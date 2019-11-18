@@ -1,0 +1,57 @@
+{
+	"callfunc": "rule",
+	"responses": [
+		{
+			"alias": "spam",
+			"text": "Spamming is not allowed in any channel, including voice channels."
+		},
+		{
+			"alias": "bullying",
+			"text": "Attacking a person or the community itself is prohibited."
+		},
+		{
+			"alias": "nsfw",
+			"text": "NSFW (not safe for work) contents in text, voice, or image format are prohibited."
+		},
+		{
+			"alias": "ping",
+			"text": "Do not ping (tag) users in your messages extensively for no valid reason."
+		},
+		{
+			"alias": "dm",
+			"text": "Do not DM (direct message) community members for help. Use the coding-help channels instead."
+		},
+		{
+			"alias": "ads",
+			"text": "Promoting or advertising products, services, websites, videos, or any other content that leads to financial gains is prohibited."
+		},
+		{
+			"alias": "trolling",
+			"text": "Do not be abusive toward other community members. We don't make jokes to other community members' expense, nor should you."
+		},
+		{
+			"alias": "hate",
+			"text": "Promoting hate in image, text, or video form is prohibited."
+		},
+		{
+			"alias": "links",
+			"text": "Posting suspicious links that lead to harmful or illegal websites is prohibited, and will be reported to Discord."
+		},
+		{
+			"alias": "language",
+			"text": "Please use English in your communication on this server."
+		},
+		{
+			"alias": "topics",
+			"text": "Please avoid discussing sensitive topics like substance abuse, illegal activity, self harm, etc."
+		},
+		{
+			"alias": "formatting",
+			"text": "When sharing code with the community, please use the correct formatting:\n\\```py\n# YOUR CODE HERE\n\\```"
+		},
+		{
+			"alias": "asking",
+			"text": "Do not ask whether you can ask. Do not ask whether someone can help.\nInstead **ask away**, tell us what your goal is, **provide the *related, relevant* code with proper formatting**, and we will do our best to give you an answer."
+		}
+	]
+}
