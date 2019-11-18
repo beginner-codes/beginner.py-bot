@@ -1,20 +1,25 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: beginnerpy
+  name: beginner-py-bot
   labels:
-    app: beginnerpy
+    app: beginner-py-bot
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: beginnerpy
+      app: beginner-py-bot
   template:
     metadata:
       labels:
-        app: beginnerpy
+        app: beginner-py-bot
     spec:
       containers:
-      - name: beginnerpy-bot
-        image: zzmmrmn/beginnerpybot:2019.11.001
-
+      - name: beginner-py-bot
+        image: zzmmrmn/beginner-py-bot:2019.11.009
+        env:
+          - name: "DISCORD_TOKEN"
+            valueFrom:
+              secretKeyRef:
+                name: discord.token
+                key: token
