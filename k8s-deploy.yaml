@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: beginnerpy
+  labels:
+    app: beginnerpy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: beginnerpy
+  template:
+    metadata:
+      labels:
+        app: beginnerpy
+    spec:
+      containers:
+      - name: beginnerpy-bot
+        image: zzmmrmn/beginnerpybot:2019.11.001
+
