@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: beginner-py-bot
-        image: zzmmrmn/beginner-py-bot:2019.11.009
+        image: zzmmrmn/beginner-py-bot:2019.11.010
         env:
           - name: "DISCORD_TOKEN"
             valueFrom:
