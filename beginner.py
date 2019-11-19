@@ -3,7 +3,13 @@ import discord
 import random
 from discord.ext import commands
 
-client = commands.Bot(command_prefix = "!")
+client = commands.Bot(
+	command_prefix="!",
+	activity=discord.Activity(
+		name="for '!help' to show you all commands",
+		type=discord.ActivityType.watching
+	)
+)
 client.remove_command('help')
 
 
