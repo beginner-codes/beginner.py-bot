@@ -2,6 +2,7 @@ import os
 import discord
 import random
 from discord.ext import commands
+from functools import lru_cache
 
 client = commands.Bot(
 	command_prefix="!",
@@ -55,6 +56,14 @@ def load_cogs():
 			client.load_extension(f'cogs.{filename[:-3]}')
 
 
+@lru_cache()
+def get_token():
+	if "DISCORD_TOKEN" in os.environ:
+		return os.environ.get("DISCORD_TOKEN")
+	with open("bot.token", "r") as token_file:
+		return token_file.readline().strip()
+
+
 if __name__ == "__main__":
 	load_cogs()
-	client.run(os.environ["DISCORD_TOKEN"])
+	client.run(get_token())
