@@ -49,10 +49,12 @@ async def reload(ctx, extension):
 		await ctx.send(f"{ctx.author.name} you don't have permission to perform this action.")
 
 
-for filename in os.listdir('./cogs'):
-	if filename.endswith('.py'):
-		client.load_extension(f'cogs.{filename[:-3]}')
+def load_cogs():
+	for filename in os.listdir('./cogs'):
+		if filename.endswith('.py'):
+			client.load_extension(f'cogs.{filename[:-3]}')
 
 
 if __name__ == "__main__":
+	load_cogs()
 	client.run(os.environ["DISCORD_TOKEN"])
