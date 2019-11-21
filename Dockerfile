@@ -9,4 +9,4 @@ COPY beginner/cogs cogs
 COPY beginner/beginner.py beginner.py
 COPY icon.png icon.png
 
-CMD ["python3", "beginner.py"]
+CMD ["python3", "-m", "beginner"]
