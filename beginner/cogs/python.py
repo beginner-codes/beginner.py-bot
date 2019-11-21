@@ -14,6 +14,10 @@ class Python(Cog):
 
 	@Cog.command()
 	async def python(self, ctx, *, cmd):
+		if not self.commands:
+			await ctx.send("Nothing found in the database, try again later")
+			return
+
 		found = False
 		if "-missing" in cmd:	# provide a list of python commands that are missing examples
 			if len([r for r in ctx.author.roles if r.id == 644301991832453120]) > 0:

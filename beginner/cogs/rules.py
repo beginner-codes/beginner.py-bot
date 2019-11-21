@@ -14,6 +14,14 @@ class Rules(Cog):
 
 	@Cog.command()
 	async def rule(self, ctx, *, cmd):
+		if not self.rules:
+			await ctx.send("No rules found in the database, try again later")
+			if len([r for r in ctx.author.roles if r.id == 644301991832453120]) > 0:
+				# TODO: This is debug code for use on the cluster. Will be removed later.
+				import os
+				await ctx.send(f">>> {os.getcwd()}\n{os.listdir(os.getcwd())}")
+			return
+
 		found = False
 		if "-add rule" in cmd:		# allow to add a new rule
 			items = cmd.split()
