@@ -1,18 +1,15 @@
 import discord
 from discord.ext import commands
 
-class Help(commands.Cog):
 
+class Help(commands.Cog):
 	def __init__(self, client):
 		self.client = client
 
-
-	@commands.Cog.listener()	# event decorator inside a cog
+	@commands.Cog.listener()
 	async def on_ready(self):
 		print("Help cog ready.")
 
-
-	# @command.command(help, description="Shows this message")
 	@commands.command()
 	async def help(self, ctx, *, cmd=None):
 		if not cmd:
@@ -63,7 +60,6 @@ class Help(commands.Cog):
 				)
 				await ctx.send(embed=embedded)
 
-
 	@commands.command()
 	async def info(self, ctx):
 		embedded = discord.Embed(
@@ -71,8 +67,6 @@ class Help(commands.Cog):
 			color=0xFFE873
 		)
 		await ctx.send(embed=embedded)
-
-
 
 
 def setup(client):
