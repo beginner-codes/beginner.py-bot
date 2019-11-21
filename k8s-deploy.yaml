@@ -16,8 +16,10 @@ spec:
     spec:
       containers:
       - name: beginner-py-bot
-        image: zzmmrmn/beginner-py-bot:2019.11.12
+        image: zzmmrmn/beginner-py-bot:2019.11.14
         env:
+          - name: PRODUCTION_BOT
+            value: "PRODUCTION"
           - name: "DISCORD_TOKEN"
             valueFrom:
               secretKeyRef:
