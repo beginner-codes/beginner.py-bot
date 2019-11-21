@@ -113,15 +113,8 @@ class Rules(Cog):
 
 	@Cog.command()
 	async def aliases(self, ctx):
-		text = ">>> The available rule aliases are:\n"
-		als = []
-		for r in self.rules:
-			als.append(r["alias"])
-		als = sorted(als)
-		for r in als:
-			text += r + ", "
-		text = text[:-2]
-		await ctx.send(text)
+		als = sorted([rule["alias"] for rule in self.rules["responses"]])
+		await ctx.send(f">>> The available rule aliases are:\n{', '.join(als)}")
 
 
 def setup(client):
