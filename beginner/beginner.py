@@ -1,5 +1,6 @@
 import os
 import discord
+from asyncio import sleep
 from discord.ext import commands
 from beginner.cog import Cog
 from functools import lru_cache
@@ -9,6 +10,12 @@ class BeginnerCog(Cog):
 	@Cog.listener()
 	async def on_ready(self):
 		print("Bot is ready.")
+
+	@Cog.command()
+	async def d(self, ctx, bump):
+		if bump == "bump":
+			await sleep(60*60*2)  # Sleep for 2 hours after we see a bump
+			await ctx.send("<@&644301991832453120> It's been 2hrs since the last bump")
 
 	@staticmethod
 	@lru_cache()
