@@ -1,5 +1,6 @@
-from beginner.beginner import get_client, get_token, load_cogs
+from beginner.beginner import BeginnerCog
 
 
-load_cogs()
-get_client().run(get_token())
+client = BeginnerCog.get_client()
+BeginnerCog.load_cogs(client)
+client.run(BeginnerCog.get_token())
