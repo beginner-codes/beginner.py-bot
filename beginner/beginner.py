@@ -1,6 +1,5 @@
 import os
 import discord
-import random
 from discord.ext import commands
 from functools import lru_cache
 
