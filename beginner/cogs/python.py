@@ -6,8 +6,7 @@ from beginner.cog import Cog
 class Python(Cog):
 	def __init__(self, client):
 		self.client = client
-		with open("./beginner/cogs/python.json") as pyfile:
-			self.cmds = json.load(pyfile)
+		self.commands = self.load_data("python")
 
 	@Cog.listener()
 	async def on_ready(self):
@@ -22,7 +21,7 @@ class Python(Cog):
 				text = "The following items are missing example codes:\n\n"
 				counter = 0
 				page = 1
-				for r in self.cmds["responses"]:
+				for r in self.commands["responses"]:
 					if not r["code"]:
 						if len(text) < 1948:
 							counter += 1
@@ -50,13 +49,13 @@ class Python(Cog):
 				code = "\n".join(rows[1:])
 				found = True
 				foundInner = False
-				for r in self.cmds["responses"]:
+				for r in self.commands["responses"]:
 					if r["alias"] == item or r["alias"] == item+"()":
 						foundInner = True
 						if len(r["code"]) < 2:
 							r["code"].append(code)
 							file = open("./cogs/python.json", "w")
-							file.write(json.dumps(self.cmds))
+							file.write(json.dumps(self.commands))
 							file.close()
 							embedded = discord.Embed(title="Success", description=f"{r['alias']} {r['type']} successfully updated.", color=0x22CC22)
 							embedded.set_author(name="Success", icon_url="https://cdn.discordapp.com/icons/644299523686006834/e69f6d4231a6e58eed5884625c4b4931.png")
@@ -77,12 +76,12 @@ class Python(Cog):
 				description = " ".join(items[3:])
 				found = True
 				foundInner = False
-				for r in self.cmds["responses"]:
+				for r in self.commands["responses"]:
 					if r["alias"] == item or r["alias"] == item+"()":
 						foundInner = True
 						r["text"] = description
 						file = open("./cogs/python.json", "w")
-						file.write(json.dumps(self.cmds))
+						file.write(json.dumps(self.commands))
 						file.close()
 						embedded = discord.Embed(description=f"{r['alias']} successfully updated.", color=0x22CC22)
 						embedded.set_author(name="Success", icon_url="https://cdn.discordapp.com/icons/644299523686006834/e69f6d4231a6e58eed5884625c4b4931.png")
@@ -102,13 +101,13 @@ class Python(Cog):
 					code = "\n".join(rows[1:])
 					found = True
 					foundInner = False
-					for r in self.cmds["responses"]:
+					for r in self.commands["responses"]:
 						if r["alias"] == item or r["alias"] == item+"()":
 							foundInner = True
 							if len(r["code"]) >= count:
 								r["code"][count - 1] = code
 								file = open("./cogs/python.json", "w")
-								file.write(json.dumps(self.cmds))
+								file.write(json.dumps(self.commands))
 								file.close()
 								embedded = discord.Embed(description=f"{r['alias']} successfully updated.", color=0x22CC22)
 								embedded.set_author(name="Success", icon_url="https://cdn.discordapp.com/icons/644299523686006834/e69f6d4231a6e58eed5884625c4b4931.png")
@@ -129,7 +128,7 @@ class Python(Cog):
 					embedded.set_author(name="Error - incorrect format", icon_url="https://cdn.discordapp.com/icons/644299523686006834/e69f6d4231a6e58eed5884625c4b4931.png")
 
 		else:
-			for r in self.cmds["responses"]:
+			for r in self.commands["responses"]:
 				if r["alias"] == cmd or r["alias"] == cmd+"()":
 					found = True
 					embedded = discord.Embed(description=r["text"], color=0x306998)

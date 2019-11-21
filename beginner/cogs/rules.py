@@ -6,8 +6,7 @@ from beginner.cog import Cog
 class Rules(Cog):
 	def __init__(self, client):
 		self.client = client
-		with open("./beginner/cogs/rules.json") as rulefile:
-			self.rules = json.load(rulefile)
+		self.rules = self.load_data("rules")
 
 	@Cog.listener()
 	async def on_ready(self):
