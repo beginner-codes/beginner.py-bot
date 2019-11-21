@@ -27,13 +27,20 @@ spec:
         app: beginner-py-bot
     spec:
       containers:
-      - name: beginner-py-bot
-        image: zzmmrmn/beginner-py-bot:2019.11.16
-        env:
-          - name: PRODUCTION_BOT
-            value: "PRODUCTION"
-          - name: "DISCORD_TOKEN"
-            valueFrom:
-              secretKeyRef:
-                name: discord.token
-                key: token
+        - name: beginner-py-bot
+          image: zzmmrmn/beginner-py-bot:2019.11.15
+          volumeMounts:
+            - name: beginner-py-bot-vol
+              mountPath: /usr/src/app/data
+          env:
+            - name: PRODUCTION_BOT
+              value: "PRODUCTION"
+            - name: "DISCORD_TOKEN"
+              valueFrom:
+                secretKeyRef:
+                  name: discord.token
+                  key: token
+      volumes:
+        - name: beginner-py-bot-vol
+          persistentVolumeClaim:
+            claimName: beginner-py-bot-pvc
