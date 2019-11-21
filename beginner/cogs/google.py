@@ -5,29 +5,25 @@ import requests
 import urllib
 from random import randint
 
-class Google(commands.Cog):
 
+class Google(commands.Cog):
 	def __init__(self, client):
 		self.client = client
 		self.colors = [0xEA4335, 0x4285F4, 0xFBBC05, 0x34A853]
-
 
 	@commands.Cog.listener()	# event decorator inside a cog
 	async def on_ready(self):
 		print("Google cog ready.")
 
-
 	@commands.command()			# command decorator inside a cog
 	async def google(self, ctx, *, query):
 		results = []
-		queryplus = query.replace(" ", "+")
 		queryplus = urllib.parse.quote_plus(query)
 		url = f"https://www.google.com/search?q={queryplus}"
 		re = requests.get(url, headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.97 Safari/537.36"})
 		soup = BeautifulSoup(re.content, "html.parser")
 		res = soup.find("div", {"id": "search"})
 
-		# print(results)
 		rs = res.find_all("div", "r")
 		counter = 0
 		for r in rs:
