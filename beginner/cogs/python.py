@@ -7,10 +7,8 @@ class Python(commands.Cog):
 
 	def __init__(self, client):
 		self.client = client
-		with open("./cogs/python.json") as pyfile:
-			python_data = json.load(pyfile)
-		self.cmds = python_data
-		pyfile.close()
+		with open("./beginner/cogs/python.json") as pyfile:
+			self.cmds = json.load(pyfile)
 
 
 	@commands.Cog.listener()	# event decorator inside a cog

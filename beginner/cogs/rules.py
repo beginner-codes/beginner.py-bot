@@ -7,10 +7,8 @@ class Rules(commands.Cog):
 
 	def __init__(self, client):
 		self.client = client
-		with open("./cogs/rules.json") as rulefile:
-			rules_data = json.load(rulefile)
-		self.rules = rules_data
-		rulefile.close()
+		with open("./beginner/cogs/rules.json") as rulefile:
+			self.rules = json.load(rulefile)
 
 
 	@commands.Cog.listener()	# event decorator inside a cog

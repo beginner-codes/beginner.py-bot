@@ -4,14 +4,29 @@ import random
 from discord.ext import commands
 from functools import lru_cache
 
-client = commands.Bot(
-	command_prefix="!",
-	activity=discord.Activity(
-		name="for '!help' to show you all commands",
-		type=discord.ActivityType.watching
+
+@lru_cache()
+def get_client() -> commands.Bot:
+	client = commands.Bot(
+		command_prefix="!",
+		activity=discord.Activity(
+			name="for '!help' to show you all commands",
+			type=discord.ActivityType.watching
+		)
 	)
-)
-client.remove_command('help')
+	client.remove_command('help')
+	return client
+
+
+@lru_cache()
+def get_token():
+	if "DISCORD_TOKEN" in os.environ:
+		return os.environ.get("DISCORD_TOKEN")
+	with open("bot.token", "r") as token_file:
+		return token_file.readline().strip()
+
+
+client = get_client()
 
 
 @client.event
@@ -51,19 +66,6 @@ async def reload(ctx, extension):
 
 
 def load_cogs():
-	for filename in os.listdir('./cogs'):
+	for filename in os.listdir('./beginner/cogs'):
 		if filename.endswith('.py'):
-			client.load_extension(f'cogs.{filename[:-3]}')
-
-
-@lru_cache()
-def get_token():
-	if "DISCORD_TOKEN" in os.environ:
-		return os.environ.get("DISCORD_TOKEN")
-	with open("bot.token", "r") as token_file:
-		return token_file.readline().strip()
-
-
-if __name__ == "__main__":
-	load_cogs()
-	client.run(get_token())
+			client.load_extension(f'beginner.cogs.{filename[:-3]}')
