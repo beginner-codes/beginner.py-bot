@@ -4,19 +4,16 @@ from discord.ext import commands
 
 
 class Python(commands.Cog):
-
 	def __init__(self, client):
 		self.client = client
 		with open("./beginner/cogs/python.json") as pyfile:
 			self.cmds = json.load(pyfile)
 
-
-	@commands.Cog.listener()	# event decorator inside a cog
+	@commands.Cog.listener()
 	async def on_ready(self):
 		print("Python cog ready.")
 
-
-	@commands.command()			# command decorator inside a cog
+	@commands.command()
 	async def python(self, ctx, *, cmd):
 		found = False
 		if "-missing" in cmd:	# provide a list of python commands that are missing examples
@@ -148,13 +145,13 @@ class Python(commands.Cog):
 					# <@{ctx.author.id}> gives a clickable link for the user
 					embedded.set_footer(text=f"This information was requested by {ctx.author.name}.", icon_url="https://cdn.discordapp.com/icons/644299523686006834/e69f6d4231a6e58eed5884625c4b4931.png")
 					break
+
 		if found == False:
 			text = f"I'm sorry <@{ctx.author.id}>, I don't know this Python keyword or function."
 			embedded = discord.Embed(description=text, color=0xCC2222)
 			embedded.set_author(name="Error - not found", icon_url="https://cdn.discordapp.com/icons/644299523686006834/e69f6d4231a6e58eed5884625c4b4931.png")
 
 		await ctx.send(embed=embedded)
-		
 
 
 def setup(client):
