@@ -65,6 +65,7 @@ async def reload(ctx, extension):
 
 
 def load_cogs():
-	for filename in os.listdir('./beginner/cogs'):
-		if filename.endswith('.py'):
-			client.load_extension(f'beginner.cogs.{filename[:-3]}')
+	client.load_extension('beginner.cogs.google')
+	client.load_extension('beginner.cogs.help')
+	client.load_extension('beginner.cogs.python')
+	client.load_extension('beginner.cogs.rules')
