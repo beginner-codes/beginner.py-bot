@@ -1,7 +1,7 @@
 # beginner.py-bot
 Discord bot for the beginner.py server.
 
-## Running
+## Setup & Running
 To run the bot you need to first define the authentication token. Then you the bot can be run either directly with the local python interpreter or using the included Dockerfile.
 
 ### Authentication Token
