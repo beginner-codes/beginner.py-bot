@@ -1,19 +1,19 @@
 import discord
 import json
-from discord.ext import commands
+from beginner.cog import Cog
 
 
-class Python(commands.Cog):
+class Python(Cog):
 	def __init__(self, client):
 		self.client = client
 		with open("./beginner/cogs/python.json") as pyfile:
 			self.cmds = json.load(pyfile)
 
-	@commands.Cog.listener()
+	@Cog.listener()
 	async def on_ready(self):
 		print("Python cog ready.")
 
-	@commands.command()
+	@Cog.command()
 	async def python(self, ctx, *, cmd):
 		found = False
 		if "-missing" in cmd:	# provide a list of python commands that are missing examples

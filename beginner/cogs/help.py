@@ -1,16 +1,16 @@
 import discord
-from discord.ext import commands
+from beginner.cog import Cog
 
 
-class Help(commands.Cog):
+class Help(Cog):
 	def __init__(self, client):
 		self.client = client
 
-	@commands.Cog.listener()
+	@Cog.listener()
 	async def on_ready(self):
 		print("Help cog ready.")
 
-	@commands.command()
+	@Cog.command()
 	async def help(self, ctx, *, cmd=None):
 		if not cmd:
 			embedded = discord.Embed(
@@ -60,7 +60,7 @@ class Help(commands.Cog):
 				)
 				await ctx.send(embed=embedded)
 
-	@commands.command()
+	@Cog.command()
 	async def info(self, ctx):
 		embedded = discord.Embed(
 			description="I am the official beginner.py server bot. I'm here to make everyone's life easier on this server.\nType **!help** to see how you can get help from me.",

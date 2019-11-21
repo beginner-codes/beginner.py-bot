@@ -1,19 +1,19 @@
 import discord
 import json
-from discord.ext import commands
+from beginner.cog import Cog
 
 
-class Rules(commands.Cog):
+class Rules(Cog):
 	def __init__(self, client):
 		self.client = client
 		with open("./beginner/cogs/rules.json") as rulefile:
 			self.rules = json.load(rulefile)
 
-	@commands.Cog.listener()
+	@Cog.listener()
 	async def on_ready(self):
 		print("Rules cog ready.")
 
-	@commands.command()
+	@Cog.command()
 	async def rule(self, ctx, *, cmd):
 		found = False
 		if "-add rule" in cmd:		# allow to add a new rule
@@ -111,7 +111,7 @@ class Rules(commands.Cog):
 					embedded.set_author(name="Error - incorrect alias", icon_url="https://cdn.discordapp.com/icons/644299523686006834/e69f6d4231a6e58eed5884625c4b4931.png")
 		await ctx.send(embed=embedded)
 
-	@commands.command()
+	@Cog.command()
 	async def aliases(self, ctx):
 		text = ">>> The available rule aliases are:\n"
 		als = []

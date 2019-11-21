@@ -1,21 +1,21 @@
 import discord
-from discord.ext import commands
+from beginner.cog import Cog
 from bs4 import BeautifulSoup
 import requests
 import urllib
 from random import randint
 
 
-class Google(commands.Cog):
+class Google(Cog):
 	def __init__(self, client):
 		self.client = client
 		self.colors = [0xEA4335, 0x4285F4, 0xFBBC05, 0x34A853]
 
-	@commands.Cog.listener()	# event decorator inside a cog
+	@Cog.listener()	# event decorator inside a cog
 	async def on_ready(self):
 		print("Google cog ready.")
 
-	@commands.command()			# command decorator inside a cog
+	@Cog.command()			# command decorator inside a cog
 	async def google(self, ctx, *, query):
 		results = []
 		queryplus = urllib.parse.quote_plus(query)
