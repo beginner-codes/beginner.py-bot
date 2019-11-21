@@ -5,8 +5,7 @@ WORKDIR /usr/src/app
 COPY requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY beginner/cogs cogs
-COPY beginner/beginner.py beginner.py
+COPY beginner beginner
 COPY icon.png icon.png
 
 CMD ["python3", "-m", "beginner"]
