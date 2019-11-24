@@ -22,6 +22,9 @@ class BeginnerCog(Cog):
 
     @Cog.command()
     async def export(self, ctx, namespace):
+        if len([r for r in ctx.author.roles if r.id == 644301991832453120]) == 0:
+            return
+
         path = os.path.join("data", f"{namespace}.json")
         if not os.path.exists(path):
             await ctx.send(f"No such namespace: {namespace}")
@@ -31,6 +34,9 @@ class BeginnerCog(Cog):
 
     @Cog.command(name="import")
     async def import_(self, ctx, namespace):
+        if len([r for r in ctx.author.roles if r.id == 644301991832453120]) == 0:
+            return
+
         path = os.path.join("data", f"{namespace}.json")
         if not os.path.exists(path):
             await ctx.send(f"No such namespace: {namespace}")
