@@ -11,7 +11,10 @@ class Cog(commands.Cog):
         path = os.path.join("data", f"{namespace}.json")
         if os.path.exists(path):
             with open(path, "r") as json_file:
-                data = json.load(json_file)
+                try:
+                    data = json.load(json_file)
+                except json.decoder.JSONDecodeError:
+                    pass
         return data if data else default
 
     @staticmethod
