@@ -7,6 +7,9 @@ from functools import lru_cache
 
 
 class BeginnerCog(Cog):
+    def __init__(self, client):
+        self.client = client
+
     @Cog.listener()
     async def on_ready(self):
         print("Bot is ready.")
@@ -16,6 +19,28 @@ class BeginnerCog(Cog):
         if bump == "bump":
             await sleep(60 * 60 * 2)  # Sleep for 2 hours after we see a bump
             await ctx.send("<@&644301991832453120> It's been 2hrs since the last bump")
+
+    @Cog.command()
+    async def export(self, ctx, namespace):
+        path = os.path.join("data", f"{namespace}.json")
+        if not os.path.exists(path):
+            await ctx.send(f"No such namespace: {namespace}")
+        else:
+            with open(path, "r") as json_file:
+                await ctx.send(f"Here you go", file=discord.File(json_file))
+
+    @Cog.command(name="import")
+    async def import_(self, ctx, namespace):
+        path = os.path.join("data", f"{namespace}.json")
+        if not os.path.exists(path):
+            await ctx.send(f"No such namespace: {namespace}")
+        elif not ctx.message.attachments:
+            await ctx.send(f"Nothing attached to import")
+        else:
+            await ctx.message.attachments[0].save(path)
+            self.client.unload_extension(f"beginner.cogs.{namespace}")
+            self.client.load_extension(f"beginner.cogs.{namespace}")
+            await ctx.send(f"Namespace {namespace} updated with contents of {ctx.message.attachments[0].filename}")
 
     @staticmethod
     @lru_cache()
