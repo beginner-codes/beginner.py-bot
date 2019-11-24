@@ -63,12 +63,12 @@ class Help(Cog):
                         inline=False,
                     )
                     embedded.add_field(
-                        name="!rule -edit rule <alias> <content>",
+                        name="!rule -edit <alias> <content>",
                         value="Overwrites an existing rule's text with <content>.",
                         inline=False,
                     )
                     embedded.add_field(
-                        name="!rule -edit alias <current_alias> <new_alias>",
+                        name="!rule -edit-alias <current_alias> <new_alias>",
                         value="Overwrites an existing rule's current alias with a new alias.",
                         inline=False,
                     )
