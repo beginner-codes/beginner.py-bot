@@ -38,9 +38,7 @@ class BeginnerCog(Cog):
             return
 
         path = os.path.join("data", f"{namespace}.json")
-        if not os.path.exists(path):
-            await ctx.send(f"No such namespace: {namespace}")
-        elif not ctx.message.attachments:
+        if not ctx.message.attachments:
             await ctx.send(f"Nothing attached to import")
         else:
             await ctx.message.attachments[0].save(path)
