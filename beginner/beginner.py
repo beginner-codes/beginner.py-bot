@@ -62,10 +62,22 @@ class BeginnerCog(Cog):
     @staticmethod
     @lru_cache()
     def get_token():
+        token = ""
         if "DISCORD_TOKEN" in os.environ:
-            return os.environ.get("DISCORD_TOKEN")
-        with open("bot.token", "r") as token_file:
-            return token_file.readline().strip()
+            token = os.environ.get("DISCORD_TOKEN")
+        elif BeginnerCog.is_dev_env() and os.path.exists("bot.token"):
+            with open("bot.token", "r") as token_file:
+                token = token_file.readline()
+        if not token or len(token.strip()) != 59:
+            message = [
+                "No valid token could be found - Please set a token in your environment as DISCORD_TOKEN",
+                f"\ttoken: {repr(token)}",
+                f"\tdev: {BeginnerCog.is_dev_env()}"
+            ]
+            if BeginnerCog.is_dev_env():
+                message.append(f"\tbot.token exists: {os.path.exists('bot.token')}")
+            raise Exception("\n".join(message))
+        return token.strip()
 
     @staticmethod
     @lru_cache()
