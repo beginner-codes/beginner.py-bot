@@ -24,7 +24,7 @@ First install the requirements
 
 Then you can run as normal
 
-    python beginner.py
+    python -m beginner
 
 #### Docker Compose
 Alternatively if you have docker installed you can have it handle all of that for you by running it with the this command:
