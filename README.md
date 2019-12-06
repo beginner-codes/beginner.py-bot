@@ -26,11 +26,12 @@ Then you can run as normal
 
     python beginner.py
 
-Alternatively if you have docker installed you can run it using docker compose with the following command.
+#### Docker Compose
+Alternatively if you have docker installed you can have it handle all of that for you by running it with the this command:
 
     docker-compose -f bot-compose.yaml up
 
-To stop the bot press `CTRL-C`
+To stop the bot press `CTRL-C`.
 
 It will be necessary to create a file at the root of the project named `bot.config`, inside the file you will need to provide the bot token like this:
 
