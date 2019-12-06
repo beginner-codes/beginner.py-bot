@@ -9,11 +9,11 @@ The authentication token can be stored either as an environment variable or as a
 
 Environment variable in a bash shell
 
-    EXPORT DISCORD_BOT="token value"
+    EXPORT DISCORD_TOKEN="token value"
 
 Environment variable in a Windows shell
 
-    setx DISCORD_BOT "token value"
+    setx DISCORD_TOKEN "token value"
 
 Or the token value can be placed into a file named `bot.token` in the same directory as the `beginner.py` file.
 
