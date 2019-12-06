@@ -107,3 +107,4 @@ bot.token
 .DS_Store
 postgres-data
 *password-manafest.yaml
+/bot.config
