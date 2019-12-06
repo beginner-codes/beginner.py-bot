@@ -1,0 +1,13 @@
+version: "3"
+services:
+  postgres_db:
+    image: "postgres:12.1"
+    container_name: "my_postgres"
+    environment:
+      - POSTGRES_USER=postgresadmin
+      - POSTGRES_PASSWORD=dev-env-password-safe-to-be-public
+      - POSTGRES_DB=bpydb
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./postgres-data:/var/lib/postgresql/data
