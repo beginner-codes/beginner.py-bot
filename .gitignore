@@ -106,3 +106,4 @@ bot.token
 .idea
 .DS_Store
 postgres-data
+*password-manafest.yaml
