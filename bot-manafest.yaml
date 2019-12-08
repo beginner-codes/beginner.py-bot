@@ -40,6 +40,13 @@ spec:
                 secretKeyRef:
                   name: discord.token
                   key: token
+            - name: "DB_HOST"
+              value: "bpy-postgres-svc"
+            - name: "DB_PASSWORD"
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-password
+                  key: password
       volumes:
         - name: beginner-py-bot-vol
           persistentVolumeClaim:
