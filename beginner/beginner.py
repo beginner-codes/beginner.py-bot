@@ -1,24 +1,44 @@
-import os
-import discord
 from asyncio import sleep
-from discord.ext import commands
 from beginner.cog import Cog
+from beginner.models import set_database, PostgresqlDatabase
+from beginner.scheduler import initialize_scheduler, schedule, tag
+from datetime import datetime, timedelta
+from discord.ext import commands
 from functools import lru_cache
+import discord
+import os
+
+
+@tag("disboard-bump")
+async def bump_reminder():
+    channel = BeginnerCog.get_client().get_channel(644338578695913504)
+    await channel.send("<@&644301991832453120> It's been 2hrs since the last bump")
 
 
 class BeginnerCog(Cog):
     def __init__(self, client):
         self.client = client
+        set_database(
+            PostgresqlDatabase(
+                "bpydb",
+                user=os.environ.get("DB_USER", "postgresadmin"),
+                host=os.environ.get("DB_HOST", "0.0.0.0"),
+                port=os.environ.get("DB_PORT", "5432"),
+                password=os.environ.get(
+                    "DB_PASSWORD", "dev-env-password-safe-to-be-public"
+                ),
+            )
+        )
 
     @Cog.listener()
     async def on_ready(self):
+        initialize_scheduler()
         print("Bot is ready.")
 
     @Cog.command()
-    async def d(self, ctx, bump):
-        if bump == "bump":
-            await sleep(60 * 60 * 2)  # Sleep for 2 hours after we see a bump
-            await ctx.send("<@&644301991832453120> It's been 2hrs since the last bump")
+    async def d(self, ctx, message):
+        if message == "bump":
+            schedule("disboard-bump-reminder", timedelta(hours=2), bump_reminder)
 
     @Cog.command()
     async def export(self, ctx, namespace):
