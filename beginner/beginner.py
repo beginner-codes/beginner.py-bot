@@ -44,7 +44,9 @@ class BeginnerCog(Cog):
             await ctx.message.attachments[0].save(path)
             self.client.unload_extension(f"beginner.cogs.{namespace}")
             self.client.load_extension(f"beginner.cogs.{namespace}")
-            await ctx.send(f"Namespace {namespace} updated with contents of {ctx.message.attachments[0].filename}")
+            await ctx.send(
+                f"Namespace {namespace} updated with contents of {ctx.message.attachments[0].filename}"
+            )
 
     @staticmethod
     @lru_cache()
@@ -72,7 +74,7 @@ class BeginnerCog(Cog):
             message = [
                 "No valid token could be found - Please set a token in your environment as DISCORD_TOKEN",
                 f"\ttoken: {repr(token)}",
-                f"\tdev: {BeginnerCog.is_dev_env()}"
+                f"\tdev: {BeginnerCog.is_dev_env()}",
             ]
             if BeginnerCog.is_dev_env():
                 message.append(f"\tbot.token exists: {os.path.exists('bot.token')}")
