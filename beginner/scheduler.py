@@ -1,101 +1,92 @@
 from __future__ import annotations
 from beginner.exceptions import BeginnerException
-from beginner.models.scheduler import Scheduler as SchedulerTasks
+from beginner.models.scheduler import Scheduler
 from collections import defaultdict
-from datetime import datetime
-from functools import cached_property
-from typing import Any, AnyStr, Callable, Union
+from datetime import datetime, timedelta
+from typing import Any, AnyStr, Callable, Dict, List, Union
+import asyncio
+import math
 import pickle
 
 
-class Scheduler:
-    """ System for scheduling actions and having them execute at a given date and time. """
+__tagged_handlers__ = defaultdict(list)
 
-    __task_handlers__ = defaultdict(list)
 
-    def __init__(self):
-        pass
+def initialize_scheduler():
+    """ Loads scheduler tasks from the database and schedules them to run. """
+    tasks = [
+        _schedule(task, pickle.loads(task.payload.encode()))
+        for task in Scheduler.select()
+    ]
+    if tasks:
+        asyncio.create_task(asyncio.gather(*tasks))
 
-    @cached_property
-    def tasks(self):
-        tasks = defaultdict(list)
-        for task in SchedulerTasks.select():
-            tasks[task.name].append(task)
-        return tasks
 
-    def schedule(
-        self, name: AnyStr, when: datetime, tag: AnyStr, payload: Any = None
-    ) -> Scheduler:
-        self.tasks[name].append(
-            Task(
-                SchedulerTasks(
-                    name=name, when=when, tag=tag, payload=pickle.dumps(payload)
-                )
-            )
+def schedule(
+    name: AnyStr,
+    when: Union[datetime, timedelta],
+    callback_tag: Union[AnyStr, Callable],
+    *args,
+    **kwargs,
+):
+    """ Schedule a task to be run and save it to the database. """
+    tag = callback_tag.tag if callable(callback_tag) else callback_tag
+    when = datetime.now() + when if isinstance(when, timedelta) else when
+    time = _seconds_until_run(when)
+    payload = {"args": args, "kwargs": kwargs}
+    if time <= 0:
+        raise TaskScheduledForPast(
+            f"Task {name} was scheduled for {when} which was {time} seconds ago"
         )
-
-    @classmethod
-    async def trigger_tag(cls, tag: AnyStr):
-        if tag not in cls.__task_handlers__:
-            raise TagNotRegistered(f"The tag '{tag}' has not been registered")
+    task = _schedule_save(name, when, tag, pickle.dumps(payload, 0).decode())
+    asyncio.get_event_loop().create_task(_schedule(task, payload))
 
 
-class Task:
-    """ Wrapper around a scheduler task. """
+async def _schedule(task: Scheduler, payload: Dict):
+    """ Schedules a task and calls the """
+    time = _seconds_until_run(task.when)
+    if time > 0:
+        await asyncio.sleep(time)
+    await _trigger_task(task, payload)
 
-    def __init__(self, task: SchedulerTasks):
-        self._task = task
 
-    @property
-    def ID(self):
-        return self.task.ID
+def _schedule_save(
+    name: AnyStr, when: datetime, tag: AnyStr, payload: AnyStr
+) -> Scheduler:
+    """ Takes task parameters and creates a Scheduler row in the database. """
+    task = Scheduler(name=name, when=when, tag=tag, payload=payload)
+    task.save()
+    return task
 
-    @property
-    def name(self) -> AnyStr:
-        return self.task.name
 
-    @name.setter
-    def name(self, value: AnyStr):
-        self.task.name = value
+def _seconds_until_run(when: datetime) -> int:
+    return math.floor((when - datetime.now()).total_seconds())
 
-    @property
-    def payload(self) -> Any:
-        return pickle.loads(self.task.payload)
 
-    @payload.setter
-    def payload(self, value: Any):
-        self.task.payload = pickle.dumps(value)
+async def _trigger_task(task: Scheduler, payload: Any):
+    """ Runs the callbacks tagged for this task and removes the task from the database. """
+    try:
+        await _run_tags(task.tag, payload)
+    finally:
+        task.delete_instance()
 
-    @property
-    def tag(self) -> AnyStr:
-        return self.task.tag
 
-    @tag.setter
-    def tag(self, value: AnyStr):
-        self.task.tag = value
-
-    @property
-    def task(self) -> SchedulerTasks:
-        return self._task
-
-    @property
-    def when(self) -> datetime:
-        return self.task.when
-
-    @when.setter
-    def when(self, value: datetime):
-        self.task.when = value
-
-    def save(self):
-        """ Handy helper to save changes made to the task to the database. """
-        self.task.save()
+async def _run_tags(tag: AnyStr, payload: Dict):
+    """ Runs all callbacks for a given tag. """
+    for callback in __tagged_handlers__[tag]:
+        if asyncio.iscoroutine(callback) or asyncio.iscoroutinefunction(callback):
+            await callback(*payload["args"], **payload["kwargs"])
+        else:
+            callback(*payload["args"], **payload["kwargs"])
 
 
 def tag(callback: Union[AnyStr, Callable]) -> Callable:
     """ Decorator to tag a callback. """
+
     def save_tag(callback: Callable, tag: AnyStr = callback) -> Callable:
         """ Save a callback for a given tag. """
-        Scheduler.__task_handlers__[tag].append(callback)
+        __tagged_handlers__[tag].append(callback)
+        callback.tag = tag
         return callback
 
     tag = callback
@@ -105,5 +96,5 @@ def tag(callback: Union[AnyStr, Callable]) -> Callable:
     return save_tag
 
 
-class TagNotRegistered(BeginnerException):
+class TaskScheduledForPast(BeginnerException):
     pass
