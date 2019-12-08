@@ -14,12 +14,8 @@ __tagged_handlers__ = defaultdict(list)
 
 def initialize_scheduler():
     """ Loads scheduler tasks from the database and schedules them to run. """
-    tasks = [
-        _schedule(task, pickle.loads(task.payload.encode()))
-        for task in Scheduler.select()
-    ]
-    if tasks:
-        asyncio.create_task(asyncio.gather(*tasks))
+    for task in Scheduler.select():
+        asyncio.create_task(_schedule(task, pickle.loads(task.payload.encode())))
 
 
 def schedule(
