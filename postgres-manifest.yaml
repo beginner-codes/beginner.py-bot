@@ -6,7 +6,7 @@ metadata:
     app: bpy-postgres
 spec:
   accessModes:
-    - ReadWriteMany
+    - ReadWriteOnce
   resources:
     requests:
       storage: 1Gi
@@ -55,7 +55,7 @@ spec:
             - configMapRef:
                 name: bpy-postgres-config
           volumeMounts:
-            - mountPath: /var/lib/postgresql/data
+            - mountPath: /var/lib/postgresql/
               name: postgresdb
       volumes:
         - name: postgresdb
