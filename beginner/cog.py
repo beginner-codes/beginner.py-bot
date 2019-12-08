@@ -1,12 +1,34 @@
 from discord.ext import commands
-from typing import Any, AnyStr, Callable, Coroutine, NoReturn, Union
+from typing import Any, AnyStr, Callable, Coroutine, List, NoReturn, Union
 import json
 import os.path
 
 
 class Cog(commands.Cog):
+    def __init__(self, client):
+        self.client = client
+
+    @property
+    def server(self):
+        return self.client.get_guild(644299523686006834)
+
+    def get_emoji(self, name: AnyStr, default: Union[Any, None] = None):
+        return self.get(self.server.emojis, name, default)
+
+    def get_channel(self, name: AnyStr, default: Union[Any, None] = None):
+        return self.get(self.server.channels, name, default)
+
+    def get_role(self, name: AnyStr, default: Union[Any, None] = None):
+        return self.get(self.server.roles, name, default)
+
+    def get(self, search: List, name: AnyStr, default: Union[Any, None] = None):
+        for element in search:
+            if element.name == name:
+                return element
+        return default
+
     @staticmethod
-    def load_data(namespace: AnyStr, default: Any=None) -> Union[Any, None]:
+    def load_data(namespace: AnyStr, default: Any = None) -> Union[Any, None]:
         data = None
         path = os.path.join("data", f"{namespace}.json")
         if os.path.exists(path):
@@ -29,7 +51,7 @@ class Cog(commands.Cog):
 
 
 class AdvancedCommand:
-    def __init__(self, default: Coroutine, fail: Union[Coroutine, None]=None):
+    def __init__(self, default: Coroutine, fail: Union[Coroutine, None] = None):
         self._default = default
         self._fail = fail
         self._options = {}
