@@ -41,8 +41,10 @@ def schedule(
 async def _schedule(task: Scheduler, payload: Dict):
     """ Schedules a task and calls the """
     time = _seconds_until_run(task.when)
+    print(f"SCHEDULER: Scheduling {task.name} for {task.when}")
     if time > 0:
         await asyncio.sleep(time)
+    print(f"SCHEDULER: Triggering {task.name} running callbacks tagged {task.tag}")
     await _trigger_task(task, payload)
 
 
@@ -52,6 +54,7 @@ def _schedule_save(
     """ Takes task parameters and creates a Scheduler row in the database. """
     task = Scheduler(name=name, when=when, tag=tag, payload=payload)
     task.save()
+    print(f"SCHEDULER: Saved {task.name} for {task.when}")
     return task
 
 
