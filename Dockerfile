@@ -9,4 +9,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY ./beginner ./beginner
 COPY ./icon.png .
 
-CMD ["python3", "-m", "beginner"]
+CMD ["python3", "-u", "-m", "beginner"]
