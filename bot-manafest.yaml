@@ -18,8 +18,6 @@ metadata:
     app: beginner-py-bot
 spec:
   replicas: 1
-  strategy:
-    type: Recreate
   selector:
     matchLabels:
       app: beginner-py-bot
@@ -30,7 +28,7 @@ spec:
     spec:
       containers:
         - name: beginner-py-bot
-          image: zzmmrmn/beginner-py-bot:0.0.2
+          image: zzmmrmn/beginner-py-bot:0.0.4
           volumeMounts:
             - name: beginner-py-bot-vol
               mountPath: /usr/src/app/data
