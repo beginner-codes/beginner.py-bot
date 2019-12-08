@@ -9,6 +9,7 @@ discord.py==1.2.5
 idna==2.8
 multidict==4.5.2
 peewee==3.13.1
+psycopg2-binary==2.8.4
 requests==2.22.0
 soupsieve==1.9.5
 urllib3==1.25.7
