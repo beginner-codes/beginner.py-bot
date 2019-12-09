@@ -49,7 +49,7 @@ class Google(Cog):
                 name="Here are 3 Google results for",
                 icon_url="https://cdn.discordapp.com/icons/644299523686006834/e69f6d4231a6e58eed5884625c4b4931.png",
             )
-            await ctx.send(embed=embedded)
+        await ctx.send(embed=embedded)
 
 
 def setup(client):
