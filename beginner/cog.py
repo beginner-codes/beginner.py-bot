@@ -1,10 +1,11 @@
+from beginner.tags import TaggableMeta
 from discord.ext import commands
 from typing import Any, AnyStr, Callable, Coroutine, List, NoReturn, Union
 import json
 import os.path
 
 
-class Cog(commands.Cog):
+class Cog(commands.Cog, metaclass=TaggableMeta):
     def __init__(self, client):
         self.client = client
 
