@@ -43,7 +43,8 @@ class OnBoarding(Cog):
         emote = "✅"
         rules = self.get_channel("rules")
         message = await self.get_channel("new-users").send(
-            f"Welcome {member.mention}!!! Have a look at <#{rules.id}>, once you're done tap the {emote} to agree and gain full access to the server!"
+            f"Welcome {member.mention}!!! Have a look at <#{rules.id}>, once you're done tap the {emote} below to "
+            f"agree to the rules and gain full access to the server!"
         )
         await message.add_reaction(emote)
 
