@@ -20,10 +20,14 @@ def schedule(
     name: AnyStr,
     when: Union[datetime, timedelta],
     callback_tag: Union[AnyStr, Callable],
+    no_duplication=False,
     *args,
     **kwargs,
 ):
     """ Schedule a task to be run and save it to the database. """
+    if no_duplication and _count_scheduled(name) > 0:
+        return
+
     tags = build_tag_set(callback_tag)  # Get tags into a set
     # We don't want the "schedule" tag which is required for all tasks
     if "schedule" in tags:
@@ -47,6 +51,10 @@ async def _schedule(task: Scheduler, payload: Dict):
         await asyncio.sleep(time)
     print(f"SCHEDULER: Triggering {task.name} running callbacks tagged {task.tag}")
     await _trigger_task(task, payload)
+
+
+def _count_scheduled(name: AnyStr) -> int:
+    return Scheduler.select().where(Scheduler.name == name).count()
 
 
 def _schedule_save(
