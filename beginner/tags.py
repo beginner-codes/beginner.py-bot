@@ -16,7 +16,7 @@ def fetch_tags(*tags, operation: AnyStr = "and") -> Set:
     the operation to "or" will cause the fetch to select all objects that match
     any of the requested tags. """
     operator_ = operator.and_ if operation == "and" else operator.or_
-    tag_set = _build_tag_set(*tags)
+    tag_set = build_tag_set(*tags)
     if tag_set:
         matches = __registered_tags__[tag_set.pop()]
         for tag_name in tag_set:
@@ -25,7 +25,7 @@ def fetch_tags(*tags, operation: AnyStr = "and") -> Set:
     return set()
 
 
-def _build_tag_set(*tag_objects):
+def build_tag_set(*tag_objects):
     tags = set()
     for tag_object in tag_objects:
         if isinstance(tag_object, str):
