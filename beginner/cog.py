@@ -16,6 +16,9 @@ class Cog(commands.Cog, metaclass=TaggableMeta):
     def get_emoji(self, name: AnyStr, default: Union[Any, None] = None):
         return self.get(self.server.emojis, name, default)
 
+    def get_category(self, name: AnyStr, default: Union[Any, None] = None):
+        return self.get(self.server.categories, name, default, preserve_case=False)
+
     def get_channel(self, name: AnyStr, default: Union[Any, None] = None):
         return self.get(self.server.channels, name, default)
 
