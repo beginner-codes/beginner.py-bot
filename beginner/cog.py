@@ -20,11 +20,18 @@ class Cog(commands.Cog, metaclass=TaggableMeta):
         return self.get(self.server.channels, name, default)
 
     def get_role(self, name: AnyStr, default: Union[Any, None] = None):
-        return self.get(self.server.roles, name, default)
+        return self.get(self.server.roles, name, default, preserve_case=False)
 
-    def get(self, search: List, name: AnyStr, default: Union[Any, None] = None):
+    def get(
+        self,
+        search: List,
+        name: AnyStr,
+        default: Union[Any, None] = None,
+        preserve_case: bool = True,
+    ):
         for element in search:
-            if element.name == name:
+            ename = element.name if preserve_case else element.name.lower()
+            if ename == name:
                 return element
         return default
 
