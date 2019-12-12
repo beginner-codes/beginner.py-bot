@@ -20,8 +20,8 @@ def schedule(
     name: AnyStr,
     when: Union[datetime, timedelta],
     callback_tag: Union[AnyStr, Callable],
-    no_duplication=False,
     *args,
+    no_duplication=False,
     **kwargs,
 ):
     """ Schedule a task to be run and save it to the database. """
