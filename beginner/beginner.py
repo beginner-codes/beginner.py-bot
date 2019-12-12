@@ -33,7 +33,12 @@ class BeginnerCog(Cog):
     @Cog.command()
     async def d(self, ctx, message):
         if message == "bump":
-            schedule("disboard-bump-reminder", timedelta(hours=2), self.bump_reminder)
+            schedule(
+                "disboard-bump-reminder",
+                timedelta(hours=2),
+                self.bump_reminder,
+                no_duplication=True,
+            )
 
     @tag("schedule", "disboard-bump")
     async def bump_reminder(self):
