@@ -47,7 +47,7 @@ def tag(*tags) -> Callable:
     """ Decorator that assigns tags to an object. """
 
     def decorator(obj: Any) -> Any:
-        obj.tags = tags
+        obj.tags = build_tag_set(tags)
         assign_tags(obj, *tags)
         return obj
 
@@ -86,7 +86,7 @@ class TaggableMeta(commands.CogMeta):
     @staticmethod
     def class_tagger(__tagged_attributes__: Dict, *tags) -> Callable:
         def decorator(obj: Any) -> Any:
-            obj.tags = tags
+            obj.tags = build_tag_set(tags)
             __tagged_attributes__[obj.__name__] = tags
             return obj
 
