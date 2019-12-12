@@ -1,4 +1,7 @@
 from beginner.cog import Cog
+from beginner.scheduler import schedule
+from beginner.tags import tag
+from datetime import timedelta
 
 
 class OnBoarding(Cog):
@@ -27,6 +30,16 @@ class OnBoarding(Cog):
 
     @Cog.listener()
     async def on_member_join(self, member):
+        schedule(
+            "welcome-member",
+            timedelta(seconds=5),
+            self._send_welcome_message,
+            member.id,
+        )
+
+    @tag("schedule", "welcome-message")
+    async def _send_welcome_message(self, member_id):
+        member = self.server.get_member(member_id)
         emote = "✅"
         rules = self.get_channel("rules")
         message = await self.get_channel("new-users").send(
