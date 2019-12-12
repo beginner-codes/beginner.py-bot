@@ -41,6 +41,7 @@ class SpamCog(Cog):
             await message.delete()
 
     def build_embed(self, message):
+        """ Construct the embed for the moderation message. """
         embed = Embed(
             description=f"{message.author.mention} you can only attach images.",
             color=0xFF0000,
@@ -66,6 +67,7 @@ class SpamCog(Cog):
         return embed
 
     def has_disallowed_attachments(self, message):
+        """ Check if a message has an attachment that is not an allowed image type. """
         for attachment in message.attachments:
             _, extension = os.path.splitext(attachment.filename)
             if extension[1:].lower() not in {"gif", "png", "jpeg", "jpg"}:
