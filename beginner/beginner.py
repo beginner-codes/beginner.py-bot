@@ -43,7 +43,8 @@ class BeginnerCog(Cog):
     @tag("schedule", "disboard-bump")
     async def bump_reminder(self):
         channel = self.client.get_channel(644338578695913504)
-        await channel.send("It's been 2hrs since the last bump")
+        roundtable = self.get_role("roundtable")
+        await channel.send(f"{roundtable.mention} It's been 2hrs since the last bump")
 
     @Cog.command()
     async def export(self, ctx, namespace):
