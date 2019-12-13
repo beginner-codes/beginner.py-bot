@@ -1,0 +1,1 @@
+Creating virtualenv beginnerpy-site-py3.8 in /Users/zzmmrmn/Projects/beginner.py/site/.venv
