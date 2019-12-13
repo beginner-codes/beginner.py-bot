@@ -54,10 +54,7 @@ class Rules(Cog):
                 await ctx.send(embed=embedded)
 
             if error_message:
-                embedded = discord.Embed(
-                    description=error_message,
-                    color=0xCC2222,
-                )
+                embedded = discord.Embed(description=error_message, color=0xCC2222)
                 embedded.set_author(
                     name=f"Error - {error_sub}",
                     icon_url="https://cdn.discordapp.com/icons/644299523686006834/e69f6d4231a6e58eed5884625c4b4931.png",
@@ -109,8 +106,7 @@ class Rules(Cog):
                 await ctx.send(embed=embedded)
             else:
                 embedded = discord.Embed(
-                    description=f"No rule found for *{identifier}*.",
-                    color=0xCC2222,
+                    description=f"No rule found for *{identifier}*.", color=0xCC2222
                 )
                 embedded.set_author(
                     name="Error - invalid rule",
@@ -121,25 +117,19 @@ class Rules(Cog):
     async def show_rule(self, ctx, identifier: AnyStr, *_):
         rule = self.find_rule(identifier)
         if rule:
-            embedded = discord.Embed(
-                description=rule[1]["text"],
-                color=0x306998,
-            )
+            embedded = discord.Embed(description=rule[1]["text"], color=0x306998)
             embedded.set_author(
                 name=f"Rule {rule[0]} - {rule[1]['alias']}",
                 icon_url="https://cdn.discordapp.com/icons/644299523686006834/e69f6d4231a6e58eed5884625c4b4931.png",
             )
             await ctx.send(embed=embedded)
         else:
-            message = f"Invalid rule number. The valid rule numbers are between 1 and 13."
+            message = (
+                f"Invalid rule number. The valid rule numbers are between 1 and 13."
+            )
             if not identifier.isnumeric() and not identifier[1:].isnumeric():
-                aliases = ', '.join(
-                    sorted(
-                        [
-                            _rule["alias"]
-                            for _rule in self.rules["responses"]
-                        ]
-                    )
+                aliases = ", ".join(
+                    sorted([_rule["alias"] for _rule in self.rules["responses"]])
                 )
                 message = f"*{identifier}* is not a valid rule. The valid rules are:\n{aliases}"
             embedded = discord.Embed(description=message, color=0xCC2222)
