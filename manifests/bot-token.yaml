@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: discord.token
+type: Opaque
+data:
+  token: TmpVeE5UVXhNekF3TXpjNE5qZzVOVE0yLlhlYmx0Zy5pRFFnSHp4RFhWb3JmTWtEZXUxcHkwUzNxZ1k=
