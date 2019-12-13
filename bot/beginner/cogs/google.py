@@ -36,17 +36,19 @@ class Google(Cog):
                 title = r.find("span", "S3Uucc")
                 if title:
                     link = r.find("a")["href"]
-                    results.append({"title": title.text, "link": link})
-                    counter += 1
+                    if title.text and link:
+                        results.append(f"[{title.text}]({link})")
+                        counter += 1
                 if counter > 2:
                     break
 
+            description = "\n".join(results) if results else "*No Results Found*"
             embedded = discord.Embed(
-                description=f"*{query}*\n\n[{results[0]['title']}]({results[0]['link']})\n[{results[1]['title']}]({results[1]['link']})\n[{results[2]['title']}]({results[2]['link']})\nIf you don't like these sites, you can check the other results here:\n[Google search for {query}]({url})",
+                description=f'Results for *"{query}"*\n\n{description}\n\n[See more results]({url})',
                 color=self.colors[randint(0, 3)],
             )
             embedded.set_author(
-                name="Here are 3 Google results for",
+                name=f"Google Results",
                 icon_url="https://cdn.discordapp.com/icons/644299523686006834/e69f6d4231a6e58eed5884625c4b4931.png",
             )
         await ctx.send(embed=embedded)
