@@ -75,10 +75,9 @@ def _seconds_until_run(when: datetime) -> int:
 
 async def _trigger_task(task: Scheduler, payload: Any):
     """ Runs the callbacks tagged for this task and removes the task from the database. """
-    try:
-        await _run_tags(set(task.tag.split(",")), payload)
-    finally:
-        task.delete_instance()
+    tags = set(task.tag.split(","))
+    task.delete_instance()
+    await _run_tags(tags, payload)
 
 
 async def _run_tags(tags: Set, payload: Dict):
