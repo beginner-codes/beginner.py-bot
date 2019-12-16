@@ -120,6 +120,7 @@ class BeginnerCog(Cog):
         client.load_extension("beginner.cogs.rules")
         client.load_extension("beginner.cogs.onboarding")
         client.load_extension("beginner.cogs.spam")
+        client.load_extension("beginner.cogs.statistics")
 
         if BeginnerCog.is_dev_env():
             import beginner.devcog
