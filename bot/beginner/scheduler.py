@@ -13,10 +13,10 @@ import pickle
 running_tasks = list()
 
 
-def initialize_scheduler():
+def initialize_scheduler(loop=asyncio.get_event_loop()):
     """ Loads scheduler tasks from the database and schedules them to run. """
     for task in Scheduler.select():
-        asyncio.create_task(_schedule(task, pickle.loads(task.payload.encode())))
+        loop.create_task(_schedule(task, pickle.loads(task.payload.encode())))
 
 
 def schedule(
@@ -24,6 +24,7 @@ def schedule(
     when: Union[datetime, timedelta],
     callback_tag: Union[AnyStr, Callable],
     *args,
+    loop=asyncio.get_event_loop(),
     no_duplication=False,
     **kwargs,
 ):
@@ -43,7 +44,7 @@ def schedule(
             f"Task {name} was scheduled for {when} which was {time} seconds ago ({datetime.now()})"
         )
     task = _schedule_save(name, when, tags, pickle.dumps(payload, 0).decode())
-    asyncio.get_event_loop().create_task(_schedule(task, payload))
+    loop.create_task(_schedule(task, payload))
     return True
 
 
