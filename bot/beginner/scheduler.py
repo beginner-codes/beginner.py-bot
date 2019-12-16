@@ -26,7 +26,7 @@ def schedule(
 ):
     """ Schedule a task to be run and save it to the database. """
     if no_duplication and _count_scheduled(name) > 0:
-        return
+        return False
 
     tags = build_tag_set(callback_tag)  # Get tags into a set
     # We don't want the "schedule" tag which is required for all tasks
@@ -41,6 +41,7 @@ def schedule(
         )
     task = _schedule_save(name, when, tags, pickle.dumps(payload, 0).decode())
     asyncio.get_event_loop().create_task(_schedule(task, payload))
+    return True
 
 
 async def _schedule(task: Scheduler, payload: Dict):
