@@ -144,75 +144,34 @@ class StatisticsCog(Cog):
     def _update_online_count_minute_10(self, now: datetime, online: int):
         # Round down to the nearest 10th minute
         taken = now.replace(minute=now.minute - now.minute % 10)
-        minute_10_sample: OnlineSample = OnlineSample.get_or_none(
-            OnlineSample.taken == taken,
-            OnlineSample.sample_type == OnlineSampleType.MINUTE_10,
-        )
-        if minute_10_sample:
-            minute_10_sample.max_seen = max(minute_10_sample.max_seen, online)
-            minute_10_sample.min_seen = min(minute_10_sample.min_seen, online)
-        else:
-            minute_10_sample = OnlineSample(
-                taken=taken,
-                sample_type=OnlineSampleType.MINUTE_10,
-                max_seen=online,
-                min_seen=online,
-            )
-        minute_10_sample.save()
+        self._update_online_count_sample(taken, online, OnlineSampleType.MINUTE_10)
 
     def _update_online_count_hour(self, now: datetime, online: int):
         taken = self._clean_time(now, "hour")
-        hour_sample: OnlineSample = OnlineSample.get_or_none(
-            OnlineSample.taken == taken,
-            OnlineSample.sample_type == OnlineSampleType.HOUR,
-        )
-        if hour_sample:
-            hour_sample.max_seen = max(hour_sample.max_seen, online)
-            hour_sample.min_seen = min(hour_sample.min_seen, online)
-        else:
-            hour_sample = OnlineSample(
-                taken=taken,
-                sample_type=OnlineSampleType.HOUR,
-                max_seen=online,
-                min_seen=online,
-            )
-        hour_sample.save()
+        self._update_online_count_sample(taken, online, OnlineSampleType.HOUR)
 
     def _update_online_count_day(self, now: datetime, online: int):
         taken = self._clean_time(now, "day")
-        day_sample: OnlineSample = OnlineSample.get_or_none(
-            OnlineSample.taken == taken,
-            OnlineSample.sample_type == OnlineSampleType.DAY,
-        )
-        if day_sample:
-            day_sample.max_seen = max(day_sample.max_seen, online)
-            day_sample.min_seen = min(day_sample.min_seen, online)
-        else:
-            day_sample = OnlineSample(
-                taken=taken,
-                sample_type=OnlineSampleType.DAY,
-                max_seen=online,
-                min_seen=online,
-            )
-        day_sample.save()
+        self._update_online_count_sample(taken, online, OnlineSampleType.DAY)
 
     def _update_online_count_month(self, now: datetime, online: int):
         taken = self._clean_time(now, "month")
-        month_sample: OnlineSample = OnlineSample.get_or_none(
-            OnlineSample.taken == taken,
-            OnlineSample.sample_type == OnlineSampleType.MONTH,
+        self._update_online_count_sample(taken, online, OnlineSampleType.MONTH)
+
+    def _update_online_count_sample(
+        self, taken: datetime, online: int, sample_type: OnlineSampleType
+    ):
+        sample: OnlineSample = OnlineSample.get_or_none(
+            OnlineSample.taken == taken, OnlineSample.sample_type == sample_type
         )
-        if month_sample:
-            month_sample.max_seen = max(month_sample.max_seen, online)
-            month_sample.min_seen = min(month_sample.min_seen, online)
+        if sample:
+            sample.max_seen = max(sample.max_seen, online)
+            sample.min_seen = min(sample.min_seen, online)
         else:
-            month_sample = OnlineSample(
-                taken=taken,
-                sample_type=OnlineSampleType.MONTH,
-                max_seen=online,
-                min_seen=online,
+            sample = OnlineSample(
+                taken=taken, sample_type=sample_type, max_seen=online, min_seen=online
             )
-        month_sample.save()
+        sample.save()
 
 
 def setup(client):
