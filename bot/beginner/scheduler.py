@@ -10,9 +10,6 @@ import math
 import pickle
 
 
-running_tasks = list()
-
-
 def initialize_scheduler(loop=asyncio.get_event_loop()):
     """ Loads scheduler tasks from the database and schedules them to run. """
     for task in Scheduler.select():
@@ -29,7 +26,7 @@ def schedule(
     **kwargs,
 ):
     """ Schedule a task to be run and save it to the database. """
-    if no_duplication and name not in running_tasks and _count_scheduled(name) > 0:
+    if no_duplication and _count_scheduled(name) > 0:
         return False
 
     tags = build_tag_set(callback_tag)  # Get tags into a set
@@ -86,12 +83,10 @@ async def _trigger_task(task: Scheduler, payload: Any):
     tags = set(task.tag.split(","))
     name = task.name
     task.delete_instance()
-    running_tasks.append(name)
     ran = await _run_tags(tags, payload)
     print(
         f"RAN TASK: Attempted to run {ran} callback{'s' if ran > 1 else ''} for {name}"
     )
-    running_tasks.remove(name)
 
 
 async def _run_tags(tags: Set, payload: Dict):
