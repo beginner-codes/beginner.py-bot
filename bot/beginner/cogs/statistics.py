@@ -21,11 +21,6 @@ class StatisticsCog(Cog):
         print(self._get_online_count(), "coders are online")
         self.online_counter()
         samples = OnlineSample.select()
-        print(f"{'TAKEN':20} | {'MAX':4} | {'MIN':4} | TYPE")
-        for sample in samples:
-            print(
-                f"{sample.taken.isoformat():20} | {sample.max_seen:4} | {'-' if sample.min_seen is None else sample.min_seen:4} | {sample.sample_type}"
-            )
 
     @Cog.command()
     async def stats(self, ctx):
