@@ -24,10 +24,10 @@ class BeginnerCog(Cog):
                 ),
             )
         )
+        initialize_scheduler(loop=client.loop)
 
     @Cog.listener()
     async def on_ready(self):
-        initialize_scheduler()
         print("Bot is ready.")
 
     @Cog.command()
