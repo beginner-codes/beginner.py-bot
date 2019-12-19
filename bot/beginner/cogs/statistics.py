@@ -24,6 +24,12 @@ class StatisticsCog(Cog):
 
     @Cog.command()
     async def stats(self, ctx):
+        month = (
+            OnlineSample.select()
+            .where(OnlineSample.sample_type == OnlineSampleType.MONTH)
+            .order_by(OnlineSample.taken.desc())
+            .get()
+        )
         today = (
             OnlineSample.select()
             .where(OnlineSample.sample_type == OnlineSampleType.DAY)
@@ -46,15 +52,17 @@ class StatisticsCog(Cog):
             description=f"There are currently {self._get_online_count()} coders online!!!",
             color=0x306998,
         ).set_author(name=f"Server Statistics", icon_url=self.server.icon_url)
-        embed.add_field(name="Period", value="10 Minutes\nHour\nDay", inline=True)
+        embed.add_field(
+            name="Period", value="10 Minutes\nHour\nDay\nMonth", inline=True
+        )
         embed.add_field(
             name="Most Seen",
-            value=f"{last_10.max_seen}\n{hour.max_seen}\n{today.max_seen}",
+            value=f"{last_10.max_seen}\n{hour.max_seen}\n{today.max_seen}\n{month.max_seen}",
             inline=True,
         )
         embed.add_field(
             name="Least Seen",
-            value=f"{last_10.min_seen}\n{hour.min_seen}\n{today.min_seen}",
+            value=f"{last_10.min_seen}\n{hour.min_seen}\n{today.min_seen}\n{month.min_seen}",
             inline=True,
         )
         await ctx.send(embed=embed)
