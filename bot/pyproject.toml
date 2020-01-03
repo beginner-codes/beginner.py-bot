@@ -12,6 +12,7 @@ beautifulsoup4 = "^4.8"
 "discord.py" = "^1.2"
 requests = "^2.22"
 bs4 = "^0.0.1"
+google = "^2.0"
 
 [tool.poetry.dev-dependencies]
 

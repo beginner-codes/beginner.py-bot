@@ -6,6 +6,7 @@ bs4==0.0.1
 certifi==2019.11.28
 chardet==3.0.4
 discord.py==1.2.5
+google==2.0.3
 idna==2.8
 multidict==4.7.1
 peewee==3.13.1
