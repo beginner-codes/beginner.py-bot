@@ -27,18 +27,20 @@ class Google(Cog):
                     f"Searching...\n\n[More Results]({url_search})", color
                 )
             )
-            results = []
-            for result in google("python", num=5, stop=5, safe="on"):
-                short = result[result.find("//") + 2 :].strip("/")
-                if len(short) > 50:
-                    short = f"{short[:50]}..."
-                results.append(f"{len(results) + 1}. [{short}]({result})\n")
-                await message.edit(
-                    embed=self.create_google_message(
-                        f"Results for \"{query}\"\n\n{''.join(results)}\n[More Results]({url_search})",
-                        color,
-                    )
+            google_results = google("python", num=5, stop=5, safe="on")
+
+        results = []
+        for result in google_results:
+            short = result[result.find("//") + 2 :].strip("/")
+            if len(short) > 50:
+                short = f"{short[:50]}..."
+            results.append(f"{len(results) + 1}. [{short}]({result})\n")
+            await message.edit(
+                embed=self.create_google_message(
+                    f"Results for \"{query}\"\n\n{''.join(results)}\n[More Results]({url_search})",
+                    color,
                 )
+            )
 
     def create_google_message(self, message, color):
         return discord.Embed(description=message, color=color).set_author(
