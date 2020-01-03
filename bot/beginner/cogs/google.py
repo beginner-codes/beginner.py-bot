@@ -27,7 +27,7 @@ class Google(Cog):
                     f"Searching...\n\n[More Results]({url_search})", color
                 )
             )
-            google_results = google("python", num=5, stop=5, safe="on")
+            google_results = google(query, num=5, stop=5, safe="on")
 
         results = []
         for result in google_results:
