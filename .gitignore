@@ -108,3 +108,4 @@ postgres-data
 *token-manafest.yaml
 *.config
 /manifests/bot-token.yaml
+/manifests/postgres-password.yaml
