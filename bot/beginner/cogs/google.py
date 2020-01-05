@@ -1,8 +1,9 @@
 import discord
 from beginner.cog import Cog
-from googlesearch import search as google
+from googleapiclient.discovery import build as google
 from urllib.parse import quote_plus
 from random import choice
+import os
 
 
 class Google(Cog):
@@ -27,14 +28,22 @@ class Google(Cog):
                     f"Searching...\n\n[More Results]({url_search})", color
                 )
             )
-            google_results = google(query, num=5, stop=5, safe="on")
-
+            query_obj = google(
+                "customsearch",
+                "v1",
+                developerKey=os.environ["GOOGLE_CUSTOM_SEARCH_KEY"],
+            )
+            query_result = (
+                query_obj.cse()
+                .list(q=query, cx=os.environ["GOOGLE_CUSTOM_SEARCH_ENGINE"], num=5)
+                .execute()
+            )
         results = []
-        for result in google_results:
-            short = result[result.find("//") + 2 :].strip("/")
-            if len(short) > 50:
-                short = f"{short[:50]}..."
-            results.append(f"{len(results) + 1}. [{short}]({result})\n")
+        for result in query_result.get("items", []):
+            title = result["title"]
+            if len(title) > 77:
+                title = f"{title[:77]}..."
+            results.append(f"{len(results) + 1}. [{title}]({result['link']})\n")
             await message.edit(
                 embed=self.create_google_message(
                     f"Results for \"{query}\"\n\n{''.join(results)}\n[More Results]({url_search})",
