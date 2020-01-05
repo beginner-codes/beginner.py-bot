@@ -11,6 +11,7 @@ psycopg2-binary = "^2.8"
 "discord.py" = "^1.2"
 requests = "^2.22"
 google = "^2.0"
+google-api-python-client = "^1.7"
 
 [tool.poetry.dev-dependencies]
 
