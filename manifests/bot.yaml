@@ -40,6 +40,16 @@ spec:
                 secretKeyRef:
                   name: discord.token
                   key: token
+            - name: "GOOGLE_CUSTOM_SEARCH_KEY"
+              valueFrom:
+                secretKeyRef:
+                  name: google-custom-search
+                  key: api-key
+            - name: "GOOGLE_CUSTOM_SEARCH_ENGINE"
+              valueFrom:
+                secretKeyRef:
+                  name: google-custom-search
+                  key: cse
             - name: "DB_HOST"
               value: "bpy-postgres-svc"
             - name: "DB_PASSWORD"
