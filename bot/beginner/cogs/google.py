@@ -38,18 +38,19 @@ class Google(Cog):
                 .list(q=query, cx=os.environ["GOOGLE_CUSTOM_SEARCH_ENGINE"], num=5)
                 .execute()
             )
+
         results = []
         for result in query_result.get("items", []):
             title = result["title"]
             if len(title) > 77:
                 title = f"{title[:77]}..."
             results.append(f"{len(results) + 1}. [{title}]({result['link']})\n")
-            await message.edit(
-                embed=self.create_google_message(
-                    f"Results for \"{query}\"\n\n{''.join(results)}\n[More Results]({url_search})",
-                    color,
-                )
+        await message.edit(
+            embed=self.create_google_message(
+                f"Results for \"{query}\"\n\n{''.join(results)}\n[More Results]({url_search})",
+                color,
             )
+        )
 
     def create_google_message(self, message, color):
         return discord.Embed(description=message, color=color).set_author(
