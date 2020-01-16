@@ -91,19 +91,29 @@ class StatisticsCog(Cog):
             self._clean_samples(now)
 
     async def _check_for_highscore(self, now, online):
-        taken = self._clean_time(now, "month")
-        sample: OnlineSample = OnlineSample.get_or_none(
-            OnlineSample.taken == taken,
-            OnlineSample.sample_type == OnlineSampleType.MONTH,
+        sample = (
+            OnlineSample.select()
+            .where(OnlineSample.taken > now - timedelta(days=31))
+            .order_by(OnlineSample.max_seen.desc())
+            .get()
         )
         if sample:
             max_seen = max(sample.max_seen, online)
-            print(max_seen, online)
             if max_seen < online:
+                suffixes = {
+                    1: "st",
+                    21: "st",
+                    31: "st",
+                    2: "nd",
+                    22: "nd",
+                    3: "rd",
+                    23: "rd",
+                }
+                suffix = suffixes.get(now.day, "th")
                 await self.get_channel("staff").send(
                     (
                         f"**NEW HIGHSCORE!!!**\nThere are currently {online} coders online!!! "
-                        f"That's {online - max_seen} higher than we've seen previously this {now:%B}!"
+                        f"That's {online - max_seen} higher than we saw on {now:%B} {now.day}{suffix}!"
                     )
                 )
 
