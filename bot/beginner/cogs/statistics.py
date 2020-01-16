@@ -53,10 +53,12 @@ class StatisticsCog(Cog):
             .order_by(OnlineSample.taken.desc())
             .get()
         )
+        highscore = self._get_previous_highscore(datetime.now())
         embed = Embed(
             description=(
                 f"There are currently {self._get_online_count()} coders online "
-                f"of {self._get_coders_count()} coders!!!"
+                f"of {self._get_coders_count()} coders!!!\n\n"
+                f"Standing High Score: {highscore.max_seen}"
             ),
             color=0x306998,
         ).set_author(name=f"Server Statistics", icon_url=self.server.icon_url)
@@ -91,12 +93,7 @@ class StatisticsCog(Cog):
             self._clean_samples(now)
 
     async def _check_for_highscore(self, now, online):
-        sample = (
-            OnlineSample.select()
-            .where(OnlineSample.taken > now - timedelta(days=31))
-            .order_by(OnlineSample.max_seen.desc())
-            .get()
-        )
+        sample = self._get_previous_highscore(now)
         if sample:
             max_seen = max(sample.max_seen, online)
             if max_seen < online:
@@ -159,6 +156,14 @@ class StatisticsCog(Cog):
                 lambda member: not isinstance(member.status, str)
                 and member.status != Status.offline,
             )
+        )
+
+    def _get_previous_highscore(self, now):
+        return (
+            OnlineSample.select()
+            .where(OnlineSample.taken > now - timedelta(days=31))
+            .order_by(OnlineSample.max_seen.desc())
+            .get()
         )
 
     def _get_coders_count(self, constraints=tuple()) -> int:
