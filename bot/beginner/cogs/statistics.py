@@ -47,24 +47,17 @@ class StatisticsCog(Cog):
             .order_by(OnlineSample.taken.desc())
             .get()
         )
-        last_10 = (
-            OnlineSample.select()
-            .where(OnlineSample.sample_type == OnlineSampleType.MINUTE_10)
-            .order_by(OnlineSample.taken.desc())
-            .get()
-        )
-        highscore = self._get_previous_highscore(datetime.now())
+        highest = self._get_previous_highscore(datetime.now())
         month_name = f"{month.taken:%B}"
         message = (
             f"There are currently {self._get_online_count()} coders online "
             f"of {self._get_coders_count()} coders!!!"
             f"```\n"
             f"                  Most Seen  Least Seen\n"
-            f"last 10 Minutes   {last_10.max_seen:9}  {last_10.min_seen:10}\n"
-            f"Last Hour         {hour.max_seen:9}  {hour.min_seen:10}\n"
+            f"This Hour         {hour.max_seen:9}  {hour.min_seen:10}\n"
             f"Today             {today.max_seen:9}  {today.min_seen:10}\n"
             f"In {month_name:15}{month.max_seen:9}  {month.min_seen:10}\n"
-            f"31 Day High Score {highscore.max_seen:9}"
+            f"31 Day High Score {highest.max_seen:9} on {highest.taken.day}/{highest.taken.month}/{highest.taken.year}"
             f"\n```"
         )
         embed = Embed(description=message, color=0x306998).set_author(
