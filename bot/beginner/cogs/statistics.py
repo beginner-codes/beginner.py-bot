@@ -18,8 +18,13 @@ class OnlineSampleType(Enum):
 class StatisticsCog(Cog):
     @Cog.listener()
     async def on_ready(self):
-        print(self._get_online_count(), "coders are online")
-        self.online_counter()
+        print(
+            self._get_online_count(),
+            "coders are online and",
+            self._get_coders_count(),
+            "total coders!!!",
+        )
+        await self.online_counter()
         samples = OnlineSample.select()
 
     @Cog.command()
@@ -49,7 +54,10 @@ class StatisticsCog(Cog):
             .get()
         )
         embed = Embed(
-            description=f"There are currently {self._get_online_count()} coders online!!!",
+            description=(
+                f"There are currently {self._get_online_count()} coders online "
+                f"of {self._get_coders_count()} coders!!!"
+            ),
             color=0x306998,
         ).set_author(name=f"Server Statistics", icon_url=self.server.icon_url)
         embed.add_field(
@@ -68,7 +76,7 @@ class StatisticsCog(Cog):
         await ctx.send(embed=embed)
 
     @tag("schedule", "statistics", "online-counter")
-    def online_counter(self):
+    async def online_counter(self):
         now = self._clean_time(datetime.now(), "minute")
         online = self._get_online_count()
         scheduled = schedule(
@@ -118,13 +126,28 @@ class StatisticsCog(Cog):
         )
 
     def _get_online_count(self) -> int:
+        return self._get_coders_count(
+            (
+                lambda member: not isinstance(member.status, str)
+                and member.status != Status.offline,
+            )
+        )
+
+    def _get_coders_count(self, constraints=tuple()) -> int:
         coders_role = self.get_role("coders")
         count = 0
         for member in self.server.members:
-            if isinstance(member.status, str) or member.status == Status.offline:
-                continue
             if coders_role not in member.roles:
                 continue
+
+            valid = True
+            for constraint in constraints:
+                if not constraint(member):
+                    valid = False
+                    break
+            if not valid:
+                continue
+
             count += 1
         return count
 
