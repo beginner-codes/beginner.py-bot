@@ -54,26 +54,21 @@ class StatisticsCog(Cog):
             .get()
         )
         highscore = self._get_previous_highscore(datetime.now())
-        embed = Embed(
-            description=(
-                f"There are currently {self._get_online_count()} coders online "
-                f"of {self._get_coders_count()} coders!!!\n\n"
-                f"Standing High Score: {highscore.max_seen}"
-            ),
-            color=0x306998,
-        ).set_author(name=f"Server Statistics", icon_url=self.server.icon_url)
-        embed.add_field(
-            name="Period", value="10 Minutes\nHour\nDay\nMonth", inline=True
+        month_name = f"{month.taken:%B}"
+        message = (
+            f"There are currently {self._get_online_count()} coders online "
+            f"of {self._get_coders_count()} coders!!!"
+            f"```\n"
+            f"                  Most Seen  Least Seen\n"
+            f"last 10 Minutes   {last_10.max_seen:9}  {last_10.min_seen:10}\n"
+            f"Last Hour         {hour.max_seen:9}  {hour.min_seen:10}\n"
+            f"Today             {today.max_seen:9}  {today.min_seen:10}\n"
+            f"In {month_name:15}{month.max_seen:9}  {month.min_seen:10}\n"
+            f"31 Day High Score {highscore.max_seen:9}"
+            f"\n```"
         )
-        embed.add_field(
-            name="Most Seen",
-            value=f"{last_10.max_seen}\n{hour.max_seen}\n{today.max_seen}\n{month.max_seen}",
-            inline=True,
-        )
-        embed.add_field(
-            name="Least Seen",
-            value=f"{last_10.min_seen}\n{hour.min_seen}\n{today.min_seen}\n{month.min_seen}",
-            inline=True,
+        embed = Embed(description=message, color=0x306998).set_author(
+            name=f"Server Statistics", icon_url=self.server.icon_url
         )
         await ctx.send(embed=embed)
 
