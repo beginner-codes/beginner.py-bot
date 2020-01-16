@@ -86,8 +86,26 @@ class StatisticsCog(Cog):
             no_duplication=True,
         )
         if scheduled:
+            await self._check_for_highscore(now, online)
             self._update_online_count(now, online)
             self._clean_samples(now)
+
+    async def _check_for_highscore(self, now, online):
+        taken = self._clean_time(now, "month")
+        sample: OnlineSample = OnlineSample.get_or_none(
+            OnlineSample.taken == taken,
+            OnlineSample.sample_type == OnlineSampleType.MONTH,
+        )
+        if sample:
+            max_seen = max(sample.max_seen, online)
+            print(max_seen, online)
+            if max_seen < online:
+                await self.get_channel("staff").send(
+                    (
+                        f"**NEW HIGHSCORE!!!**\nThere are currently {online} coders online!!! "
+                        f"That's {online - max_seen} higher than we've seen previously this {now:%B}!"
+                    )
+                )
 
     def _clean_samples(self, now: datetime):
         OnlineSample.delete().where(
