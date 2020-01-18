@@ -7,6 +7,7 @@ from datetime import datetime, timedelta
 from discord.ext import commands
 from functools import lru_cache
 import discord
+import logging
 import os
 
 
@@ -114,6 +115,20 @@ class BeginnerCog(Cog):
 
     @staticmethod
     def load_cogs(client):
+        log_level = logging.ERROR
+        if BeginnerCog.is_dev_env():
+            import beginner.devcog
+
+            client.add_cog(beginner.devcog.DevCog(client))
+
+            log_level = logging.DEBUG
+
+        logging.basicConfig(
+            format="%(asctime)s %(levelname)s: %(message)s",
+            datefmt="%m/%d/%Y %I:%M:%S %p",
+            level=log_level,
+        )
+
         client.load_extension("beginner.cogs.google")
         client.load_extension("beginner.cogs.help")
         client.load_extension("beginner.cogs.python")
@@ -121,10 +136,5 @@ class BeginnerCog(Cog):
         client.load_extension("beginner.cogs.onboarding")
         client.load_extension("beginner.cogs.spam")
         client.load_extension("beginner.cogs.statistics")
-
-        if BeginnerCog.is_dev_env():
-            import beginner.devcog
-
-            client.add_cog(beginner.devcog.DevCog(client))
 
         client.add_cog(BeginnerCog(client))
