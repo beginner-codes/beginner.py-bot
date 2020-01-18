@@ -8,6 +8,7 @@ from typing import Any, AnyStr, Callable, Dict, Set, Union
 import asyncio
 import math
 import pickle
+import logging
 
 
 def initialize_scheduler(loop=asyncio.get_event_loop()):
@@ -48,10 +49,10 @@ def schedule(
 async def _schedule(task: Scheduler, payload: Dict):
     """ Schedules a task and calls the """
     time = _seconds_until_run(task.when)
-    print(f"SCHEDULER: Scheduling {task.name} for {task.when}")
+    logging.debug(f"SCHEDULER: Scheduling {task.name} for {task.when}")
     if time > 0:
         await asyncio.sleep(time)
-    print(
+    logging.debug(
         f"SCHEDULER: Triggering {task.name} running callbacks tagged {task.tag}\n"
         f"- SCHEDULED FOR: {task.when}\n"
         f"- RUNNING AT:    {datetime.now()}"
@@ -70,7 +71,7 @@ def _schedule_save(
     tag = ",".join(map(str, tags))  # Convert the tag set to a string
     task = Scheduler(name=name, when=when, tag=tag, payload=payload)
     task.save()
-    print(f"SCHEDULER: Saved {task.name} for {task.when}")
+    logging.debug(f"SCHEDULER: Saved {task.name} for {task.when}")
     return task
 
 
@@ -84,7 +85,7 @@ async def _trigger_task(task: Scheduler, payload: Any):
     name = task.name
     task.delete_instance()
     ran = await _run_tags(tags, payload)
-    print(
+    logging.debug(
         f"RAN TASK: Attempted to run {ran} callback{'s' if ran > 1 else ''} for {name}"
     )
 
