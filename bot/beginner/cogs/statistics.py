@@ -149,7 +149,10 @@ class StatisticsCog(Cog):
     def _get_previous_highscore(self, now):
         return (
             OnlineSample.select()
-            .where(OnlineSample.taken > now - timedelta(days=31))
+            .where(
+                (OnlineSample.taken > now - timedelta(days=31))
+                & (OnlineSample.sample_type == OnlineSampleType.DAY)
+            )
             .order_by(OnlineSample.max_seen.desc())
             .get()
         )
