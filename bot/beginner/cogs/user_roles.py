@@ -58,7 +58,7 @@ class UserRolesCog(Cog):
         await self.assign_members_role(
             self.reactions_to_roles[reaction.emoji.name], member
         )
-        await self.message.remove_reaction(reaction.emoji, member)
+        await self.remove_reactions(reaction.emoji.name, member)
         await self.channel.send(
             f"{member.mention} you've been assigned the role {reaction.emoji.name}",
             delete_after=10,
@@ -72,6 +72,11 @@ class UserRolesCog(Cog):
     async def assign_members_role(self, role, member):
         await member.remove_roles(*self.reactions_to_roles.values())
         await member.add_roles(role)
+
+    async def remove_reactions(self, keep_reaction, member):
+        for emoji in self.reactions_to_roles:
+            if emoji != keep_reaction:
+                await self.message.remove_reaction(self.get_emoji(emoji), member)
 
 
 def setup(client):
