@@ -46,6 +46,26 @@ class UserRolesCog(Cog):
             delete_after=10,
         )
 
+    @Cog.listener()
+    async def on_raw_reaction_remove(self, reaction):
+        member = self.server.get_member(reaction.user_id)
+        message = await self.get_message()
+        if member.bot:
+            return
+
+        if reaction.message_id != message.id:
+            return
+
+        if reaction.emoji.name not in self.reactions_to_roles:
+            await message.remove_reaction(reaction.emoji, member)
+            return
+
+        await member.remove_roles(self.reactions_to_roles[reaction.emoji.name])
+        await self.channel.send(
+            f"{member.mention} you've been removed from the {reaction.emoji.name} role",
+            delete_after=10,
+        )
+
     async def add_reactions(self):
         message = await self.get_message()
         await message.add_reaction(self.get_emoji("beginner"))
