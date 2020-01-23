@@ -129,6 +129,8 @@ class BeginnerCog(Cog):
             level=log_level,
         )
 
+        client.load_extension("beginner.cogs.user_roles")
+        client.load_extension("beginner.cogs.repeater")
         client.load_extension("beginner.cogs.google")
         client.load_extension("beginner.cogs.help")
         client.load_extension("beginner.cogs.python")
