@@ -53,6 +53,7 @@ class UserRolesCog(Cog):
             return
 
         if reaction.emoji.name not in self.reactions_to_roles:
+            await self.message.remove_reaction(reaction.emoji, member)
             return
 
         await self.assign_members_role(
