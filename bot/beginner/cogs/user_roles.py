@@ -22,7 +22,7 @@ class UserRolesCog(Cog):
                 f"**Select your coding skill level by reacting to this message**\n\n"
                 f"Use {self.get_emoji('beginner')} if you're a beginner\n"
                 f"Use {self.get_emoji('intermediate')} if you're at an intermediate skill level\n"
-                f"Use {self.get_emoji('expert')} if you're an expert\n"
+                f"Use {self.get_emoji('expert')} if you're an expert (e.g. production work experience)\n"
             )
             embed = Embed(description=message_content, color=0x306998).set_author(
                 name=f"Skill Level Assignment", icon_url=self.server.icon_url
