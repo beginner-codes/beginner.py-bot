@@ -57,6 +57,11 @@ class StatisticsCog(Cog):
             .get()
         )
         highest = self._get_previous_highscore(datetime.now())
+        highest_date = (
+            f"{highest.taken.day}/{highest.taken.month}/{highest.taken.year}"
+            if highest
+            else "--/--/----"
+        )
         month_name = f"{month.taken:%B}"
         message = (
             f"There are currently {self._get_online_count()} coders online "
@@ -66,11 +71,12 @@ class StatisticsCog(Cog):
             f"This Hour         {hour.max_seen:9}  {hour.min_seen:10}\n"
             f"Today             {today.max_seen:9}  {today.min_seen:10}\n"
             f"In {month_name:15}{month.max_seen:9}  {month.min_seen:10}\n"
-            f"31 Day High Score {highest.max_seen:9} on {highest.taken.day}/{highest.taken.month}/{highest.taken.year}"
+            f"31 Day High Score {highest.max_seen if highest else '---':9} on {highest_date}"
             f"\n```"
         )
         embed = Embed(description=message, color=0x306998).set_author(
-            name=f"Server Statistics", icon_url=self.server.icon_url
+            name=f"Server Statistics{' DEV' if BeginnerCog.is_dev_env() else ''}",
+            icon_url=self.server.icon_url,
         )
         await ctx.send(embed=embed)
 
@@ -156,15 +162,18 @@ class StatisticsCog(Cog):
         )
 
     def _get_previous_highscore(self, now):
-        return (
-            OnlineSample.select()
-            .where(
-                (OnlineSample.taken > now - timedelta(days=31))
-                & (OnlineSample.sample_type == OnlineSampleType.DAY)
+        try:
+            return (
+                OnlineSample.select()
+                .where(
+                    (OnlineSample.taken > now - timedelta(days=31))
+                    & (OnlineSample.sample_type == OnlineSampleType.DAY)
+                )
+                .order_by(OnlineSample.max_seen.desc())
+                .get()
             )
-            .order_by(OnlineSample.max_seen.desc())
-            .get()
-        )
+        except DoesNotExist:
+            return None
 
     def _get_coders_count(self, constraints=tuple()) -> int:
         coders_role = self.get_role("coders")
