@@ -11,6 +11,9 @@ import pickle
 import logging
 
 
+logger = logging.getLogger("beginnerpy.scheduler")
+
+
 def initialize_scheduler(loop=asyncio.get_event_loop()):
     """ Loads scheduler tasks from the database and schedules them to run. """
     for task in Scheduler.select():
@@ -49,10 +52,10 @@ def schedule(
 async def _schedule(task: Scheduler, payload: Dict):
     """ Schedules a task and calls the """
     time = _seconds_until_run(task.when)
-    logging.debug(f"SCHEDULER: Scheduling {task.name} for {task.when}")
+    logger.debug(f"SCHEDULER: Scheduling {task.name} for {task.when}")
     if time > 0:
         await asyncio.sleep(time)
-    logging.debug(
+    logger.debug(
         f"SCHEDULER: Triggering {task.name} running callbacks tagged {task.tag}\n"
         f"- SCHEDULED FOR: {task.when}\n"
         f"- RUNNING AT:    {datetime.now()}"
@@ -71,7 +74,7 @@ def _schedule_save(
     tag = ",".join(map(str, tags))  # Convert the tag set to a string
     task = Scheduler(name=name, when=when, tag=tag, payload=payload)
     task.save()
-    logging.debug(f"SCHEDULER: Saved {task.name} for {task.when}")
+    logger.debug(f"SCHEDULER: Saved {task.name} for {task.when}")
     return task
 
 
@@ -85,7 +88,7 @@ async def _trigger_task(task: Scheduler, payload: Any):
     name = task.name
     task.delete_instance()
     ran = await _run_tags(tags, payload)
-    logging.debug(
+    logger.debug(
         f"RAN TASK: Attempted to run {ran} callback{'s' if ran > 1 else ''} for {name}"
     )
 
