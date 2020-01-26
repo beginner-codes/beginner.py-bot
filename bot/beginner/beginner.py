@@ -138,5 +138,6 @@ class BeginnerCog(Cog):
         client.load_extension("beginner.cogs.onboarding")
         client.load_extension("beginner.cogs.spam")
         client.load_extension("beginner.cogs.statistics")
+        client.load_extension("beginner.cogs.tips")
 
         client.add_cog(BeginnerCog(client))
