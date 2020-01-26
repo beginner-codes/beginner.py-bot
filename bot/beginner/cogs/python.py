@@ -1,16 +1,13 @@
 import discord
 import json
 from beginner.cog import Cog
+from beginner.logging import create_logger
 
 
 class Python(Cog):
     def __init__(self, client):
-        self.client = client
+        super().__init__(client)
         self.commands = self.load_data("python")
-
-    @Cog.listener()
-    async def on_ready(self):
-        print("Python cog ready.")
 
     @Cog.command()
     async def python(self, ctx, *, cmd):

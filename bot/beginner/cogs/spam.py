@@ -9,16 +9,9 @@ import os.path
 
 
 class SpamCog(Cog):
-    def __init__(self, client):
-        self.client = client
-
     @cached_property
     def admin_channels(self) -> Set:
         return set(channel.name for channel in self.get_category("staff").text_channels)
-
-    @Cog.listener()
-    async def on_ready(self):
-        print("Spam Cog is ready")
 
     @Cog.listener()
     async def on_message(self, message):

@@ -5,12 +5,8 @@ from typing import AnyStr, Dict
 
 class Rules(Cog):
     def __init__(self, client):
-        self.client = client
+        super().__init__(client)
         self.rules = self.load_data("rules", {"responses": [], "callfunc": "rule"})
-
-    @Cog.listener()
-    async def on_ready(self):
-        print("Rules cog ready.")
 
     @Cog.command()
     async def rule(self, ctx, *args):

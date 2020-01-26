@@ -1,17 +1,15 @@
 from __future__ import annotations
 from beginner.exceptions import BeginnerException
+from beginner.logging import create_logger
 from beginner.models.scheduler import Scheduler
 from beginner.tags import build_tag_set, fetch_tags
-from collections import defaultdict
 from datetime import datetime, timedelta
 from typing import Any, AnyStr, Callable, Dict, Set, Union
 import asyncio
-import math
 import pickle
-import logging
 
 
-logger = logging.getLogger("beginnerpy.scheduler")
+logger = create_logger("scheduler")
 
 
 def initialize_scheduler(loop=asyncio.get_event_loop()):
@@ -52,14 +50,12 @@ def schedule(
 async def _schedule(task: Scheduler, payload: Dict):
     """ Schedules a task and calls the """
     time = _seconds_until_run(task.when)
-    logger.debug(f"SCHEDULER: Scheduling {task.name} for {task.when}")
+    logger.debug(f"Scheduling {task.name} for {task.when}")
     if time > 0:
         await asyncio.sleep(time)
-    logger.debug(
-        f"SCHEDULER: Triggering {task.name} running callbacks tagged {task.tag}\n"
-        f"- SCHEDULED FOR: {task.when}\n"
-        f"- RUNNING AT:    {datetime.now()}"
-    )
+    logger.debug(f"Triggering {task.name} running callbacks tagged {task.tag}")
+    logger.debug(f"- SCHEDULED FOR: {task.when}")
+    logger.debug(f"- RUNNING AT:    {datetime.now()}")
     await _trigger_task(task, payload)
 
 
@@ -74,7 +70,7 @@ def _schedule_save(
     tag = ",".join(map(str, tags))  # Convert the tag set to a string
     task = Scheduler(name=name, when=when, tag=tag, payload=payload)
     task.save()
-    logger.debug(f"SCHEDULER: Saved {task.name} for {task.when}")
+    logger.debug(f"Saved {task.name} for {task.when}")
     return task
 
 
@@ -88,9 +84,7 @@ async def _trigger_task(task: Scheduler, payload: Any):
     name = task.name
     task.delete_instance()
     ran = await _run_tags(tags, payload)
-    logger.debug(
-        f"RAN TASK: Attempted to run {ran} callback{'s' if ran > 1 else ''} for {name}"
-    )
+    logger.debug(f"Attempted to run {ran} callback{'s' if ran > 1 else ''} for {name}")
 
 
 async def _run_tags(tags: Set, payload: Dict):

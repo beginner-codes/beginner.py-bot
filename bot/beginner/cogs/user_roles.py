@@ -11,7 +11,7 @@ class UserRolesCog(Cog):
 
     @Cog.listener()
     async def on_ready(self):
-        logging.debug("User roles is ready")
+        logging.debug("Cog ready")
         self.channel = self.get_channel("role-assignment")
         message = await self.get_message()
 

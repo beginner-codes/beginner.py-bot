@@ -1,10 +1,14 @@
 from beginner.beginner import BeginnerCog
+from beginner.logging import create_logger
 
 
-print("Hello")
+logger = create_logger()
+BeginnerCog.setup_logging()
+
+logger.debug("Hello")
 client = BeginnerCog.get_client()
-print("We've got a client")
+logger.debug("Created client")
 BeginnerCog.load_cogs(client)
-print("Cogs loaded")
+logger.debug("Created cogs")
 client.run(BeginnerCog.get_token())
-print("Good bye")
+logger.debug("Good bye")

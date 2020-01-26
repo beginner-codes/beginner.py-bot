@@ -4,10 +4,6 @@ from discord import Embed
 
 
 class TipsCog(Cog):
-    @Cog.listener()
-    async def on_ready(self):
-        print("Tips ready")
-
     @Cog.command()
     async def tip(self, ctx, *, unsanitized_label=None):
         label = self.sanitize_label(unsanitized_label)

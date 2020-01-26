@@ -1,5 +1,6 @@
 import discord
 from beginner.cog import Cog
+from beginner.logging import create_logger
 from googleapiclient.discovery import build as google
 from urllib.parse import quote_plus
 from random import choice
@@ -8,12 +9,8 @@ import os
 
 class Google(Cog):
     def __init__(self, client):
-        self.client = client
+        super().__init__(client)
         self.colors = [0xEA4335, 0x4285F4, 0xFBBC05, 0x34A853]
-
-    @Cog.listener()  # event decorator inside a cog
-    async def on_ready(self):
-        print("Google cog ready.")
 
     @Cog.command()  # command decorator inside a cog
     async def google(self, ctx, *, query):

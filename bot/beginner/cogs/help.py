@@ -1,15 +1,9 @@
 import discord
 from beginner.cog import Cog
+from beginner.logging import create_logger
 
 
 class Help(Cog):
-    def __init__(self, client):
-        self.client = client
-
-    @Cog.listener()
-    async def on_ready(self):
-        print("Help cog ready.")
-
     @Cog.command()
     async def help(self, ctx, *, cmd=None):
         if not cmd:

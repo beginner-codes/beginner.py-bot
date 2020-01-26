@@ -7,10 +7,6 @@ from discord import Embed, Status
 from enum import Enum
 from peewee import DoesNotExist
 from beginner.beginner import BeginnerCog
-import logging
-
-
-logger = logging.getLogger("beginnerpy.statistics")
 
 
 class OnlineSampleType(Enum):
@@ -24,7 +20,8 @@ class OnlineSampleType(Enum):
 class StatisticsCog(Cog):
     @Cog.listener()
     async def on_ready(self):
-        logger.debug(
+        self.logger.debug("Cog ready")
+        self.logger.debug(
             f"{self._get_online_count()} coders are online and {self._get_coders_count()} total coders!!!"
         )
         daily_samples = (
@@ -32,7 +29,7 @@ class StatisticsCog(Cog):
             .where(OnlineSample.sample_type == OnlineSampleType.DAY)
             .execute()
         )
-        logger.debug(f"Found {len(daily_samples)} days of stat samples.")
+        self.logger.debug(f"Found {len(daily_samples)} days of stat samples.")
 
         await self.online_counter()
 

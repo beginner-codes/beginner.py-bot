@@ -1,13 +1,9 @@
 from beginner.cog import Cog
+from beginner.logging import create_logger
 from discord import Embed, Status
-import logging
 
 
 class RepeaterCog(Cog):
-    @Cog.listener()
-    async def on_ready(self):
-        logging.debug("Repeater is ready")
-
     @Cog.command()
     async def send(self, ctx, channel, *, message):
         if not ctx.author.guild_permissions.manage_guild:

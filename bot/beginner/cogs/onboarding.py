@@ -1,17 +1,11 @@
 from beginner.cog import Cog
+from beginner.logging import create_logger
 from beginner.scheduler import schedule
 from beginner.tags import tag
 from datetime import timedelta
 
 
 class OnBoarding(Cog):
-    def __init__(self, client):
-        self.client = client
-
-    @Cog.listener()
-    async def on_ready(self):
-        print("On Boarding is ready")
-
     @Cog.listener()
     async def on_raw_reaction_add(self, reaction):
         if reaction.emoji.name != "✅":

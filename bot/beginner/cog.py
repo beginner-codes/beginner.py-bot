@@ -1,3 +1,4 @@
+from beginner.logging import create_logger
 from beginner.tags import TaggableMeta
 from discord.ext import commands
 from typing import Any, AnyStr, Callable, Coroutine, List, NoReturn, Union
@@ -8,6 +9,11 @@ import os.path
 class Cog(commands.Cog, metaclass=TaggableMeta):
     def __init__(self, client):
         self.client = client
+        self.logger = create_logger(self.__class__.__name__)
+
+    @commands.Cog.listener()
+    async def on_ready(self):
+        self.logger.debug("Cog ready")
 
     @property
     def server(self):

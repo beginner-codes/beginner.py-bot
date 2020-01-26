@@ -13,7 +13,7 @@ import os
 
 class BeginnerCog(Cog):
     def __init__(self, client):
-        self.client = client
+        super().__init__(client)
         set_database(
             PostgresqlDatabase(
                 "bpydb",
@@ -26,10 +26,6 @@ class BeginnerCog(Cog):
             )
         )
         initialize_scheduler(loop=client.loop)
-
-    @Cog.listener()
-    async def on_ready(self):
-        print("Bot is ready.")
 
     @Cog.command()
     async def d(self, ctx, message):
@@ -115,19 +111,6 @@ class BeginnerCog(Cog):
 
     @staticmethod
     def load_cogs(client):
-        logging.basicConfig(
-            format="%(asctime)s %(levelname)s: %(message)s",
-            datefmt="%m/%d/%Y %I:%M:%S %p",
-            level=logging.ERROR,
-        )
-
-        if BeginnerCog.is_dev_env():
-            import beginner.devcog
-
-            client.add_cog(beginner.devcog.DevCog(client))
-
-        logging.getLogger("beginnerpy").setLevel(logging.DEBUG)
-
         client.load_extension("beginner.cogs.user_roles")
         client.load_extension("beginner.cogs.repeater")
         client.load_extension("beginner.cogs.google")
@@ -138,5 +121,19 @@ class BeginnerCog(Cog):
         client.load_extension("beginner.cogs.spam")
         client.load_extension("beginner.cogs.statistics")
         client.load_extension("beginner.cogs.tips")
-
         client.add_cog(BeginnerCog(client))
+
+        if BeginnerCog.is_dev_env():
+            import beginner.devcog
+
+            client.add_cog(beginner.devcog.DevCog(client))
+
+    @staticmethod
+    def setup_logging():
+        logging.basicConfig(
+            format="%(asctime)s: %(levelname)-9s %(name)-16s ::          %(message)s",
+            datefmt="%m/%d/%Y %I:%M:%S %p",
+            level=logging.ERROR,
+        )
+
+        logging.getLogger("beginnerpy").setLevel(logging.DEBUG)
