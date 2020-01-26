@@ -84,7 +84,7 @@ class TipsCog(Cog):
         embed = Embed(description=message, color=0x306998)
         embed.set_author(name=title, icon_url=self.server.icon_url)
         while formatted:
-            index = min(len(formatted), 10)
+            index = min(len(formatted), 5)
             embed.add_field(name="- - - -", value="\n".join(formatted[:index]))
             formatted = formatted[index:]
 
