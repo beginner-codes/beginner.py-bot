@@ -115,19 +115,18 @@ class BeginnerCog(Cog):
 
     @staticmethod
     def load_cogs(client):
-        log_level = logging.ERROR
+        logging.basicConfig(
+            format="%(asctime)s %(levelname)s: %(message)s",
+            datefmt="%m/%d/%Y %I:%M:%S %p",
+            level=logging.ERROR,
+        )
+
         if BeginnerCog.is_dev_env():
             import beginner.devcog
 
             client.add_cog(beginner.devcog.DevCog(client))
 
-            log_level = logging.DEBUG
-
-        logging.basicConfig(
-            format="%(asctime)s %(levelname)s: %(message)s",
-            datefmt="%m/%d/%Y %I:%M:%S %p",
-            level=log_level,
-        )
+        logging.getLogger("beginnerpy").setLevel(logging.DEBUG)
 
         client.load_extension("beginner.cogs.user_roles")
         client.load_extension("beginner.cogs.repeater")
