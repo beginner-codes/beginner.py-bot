@@ -48,6 +48,16 @@ class TipsCog(Cog):
         )
         response = f'Created tip labeled "{label}"'
         if tip:
+            await ctx.send(
+                'What would you like the label to be? Say "keep" if you don\'t want it changed.'
+            )
+            label_message = await self.client.wait_for(
+                "message",
+                check=lambda msg: msg.channel == ctx.message.channel
+                and msg.author == ctx.author,
+            )
+            if label_message.clean_content.lower() != "keep":
+                tip.label = self.sanitize_label(label_message.clean_content)
             tip.message = message.content
             tip.author = message.author.display_name
             if title != "keep":
