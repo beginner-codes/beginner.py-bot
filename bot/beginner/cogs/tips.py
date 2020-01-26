@@ -15,14 +15,13 @@ class TipsCog(Cog):
         if not label:
             await self.list_tips(ctx.message.channel, self.get_tips())
         elif tip:
-            embed = Embed(description=tip.message, color=0x306998).set_footer(
-                text=f"Contributed graciously by {tip.author}"
-            )
-            if tip.title:
-                embed.set_author(name=tip.title, icon_url=self.server.icon_url)
-            await ctx.send(embed=embed)
+            await self.show_tip(tip, ctx.message.channel)
         else:
-            await self.list_tips(ctx.message.channel, self.get_tips(label), label)
+            tips = self.get_tips(label)
+            if len(tips) == 1:
+                await self.show_tip(tips[0], ctx.message.channel)
+            else:
+                await self.list_tips(ctx.message.channel, tips, label)
         await ctx.message.delete()
 
     @Cog.command(name="create-tip")
@@ -89,6 +88,14 @@ class TipsCog(Cog):
             embed.add_field(name="- - - -", value="\n".join(formatted[:index]))
             formatted = formatted[index:]
 
+        await channel.send(embed=embed)
+
+    async def show_tip(self, tip, channel):
+        embed = Embed(description=tip.message, color=0x306998).set_footer(
+            text=f"Contributed graciously by {tip.author}"
+        )
+        if tip.title:
+            embed.set_author(name=tip.title, icon_url=self.server.icon_url)
         await channel.send(embed=embed)
 
     @staticmethod
