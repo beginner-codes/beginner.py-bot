@@ -5,6 +5,12 @@ from beginner.tags import tag
 from datetime import datetime, timedelta
 from discord import Embed, Status
 from enum import Enum
+from peewee import DoesNotExist
+from beginner.beginner import BeginnerCog
+import logging
+
+
+logger = logging.getLogger("beginnerpy.statistics")
 
 
 class OnlineSampleType(Enum):
@@ -18,14 +24,17 @@ class OnlineSampleType(Enum):
 class StatisticsCog(Cog):
     @Cog.listener()
     async def on_ready(self):
-        print(
-            self._get_online_count(),
-            "coders are online and",
-            self._get_coders_count(),
-            "total coders!!!",
+        logger.debug(
+            f"{self._get_online_count()} coders are online and {self._get_coders_count()} total coders!!!"
         )
+        daily_samples = (
+            OnlineSample.select()
+            .where(OnlineSample.sample_type == OnlineSampleType.DAY)
+            .execute()
+        )
+        logger.debug(f"Found {len(daily_samples)} days of stat samples.")
+
         await self.online_counter()
-        samples = OnlineSample.select()
 
     @Cog.command()
     async def stats(self, ctx):
