@@ -1,160 +1,158 @@
-import discord
-from beginner.cog import AdvancedCommand, Cog
-from typing import AnyStr, Dict
+from beginner.cog import Cog
+from beginner.models.messages import Message, MessageTypes
+from discord import Embed
 
 
-class Rules(Cog):
-    def __init__(self, client):
-        super().__init__(client)
-        self.rules = self.load_data("rules", {"responses": [], "callfunc": "rule"})
+class RulesCog(Cog):
+    @Cog.command(name="create-rule")
+    async def create_rule(self, ctx, *, content):
+        if not ctx.author.guild_permissions.manage_guild:
+            return
 
-    @Cog.command()
-    async def rule(self, ctx, *args):
-        if not self.rules:
-            await ctx.send("No rules found in the database, try again later")
-            if len([r for r in ctx.author.roles if r.id == 644301991832453120]) > 0:
-                # TODO: This is debug code for use on the cluster. Will be removed later.
-                import os
+        sections = content.split("\n")
+        rule_number = sections[0]
+        title = sections[1]
+        labels = [label.strip() for label in sections[2].split(", ")]
+        rule = "\n".join(sections[3:])
 
-                await ctx.send(f">>> {os.getcwd()}\n{os.listdir(os.getcwd())}")
+        existing_rule = self.get_rule(rule_number)
+        if existing_rule:
+            await ctx.send(
+                f"There is already a rule #{rule_number} ({existing_rule.title})"
+            )
+
         else:
-            command = AdvancedCommand(self.show_rule)
-            command.add("-add", self.add_rule)
-            command.add("-edit", self.edit_rule)
-            command.add("-edit-alias", self.edit_rule_alias)
-            await command.run(ctx, *args)
+            new_rule = Message(
+                title=f"Rule #{rule_number} - {title}",
+                label=" ".join([rule_number] + labels),
+                message=rule,
+                message_type=MessageTypes.RULE,
+                author=ctx.author.display_name,
+            )
+            new_rule.save()
 
-    async def add_rule(self, ctx, alias: AnyStr, *rule):
-        if len([r for r in ctx.author.roles if r.id == 644301991832453120]) > 0:
-            error_message = ""
-            error_sub = ""
-            if alias.isnumeric():
-                error_message = f"*{alias}* is an invalid rule alias."
-                error_sub = "invalid alias"
-            elif self.find_rule(alias):
-                error_message = f"A rule with the alias *{alias}* already exists."
-                error_sub = "alias exists"
-            else:
-                text = " ".join(rule)
-                self.rules["responses"].append({"alias": alias, "text": text})
-                self.update_data("rules", self.rules)
+            await ctx.send(
+                f"Created rule successfully\n"
+                f"Rule #: {rule_number}\n"
+                f"Title: {title}\n"
+                f"Labels: {', '.join(labels)}\n"
+                f"Rule: {rule}"
+            )
 
-                embedded = discord.Embed(
-                    description=f"Rules successfully updated with new rule:\n\n**Rule {len(self.rules['responses'])}** - *{alias}*\n{text}.",
-                    color=0x22CC22,
-                )
-                embedded.set_author(
-                    name="Success",
-                    icon_url="https://cdn.discordapp.com/icons/644299523686006834/e69f6d4231a6e58eed5884625c4b4931.png",
-                )
-                await ctx.send(embed=embedded)
+    @Cog.command(name="edit-rule")
+    async def edit_rule(self, ctx, rule_number, *_):
+        if not ctx.author.guild_permissions.manage_guild:
+            return
 
-            if error_message:
-                embedded = discord.Embed(description=error_message, color=0xCC2222)
-                embedded.set_author(
-                    name=f"Error - {error_sub}",
-                    icon_url="https://cdn.discordapp.com/icons/644299523686006834/e69f6d4231a6e58eed5884625c4b4931.png",
-                )
-                await ctx.send(embed=embedded)
-
-    async def edit_rule(self, ctx, identifier: AnyStr, *message):
-        if len([r for r in ctx.author.roles if r.id == 644301991832453120]) > 0:
-            rule = self.find_rule(identifier)
-            if rule:
-                rule[1]["text"] = " ".join(message)
-                self.update_data("rules", self.rules)
-
-                embedded = discord.Embed(
-                    description=f"Rule *{rule[1]['alias']}* successfully updated to the following:\n{rule[1]['text']}.",
-                    color=0x22CC22,
-                )
-                embedded.set_author(
-                    name="Success",
-                    icon_url="https://cdn.discordapp.com/icons/644299523686006834/e69f6d4231a6e58eed5884625c4b4931.png",
-                )
-                await ctx.send(embed=embedded)
-            else:
-                embedded = discord.Embed(
-                    description=f"A rule with the alias *{identifier}* doesn't exist.",
-                    color=0xCC2222,
-                )
-                embedded.set_author(
-                    name="Error - missing alias",
-                    icon_url="https://cdn.discordapp.com/icons/644299523686006834/e69f6d4231a6e58eed5884625c4b4931.png",
-                )
-                await ctx.send(embed=embedded)
-
-    async def edit_rule_alias(self, ctx, identifier: AnyStr, alias: AnyStr, *_):
-        if len([r for r in ctx.author.roles if r.id == 644301991832453120]) > 0:
-            rule = self.find_rule(identifier)
-            if rule:
-                rule[1]["alias"] = alias
-                self.update_data("rules", self.rules)
-
-                embedded = discord.Embed(
-                    description=f"Rule *{rule[0]}* alias changed to {alias}.",
-                    color=0x22CC22,
-                )
-                embedded.set_author(
-                    name="Success",
-                    icon_url="https://cdn.discordapp.com/icons/644299523686006834/e69f6d4231a6e58eed5884625c4b4931.png",
-                )
-                await ctx.send(embed=embedded)
-            else:
-                embedded = discord.Embed(
-                    description=f"No rule found for *{identifier}*.", color=0xCC2222
-                )
-                embedded.set_author(
-                    name="Error - invalid rule",
-                    icon_url="https://cdn.discordapp.com/icons/644299523686006834/e69f6d4231a6e58eed5884625c4b4931.png",
-                )
-                await ctx.send(embed=embedded)
-
-    async def show_rule(self, ctx, identifier: AnyStr, *_):
-        rule = self.find_rule(identifier)
+        rule = RulesCog.get_rule(rule_number)
         if rule:
-            embedded = discord.Embed(description=rule[1]["text"], color=0x306998)
-            embedded.set_author(
-                name=f"Rule {rule[0]} - {rule[1]['alias']}",
-                icon_url="https://cdn.discordapp.com/icons/644299523686006834/e69f6d4231a6e58eed5884625c4b4931.png",
+            existing_number = rule.title[
+                rule.title.find("#") + 1 : rule.title.find("-") - 1
+            ]
+            existing_title = rule.title[rule.title.find("-") + 2 :]
+            existing_labels = rule.label.split(" ")[1:]
+            await ctx.send(
+                "Found this rule\n"
+                f"**- Rule #:** {existing_number}\n"
+                f"**- Title:** {existing_title}\n"
+                f"**- Labels:** {', '.join(existing_labels)}\n"
+                f"**- Rule:** {rule.message}\n\n"
+                "You can enter your changes now\n"
+                "Send 'cancel' to stop\n"
+                "Use `-` to not change the corresponding field.\n"
+                "*Rule #, Title, Labels, Rule Message* should all be on their "
+                "own line and in that order."
             )
-            await ctx.send(embed=embedded)
+            message = await self.client.wait_for(
+                "message",
+                check=lambda msg: msg.channel == ctx.message.channel
+                and msg.author == ctx.author,
+            )
+            if message.content.strip().lower() == "cancel":
+                await ctx.send("Canceled, didn't change anything")
+                return
+
+            sections = message.content.split("\n")
+
+            rule_number = sections[0]
+            title = sections[1]
+            labels = [label.strip() for label in sections[2].split(", ")]
+            rule_message = "\n".join(sections[3:])
+
+            if rule_number != "-":
+                existing_number = rule_number
+            if title != "-":
+                existing_title = title
+            if labels != "-":
+                existing_labels = labels
+            if rule_message != "-":
+                rule.message = rule_message
+
+            rule.title = f"Rule #{existing_number} - {existing_title}"
+            rule.label = " ".join([existing_number] + existing_labels)
+            rule.author = ctx.author.display_name
+            rule.save()
+
+            await ctx.send(
+                "Here is the updated rule", embed=self.build_rule_embed(rule)
+            )
+
+    @Cog.command(name="rule")
+    async def show_rule(self, ctx, label=None, *_):
+        rule = RulesCog.get_rule(label, fuzzy=True)
+        if rule:
+            await ctx.send(embed=self.build_rule_embed(rule))
         else:
-            message = (
-                f"Invalid rule number. The valid rule numbers are between 1 and 13."
-            )
-            if not identifier.isnumeric() and not identifier[1:].isnumeric():
-                aliases = ", ".join(
-                    sorted([_rule["alias"] for _rule in self.rules["responses"]])
+            rules = RulesCog.get_rules(label, force=True)
+            rule_primary_labels = [
+                "**" + rule.label.split(" ")[1] + "**" for rule in rules
+            ]
+            await ctx.send(
+                embed=Embed(
+                    description=f"Here are some rules you might try:\n{', '.join(rule_primary_labels)}"
+                    if label
+                    else f"Here are all the rules: \n{', '.join(rule_primary_labels)}",
+                    color=0x306998,
+                ).set_author(
+                    name=f"Didn't find a rule for '{label}'"
+                    if label
+                    else "Beginner.py Rules",
+                    icon_url=self.server.icon_url,
                 )
-                message = f"*{identifier}* is not a valid rule. The valid rules are:\n{aliases}"
-            embedded = discord.Embed(description=message, color=0xCC2222)
-            embedded.set_author(
-                name="Error - incorrect alias",
-                icon_url="https://cdn.discordapp.com/icons/644299523686006834/e69f6d4231a6e58eed5884625c4b4931.png",
             )
-            await ctx.send(embed=embedded)
 
-    @Cog.command()
-    async def aliases(self, ctx):
-        als = sorted([rule["alias"] for rule in self.rules["responses"]])
-        await ctx.send(f">>> The available rule aliases are:\n{', '.join(als)}")
+    def build_rule_embed(self, rule):
+        return Embed(description=rule.message, color=0x306998).set_author(
+            name=rule.title, icon_url=self.server.icon_url
+        )
 
-    def find_rule(self, identifier: AnyStr) -> Dict:
-        rule = None
-        rule_index = -1
-        if identifier.isnumeric():
-            rule_index = int(identifier)
-            if 0 < rule_index <= len(self.rules["responses"]):
-                rule = self.rules["responses"][rule_index - 1]
-        else:
-            rules = self.rules["responses"]
-            for rule_index, _rule in zip(range(1, len(rules) + 1), rules):
-                if _rule["alias"] == identifier.lower():
-                    rule = _rule
-                    break
-        return (rule_index, rule) if rule else None
+    @staticmethod
+    def get_rule(label, fuzzy=False):
+        rule = Message.get_or_none(
+            (Message.message_type == MessageTypes.RULE)
+            & (Message.label.startswith(label))
+        )
+        if not rule and fuzzy:
+            rules = RulesCog.get_rules(label)
+            if len(rules) == 1:
+                rule = rules[0]
+        return rule
+
+    @staticmethod
+    def get_rules(label=None, force=True):
+        where = Message.message_type == MessageTypes.RULE
+        if label:
+            where &= Message.label.contains(f"%{label}%")
+        query = Message.select().where(where)
+        rules = query.order_by(Message.label.asc()).execute()
+        return rules if rules or not force else RulesCog.get_rules()
+
+    @staticmethod
+    def sanitize_label(label: str):
+        return (
+            label.lower().translate({ord("-"): " ", ord("_"): " "}) if label else label
+        )
 
 
 def setup(client):
-    client.add_cog(Rules(client))
+    client.add_cog(RulesCog(client))
