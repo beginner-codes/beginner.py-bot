@@ -6,30 +6,12 @@ from discord.ext import commands
 
 
 class RulesCog(Cog):
-    def __init__(self, client):
-        super().__init__(client)
-        self._rule_message = None
-
-    async def get_rule_message(self) -> DiscordMessage:
-        if not self._rule_message:
-            channel = self.get_rules_channel()
-            messages = await channel.history(limit=1, oldest_first=True).flatten()
-            if messages and messages[0].author.id == self.client.user.id:
-                self._rule_message = messages[0]
-        return self._rule_message
-
     def get_rules_channel(self) -> TextChannel:
         if BeginnerCog.is_dev_env():
             return self.get_channel("empty-channel-for-bot-dev")
         return self.get_channel("rules")
 
-    @commands.Cog.listener()
-    async def on_ready(self):
-        self.logger.debug("Cog ready")
-        if not await self.get_rule_message():
-            await self.create_rule_message()
-
-    @Cog.command(name="create-rule")
+    @Cog.command(name="dcreate-rule")
     async def create_rule(self, ctx, *, content):
         if not ctx.author.guild_permissions.manage_guild:
             return
@@ -63,9 +45,9 @@ class RulesCog(Cog):
                 f"Labels: {', '.join(labels)}\n"
                 f"Rule: {rule}"
             )
-            await self.rebuild_rule_message()
+            await self.rebuild_rule_messages()
 
-    @Cog.command(name="edit-rule")
+    @Cog.command(name="dedit-rule")
     async def edit_rule(self, ctx, rule_number, *_):
         if not ctx.author.guild_permissions.manage_guild:
             return
@@ -122,7 +104,7 @@ class RulesCog(Cog):
             await ctx.send(
                 "Here is the updated rule", embed=self.build_rule_embed(rule)
             )
-            await self.rebuild_rule_message()
+            await self.rebuild_rule_messages()
 
     @Cog.command(name="rule")
     async def show_rule(self, ctx, label=None, *_):
@@ -153,32 +135,30 @@ class RulesCog(Cog):
             name=rule.title, icon_url=self.server.icon_url
         )
 
-    def build_rules_embed(self) -> Embed:
-        message = [
-            "Welcome to beginner.py! We hope you'll enjoy your stay and learn "
-            "a lot about python with us.",
-            "You'll need to **read through the rules** real quick and "
-            "**acknowledge that you've understood them** at the bottom before "
-            "you can gain full access to the server.",
-        ]
-        message += [
-            f"**{rule.title}**\n{rule.message}"
-            for rule in sorted(
-                self.get_rules(),
-                key=lambda rule: int(rule.label[: rule.label.find(" ")]),
-            )
-        ]
-        return Embed(description="\n\n".join(message), color=0x306998).set_author(
-            name="Beginner.py Rules", icon_url=self.server.icon_url
-        )
-
-    async def create_rule_message(self):
+    async def create_rule_messages(self):
         channel = self.get_rules_channel()
-        self._rule_message = await channel.send(embed=self.build_rules_embed())
+        await channel.send(
+            embed=Embed(
+                description="Welcome to beginner.py! We hope you'll enjoy your stay and learn "
+                "a lot about python with us.\n\n"
+                "You'll need to **read through the rules** real quick and "
+                "**acknowledge that you've understood them** at the bottom before "
+                "you can gain full access to the server.",
+                color=0x306998,
+            ).set_author(name="Beginner.py Rules", icon_url=self.server.icon_url)
+        )
+        for rule in sorted(
+            self.get_rules(), key=lambda r: int(r.label[: r.label.find(" ")])
+        ):
+            await channel.send(
+                embed=Embed(description=rule.message, color=0x306998).set_author(
+                    name=rule.title
+                )
+            )
 
-    async def rebuild_rule_message(self):
-        message = await self.get_rule_message()
-        await message.edit(embed=self.build_rules_embed())
+    async def rebuild_rule_messages(self):
+        await self.get_rules_channel().purge(limit=1000)
+        await self.create_rule_messages()
 
     @staticmethod
     def get_rule(label, fuzzy=False):
