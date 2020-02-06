@@ -1,9 +1,34 @@
 from beginner.cog import Cog
+from beginner.beginner import BeginnerCog
 from beginner.models.messages import Message, MessageTypes
-from discord import Embed
+from discord import Embed, Message as DiscordMessage, TextChannel
+from discord.ext import commands
 
 
 class RulesCog(Cog):
+    def __init__(self, client):
+        super().__init__(client)
+        self._rule_message = None
+
+    async def get_rule_message(self) -> DiscordMessage:
+        if not self._rule_message:
+            channel = self.get_rules_channel()
+            messages = await channel.history(limit=1, oldest_first=True).flatten()
+            if messages and messages[0].author.id == self.client.user.id:
+                self._rule_message = messages[0]
+        return self._rule_message
+
+    def get_rules_channel(self) -> TextChannel:
+        if BeginnerCog.is_dev_env():
+            return self.get_channel("empty-channel-for-bot-dev")
+        return self.get_channel("rules")
+
+    @commands.Cog.listener()
+    async def on_ready(self):
+        self.logger.debug("Cog ready")
+        if not await self.get_rule_message():
+            await self.create_rule_message()
+
     @Cog.command(name="create-rule")
     async def create_rule(self, ctx, *, content):
         if not ctx.author.guild_permissions.manage_guild:
@@ -38,6 +63,7 @@ class RulesCog(Cog):
                 f"Labels: {', '.join(labels)}\n"
                 f"Rule: {rule}"
             )
+            await self.rebuild_rule_message()
 
     @Cog.command(name="edit-rule")
     async def edit_rule(self, ctx, rule_number, *_):
@@ -83,7 +109,7 @@ class RulesCog(Cog):
                 existing_number = rule_number
             if title != "-":
                 existing_title = title
-            if labels != "-":
+            if sections[2] != "-":
                 existing_labels = labels
             if rule_message != "-":
                 rule.message = rule_message
@@ -96,6 +122,7 @@ class RulesCog(Cog):
             await ctx.send(
                 "Here is the updated rule", embed=self.build_rule_embed(rule)
             )
+            await self.rebuild_rule_message()
 
     @Cog.command(name="rule")
     async def show_rule(self, ctx, label=None, *_):
@@ -126,6 +153,33 @@ class RulesCog(Cog):
             name=rule.title, icon_url=self.server.icon_url
         )
 
+    def build_rules_embed(self) -> Embed:
+        message = [
+            "Welcome to beginner.py! We hope you'll enjoy your stay and learn "
+            "a lot about python with us.",
+            "You'll need to **read through the rules** real quick and "
+            "**acknowledge that you've understood them** at the bottom before "
+            "you can gain full access to the server.",
+        ]
+        message += [
+            f"**{rule.title}**\n{rule.message}"
+            for rule in sorted(
+                self.get_rules(),
+                key=lambda rule: int(rule.label[: rule.label.find(" ")]),
+            )
+        ]
+        return Embed(description="\n\n".join(message), color=0x306998).set_author(
+            name="Beginner.py Rules", icon_url=self.server.icon_url
+        )
+
+    async def create_rule_message(self):
+        channel = self.get_rules_channel()
+        self._rule_message = await channel.send(embed=self.build_rules_embed())
+
+    async def rebuild_rule_message(self):
+        message = await self.get_rule_message()
+        await message.edit(embed=self.build_rules_embed())
+
     @staticmethod
     def get_rule(label, fuzzy=False):
         rule = Message.get_or_none(
@@ -139,12 +193,12 @@ class RulesCog(Cog):
         return rule
 
     @staticmethod
-    def get_rules(label=None, force=True):
+    def get_rules(label=None, force=True, order_by=Message.label.asc()):
         where = Message.message_type == MessageTypes.RULE
         if label:
             where &= Message.label.contains(f"%{label}%")
         query = Message.select().where(where)
-        rules = query.order_by(Message.label.asc()).execute()
+        rules = query.order_by(order_by).execute()
         return rules if rules or not force else RulesCog.get_rules()
 
     @staticmethod

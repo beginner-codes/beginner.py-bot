@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "beginner.py"
-version = "0.1.0"
+version = "0.0.40"
 description = ""
 authors = ["Zech Zimmerman <zechzimm@gmail.com>"]
 
