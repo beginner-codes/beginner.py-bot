@@ -121,6 +121,7 @@ class BeginnerCog(Cog):
         client.load_extension("beginner.cogs.spam")
         client.load_extension("beginner.cogs.statistics")
         client.load_extension("beginner.cogs.tips")
+        client.load_extension("beginner.cogs.moderation")
         client.add_cog(BeginnerCog(client))
 
         if BeginnerCog.is_dev_env():
