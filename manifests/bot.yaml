@@ -28,7 +28,7 @@ spec:
     spec:
       containers:
         - name: beginner-py-bot
-          image: zzmmrmn/beginner-py-bot:0.1.1
+          image: zzmmrmn/beginner-py-bot:0.1.2
           volumeMounts:
             - name: beginner-py-bot-vol
               mountPath: /usr/src/app/data
