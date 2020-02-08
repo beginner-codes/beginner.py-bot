@@ -15,7 +15,7 @@ class ModerationCog(Cog):
         ):
             return
 
-        member: Member = self.server.get_member(int(user[3:-1]))
+        member: Member = self.server.get_member(self.parse_user_id(user))
         if self.get_role("muted") in member.roles:
             await ctx.send(f"*{member.mention} is already muted*")
             return
@@ -66,7 +66,7 @@ class ModerationCog(Cog):
         ):
             return
 
-        member = self.server.get_member(int(user[3:-1]))
+        member = self.server.get_member(self.parse_user_id(user))
         embed = self.build_mod_action_embed(ctx, member, reason, "Mod Warning")
         message = await ctx.send(embed=embed)
 
@@ -163,6 +163,9 @@ class ModerationCog(Cog):
             return int(duration[:-1]) * 60
 
         return int(duration)
+
+    def parse_user_id(self, user_tag: str) -> int:
+        return int(user_tag[3:-1] if user_tag.find("!") >= 0 else user_tag[2:-1])
 
     @tag("schedule", "unmute-member")
     async def unmute_member(self, member_id):
