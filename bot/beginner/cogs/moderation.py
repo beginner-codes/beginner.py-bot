@@ -151,10 +151,8 @@ class ModerationCog(Cog):
         if reason.find(" ") == -1:
             rule = RulesCog.get_rule(reason, fuzzy=True)
             if rule:
-                embed.description = rule.message
-                embed.set_author(
-                    name=f"Mod Warning: {rule.title}", icon_url=self.server.icon_url
-                )
+                embed.description = f"**{rule.title}**\n{rule.message}"
+                embed.set_author(name=f"Mod Warning", icon_url=self.server.icon_url)
 
     def parse_duration(self, duration: str):
         if duration.endswith("d"):
