@@ -126,6 +126,7 @@ class ModerationCog(Cog):
     ) -> Embed:
         embed = Embed(description=reason, color=0xCC2222)
         self.get_rule_for_reason(reason, embed)
+        embed.description = f"{user.mention}\n{embed.description}"
         embed.set_author(name=title, icon_url=self.server.icon_url)
         embed.set_footer(text=ctx.author.display_name, icon_url=ctx.author.avatar_url)
         return embed
