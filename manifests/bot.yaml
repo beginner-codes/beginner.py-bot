@@ -28,7 +28,7 @@ spec:
     spec:
       containers:
         - name: beginner-py-bot
-          image: zzmmrmn/beginner-py-bot:0.1.2
+          image: zzmmrmn/beginner-py-bot:0.1.4
           volumeMounts:
             - name: beginner-py-bot-vol
               mountPath: /usr/src/app/data
@@ -51,7 +51,11 @@ spec:
                   name: google-custom-search
                   key: cse
             - name: "DB_HOST"
-              value: "bpy-postgres-svc"
+              value: "private-personal-postgres-cluster-1-do-user-877728-0.db.ondigitalocean.com"
+            - name: "DB_PORT"
+              value: "25060"
+            - name: "DB_USER"
+              value: "beginnerpy"
             - name: "DB_PASSWORD"
               valueFrom:
                 secretKeyRef:
