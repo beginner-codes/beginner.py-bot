@@ -179,7 +179,7 @@ class RulesCog(Cog):
             where &= Message.label.contains(f"%{label}%")
         query = Message.select().where(where)
         rules = query.order_by(order_by).execute()
-        return rules if rules or not force else RulesCog.get_rules()
+        return rules if rules or not force else RulesCog.get_rules(force=False)
 
     @staticmethod
     def sanitize_label(label: str):
