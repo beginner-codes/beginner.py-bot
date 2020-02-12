@@ -23,7 +23,7 @@ class BeginnerCog(Cog):
                 password=os.environ.get(
                     "DB_PASSWORD", "dev-env-password-safe-to-be-public"
                 ),
-                sslmode="require" if os.environ.get("PRODUCTION_BOT", False) else False,
+                sslmode="require" if os.environ.get("PRODUCTION_BOT", False) else None,
             )
         )
         initialize_scheduler(loop=client.loop)
