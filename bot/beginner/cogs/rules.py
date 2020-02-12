@@ -147,7 +147,7 @@ class RulesCog(Cog):
                 embed=Embed(
                     description=f"Here are some rules you might try:\n{', '.join(rule_primary_labels)}"
                     if label
-                    else f"Here are all the rules: \n{', '.join(rule_primary_labels)}",
+                    else f"Here are all the rules: \n{', '.join(sorted(rule_primary_labels))}",
                     color=0x306998,
                 ).set_author(
                     name=f"Didn't find a rule for '{label}'"
