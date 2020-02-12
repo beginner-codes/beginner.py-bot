@@ -1,6 +1,7 @@
 from beginner.cog import Cog
 from beginner.beginner import BeginnerCog
 from beginner.models.messages import Message, MessageTypes
+from beginner.options import get_option, set_option
 from discord import Embed, Message as DiscordMessage, TextChannel
 from discord.ext import commands
 
@@ -11,7 +12,33 @@ class RulesCog(Cog):
             return self.get_channel("empty-channel-for-bot-dev")
         return self.get_channel("rules")
 
-    @Cog.command(name="dcreate-rule")
+    @property
+    def allow_rule_rebuilds(self) -> bool:
+        return get_option("allow-rule-rebuilds", True)
+
+    @allow_rule_rebuilds.setter
+    def allow_rule_rebuilds(self, value: bool):
+        set_option("allow-rule-rebuilds", value)
+
+    @Cog.command(name="rule-updates")
+    async def rule_updates(self, ctx, on_or_off: str = ""):
+        if not ctx.author.guild_permissions.manage_guild:
+            return
+
+        if on_or_off == "":
+            await ctx.send(
+                f"Rule updates are currently turned {'on' if self.allow_rule_rebuilds else 'off'}."
+            )
+        elif on_or_off.lower() in {"on", "yes", "true", "t", "y", "1"}:
+            self.allow_rule_rebuilds = True
+            await ctx.send(f"Rule updates turned on.")
+        elif on_or_off.lower() in {"off", "no", "false", "f", "n", "0"}:
+            self.allow_rule_rebuilds = False
+            await ctx.send(f"Rule updates turned off.")
+        else:
+            await ctx.send(f"I don't understand. Rule update setting unchanged.")
+
+    @Cog.command(name="create-rule")
     async def create_rule(self, ctx, *, content):
         if not ctx.author.guild_permissions.manage_guild:
             return
@@ -47,7 +74,7 @@ class RulesCog(Cog):
             )
             await self.rebuild_rule_messages()
 
-    @Cog.command(name="dedit-rule")
+    @Cog.command(name="edit-rule")
     async def edit_rule(self, ctx, rule_number, *_):
         if not ctx.author.guild_permissions.manage_guild:
             return
@@ -157,8 +184,9 @@ class RulesCog(Cog):
             )
 
     async def rebuild_rule_messages(self):
-        await self.get_rules_channel().purge(limit=1000)
-        await self.create_rule_messages()
+        if self.allow_rule_rebuilds:
+            await self.get_rules_channel().purge(limit=1000)
+            await self.create_rule_messages()
 
     @staticmethod
     def get_rule(label, fuzzy=False):
