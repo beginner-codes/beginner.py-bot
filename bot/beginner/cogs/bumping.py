@@ -19,7 +19,7 @@ class Bumping(Cog):
 
     @Cog.listener()
     async def on_message(self, message):
-        if message.channel != self.channel:
+        if not hasattr(self, "channel") or message.channel != self.channel:
             return
 
         if self.is_bump_success_confirmation(message):
