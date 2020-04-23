@@ -24,12 +24,7 @@ class OnBoarding(Cog):
 
     @Cog.listener()
     async def on_member_join(self, member):
-        schedule(
-            "welcome-member",
-            timedelta(seconds=5),
-            self._send_welcome_message,
-            member.id,
-        )
+        await self._send_welcome_message(member.id)
 
     @tag("schedule", "welcome-message")
     async def _send_welcome_message(self, member_id):
