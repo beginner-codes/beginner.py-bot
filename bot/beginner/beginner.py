@@ -29,22 +29,6 @@ class BeginnerCog(Cog):
         initialize_scheduler(loop=client.loop)
 
     @Cog.command()
-    async def d(self, ctx, message):
-        if message == "bump":
-            schedule(
-                "disboard-bump-reminder",
-                timedelta(hours=2),
-                self.bump_reminder,
-                no_duplication=True,
-            )
-
-    @tag("schedule", "disboard-bump")
-    async def bump_reminder(self):
-        channel = self.client.get_channel(644338578695913504)
-        roundtable = self.get_role("roundtable")
-        await channel.send(f"{roundtable.mention} It's been 2hrs since the last bump")
-
-    @Cog.command()
     async def export(self, ctx, namespace):
         if len([r for r in ctx.author.roles if r.id == 644301991832453120]) == 0:
             return
@@ -123,6 +107,7 @@ class BeginnerCog(Cog):
         client.load_extension("beginner.cogs.statistics")
         client.load_extension("beginner.cogs.tips")
         client.load_extension("beginner.cogs.moderation")
+        client.load_extension("beginner.cogs.bumping")
         client.add_cog(BeginnerCog(client))
 
         if BeginnerCog.is_dev_env():
