@@ -142,7 +142,7 @@ class Bumping(Cog):
             elif not confirmation and self.is_bump_fail_confirmation(message):
                 confirmation = message
 
-            elif message.content == "!d bump" and (not confirmation or not bump):
+            elif message.content == "!d bump" and not bump:
                 bump = message
 
             elif message.author.id == self.server.me.id and (
