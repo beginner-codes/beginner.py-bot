@@ -37,8 +37,7 @@ class Python(Cog):
                             embedded = discord.Embed(description=text, color=0x306998)
                             if page == 1:
                                 embedded.set_author(
-                                    name="Missing",
-                                    icon_url="https://cdn.discordapp.com/icons/644299523686006834/e69f6d4231a6e58eed5884625c4b4931.png",
+                                    name="Missing", icon_url=self.server.icon_url
                                 )
                             page += 1
                             text = ""
@@ -69,8 +68,7 @@ class Python(Cog):
                                 color=0x22CC22,
                             )
                             embedded.set_author(
-                                name="Success",
-                                icon_url="https://cdn.discordapp.com/icons/644299523686006834/e69f6d4231a6e58eed5884625c4b4931.png",
+                                name="Success", icon_url=self.server.icon_url
                             )
                         else:
                             embedded = discord.Embed(
@@ -79,7 +77,7 @@ class Python(Cog):
                             )
                             embedded.set_author(
                                 name="Error - limit reached",
-                                icon_url="https://cdn.discordapp.com/icons/644299523686006834/e69f6d4231a6e58eed5884625c4b4931.png",
+                                icon_url=self.server.icon_url,
                             )
                         break
 
@@ -87,8 +85,7 @@ class Python(Cog):
                     text = f"I'm sorry <@{ctx.author.id}>, it looks like you're trying to add an example to a python keyword or function that doesn't exist in my database."
                     embedded = discord.Embed(description=text, color=0xCC2222)
                     embedded.set_author(
-                        name="Error - not found",
-                        icon_url="https://cdn.discordapp.com/icons/644299523686006834/e69f6d4231a6e58eed5884625c4b4931.png",
+                        name="Error - not found", icon_url=self.server.icon_url
                     )
 
         elif (
@@ -112,16 +109,14 @@ class Python(Cog):
                             color=0x22CC22,
                         )
                         embedded.set_author(
-                            name="Success",
-                            icon_url="https://cdn.discordapp.com/icons/644299523686006834/e69f6d4231a6e58eed5884625c4b4931.png",
+                            name="Success", icon_url=self.server.icon_url
                         )
 
                 if foundInner == False:
                     text = f"I'm sorry <@{ctx.author.id}>, it looks like you're trying to edit the description of a python keyword or function that doesn't exist in my database."
                     embedded = discord.Embed(description=text, color=0xCC2222)
                     embedded.set_author(
-                        name="Error - not found",
-                        icon_url="https://cdn.discordapp.com/icons/644299523686006834/e69f6d4231a6e58eed5884625c4b4931.png",
+                        name="Error - not found", icon_url=self.server.icon_url
                     )
 
         elif (
@@ -149,8 +144,7 @@ class Python(Cog):
                                     color=0x22CC22,
                                 )
                                 embedded.set_author(
-                                    name="Success",
-                                    icon_url="https://cdn.discordapp.com/icons/644299523686006834/e69f6d4231a6e58eed5884625c4b4931.png",
+                                    name="Success", icon_url=self.server.icon_url
                                 )
                             else:
                                 text = f"I'm sorry <@{ctx.author.id}>, it seems that the {r['alias']} python command has no example code #{count}."
@@ -159,15 +153,14 @@ class Python(Cog):
                                 )
                                 embedded.set_author(
                                     name="Error - incorrect index",
-                                    icon_url="https://cdn.discordapp.com/icons/644299523686006834/e69f6d4231a6e58eed5884625c4b4931.png",
+                                    icon_url=self.server.icon_url,
                                 )
 
                     if foundInner == False:
                         text = f"I'm sorry <@{ctx.author.id}>, it looks like you're trying to edit the description of a python keyword or function that doesn't exist in my database."
                         embedded = discord.Embed(description=text, color=0xCC2222)
                         embedded.set_author(
-                            name="Error - not found",
-                            icon_url="https://cdn.discordapp.com/icons/644299523686006834/e69f6d4231a6e58eed5884625c4b4931.png",
+                            name="Error - not found", icon_url=self.server.icon_url
                         )
 
                 except ValueError:
@@ -175,8 +168,7 @@ class Python(Cog):
                     text = f"<@{ctx.author.id}>, the proper format for editing a code example is the following:\n!python -edit code <example_number>\n\```py\n# code here\n\```\n*<example_number> specifies which example should be overwritten (1 or 2).*"
                     embedded = discord.Embed(description=text, color=0xCC2222)
                     embedded.set_author(
-                        name="Error - incorrect format",
-                        icon_url="https://cdn.discordapp.com/icons/644299523686006834/e69f6d4231a6e58eed5884625c4b4931.png",
+                        name="Error - incorrect format", icon_url=self.server.icon_url
                     )
 
         else:
@@ -185,8 +177,7 @@ class Python(Cog):
                     found = True
                     embedded = discord.Embed(description=r["text"], color=0x306998)
                     embedded.set_author(
-                        name=r["title"] + " " + r["type"],
-                        icon_url="https://cdn.discordapp.com/icons/644299523686006834/e69f6d4231a6e58eed5884625c4b4931.png",
+                        name=r["title"] + " " + r["type"], icon_url=self.server.icon_url
                     )
                     if len(r["code"]) == 0:
                         embedded.add_field(
@@ -207,17 +198,14 @@ class Python(Cog):
                     # <@{ctx.author.id}> gives a clickable link for the user
                     embedded.set_footer(
                         text=f"This information was requested by {ctx.author.name}.",
-                        icon_url="https://cdn.discordapp.com/icons/644299523686006834/e69f6d4231a6e58eed5884625c4b4931.png",
+                        icon_url=self.server.icon_url,
                     )
                     break
 
         if found == False:
             text = f"I'm sorry <@{ctx.author.id}>, I don't know this Python keyword or function."
             embedded = discord.Embed(description=text, color=0xCC2222)
-            embedded.set_author(
-                name="Error - not found",
-                icon_url="https://cdn.discordapp.com/icons/644299523686006834/e69f6d4231a6e58eed5884625c4b4931.png",
-            )
+            embedded.set_author(name="Error - not found", icon_url=self.server.icon_url)
 
         await ctx.send(embed=embedded)
 
