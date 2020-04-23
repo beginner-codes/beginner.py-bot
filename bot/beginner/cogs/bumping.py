@@ -6,13 +6,14 @@ from datetime import datetime, timedelta
 import asyncio
 import discord
 import re
+import os
 
 
 class Bumping(Cog):
     @Cog.listener()
     async def on_ready(self):
         self.role = self.get_role("bumpers")
-        self.channel = self.get_channel("bumping")
+        self.channel = self.get_channel(os.environ.get("BUMP_CHANNEL", "bumping"))
         self.explanation_message = await self.get_explanation_message()
         self.logger.debug("Cog ready")
 
