@@ -1,5 +1,5 @@
 # beginner.py-bot
-Discord bot for the beginner.py server.
+Discord bot for the beginner.py server. A bit of a hodge podge of coding style and experience levels as it is a collaboration between various people, all of whom had no experience with Discord.py before this.
 
 ## Setup & Running
 To run the bot you need to first define the authentication token. Then you the bot can be run either directly with the local python interpreter or using the included Dockerfile.
