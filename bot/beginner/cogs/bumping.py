@@ -67,10 +67,17 @@ class Bumping(Cog):
     @tag("schedule", "disboard-bump-reminder")
     async def bump_reminder(self):
         self.logger.debug(f"SENDING BUMP REMINDER: {self.role.name}")
-        message = await self.channel.send(
-            f"{self.role.mention} It's been 2hrs since the last bump!\n"
-            f"*Use the command `!d bump` now!*"
-        )
+        disboard = self.server.get_member(302050872383242240)
+        if disboard.status == discord.Status.online:
+            message = await self.channel.send(
+                f"{self.role.mention} It's been 2hrs since the last bump!\n"
+                f"*Use the command `!d bump` now!*"
+            )
+        else:
+            await self.channel.send(
+                f"**{disboard.mention} is offline. Check back in later to bump the server.**"
+            )
+            self.schedule_bump(timedelta(minutes=30))
 
     @Cog.listener()
     async def on_raw_reaction_add(self, reaction):
