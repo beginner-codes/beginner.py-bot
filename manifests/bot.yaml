@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: beginner-py-bot
+  labels:
+    app: beginner-py-bot
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: beginner-py-bot
+  template:
+    metadata:
+      labels:
+        app: beginner-py-bot
+    spec:
+      containers:
+        - name: beginner-py-bot
+          image: zzmmrmn/beginner-py-bot:0.1.21
+          env:
+            - name: PRODUCTION_BOT
+              value: "PRODUCTION"
+            - name: "DISCORD_TOKEN"
+              valueFrom:
+                secretKeyRef:
+                  name: discord.token
+                  key: token
+            - name: "GOOGLE_CUSTOM_SEARCH_KEY"
+              valueFrom:
+                secretKeyRef:
+                  name: google-custom-search
+                  key: api-key
+            - name: "GOOGLE_CUSTOM_SEARCH_ENGINE"
+              valueFrom:
+                secretKeyRef:
+                  name: google-custom-search
+                  key: cse
+            - name: "DB_HOST"
+              value: "private-personal-postgres-cluster-1-do-user-877728-0.db.ondigitalocean.com"
+            - name: "DB_PORT"
+              value: "25060"
+            - name: "DB_USER"
+              value: "beginnerpy"
+            - name: "DB_PASSWORD"
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-password
+                  key: password

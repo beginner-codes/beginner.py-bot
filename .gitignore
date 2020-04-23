@@ -97,10 +97,15 @@ venv.bak/
 # Rope project settings
 .ropeproject
 
-# mkdocs documentation
-/site
-
 # mypy
 .mypy_cache/
 bot.token
 .idea
+.DS_Store
+postgres-data
+*password-manafest.yaml
+/bot.config
+*token-manafest.yaml
+*.config
+/manifests/bot-token.yaml
+/manifests/postgres-password.yaml

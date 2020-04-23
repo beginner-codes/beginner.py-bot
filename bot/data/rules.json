@@ -47,7 +47,7 @@
 		},
 		{
 			"alias": "formatting",
-			"text": "When sharing code with the community, please use the correct formatting:\n\\```py\n# YOUR CODE HERE\n\\```"
+			"text": "When sharing code with the community, please use the correct formatting:\n\\```py\n# YOUR CODE HERE\n\\```\nFor longer scripts use [Hastebin](https://hastebin.com/) or [GitHub Gists](https://gist.github.com/) and share the link here"
 		},
 		{
 			"alias": "asking",

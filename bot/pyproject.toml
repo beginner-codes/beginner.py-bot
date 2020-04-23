@@ -1,11 +1,17 @@
 [tool.poetry]
 name = "beginner.py"
-version = "0.1.0"
+version = "0.0.40"
 description = ""
 authors = ["Zech Zimmerman <zechzimm@gmail.com>"]
 
 [tool.poetry.dependencies]
-python = "^3.7"
+python = "3.8.0"
+peewee = "^3.13"
+psycopg2-binary = "^2.8"
+"discord.py" = "^1.2"
+requests = "^2.22"
+google = "^2.0"
+google-api-python-client = "^1.7"
 
 [tool.poetry.dev-dependencies]
 

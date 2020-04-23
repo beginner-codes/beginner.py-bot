@@ -1,0 +1,76 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: bpy-postgres-pvc
+  labels:
+    app: bpy-postgres
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 50Gi
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: bpy-postgres-config
+  labels:
+    app: bpy-postgres
+data:
+  POSTGRES_DB: bpydb
+  POSTGRES_USER: postgresadmin
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bpy-postgres
+  labels:
+    app: bpy-postgres
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bpy-postgres
+  template:
+    metadata:
+      labels:
+        app: bpy-postgres
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:12.1
+          imagePullPolicy: "IfNotPresent"
+          ports:
+            - containerPort: 5432
+          env:
+            - name: "POSTGRES_PASSWORD"
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-password
+                  key: password
+          envFrom:
+            - configMapRef:
+                name: bpy-postgres-config
+          volumeMounts:
+            - mountPath: /var/lib/postgresql/
+              name: postgresdb
+      volumes:
+        - name: postgresdb
+          persistentVolumeClaim:
+            claimName: bpy-postgres-pvc
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: bpy-postgres-svc
+  labels:
+    app: bpy-postgres
+spec:
+  ports:
+  - port: 5432
+  selector:
+    app: bpy-postgres

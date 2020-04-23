@@ -1,0 +1,59 @@
+import discord
+from beginner.cog import Cog
+from beginner.logging import create_logger
+from googleapiclient.discovery import build as google
+from urllib.parse import quote_plus
+from random import choice
+import os
+
+
+class Google(Cog):
+    def __init__(self, client):
+        super().__init__(client)
+        self.colors = [0xEA4335, 0x4285F4, 0xFBBC05, 0x34A853]
+
+    @Cog.command()  # command decorator inside a cog
+    async def google(self, ctx, *, query):
+        async with ctx.typing():
+            color = choice(self.colors)
+            url_search = (
+                f"https://www.google.com/search?hl=en&q={quote_plus(query)}"
+                "&btnG=Google+Search&tbs=0&safe=on"
+            )
+            message = await ctx.send(
+                embed=self.create_google_message(
+                    f"Searching...\n\n[More Results]({url_search})", color
+                )
+            )
+            query_obj = google(
+                "customsearch",
+                "v1",
+                developerKey=os.environ["GOOGLE_CUSTOM_SEARCH_KEY"],
+            )
+            query_result = (
+                query_obj.cse()
+                .list(q=query, cx=os.environ["GOOGLE_CUSTOM_SEARCH_ENGINE"], num=5)
+                .execute()
+            )
+
+        results = []
+        for result in query_result.get("items", []):
+            title = result["title"]
+            if len(title) > 77:
+                title = f"{title[:77]}..."
+            results.append(f"{len(results) + 1}. [{title}]({result['link']})\n")
+        await message.edit(
+            embed=self.create_google_message(
+                f"Results for \"{query}\"\n\n{''.join(results)}\n[More Results]({url_search})",
+                color,
+            )
+        )
+
+    def create_google_message(self, message, color):
+        return discord.Embed(description=message, color=color).set_author(
+            name=f"Google Results", icon_url=self.server.icon_url
+        )
+
+
+def setup(client):
+    client.add_cog(Google(client))
