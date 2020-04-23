@@ -20,11 +20,12 @@ class Bumping(Cog):
         if not hasattr(self, "channel") or message.channel != self.channel:
             return
 
+        scheduled = False
         if self.is_bump_success_confirmation(message):
-            self.schedule_bump(timedelta(hours=2))
+            scheduled = self.schedule_bump(timedelta(hours=2))
 
         elif self.is_bump_fail_confirmation(message):
-            self.schedule_bump(
+            scheduled = self.schedule_bump(
                 timedelta(minutes=self.get_failed_next_bump_timer(message))
             )
 
@@ -32,7 +33,7 @@ class Bumping(Cog):
         if author.id != self.server.me.id:
             await self.clean_up_messages()
 
-        if not author.bot:
+        if not scheduled and not author.bot:
             await self.channel.send(
                 f"{author.mention} please wait for the next bump reminder",
                 delete_after=10,
