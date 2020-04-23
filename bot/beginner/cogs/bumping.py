@@ -138,8 +138,8 @@ class Bumping(Cog):
                 bump = message
 
             elif message.author.id == self.server.me.id and (
-                not message.content.endswith("Use the command `!d bump` now!")
-                or not success
+                not message.content.endswith("Use the command `!d bump` now!*")
+                or not confirmation
             ):
                 pass
 
