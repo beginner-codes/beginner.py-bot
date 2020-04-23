@@ -68,8 +68,8 @@ class Bumping(Cog):
     async def bump_reminder(self):
         self.logger.debug(f"SENDING BUMP REMINDER: {self.role.name}")
         message = await self.channel.send(
-            f"{self.role.mention} It's been 2hrs since the last bump!"
-            f"Use the command `!d bump` now!"
+            f"{self.role.mention} It's been 2hrs since the last bump!\n"
+            f"*Use the command `!d bump` now!*"
         )
 
     @Cog.listener()
