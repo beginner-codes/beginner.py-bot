@@ -1,5 +1,6 @@
 from asyncio import sleep
 from beginner.cog import Cog
+from beginner.logging import create_logger
 from beginner.models import set_database, PostgresqlDatabase
 from beginner.scheduler import initialize_scheduler, schedule
 from beginner.tags import tag
@@ -96,24 +97,31 @@ class BeginnerCog(Cog):
 
     @staticmethod
     def load_cogs(client):
-        client.load_extension("beginner.cogs.user_roles")
-        client.load_extension("beginner.cogs.repeater")
-        client.load_extension("beginner.cogs.google")
-        client.load_extension("beginner.cogs.help")
-        client.load_extension("beginner.cogs.python")
-        client.load_extension("beginner.cogs.rules")
-        client.load_extension("beginner.cogs.onboarding")
-        client.load_extension("beginner.cogs.spam")
-        client.load_extension("beginner.cogs.statistics")
-        client.load_extension("beginner.cogs.tips")
-        client.load_extension("beginner.cogs.moderation")
-        client.load_extension("beginner.cogs.bumping")
-        client.add_cog(BeginnerCog(client))
-
         if BeginnerCog.is_dev_env():
             import beginner.devcog
 
             client.add_cog(beginner.devcog.DevCog(client))
+
+        BeginnerCog.load_extension(client, "beginner.cogs.user_roles")
+        BeginnerCog.load_extension(client, "beginner.cogs.repeater")
+        BeginnerCog.load_extension(client, "beginner.cogs.google")
+        BeginnerCog.load_extension(client, "beginner.cogs.help")
+        BeginnerCog.load_extension(client, "beginner.cogs.python")
+        BeginnerCog.load_extension(client, "beginner.cogs.rules")
+        BeginnerCog.load_extension(client, "beginner.cogs.onboarding")
+        BeginnerCog.load_extension(client, "beginner.cogs.spam")
+        BeginnerCog.load_extension(client, "beginner.cogs.statistics")
+        BeginnerCog.load_extension(client, "beginner.cogs.tips")
+        BeginnerCog.load_extension(client, "beginner.cogs.moderation")
+        BeginnerCog.load_extension(client, "beginner.cogs.bumping")
+        client.add_cog(BeginnerCog(client))
+
+    @staticmethod
+    def load_extension(client, name, *args, **kwargs):
+        if os.environ.get(name, 1) == "0":
+            create_logger().debug(f"{name} is disabled")
+            return
+        return client.load_extension(name, *args, **kwargs)
 
     @staticmethod
     def setup_logging():
