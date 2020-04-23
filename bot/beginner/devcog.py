@@ -1,7 +1,20 @@
 from beginner.cog import Cog
+import os
 
 
 class DevCog(Cog):
+    def __init__(self, client):
+        super().__init__(client)
+        self.load_env()
+
+    def load_env(self):
+        if os.path.exists("bot.config"):
+            self.logger.debug("Loading config file")
+            with open("bot.config") as config:
+                for line in config:
+                    key, value = line.split("=")
+                    os.environ[key.strip()] = value.strip()
+
     @Cog.command()
     async def load(self, ctx, *extensions):
         if (
