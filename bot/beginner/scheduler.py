@@ -28,7 +28,7 @@ def schedule(
     **kwargs,
 ):
     """ Schedule a task to be run and save it to the database. """
-    if no_duplication and _count_scheduled(name) > 0:
+    if no_duplication and task_scheduled(name):
         return False
 
     tags = build_tag_set(callback_tag)  # Get tags into a set
@@ -45,6 +45,10 @@ def schedule(
     task = _schedule_save(name, when, tags, pickle.dumps(payload, 0).decode())
     loop.create_task(_schedule(task, payload))
     return True
+
+
+def task_scheduled(name):
+    return _count_scheduled(name) > 0
 
 
 async def _schedule(task: Scheduler, payload: Dict):
