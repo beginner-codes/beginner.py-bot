@@ -1,9 +1,7 @@
 from beginner.cog import Cog
-from beginner.logging import create_logger
 from beginner.scheduler import schedule
 from beginner.tags import tag
 from datetime import datetime, timedelta
-import asyncio
 import discord
 import re
 import os
@@ -107,9 +105,7 @@ class Bumping(Cog):
     async def add_bumper_role(self, member):
         await member.add_roles(self.role)
         await self.channel.send(
-            f"{member.mention} you will be tagged by bump reminders",
-            delete_after=10,
-            nonce=12345,
+            f"{member.mention} you will be tagged by bump reminders", delete_after=10
         )
 
     async def clean_up_messages(self):
