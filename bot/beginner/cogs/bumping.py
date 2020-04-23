@@ -107,42 +107,50 @@ class Bumping(Cog):
     async def add_bumper_role(self, member):
         await member.add_roles(self.role)
         await self.channel.send(
-            f"{member.mention} you will be tagged by bump reminders", delete_after=10
+            f"{member.mention} you will be tagged by bump reminders",
+            delete_after=10,
+            nonce=12345,
         )
 
     async def clean_up_messages(self):
         messages = self.channel.history(
             after=self.explanation_message, oldest_first=False
         )
-        message_pools = {"failure": [], "success": [], "deleting": []}
-        last_status = "deleting"
+        deleting = []
+        bump = None
+        confirmation = None
+        success = False
         async for message in messages:
-            use_pool = "deleting"
-            if message.content == "!d bump":
-                use_pool = last_status
-                last_status = "deleting"
-            elif self.is_bump_success_confirmation(message):
-                use_pool = last_status = "success"
-            elif self.is_bump_fail_confirmation(message):
-                use_pool = last_status = "failure"
+            if (datetime.utcnow() - message.created_at).days > 7:
+                break
 
-            if (datetime.utcnow() - message.created_at).days < 7:
-                message_pools[use_pool].append(message)
+            elif not success and self.is_bump_success_confirmation(message):
+                if confirmation:
+                    deleting.append(confirmation)
 
-        delete = message_pools["deleting"]
-        if len(message_pools["success"]) >= 2:
-            delete.extend(message_pools["failure"])
-            delete.extend(message_pools["success"][2:])
+                    if bump:
+                        deleting.append(bump)
 
-        elif len(message_pools["failure"]) >= 2:
-            delete.extend(message_pools["failure"][2:])
-            delete.extend(message_pools["success"])
+                success = True
+                confirmation = message
+                bump = None
 
-        else:
-            delete.extend(message_pools["failure"])
-            delete.extend(message_pools["success"])
+            elif not confirmation and self.is_bump_fail_confirmation(message):
+                confirmation = message
 
-        await self.channel.delete_messages(delete)
+            elif message.content == "!d bump" and (not confirmation or not bump):
+                bump = message
+
+            elif message.author.id == self.server.me.id and (
+                not message.content.endswith("Use the command `!d bump` now!")
+                or not success
+            ):
+                pass
+
+            else:
+                deleting.append(message)
+
+        await self.channel.delete_messages(deleting)
 
     async def create_explanation_message(self):
         message = await self.channel.send(
