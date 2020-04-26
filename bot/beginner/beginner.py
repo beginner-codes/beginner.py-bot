@@ -15,16 +15,27 @@ import os
 class BeginnerCog(Cog):
     def __init__(self, client):
         super().__init__(client)
+        user = os.environ.get("DB_USER", "postgresadmin")
+        host = os.environ.get("DB_HOST", "0.0.0.0")
+        port = os.environ.get("DB_PORT", "5432")
+        mode = "require" if os.environ.get("PRODUCTION_BOT", False) else None
+        self.logger.debug(
+            f"\nConnecting to database:\n"
+            f"- User {user}\n"
+            f"- Host {host}\n"
+            f"- Port {port}\n"
+            f"- Mode {mode}"
+        )
         set_database(
             PostgresqlDatabase(
                 "bpydb",
-                user=os.environ.get("DB_USER", "postgresadmin"),
-                host=os.environ.get("DB_HOST", "0.0.0.0"),
-                port=os.environ.get("DB_PORT", "5432"),
+                user=user,
+                host=host,
+                port=port,
                 password=os.environ.get(
                     "DB_PASSWORD", "dev-env-password-safe-to-be-public"
                 ),
-                sslmode="require" if os.environ.get("PRODUCTION_BOT", False) else None,
+                sslmode=mode,
             )
         )
         initialize_scheduler(loop=client.loop)
