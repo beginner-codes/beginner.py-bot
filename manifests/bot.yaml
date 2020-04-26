@@ -36,7 +36,7 @@ spec:
                   name: google-custom-search
                   key: cse
             - name: "DB_HOST"
-              value: "private-personal-postgres-cluster-1-do-user-877728-0.db.ondigitalocean.com"
+              value: "private-personal-postgres-cluster-1-apr-26-backup-do-user-87772.a.db.ondigitalocean.com"
             - name: "DB_PORT"
               value: "25060"
             - name: "DB_USER"
