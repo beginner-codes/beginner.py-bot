@@ -80,7 +80,6 @@ class StatisticsCog(Cog):
     @tag("schedule", "statistics", "online-counter")
     async def online_counter(self):
         now = self._clean_time(datetime.now(), "minute")
-        online = self._get_online_count()
         scheduled = schedule(
             "online-counter",
             now + timedelta(minutes=1),
@@ -88,31 +87,36 @@ class StatisticsCog(Cog):
             no_duplication=True,
         )
         if scheduled:
+            online = self._get_online_count()
             await self._check_for_highscore(now, online)
             self._update_online_count(now, online)
             self._clean_samples(now)
 
     async def _check_for_highscore(self, now, online):
         sample = self._get_previous_highscore(now)
-        if sample:
-            max_seen = max(sample.max_seen, online)
-            if max_seen < online:
-                suffixes = {
-                    1: "st",
-                    21: "st",
-                    31: "st",
-                    2: "nd",
-                    22: "nd",
-                    3: "rd",
-                    23: "rd",
-                }
-                suffix = suffixes.get(now.day, "th")
-                await self.get_channel("staff").send(
-                    (
-                        f"**NEW HIGHSCORE!!!**\nThere are currently {online} coders online!!! "
-                        f"That's {online - max_seen} higher than we saw on {now:%B} {now.day}{suffix}!"
-                    )
+        self.logger.debug(f"{online} | {sample.max_seen} {sample.taken:%d/%m/%Y}")
+        if sample and sample.max_seen < online:
+            suffixes = {
+                1: "st",
+                21: "st",
+                31: "st",
+                2: "nd",
+                22: "nd",
+                3: "rd",
+                23: "rd",
+            }
+            suffix = suffixes.get(sample.taken.day, "th")
+            message = f"on {sample.taken:%B} {sample.taken.day}{suffix}!"
+            if (now - sample.taken).days == 0:
+                message = (
+                    f" earlier today ({sample.taken:%B} {sample.taken.day}{suffix})!"
                 )
+            await self.get_channel("staff").send(
+                (
+                    f"**NEW HIGHSCORE!!!**\nThere are currently {online} coders online!!! "
+                    f"That's {online - sample.max_seen} higher than we saw " + message
+                )
+            )
 
     def _clean_samples(self, now: datetime):
         OnlineSample.delete().where(
