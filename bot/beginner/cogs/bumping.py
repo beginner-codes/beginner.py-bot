@@ -1,7 +1,8 @@
 from beginner.cog import Cog
-from beginner.scheduler import schedule
+from beginner.scheduler import schedule, task_scheduled
 from beginner.tags import tag
 from datetime import datetime, timedelta
+import asyncio
 import discord
 import re
 import os
@@ -10,45 +11,125 @@ import os
 class Bumping(Cog):
     @Cog.listener()
     async def on_ready(self):
-        self.role = self.get_role("bumpers")
         self.channel = self.get_channel(os.environ.get("BUMP_CHANNEL", "bumping"))
+        self.disboard = self.server.get_member(302050872383242240)
         self.explanation_message = await self.get_explanation_message()
+        self.role = self.get_role("bumpers")
         self.logger.debug("Cog ready")
+
+    @Cog.command()
+    async def d(self, ctx, option):
+        if option != "bump":
+            return
+
+        self.logger.debug(f"BUMP RECEIVED FROM {ctx.author.display_name}")
+
+        if not hasattr(self, "channel") or ctx.message.channel != self.channel:
+            return
+
+        def is_confirmation(message):
+            if not self.is_bump_confirmation(message):
+                return False
+
+            mention_id = int(re.findall(r"\d+", message.embeds[0].description)[0])
+            if ctx.message.author.id != mention_id:
+                return False
+
+            return True
+
+        try:
+            confirmation_message = await self.client.wait_for(
+                "message", check=is_confirmation, timeout=10
+            )
+        except asyncio.TimeoutError:
+            await self.handle_disboard_down()
+        else:
+            await self.handle_new_bump(ctx.message, confirmation_message)
+
+    async def handle_new_bump(self, bump_message, confirmation_message):
+        if task_scheduled("bump-reminder"):
+            await self.channel.delete_messages([bump_message, confirmation_message])
+        else:
+            await self.delete_all_except(bump_message, confirmation_message)
+            schedule(
+                "bump-reminder",
+                timedelta(minutes=self.get_next_bump_timer(confirmation_message)),
+                self.bump_reminder,
+                no_duplication=True,
+            )
+
+    async def handle_disboard_down(self):
+        self.logger.debug(f"Disboard may be down: {self.disboard.status}")
+        await self.delete_all_except()
+        await self.channel.send(
+            embed=discord.Embed(
+                description=(
+                    f"{self.disboard.mention} appears to be offline. "
+                    f"I'll monitor its status and let you know when it is back online."
+                ),
+                color=0xCC2222,
+            )
+        )
+        await self.bump_recovery()
+
+    async def delete_all_except(self, *messages):
+        message_ids = {m.id for m in messages}
+
+        def should_delete(message):
+            if (datetime.utcnow() - message.created_at).days > 7:
+                return False
+
+            return message.id not in message_ids
+
+        await self.channel.purge(
+            limit=1000,
+            check=should_delete,
+            after=self.explanation_message,
+            oldest_first=False,
+        )
 
     @Cog.listener()
     async def on_message(self, message):
         if not hasattr(self, "channel") or message.channel != self.channel:
             return
 
-        scheduled = False
-        if self.is_bump_success_confirmation(message):
-            scheduled = self.schedule_bump(timedelta(hours=2))
+        if message.content == "!d bump":
+            return
 
-        elif self.is_bump_fail_confirmation(message):
-            scheduled = self.schedule_bump(
-                timedelta(minutes=self.get_failed_next_bump_timer(message))
-            )
+        if self.is_bump_confirmation(message):
+            return
 
-        author = message.author
-        if author.id != self.server.me.id:
-            await self.clean_up_messages()
+        if message.author.id == self.server.me.id:
+            if "It's been 2hrs since the last bump!" in message.content:
+                return
 
-        if not scheduled and not author.bot:
-            await self.channel.send(
-                f"{author.mention} please wait for the next bump reminder",
-                delete_after=10,
-            )
+            if "tagged by bump reminders" in message.content:
+                return
 
-    def schedule_bump(self, next_bump):
-        return schedule(
-            "bump-reminder", next_bump, self.bump_reminder, no_duplication=True
-        )
+            if (
+                not hasattr(self, "explanation_message")
+                or self.explanation_message == None
+            ):
+                return
+
+        if (
+            len(message.embeds)
+            and "appears to be offline" in message.embeds[0].description
+        ):
+            return
+
+        await message.delete()
+
+    def is_bump_confirmation(self, message):
+        return self.is_bump_success_confirmation(
+            message
+        ) or self.is_bump_fail_confirmation(message)
 
     def is_bump_success_confirmation(self, message):
         if len(message.embeds) == 0:
             return False
 
-        if message.author.id != 302050872383242240:  # If not disboard bot
+        if message.author.id != self.disboard.id:
             return False
 
         return "Bump done" in message.embeds[0].description
@@ -57,28 +138,42 @@ class Bumping(Cog):
         if len(message.embeds) == 0:
             return False
 
-        if message.author.id != 302050872383242240:  # If not disboard bot
+        if message.author.id != self.disboard.id:
             return False
 
         return "Please wait" in message.embeds[0].description
 
-    def get_failed_next_bump_timer(self, message):
-        return int(re.findall(r"\d+", message.embeds[0].description)[-1])
+    def get_next_bump_timer(self, message):
+        result = re.findall(r"\d+", message.embeds[0].description)
+        timer = 120
+        if len(result) > 1:
+            timer = int(result[-1])
+        return timer
 
     @tag("schedule", "disboard-bump-reminder")
     async def bump_reminder(self):
         self.logger.debug(f"SENDING BUMP REMINDER: {self.role.name}")
-        disboard = self.server.get_member(302050872383242240)
-        if disboard.status == discord.Status.online:
-            message = await self.channel.send(
+        if self.disboard.status == discord.Status.online:
+            await self.delete_all_except()
+            await self.channel.send(
                 f"{self.role.mention} It's been 2hrs since the last bump!\n"
                 f"*Use the command `!d bump` now!*"
             )
         else:
-            await self.channel.send(
-                f"**{disboard.mention} is offline. Check back in later to bump the server.**"
+            await self.handle_disboard_down()
+
+    @tag("schedule", "disboard-bump-recovery")
+    async def bump_recovery(self):
+        self.logger.debug(f"ATTEMPTING BUMP RECOVERY")
+        if self.disboard.status == discord.Status.online:
+            await self.bump_reminder()
+        else:
+            schedule(
+                "bump-recovery",
+                timedelta(minutes=1),
+                self.bump_recovery,
+                no_duplication=True,
             )
-            self.schedule_bump(timedelta(minutes=30))
 
     @Cog.listener()
     async def on_raw_reaction_add(self, reaction):
