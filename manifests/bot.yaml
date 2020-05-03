@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: beginner-py-bot
-          image: zzmmrmn/beginner-py-bot:0.1.31
+          image: zzmmrmn/beginner-py-bot:0.1.32
           env:
             - name: PRODUCTION_BOT
               value: "PRODUCTION"

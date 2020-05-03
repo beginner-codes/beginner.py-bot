@@ -162,7 +162,7 @@ class ModerationCog(Cog):
         elif duration.endswith("h"):
             return int(duration[:-1]) * 60
 
-        return int(duration)
+        return int(duration[:-1] if duration.endswith("m") else duration)
 
     def parse_user_id(self, user_tag: str) -> int:
         return int(user_tag[3:-1] if user_tag.find("!") >= 0 else user_tag[2:-1])
