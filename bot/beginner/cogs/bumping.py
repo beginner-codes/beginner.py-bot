@@ -42,7 +42,10 @@ class Bumping(Cog):
                 "message", check=is_confirmation, timeout=10
             )
         except asyncio.TimeoutError:
-            await self.handle_disboard_down()
+            if task_scheduled("bump-reminder"):
+                await ctx.message.delete()
+            else:
+                await self.handle_disboard_down()
         else:
             await self.handle_new_bump(ctx.message, confirmation_message)
 
