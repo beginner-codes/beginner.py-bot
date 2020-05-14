@@ -128,10 +128,15 @@ class BeginnerCog(Cog):
         client.add_cog(BeginnerCog(client))
 
     @staticmethod
-    def load_extension(client, name, *args, **kwargs):
+    def load_extension(client, name, *args, dev_only=False, **kwargs):
+        if dev_only and not BeginnerCog.is_dev_env():
+            create_logger().debug(f"{name} is disabled in production")
+            return
+
         if os.environ.get(name, 1) == "0":
             create_logger().debug(f"{name} is disabled")
             return
+
         return client.load_extension(name, *args, **kwargs)
 
     @staticmethod
