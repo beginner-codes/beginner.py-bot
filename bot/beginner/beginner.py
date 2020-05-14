@@ -28,7 +28,7 @@ class BeginnerCog(Cog):
         )
         set_database(
             PostgresqlDatabase(
-                "bpydb",
+                os.environ.get("DB_NAME", "bpydb"),
                 user=user,
                 host=host,
                 port=port,
