@@ -34,6 +34,19 @@ class StatisticsCog(Cog):
         await self.online_counter()
 
     @Cog.command()
+    async def norole(self, ctx):
+        if self.get_role("roundtable") not in ctx.author.roles:
+            return
+
+        coders_role = self.get_role("coders")
+        count = 0
+        for member in self.server.members:
+            if not member.bot and coders_role not in member.roles:
+                count += 1
+
+        await ctx.send(f"There are {count} users who haven't verified")
+
+    @Cog.command()
     async def stats(self, ctx):
         month = (
             OnlineSample.select()
