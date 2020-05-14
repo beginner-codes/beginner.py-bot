@@ -39,7 +39,7 @@ class Bumping(Cog):
 
         try:
             confirmation_message = await self.client.wait_for(
-                "message", check=is_confirmation, timeout=10
+                "message", check=is_confirmation, timeout=60
             )
         except asyncio.TimeoutError:
             if task_scheduled("bump-reminder"):
