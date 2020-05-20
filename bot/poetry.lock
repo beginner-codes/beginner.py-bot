@@ -152,7 +152,7 @@ description = "A comprehensive HTTP client library."
 name = "httplib2"
 optional = false
 python-versions = "*"
-version = "0.15.0"
+version = "0.18.0"
 
 [[package]]
 category = "main"
@@ -356,8 +356,8 @@ google-auth-httplib2 = [
     {file = "google_auth_httplib2-0.0.3-py2.py3-none-any.whl", hash = "sha256:f1c437842155680cf9918df9bc51c1182fda41feef88c34004bd1978c8157e08"},
 ]
 httplib2 = [
-    {file = "httplib2-0.15.0-py3-none-any.whl", hash = "sha256:1d1f4ad7a6e55d325830ab274190f98894e069850a871fac19921caf4363259d"},
-    {file = "httplib2-0.15.0.tar.gz", hash = "sha256:a5f914f18f99cb9541660454a159e3b3c63241fc3ab60005bb88d97cc7a4fb58"},
+    {file = "httplib2-0.18.0-py3-none-any.whl", hash = "sha256:4f6988e6399a2546b525a037d56da34aed4d149bbdc0e78523018d5606c26e74"},
+    {file = "httplib2-0.18.0.tar.gz", hash = "sha256:b0e1f3ed76c97380fe2485bc47f25235453b40ef33ca5921bb2897e257a49c4c"},
 ]
 idna = [
     {file = "idna-2.8-py2.py3-none-any.whl", hash = "sha256:ea8b7f6188e6fa117537c3df7da9fc686d485087abf6ac197f9c46432f7e4a3c"},
