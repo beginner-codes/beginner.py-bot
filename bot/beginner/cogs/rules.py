@@ -60,7 +60,7 @@ class RulesCog(Cog):
                 title=f"Rule #{rule_number} - {title}",
                 label=" ".join([rule_number] + labels),
                 message=rule,
-                message_type=MessageTypes.RULE,
+                message_type=MessageTypes.RULE.name,
                 author=ctx.author.display_name,
             )
             new_rule.save()
@@ -191,7 +191,7 @@ class RulesCog(Cog):
     @staticmethod
     def get_rule(label, fuzzy=False):
         rule = Message.get_or_none(
-            (Message.message_type == MessageTypes.RULE)
+            (Message.message_type == MessageTypes.RULE.name)
             & (Message.label.startswith(label))
         )
         if not rule and fuzzy:
@@ -202,7 +202,7 @@ class RulesCog(Cog):
 
     @staticmethod
     def get_rules(label=None, force=True, order_by=Message.label.asc()):
-        where = Message.message_type == MessageTypes.RULE
+        where = Message.message_type == MessageTypes.RULE.name
         if label:
             where &= Message.label.contains(f"%{label}%")
         query = Message.select().where(where)
