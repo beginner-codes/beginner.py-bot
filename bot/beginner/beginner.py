@@ -125,6 +125,8 @@ class BeginnerCog(Cog):
         BeginnerCog.load_extension(client, "beginner.cogs.tips")
         BeginnerCog.load_extension(client, "beginner.cogs.moderation")
         BeginnerCog.load_extension(client, "beginner.cogs.bumping")
+        BeginnerCog.load_extension(client, "beginner.cogs.challenges")
+        BeginnerCog.load_extension(client, "beginner.cogs.code_runner")
         client.add_cog(BeginnerCog(client))
 
     @staticmethod
