@@ -88,7 +88,9 @@ class Challenges(Cog):
         if self.get_role("challenges") not in member.roles:
             await self.add_challenges_role(member, channel)
         else:
-            await self.remove_challenges_role(member, channel)
+            await channel.send(
+                f"{member.mention} you're already signed up for new challenge notifications", delete_after=5
+            )
 
     async def add_challenges_role(self, member, channel):
         await member.add_roles(self.get_role("challenges"))
