@@ -25,6 +25,9 @@ class Challenges(Cog):
         ):
             return
 
+        if message.author.bot:
+            return
+
         await message.add_reaction("🔔")
 
     async def challenge_submission_scan(self, message):
