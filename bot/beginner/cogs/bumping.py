@@ -1,11 +1,14 @@
 from beginner.cog import Cog
+from beginner.models.points import Points
 from beginner.scheduler import schedule, task_scheduled
 from beginner.tags import tag
+from collections import defaultdict
 from datetime import datetime, timedelta
 import asyncio
 import discord
-import re
 import os
+import peewee
+import re
 
 
 class Bumping(Cog):
@@ -60,6 +63,47 @@ class Bumping(Cog):
                 self.bump_reminder,
                 no_duplication=True,
             )
+            await self.award_points(bump_message)
+
+    async def award_points(self, message):
+        king_id = self.get_bump_king_id()
+        self.award_bump_points(message.author.id)
+
+        new_king_id = self.get_bump_king_id()
+        if new_king_id != king_id:
+            role = self.get_role("bump king")
+
+            if king_id:
+                await self.server.get_member(king_id).remove_roles(role)
+
+            new_king = self.server.get_member(new_king_id)
+            await new_king.add_roles(role)
+
+            channel = self.get_channel(os.environ.get("BUMP_KING_ANNOUNCE_CHANNEL", "general"))
+            await channel.send(
+                embed=discord.Embed(
+                    description=f"All hail {new_king.mention} our new {role.mention}!!!"
+                ).set_author(name="New Bump King", icon_url=self.server.icon_url)
+            )
+
+    def award_bump_points(self, author_id):
+        bump = Points(
+            awarded=datetime.utcnow(),
+            user_id=author_id,
+            points=1,
+            point_type="BUMP"
+        )
+        bump.save()
+
+    def get_bump_king_id(self):
+        scores = (
+            Points.select(Points.user_id, peewee.fn.sum(Points.points))
+            .order_by(peewee.fn.sum(Points.points).desc())
+            .group_by(Points.user_id)
+            .filter(Points.point_type == "BUMP",  Points.awarded > datetime.utcnow() - timedelta(days=7))
+            .limit(1)
+        )
+        return scores.scalar() if scores.count() else None
 
     async def handle_disboard_down(self):
         self.logger.debug(f"Disboard may be down: {self.disboard.status}")
