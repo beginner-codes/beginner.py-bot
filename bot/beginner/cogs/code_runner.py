@@ -4,6 +4,8 @@ import discord
 import sys
 import ast
 import re
+import asyncio
+import base64
 
 
 class CodeRunner(Cog):
@@ -74,7 +76,66 @@ class CodeRunner(Cog):
         return result, prints, exception
 
     @Cog.command()
+    async def exec(self, ctx, *, content=""):
+        if not self.settings.get("EXEC_ENABLED", False):
+            await ctx.send("The exec command has been disabled.")
+            return
+
+        color = 0x4285F4
+        title = "Exec - Success"
+        message = [f"{ctx.author.mention} here's the output from [your code]({ctx.message.jump_url})"]
+        if not len(content.strip()) or content.find("```py") < 0 or content.rfind("```") <= 0:
+            message.append(
+                "\n**NO PYTHON CODE BLOCK FOUND**\n\nThe command format is as follows:\n\n"
+                "\n!exec \\`\\`\\`py\nYOUR CODE HERE\n\\`\\`\\`\n"
+            )
+            title = "Exec - No Code"
+
+        else:
+            code = content[content.find("```py") + 5: -3]
+
+            proc = await asyncio.create_subprocess_shell(
+                "python -m beginner.runner", stdin=asyncio.subprocess.PIPE, stdout=asyncio.subprocess.PIPE)
+            try:
+                stdout, stderr = await asyncio.wait_for(proc.communicate(base64.b64encode(code.encode())), 2)
+                if stdout:
+                    out, *exceptions = map(lambda line: base64.b64decode(line).decode(), stdout.split(b"\n"))
+                    out = out.strip()
+
+            except asyncio.exceptions.TimeoutError:
+                proc.kill()
+                out, exceptions = "", ("TimeoutError: Your script took too long and was killed",)
+
+            if not out and not exceptions[0].strip():
+                message.append("\n*No output or exceptions*")
+            else:
+                message.append(f"```\n")
+                if out:
+                    message.append(f"{out[:1000]}{'...' if len(out) > 1000 else ''}")
+
+                if exceptions[0].strip():
+                    color = 0xEA4335
+                    title = "Exec - Exception Raised"
+                    if out:
+                        message.append("")
+
+                    for exception in exceptions:
+                        if exception:
+                            message.append(f"{'...' if len(exception) > 500 else ''}{exception[-500:]}")
+                message.append("```")
+
+        await ctx.send(
+            embed=discord.Embed(description="\n".join(message), color=color).set_author(
+                name=title, icon_url=self.server.icon_url
+            )
+        )
+
+    @Cog.command()
     async def eval(self, ctx, *, content):
+        if not self.settings.get("EVAL_ENABLED", False):
+            await ctx.send("The eval command has been disabled.")
+            return
+
         if content.casefold().strip() == "help":
             await ctx.send(
                 embed=discord.Embed(
