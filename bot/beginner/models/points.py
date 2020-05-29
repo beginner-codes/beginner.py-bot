@@ -7,3 +7,4 @@ class Points(models.Model):
     giver_id = models.BigIntegerField(null=True)
     message_id = models.BigIntegerField(null=True)
     points = models.IntegerField()
+    point_type = models.CharField(max_length=32)
