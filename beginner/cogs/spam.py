@@ -57,6 +57,14 @@ class SpamCog(Cog):
             f"[GitHub Gists](https://gist.github.com/) and share the link here",
             inline=False,
         )
+        embed.add_field(
+            name="Videos",
+            value=(
+                f"Discord has terrible video support. If you *must* share a video"
+                f"please use anything but Discord to host it."
+            ),
+            inline=False,
+        )
         return embed
 
     def has_disallowed_attachments(self, message):
