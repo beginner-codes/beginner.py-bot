@@ -22,7 +22,7 @@ class Bumping(Cog):
 
     @Cog.command()
     async def d(self, ctx, option):
-        if option != "bump":
+        if option.casefold() != "bump":
             return
 
         self.logger.debug(f"BUMP RECEIVED FROM {ctx.author.display_name}")
