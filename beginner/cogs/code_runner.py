@@ -92,7 +92,12 @@ class CodeRunner(Cog):
             title = "Exec - No Code"
 
         else:
-            code = content[content.find("```py") + 5: -3]
+            start = content.find("```python")
+            if start >= 0:
+                start += 9
+            else:
+                start = content.find("```py") + 5
+            code = content[start: -3]
 
             proc = await asyncio.create_subprocess_shell(
                 "python -m beginner.runner", stdin=asyncio.subprocess.PIPE, stdout=asyncio.subprocess.PIPE)
