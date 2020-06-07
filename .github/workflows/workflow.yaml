@@ -28,7 +28,7 @@ jobs:
     - name: Push image to Docker Hub
       run: docker push zzmmrmn/beginner-py-bot
     - name: Update deployment file
-      run: TAG=$(echo $GITHUB_SHA | head -c7) && sed -i 's|<IMAGE_VERSION>|'${TAG}'|' $GITHUB_WORKSPACE/manifests/bot.yml
+      run: TAG=$(echo $GITHUB_SHA | head -c7) && sed -i 's|<IMAGE_VERSION>|'${TAG}'|' $GITHUB_WORKSPACE/manifests/bot.yaml
 
     - name: Install doctl
       uses: digitalocean/action-doctl@v2
