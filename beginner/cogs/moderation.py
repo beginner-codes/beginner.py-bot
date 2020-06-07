@@ -79,6 +79,31 @@ class ModerationCog(Cog):
         await ctx.send(f"{member.display_name} has been kicked")
         await self.log_action("Kick", member, ctx.author, reason, ctx.message)
 
+    @Cog.command(name="purge")
+    @commands.has_guild_permissions(manage_messages=True)
+    async def purge(self, ctx, messages: str):
+        if messages.startswith("<"):
+            user_id = re.findall("\d+", messages)
+            if user_id:
+                member = self.server.get_member(int(user_id[0]))
+                if member and member.guild_permissions.manage_messages:
+                    await ctx.send("You cannot delete messages from this user", delete_after=15)
+                    return
+                await self.purge_by_user_id(ctx, int(user_id[0]))
+            else:
+                await ctx.send("Invalid user ID was provided:", messages)
+                return
+        else:
+            await self.purge_by_message_count(ctx, int(messages))
+
+    async def purge_by_user_id(self, ctx, user_id):
+        messages = await ctx.message.channel.purge(check=lambda message: message.author.id == user_id)
+        await ctx.send(f"Deleted {len(messages)} messages sent by that user in this channel", delete_after=15)
+
+    async def purge_by_message_count(self, ctx, count):
+        messages = await ctx.message.channel.purge(limit=min(100, count + 1))
+        await ctx.send(f"Deleted {len(messages)} messages in this channel", delete_after=15)
+
 
     @Cog.command(name="mute")
     async def mute(self, ctx, user, duration, *, reason: str):
