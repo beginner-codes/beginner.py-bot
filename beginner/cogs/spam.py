@@ -60,7 +60,7 @@ class SpamCog(Cog):
         embed.add_field(
             name="Videos",
             value=(
-                f"Discord has terrible video support. If you *must* share a video"
+                f"Discord has terrible video support. If you *must* share a video "
                 f"please use anything but Discord to host it."
             ),
             inline=False,
