@@ -1,17 +1,89 @@
-from beginner.cog import Cog
+from beginner.cog import Cog, commands
 from beginner.cogs.rules import RulesCog
 from beginner.scheduler import schedule
 from datetime import timedelta
 from discord import Embed, Message, Member
 from beginner.tags import tag
 import discord
+import re
 
 
 class ModerationCog(Cog):
+    async def cog_command_error(self, ctx, error):
+        print("Command error:", error)
+
+    @Cog.command(name="ban")
+    @commands.has_guild_permissions(manage_messages=True)
+    async def ban(self, ctx, user_detail: str, *, reason=None):
+        if not reason:
+            await ctx.send("You must provide a reason for the ban. `!ban [@user|1234] reason for ban`")
+            return
+
+        user_id = re.findall("\d+", user_detail)
+        if user_id:
+            user_id = user_id[0]
+        else:
+            await ctx.send("Invalid user ID was provided:", user_detail)
+            return
+
+        member = self.server.get_member(int(user_id))
+        if not member:
+            await ctx.send("No such member found")
+            return
+
+
+        embed = self.build_mod_action_embed(
+            ctx, member, reason, f"You've Been Banned"
+        )
+        successfully_dmd = await self.send_dm(
+            member, embed, description="You've been banned from the Beginner.py server.\n"
+        )
+        if not successfully_dmd:
+            reason += "\n*Unable to DM user*"
+
+        await self.server.ban(member, reason=reason, delete_message_days=0)
+
+        await ctx.send(f"{member.display_name} has been banned")
+        await self.log_action("Ban", member, ctx.author, reason, ctx.message)
+
+    @Cog.command(name="kick")
+    @commands.has_guild_permissions(manage_messages=True)
+    async def kick(self, ctx, user_detail: str, *, reason=None):
+        if not reason:
+            await ctx.send("You must provide a reason for the kick. `!kick [@user|1234] reason for kick`")
+            return
+
+        user_id = re.findall("\d+", user_detail)
+        if user_id:
+            user_id = user_id[0]
+        else:
+            await ctx.send("Invalid user ID was provided:", user_detail)
+            return
+
+        member = self.server.get_member(int(user_id))
+        if not member:
+            await ctx.send("No such member found")
+            return
+
+        embed = self.build_mod_action_embed(
+            ctx, member, reason, f"You've Been Kicked"
+        )
+        successfully_dmd = await self.send_dm(
+            member, embed, description="You've been kicked from the Beginner.py server.\n"
+        )
+        if not successfully_dmd:
+            reason += "\n*Unable to DM user*"
+
+        await self.server.kick(member, reason=reason)
+
+        await ctx.send(f"{member.display_name} has been kicked")
+        await self.log_action("Kick", member, ctx.author, reason, ctx.message)
+
+
     @Cog.command(name="mute")
     async def mute(self, ctx, user, duration, *, reason: str):
         if not (
-            set(ctx.author.roles) & {self.get_role("roundtable"), self.get_role("mods")}
+                set(ctx.author.roles) & {self.get_role("roundtable"), self.get_role("mods")}
         ):
             return
 
@@ -50,7 +122,7 @@ class ModerationCog(Cog):
     @Cog.command(name="unmute")
     async def unmute(self, ctx, user):
         if not (
-            set(ctx.author.roles) & {self.get_role("roundtable"), self.get_role("mods")}
+                set(ctx.author.roles) & {self.get_role("roundtable"), self.get_role("mods")}
         ):
             return
 
@@ -62,7 +134,7 @@ class ModerationCog(Cog):
     @Cog.command(name="warn")
     async def warn(self, ctx, user, *, reason: str):
         if not (
-            set(ctx.author.roles) & {self.get_role("Roundtable"), self.get_role("mods")}
+                set(ctx.author.roles) & {self.get_role("Roundtable"), self.get_role("mods")}
         ):
             return
 
@@ -82,13 +154,15 @@ class ModerationCog(Cog):
         await self.log_action("WARN", member, ctx.author, reason, message)
 
     async def send_dm(
-        self, member: Member, embed: Embed, message: Message, description: str
+            self, member: Member, embed: Embed, message: Message = None, description: str = ""
     ):
         embed.description = (
             f"{description}\n\n"
             f"Reason: {embed.description}\n\n"
-            f"[Jump To Conversation]({message.jump_url})"
         )
+        if message:
+            embed.description += f"[Jump To Conversation]({message.jump_url})"
+
         try:
             await member.send(embed=embed)
             return True
@@ -96,25 +170,25 @@ class ModerationCog(Cog):
             return False
 
     async def log_action(
-        self,
-        action: str,
-        user: Member,
-        mod: Member,
-        reason: str,
-        message: Message,
-        **kwargs,
+            self,
+            action: str,
+            user: Member,
+            mod: Member,
+            reason: str,
+            message: Message,
+            **kwargs,
     ):
         additional_fields = "\n".join(
             [f"{key}: {value}" for key, value in kwargs.items()]
         )
-        await self.get_channel("activity-log").send(
+        await self.get_channel(self.settings.get("MOD_ACTION_LOG_CHANNEL", "mod-action-log")).send(
             embed=Embed(
                 description=f"Moderator: {mod.mention}\n"
-                f"User: {user.mention}\n"
-                f"Reason: {reason}"
-                + ("\n" if additional_fields else "")
-                + f"{additional_fields}\n\n"
-                f"[Jump To Action]({message.jump_url})",
+                            f"User: {user.mention}\n"
+                            f"Reason: {reason}"
+                            + ("\n" if additional_fields else "")
+                            + f"{additional_fields}\n\n"
+                              f"[Jump To Action]({message.jump_url})",
                 color=0xCC2222,
             ).set_author(
                 name=f"{action} @{user.display_name}", icon_url=self.server.icon_url
@@ -122,11 +196,10 @@ class ModerationCog(Cog):
         )
 
     def build_mod_action_embed(
-        self, ctx, user: Member, reason: str, title: str
+            self, ctx, user: Member, reason: str, title: str
     ) -> Embed:
         embed = Embed(description=reason, color=0xCC2222)
         self.get_rule_for_reason(reason, embed)
-        embed.description = f"{user.mention}\n{embed.description}"
         embed.set_author(name=title, icon_url=self.server.icon_url)
         embed.set_footer(text=ctx.author.display_name, icon_url=ctx.author.avatar_url)
         return embed
