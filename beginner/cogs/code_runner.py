@@ -83,7 +83,8 @@ class CodeRunner(Cog):
 
         color = 0x4285F4
         title = "Exec - Success"
-        message = [f"{ctx.author.mention} here's the output from [your code]({ctx.message.jump_url})"]
+        code_message = f"{ctx.author.mention} here's the output from [your code]({ctx.message.jump_url})"
+        message = []
         if not len(content.strip()) or content.find("```py") < 0 or content.rfind("```") <= 0:
             message.append(
                 "\n**NO PYTHON CODE BLOCK FOUND**\n\nThe command format is as follows:\n\n"
@@ -98,6 +99,8 @@ class CodeRunner(Cog):
             else:
                 start = content.find("```py") + 5
             code = content[start: -3]
+
+            code_message += f"\n```py\n{code}\n```"
 
             proc = await asyncio.create_subprocess_shell(
                 "python -m beginner.runner", stdin=asyncio.subprocess.PIPE, stdout=asyncio.subprocess.PIPE)
@@ -130,9 +133,9 @@ class CodeRunner(Cog):
                 message.append("```")
 
         await ctx.send(
-            embed=discord.Embed(description="\n".join(message), color=color).set_author(
+            embed=discord.Embed(description=code_message, color=color).set_author(
                 name=title, icon_url=self.server.icon_url
-            )
+            ).add_field(name="Output", value="\n".join(message), inline=False)
         )
 
     @Cog.command()
