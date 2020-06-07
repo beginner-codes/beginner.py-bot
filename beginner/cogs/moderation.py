@@ -89,20 +89,24 @@ class ModerationCog(Cog):
                 if member and member.guild_permissions.manage_messages:
                     await ctx.send("You cannot delete messages from this user", delete_after=15)
                     return
-                await self.purge_by_user_id(ctx, int(user_id[0]))
+                deleted = await self.purge_by_user_id(ctx, int(user_id[0]))
             else:
                 await ctx.send("Invalid user ID was provided:", messages)
                 return
         else:
-            await self.purge_by_message_count(ctx, int(messages))
+            deleted = await self.purge_by_message_count(ctx, int(messages))
+
+        await self.log_action("Purge", None, ctx.author, f"Purged {deleted} messages in {ctx.message.channel.mention}", ctx.message)
 
     async def purge_by_user_id(self, ctx, user_id):
         messages = await ctx.message.channel.purge(check=lambda message: message.author.id == user_id)
         await ctx.send(f"Deleted {len(messages)} messages sent by that user in this channel", delete_after=15)
+        return len(messages)
 
     async def purge_by_message_count(self, ctx, count):
         messages = await ctx.message.channel.purge(limit=min(100, count + 1))
         await ctx.send(f"Deleted {len(messages)} messages in this channel", delete_after=15)
+        return len(messages)
 
 
     @Cog.command(name="mute")
@@ -209,14 +213,14 @@ class ModerationCog(Cog):
         await self.get_channel(self.settings.get("MOD_ACTION_LOG_CHANNEL", "mod-action-log")).send(
             embed=Embed(
                 description=f"Moderator: {mod.mention}\n"
-                            f"User: {user.mention}\n"
-                            f"Reason: {reason}"
+                            + (f"User: {user.mention}\n" if user else "")
+                            + f"Reason: {reason}"
                             + ("\n" if additional_fields else "")
                             + f"{additional_fields}\n\n"
                               f"[Jump To Action]({message.jump_url})",
                 color=0xCC2222,
             ).set_author(
-                name=f"{action} @{user.display_name}", icon_url=self.server.icon_url
+                name=f"{action} @{user.display_name if user else mod.display_name}", icon_url=self.server.icon_url
             )
         )
 
