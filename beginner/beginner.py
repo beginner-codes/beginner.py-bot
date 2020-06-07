@@ -1,5 +1,6 @@
 from asyncio import sleep
 from beginner.cog import Cog
+from beginner.logging import create_logger
 from beginner.models import set_database, PostgresqlDatabase
 from beginner.scheduler import initialize_scheduler, schedule
 from beginner.tags import tag
@@ -14,16 +15,27 @@ import os
 class BeginnerCog(Cog):
     def __init__(self, client):
         super().__init__(client)
+        user = os.environ.get("DB_USER", "postgresadmin")
+        host = os.environ.get("DB_HOST", "0.0.0.0")
+        port = os.environ.get("DB_PORT", "5432")
+        mode = "require" if os.environ.get("PRODUCTION_BOT", False) else None
+        self.logger.debug(
+            f"\nConnecting to database:\n"
+            f"- User {user}\n"
+            f"- Host {host}\n"
+            f"- Port {port}\n"
+            f"- Mode {mode}"
+        )
         set_database(
             PostgresqlDatabase(
-                "bpydb",
-                user=os.environ.get("DB_USER", "postgresadmin"),
-                host=os.environ.get("DB_HOST", "0.0.0.0"),
-                port=os.environ.get("DB_PORT", "5432"),
+                os.environ.get("DB_NAME", "bpydb"),
+                user=user,
+                host=host,
+                port=port,
                 password=os.environ.get(
                     "DB_PASSWORD", "dev-env-password-safe-to-be-public"
                 ),
-                sslmode="require" if os.environ.get("PRODUCTION_BOT", False) else None,
+                sslmode=mode,
             )
         )
         initialize_scheduler(loop=client.loop)
@@ -96,24 +108,39 @@ class BeginnerCog(Cog):
 
     @staticmethod
     def load_cogs(client):
-        client.load_extension("beginner.cogs.user_roles")
-        client.load_extension("beginner.cogs.repeater")
-        client.load_extension("beginner.cogs.google")
-        client.load_extension("beginner.cogs.help")
-        client.load_extension("beginner.cogs.python")
-        client.load_extension("beginner.cogs.rules")
-        client.load_extension("beginner.cogs.onboarding")
-        client.load_extension("beginner.cogs.spam")
-        client.load_extension("beginner.cogs.statistics")
-        client.load_extension("beginner.cogs.tips")
-        client.load_extension("beginner.cogs.moderation")
-        client.load_extension("beginner.cogs.bumping")
-        client.add_cog(BeginnerCog(client))
-
         if BeginnerCog.is_dev_env():
             import beginner.devcog
 
             client.add_cog(beginner.devcog.DevCog(client))
+
+        BeginnerCog.load_extension(client, "beginner.cogs.user_roles")
+        BeginnerCog.load_extension(client, "beginner.cogs.repeater")
+        BeginnerCog.load_extension(client, "beginner.cogs.google")
+        BeginnerCog.load_extension(client, "beginner.cogs.help")
+        BeginnerCog.load_extension(client, "beginner.cogs.python")
+        BeginnerCog.load_extension(client, "beginner.cogs.rules")
+        BeginnerCog.load_extension(client, "beginner.cogs.onboarding")
+        BeginnerCog.load_extension(client, "beginner.cogs.spam")
+        BeginnerCog.load_extension(client, "beginner.cogs.statistics")
+        BeginnerCog.load_extension(client, "beginner.cogs.tips")
+        BeginnerCog.load_extension(client, "beginner.cogs.moderation")
+        BeginnerCog.load_extension(client, "beginner.cogs.bumping")
+        BeginnerCog.load_extension(client, "beginner.cogs.challenges")
+        BeginnerCog.load_extension(client, "beginner.cogs.code_runner")
+        BeginnerCog.load_extension(client, "beginner.cogs.settings")
+        client.add_cog(BeginnerCog(client))
+
+    @staticmethod
+    def load_extension(client, name, *args, dev_only=False, **kwargs):
+        if dev_only and not BeginnerCog.is_dev_env():
+            create_logger().debug(f"{name} is disabled in production")
+            return
+
+        if os.environ.get(name, 1) == "0":
+            create_logger().debug(f"{name} is disabled")
+            return
+
+        return client.load_extension(name, *args, **kwargs)
 
     @staticmethod
     def setup_logging():

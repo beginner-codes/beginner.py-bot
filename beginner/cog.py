@@ -1,5 +1,6 @@
 from __future__ import annotations
 from beginner.logging import create_logger
+from beginner.settings import Settings
 from beginner.tags import TaggableMeta
 from discord.ext import commands
 from discord import TextChannel, Client, Guild, Emoji, CategoryChannel, Role
@@ -10,6 +11,7 @@ import os.path
 
 class Cog(commands.Cog, metaclass=TaggableMeta):
     def __init__(self, client: Client):
+        self.settings = Settings()
         self.client = client
         self.logger = create_logger(self.__class__.__name__)
 

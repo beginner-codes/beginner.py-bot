@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: beginner-py-bot
-          image: zzmmrmn/beginner-py-bot:0.1.21
+          image: zzmmrmn/beginner-py-bot:<IMAGE_VERSION>
           env:
             - name: PRODUCTION_BOT
               value: "PRODUCTION"
@@ -36,11 +36,13 @@ spec:
                   name: google-custom-search
                   key: cse
             - name: "DB_HOST"
-              value: "private-personal-postgres-cluster-1-do-user-877728-0.db.ondigitalocean.com"
+              value: "private-personal-postgres-cluster-1-apr-26-backup-do-user-87772.a.db.ondigitalocean.com"
             - name: "DB_PORT"
-              value: "25060"
+              value: "25061"
             - name: "DB_USER"
               value: "beginnerpy"
+            - name: "DB_NAME"
+              value: "bpydb-pool"
             - name: "DB_PASSWORD"
               valueFrom:
                 secretKeyRef:

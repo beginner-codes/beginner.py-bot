@@ -109,3 +109,4 @@ postgres-data
 *.config
 /manifests/bot-token.yaml
 /manifests/postgres-password.yaml
+/bot/env

@@ -63,7 +63,7 @@ class TipsCog(Cog):
             tip = Message(
                 label=label,
                 message=message.content,
-                message_type=MessageTypes.TIP,
+                message_type=MessageTypes.TIP.name,
                 author=message.author.display_name,
                 title=title,
             )
@@ -106,7 +106,7 @@ class TipsCog(Cog):
 
     @staticmethod
     def get_tips(label=None):
-        where = Message.message_type == MessageTypes.TIP
+        where = Message.message_type == MessageTypes.TIP.name
         if label:
             where = where & (Message.label.contains(f"%{label}%"))
         return Message.select().where(where).order_by(Message.label.asc()).execute()
@@ -114,7 +114,7 @@ class TipsCog(Cog):
     @staticmethod
     def get_tip(label):
         return Message.get_or_none(
-            (Message.message_type == MessageTypes.TIP) & (Message.label == label)
+            (Message.message_type == MessageTypes.TIP.name) & (Message.label == label)
         )
 
     @staticmethod

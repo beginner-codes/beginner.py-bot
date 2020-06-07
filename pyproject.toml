@@ -5,7 +5,7 @@ description = ""
 authors = ["Zech Zimmerman <zechzimm@gmail.com>"]
 
 [tool.poetry.dependencies]
-python = "3.8.0"
+python = "^3.8.0"
 peewee = "^3.13"
 psycopg2-binary = "^2.8"
 "discord.py" = "^1.2"
