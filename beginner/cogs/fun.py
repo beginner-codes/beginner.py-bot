@@ -56,6 +56,8 @@ class Fun(Cog):
             message = f"Invalid Instruction: {e.args[0]}"
         except IndexError:
             message = f"IndexError: current stack = {stack}"
+        except ZeroDivisionError:
+            message = f"Division by zero: current stack = {stack}"
 
         await ctx.send(message)
 
