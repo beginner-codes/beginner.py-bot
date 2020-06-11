@@ -4,6 +4,7 @@ from beginner.models.messages import Message, MessageTypes
 from beginner.options import get_option, set_option
 from discord import Embed, Message as DiscordMessage, TextChannel
 from discord.ext import commands
+import re
 
 
 class RulesCog(Cog):
@@ -19,6 +20,9 @@ class RulesCog(Cog):
     @allow_rule_rebuilds.setter
     def allow_rule_rebuilds(self, value: bool):
         set_option("allow-rule-rebuilds", value)
+
+    def clean_rule(self, rule_content: str):
+        return "\n".join(re.findall(r"<p.*?>(.+?)</p>", rule_content))
 
     @Cog.command(name="rule-updates")
     async def rule_updates(self, ctx, on_or_off: str = ""):
@@ -137,7 +141,7 @@ class RulesCog(Cog):
     async def show_rule(self, ctx, label=None, *_):
         rule = RulesCog.get_rule(label, fuzzy=True)
         if rule:
-            await ctx.send(embed=self.build_rule_embed(rule))
+            await ctx.send(embed=self.build_rule_embed(self.clean_rule(rule)))
         else:
             rules = RulesCog.get_rules(label, force=True)
             rule_primary_labels = [
