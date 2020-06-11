@@ -8,7 +8,7 @@ class CandidatesCog(Cog):
         print("Command error:", error)
 
     @Cog.command()
-    @commands.has_role("Roundtable")
+    @commands.has_role("Jedi Council")
     async def candidate(self, ctx, member: Member, role: str = "helper"):
         candidates_channel = self.get_channel(self.settings.get("CANDIDATES_CHANNEL", "candidates"))
         if candidates_channel.id != ctx.message.channel.id:
@@ -22,7 +22,7 @@ class CandidatesCog(Cog):
         await ctx.send(f"{member.mention} you've been invited to join our team as a {role}. What do you say?")
 
     @Cog.command()
-    @commands.has_role("Roundtable")
+    @commands.has_role("Jedi Council")
     async def thanks(self, ctx, member: Member):
         candidates_channel = self.get_channel(self.settings.get("CANDIDATES_CHANNEL", "candidates"))
         if candidates_channel.id != ctx.message.channel.id:
@@ -38,7 +38,7 @@ class CandidatesCog(Cog):
         await ctx.send(f"{member.mention} has been removed from {candidates_channel.mention}!")
 
     @Cog.command()
-    @commands.has_role("Roundtable")
+    @commands.has_role("Jedi Council")
     async def make(self, ctx, member: Member, role: Role):
         candidates_channel = self.get_channel(self.settings.get("CANDIDATES_CHANNEL", "candidates"))
         if candidates_channel.id != ctx.message.channel.id:
@@ -47,12 +47,12 @@ class CandidatesCog(Cog):
         candidate_role = self.get_role(self.settings.get("CANDIDATES_ROLE", "candidate"))
         mod_role = self.get_role(self.settings.get("MODERATOR_ROLE", "mods"))
         helper_role = self.get_role(self.settings.get("HELPER_ROLE", "helpers"))
-        roundtable_role = self.get_role(self.settings.get("ROUNDTABLE_ROLE", "roundtable"))
+        council_role = self.get_role(self.settings.get("COUNCIL_ROLE", "Jedi Council"))
         if candidate_role not in member.roles:
             await ctx.send(f"{member.mention} is not a candidate.")
             return
 
-        if role not in {helper_role, mod_role, roundtable_role}:
+        if role not in {helper_role, mod_role, council_role}:
             await ctx.send(f"{role.name} is not a valid helper or moderator role.")
             return
 
@@ -61,7 +61,7 @@ class CandidatesCog(Cog):
         await ctx.send(f"{member.mention} has been added to the {role.mention} role!")
 
     @Cog.command()
-    @commands.has_role("Roundtable")
+    @commands.has_role("Jedi Council")
     async def unmake(self, ctx, member: Member, role: Role):
         candidates_channel = self.get_channel(self.settings.get("CANDIDATES_CHANNEL", "candidates"))
         if candidates_channel.id != ctx.message.channel.id:
@@ -69,12 +69,12 @@ class CandidatesCog(Cog):
 
         mod_role = self.get_role(self.settings.get("MODERATOR_ROLE", "mods"))
         helper_role = self.get_role(self.settings.get("HELPER_ROLE", "helpers"))
-        roundtable_role = self.get_role(self.settings.get("ROUNDTABLE_ROLE", "roundtable"))
+        council_role = self.get_role(self.settings.get("COUNCIL_ROLE", "Jedi Council"))
         if role not in member.roles:
             await ctx.send(f"{member.mention} does not have the {role.name} role.")
             return
 
-        if role not in {helper_role, mod_role, roundtable_role}:
+        if role not in {helper_role, mod_role, council_role}:
             await ctx.send(f"{role.name} is not a valid helper or moderator role.")
             return
 
