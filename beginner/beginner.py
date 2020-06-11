@@ -129,6 +129,7 @@ class BeginnerCog(Cog):
         BeginnerCog.load_extension(client, "beginner.cogs.code_runner")
         BeginnerCog.load_extension(client, "beginner.cogs.settings")
         BeginnerCog.load_extension(client, "beginner.cogs.fun")
+        BeginnerCog.load_extension(client, "beginner.cogs.candidates")
         client.add_cog(BeginnerCog(client))
 
     @staticmethod
