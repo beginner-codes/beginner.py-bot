@@ -51,6 +51,12 @@ class ModerationCog(Cog):
             await ctx.send("No such member found")
             return
 
+        if member.guild_permissions.manage_messages:
+            await ctx.send(
+                "You cannot ban this user", delete_after=15
+            )
+            return
+
         embed = self.build_mod_action_embed(ctx, member, reason, f"You've Been Banned")
         successfully_dmd = await self.send_dm(
             member,
@@ -87,6 +93,12 @@ class ModerationCog(Cog):
         member = self.server.get_member(int(user_id))
         if not member:
             await ctx.send("No such member found")
+            return
+
+        if member.guild_permissions.manage_messages:
+            await ctx.send(
+                "You cannot kick this user", delete_after=15
+            )
             return
 
         embed = self.build_mod_action_embed(ctx, member, reason, f"You've Been Kicked")
