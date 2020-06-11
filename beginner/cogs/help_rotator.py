@@ -23,6 +23,10 @@ class HelpRotatorCog(Cog):
         await message.channel.edit(category=self.occupied_category, position=current_top_occupied)
         await next_channel.edit(category=self.available_category, position=current_top_available)
 
+    @Cog.command("free-channel")
+    async def free_channel(self, ctx):
+        await ctx.send(f"{self.available_category.channels[0].mention}")
+
     def get_next_channel(self) -> discord.TextChannel:
         return self.occupied_category.text_channels[-1]
 
