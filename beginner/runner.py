@@ -86,7 +86,7 @@ class Executer:
             except SyntaxError as excp:
                 msg, (file, line_no, column, line) = excp.args
                 spaces = " " * (column - 1)
-                exceptions.append(f"Line {line_no}\n{line}\n{spaces}^\nSyntaxError: {msg}")
+                exceptions.append(f"Line {line_no}\n{line.rstrip()}\n{spaces}^\nSyntaxError: {msg}")
             else:
                 dunder_attributes = self.dunder_attributes(code_tree)
                 if dunder_attributes - self.dunder_whitelist:
