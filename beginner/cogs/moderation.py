@@ -1,16 +1,30 @@
 from beginner.cog import Cog, commands
 from beginner.cogs.rules import RulesCog
+from beginner.models.mod_actions import ModAction
 from beginner.scheduler import schedule
-from datetime import timedelta
-from discord import Embed, Message, Member
+from datetime import timedelta, datetime
+from discord import Embed, Message, Member, User
 from beginner.tags import tag
 import discord
+import pickle
 import re
 
 
 class ModerationCog(Cog):
     async def cog_command_error(self, ctx, error):
         print("Command error:", error)
+
+    @Cog.listener()
+    async def on_member_join(self, member: Member):
+        history = list(ModAction.select().limit(1).where(ModAction.user_id == member.id))
+        if history:
+            mod_action_log = self.get_channel(self.settings.get("MOD_ACTION_LOG_CHANNEL", "mod-action-log"))
+            await mod_action_log.send(
+                embed=Embed(
+                    description=f"{member.mention} has rejoined. They have a past history of mod actions.",
+                    color=0xFFE873
+                ).set_author(name="Member Rejoined")
+            )
 
     @Cog.command(name="ban")
     @commands.has_guild_permissions(manage_messages=True)
@@ -45,6 +59,7 @@ class ModerationCog(Cog):
 
         await ctx.send(f"{member.display_name} has been banned")
         await self.log_action("Ban", member, ctx.author, reason, ctx.message)
+        self.save_action("BAN", member, ctx.author, message=reason, reference=ctx.message.id)
 
     @Cog.command(name="kick")
     @commands.has_guild_permissions(manage_messages=True)
@@ -78,6 +93,7 @@ class ModerationCog(Cog):
 
         await ctx.send(f"{member.display_name} has been kicked")
         await self.log_action("Kick", member, ctx.author, reason, ctx.message)
+        self.save_action("KICK", member, ctx.author, message=reason, reference=ctx.message.id)
 
     @Cog.command(name="purge")
     @commands.has_guild_permissions(manage_messages=True)
@@ -107,7 +123,6 @@ class ModerationCog(Cog):
         messages = await ctx.message.channel.purge(limit=min(100, count + 1))
         await ctx.send(f"Deleted {len(messages)} messages in this channel", delete_after=15)
         return len(messages)
-
 
     @Cog.command(name="mute")
     async def mute(self, ctx, user, duration, *, reason: str):
@@ -147,6 +162,7 @@ class ModerationCog(Cog):
         )
 
         await member.add_roles(self.get_role("muted"), reason="Mod Mute")
+        self.save_action("MUTE", member, ctx.author, message=reason, reference=message.id)
 
     @Cog.command(name="unmute")
     async def unmute(self, ctx, user):
@@ -159,6 +175,7 @@ class ModerationCog(Cog):
         await member.remove_roles(self.get_role("muted"), reason="Mod unmute")
 
         await ctx.send(f"*{member.mention} is unmuted*")
+        self.save_action("UNMUTE", member, ctx.author, message="Mod unmute")
 
     @Cog.command(name="warn")
     async def warn(self, ctx, user, *, reason: str):
@@ -181,6 +198,28 @@ class ModerationCog(Cog):
             reason += "\n*Unable to DM user*"
 
         await self.log_action("WARN", member, ctx.author, reason, message)
+        self.save_action("WARN", member, ctx.author, message=reason, reference=message.id)
+
+    @Cog.command()
+    @commands.has_guild_permissions(manage_messages=True)
+    async def history(self, ctx, member: User):
+        history = list(
+            ModAction
+            .select()
+            .limit(50)
+            .order_by(ModAction.datetime.desc())
+            .where(ModAction.user_id == member.id)
+        )
+        message = f"{member.mention} has no mod action history."
+        if len(history):
+            action_items = []
+            for action in history:
+                details = pickle.loads(action.details.encode())
+                msg = details.get("message", "*No message*")
+                action_items.append(f"**{action.action_type:6} {action.datetime:%d/%m/%Y}**\n{msg}")
+            message = "\n".join(action_items)
+
+        await ctx.send(embed=Embed(description=message, color=0xFFE873).set_author(name="Mod Action History"))
 
     async def send_dm(
             self, member: Member, embed: Embed, message: Message = None, description: str = ""
@@ -197,6 +236,16 @@ class ModerationCog(Cog):
             return True
         except discord.errors.Forbidden:
             return False
+
+    def save_action(self, action_type: str, user: Member, mod: Member, **details):
+        action = ModAction(
+            action_type=action_type,
+            user_id=user.id,
+            mod_id=mod.id,
+            datetime=datetime.utcnow(),
+            details=pickle.dumps(details, 0)
+        )
+        action.save()
 
     async def log_action(
             self,
