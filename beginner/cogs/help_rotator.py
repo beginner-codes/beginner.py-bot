@@ -22,7 +22,7 @@ class HelpRotatorCog(Cog):
 
     @Cog.command("free-channel", aliases=["free"])
     async def free_channel(self, ctx: discord.ext.commands.Context):
-        await ctx.send(f"{self.available_category.channels[0].mention}")
+        await ctx.send(f"Please use this free channel which is currently not in use:\n{self.available_category.channels[0].mention}")
 
     async def rotate_available_channels(self, message: discord.Message):
         current_top_occupied = self.occupied_category.channels[0].position
