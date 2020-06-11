@@ -81,33 +81,38 @@ class Executer:
         exceptions = []
 
         with self.set_recursion_depth(50):
-            code_tree = ast.parse(code, "<string>", "exec")
+            try:
+                code_tree = ast.parse(code, "<string>", "exec")
+            except SyntaxError as excp:
+                msg, (file, line_no, column, line) = excp.args
+                spaces = " " * (column - 1)
+                exceptions.append(f"Line {line_no}\n{line}\n{spaces}^\nSyntaxError: {msg}")
+            else:
+                dunder_attributes = self.dunder_attributes(code_tree)
+                if dunder_attributes - self.dunder_whitelist:
+                    prohibited_attributes = ", ".join(sorted(dunder_attributes - self.dunder_whitelist))
+                    exceptions.append(f"NameError: These attributes are not whitelisted: {prohibited_attributes}")
 
-            dunder_attributes = self.dunder_attributes(code_tree)
-            if dunder_attributes - self.dunder_whitelist:
-                prohibited_attributes = ", ".join(sorted(dunder_attributes - self.dunder_whitelist))
-                exceptions.append(f"NameError: These attributes are not whitelisted: {prohibited_attributes}")
-
-            if not exceptions:
-                code_object = compile(code_tree, "<string>", "exec")
-                try:
-                    ns_globals = self.generate_globals()
-                    soft, hard = resource.getrlimit(resource.RLIMIT_AS)
-                    soft, hard = resource.getrlimit(resource.RLIMIT_CPU)
-                    resource.setrlimit(resource.RLIMIT_AS, (1000, 1000))
-                    resource.setrlimit(resource.RLIMIT_CPU, (1, hard))
-                    exec(code_object, ns_globals, ns_globals)
-                except MemoryError:
-                    exceptions.append("MemoryError: Exceeded process memory limits")
-                except CPUTimeExceeded:
-                    exceptions.append("Beginnerpy.CPUTimeError: Exceeded process CPU time limits")
-                except Exception as ex:
-                    err = StringIO()
-                    traceback.print_exc(limit=-1, file=err)
-                    exceptions.append(err.getvalue())
-                    err.close()
-                except SystemExit as se:
-                    exceptions.append(f"EXIT WITH CODE {0 if se.code is None else se.code}")
+                if not exceptions:
+                    code_object = compile(code_tree, "<string>", "exec")
+                    try:
+                        ns_globals = self.generate_globals()
+                        soft, hard = resource.getrlimit(resource.RLIMIT_AS)
+                        soft, hard = resource.getrlimit(resource.RLIMIT_CPU)
+                        resource.setrlimit(resource.RLIMIT_AS, (1000, 1000))
+                        resource.setrlimit(resource.RLIMIT_CPU, (1, hard))
+                        exec(code_object, ns_globals, ns_globals)
+                    except MemoryError:
+                        exceptions.append("MemoryError: Exceeded process memory limits")
+                    except CPUTimeExceeded:
+                        exceptions.append("Beginnerpy.CPUTimeError: Exceeded process CPU time limits")
+                    except Exception as ex:
+                        err = StringIO()
+                        traceback.print_exc(limit=-1, file=err)
+                        exceptions.append(err.getvalue())
+                        err.close()
+                    except SystemExit as se:
+                        exceptions.append(f"EXIT WITH CODE {0 if se.code is None else se.code}")
 
         out = self.stdout.getvalue()
         self.stdout.close()
