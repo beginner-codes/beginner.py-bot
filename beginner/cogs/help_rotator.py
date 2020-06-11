@@ -23,7 +23,7 @@ class HelpRotatorCog(Cog):
         await message.channel.edit(category=self.occupied_category, position=current_top_occupied)
         await next_channel.edit(category=self.available_category, position=current_top_available)
 
-    @Cog.command("free-channel")
+    @Cog.command("free-channel", aliases=["free"])
     async def free_channel(self, ctx):
         await ctx.send(f"{self.available_category.channels[0].mention}")
 
