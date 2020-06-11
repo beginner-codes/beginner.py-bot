@@ -29,7 +29,7 @@ class Cog(commands.Cog, metaclass=TaggableMeta):
     def get_category(
         self, name: AnyStr, default: Optional[Any] = None
     ) -> CategoryChannel:
-        return self.get(self.server.categories, name, default, preserve_case=False)
+        return self.get(self.server.categories, name, default, preserve_case=True)
 
     def get_channel(self, name: AnyStr, default: Optional[Any] = None) -> TextChannel:
         return self.get(self.server.channels, name, default)
