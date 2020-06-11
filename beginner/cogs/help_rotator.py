@@ -37,6 +37,5 @@ class HelpRotatorCog(Cog):
         return channel.name.startswith("python-help-")
 
 
-
 def setup(client):
     client.add_cog(HelpRotatorCog(client))
