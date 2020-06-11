@@ -103,18 +103,25 @@ class CodeRunner(Cog):
             code_message += f"\n```py\n{code}\n```"
 
             proc = await asyncio.create_subprocess_shell(
-                "python -m beginner.runner", stdin=asyncio.subprocess.PIPE, stdout=asyncio.subprocess.PIPE)
+                "python -m beginner.runner", stdin=asyncio.subprocess.PIPE, stdout=asyncio.subprocess.PIPE
+            )
             try:
                 stdout, stderr = await asyncio.wait_for(proc.communicate(base64.b64encode(code.encode())), 2)
                 if stdout:
                     out, *exceptions = map(lambda line: base64.b64decode(line).decode(), stdout.split(b"\n"))
-                    out = out.strip()
+                    if out:
+                        out = out.strip()
+                    else:
+                        out = ""
+                else:
+                    out = ""
+                    exceptions = [stderr]
 
             except asyncio.exceptions.TimeoutError:
                 proc.kill()
                 out, exceptions = "", ("TimeoutError: Your script took too long and was killed",)
 
-            if not out and not exceptions[0].strip():
+            if not out and (not exceptions[0] or not exceptions[0].strip()):
                 message.append("\n*No output or exceptions*")
             else:
                 message.append(f"```\n")
