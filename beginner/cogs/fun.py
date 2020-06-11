@@ -1,14 +1,5 @@
 from beginner.cog import Cog
-from beginner.models.points import Points
-from beginner.scheduler import schedule, task_scheduled
-from beginner.tags import tag
-from collections import defaultdict
-from datetime import datetime, timedelta
-import asyncio
-import discord
-import os
-import peewee
-import re
+import ast
 
 
 class Fun(Cog):
@@ -60,6 +51,18 @@ class Fun(Cog):
             message = f"Division by zero: current stack = {stack}"
 
         await ctx.send(message)
+
+
+    @Cog.command()
+    async def remove_extras(self, ctx, count: int, *, raw_literals):
+        try:
+            literals = ast.literal_eval(raw_literals)
+        except (SyntaxError, ValueError):
+            await ctx.send("You must provide a sequence of literals")
+            return
+
+        result = [item for index, item in enumerate(literals) if literals[:index].count(item) < count]
+        await ctx.send(f"Result: {result}")
 
 
 def setup(client):
