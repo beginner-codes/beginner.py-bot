@@ -106,6 +106,8 @@ class Executer:
                         exceptions.append("MemoryError: Exceeded process memory limits")
                     except CPUTimeExceeded:
                         exceptions.append("Beginnerpy.CPUTimeError: Exceeded process CPU time limits")
+                    except ImportError as ex:
+                        exceptions.append(f"ImportError: {ex.args[0]}")
                     except Exception as ex:
                         err = StringIO()
                         traceback.print_exc(limit=-1, file=err)
