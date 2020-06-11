@@ -5,6 +5,12 @@ import contextlib
 import inspect
 import sys
 import traceback
+import resource
+import signal
+
+
+class CPUTimeExceeded(Exception):
+    ...
 
 
 class Executer:
@@ -18,6 +24,11 @@ class Executer:
         self.stdout = StringIO()
 
         self.exception = False
+
+        signal.signal(signal.SIGXCPU, self.cpu_time_exceeded)
+
+    def cpu_time_exceeded(self, signo, frame):
+        raise CPUTimeExceeded()
 
     def dunder_attributes(self, code_tree):
         attributes = set()
@@ -81,7 +92,15 @@ class Executer:
                 code_object = compile(code_tree, "<string>", "exec")
                 try:
                     ns_globals = self.generate_globals()
+                    soft, hard = resource.getrlimit(resource.RLIMIT_AS)
+                    soft, hard = resource.getrlimit(resource.RLIMIT_CPU)
+                    resource.setrlimit(resource.RLIMIT_AS, (1000, 1000))
+                    resource.setrlimit(resource.RLIMIT_CPU, (1, hard))
                     exec(code_object, ns_globals, ns_globals)
+                except MemoryError:
+                    exceptions.append("MemoryError: Exceeded process memory limits")
+                except CPUTimeExceeded:
+                    exceptions.append("Beginnerpy.CPUTimeError: Exceeded process CPU time limits")
                 except Exception as ex:
                     err = StringIO()
                     traceback.print_exc(limit=-1, file=err)
