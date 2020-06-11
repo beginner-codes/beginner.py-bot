@@ -35,7 +35,7 @@ class StatisticsCog(Cog):
 
     @Cog.command()
     async def norole(self, ctx):
-        if self.get_role("roundtable") not in ctx.author.roles:
+        if self.get_role("jedi council") not in ctx.author.roles:
             return
 
         coders_role = self.get_role("coders")

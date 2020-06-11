@@ -5,7 +5,7 @@ from ast import literal_eval
 class Settings(Cog):
     @Cog.command()
     async def setvalue(self, ctx, raw_name, *, raw_value):
-        if self.get_role("roundtable") not in ctx.author.roles:
+        if self.get_role("jedi council") not in ctx.author.roles:
             return
 
         try:
@@ -19,7 +19,7 @@ class Settings(Cog):
 
     @Cog.command()
     async def getvalue(self, ctx, raw_name):
-        if self.get_role("roundtable") not in ctx.author.roles:
+        if self.get_role("jedi council") not in ctx.author.roles:
             return
 
         name = raw_name.strip()
@@ -28,7 +28,7 @@ class Settings(Cog):
 
     @Cog.command()
     async def listvalues(self, ctx):
-        if self.get_role("roundtable") not in ctx.author.roles:
+        if self.get_role("jedi council") not in ctx.author.roles:
             return
 
         await ctx.send("\n".join(f"`{name} = {repr(value)}`" for name, value in self.settings.all().items()))
