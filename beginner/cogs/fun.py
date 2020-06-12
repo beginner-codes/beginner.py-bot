@@ -72,7 +72,7 @@ class Fun(Cog):
             return
 
         walked = len(directions)
-        shortest = abs(directions.count("N") - directions.count("S")) - abs(directions.count("E") - directions.count("W"))
+        shortest = abs(directions.count("N") - directions.count("S")) + abs(directions.count("E") - directions.count("W"))
         await ctx.send(
             f"Your path had a length of `{walked}`\n"
             f"The shortest path had a length of `{shortest}`\n"
