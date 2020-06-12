@@ -6,6 +6,7 @@ import ast
 import re
 import asyncio
 import base64
+from typing import List, Tuple
 
 
 class CodeRunner(Cog):
@@ -81,18 +82,23 @@ class CodeRunner(Cog):
             await ctx.send("The exec command has been disabled.")
             return
 
-        color = 0x4285F4
-        title = "Exec - Success"
-        code_message = f"{ctx.author.mention} here's the output from [your code]({ctx.message.jump_url})"
-        message = []
         if not len(content.strip()) or content.find("```py") < 0 or content.rfind("```") <= 0:
-            message.append(
-                "\n**NO PYTHON CODE BLOCK FOUND**\n\nThe command format is as follows:\n\n"
-                "\n!exec \\`\\`\\`py\nYOUR CODE HERE\n\\`\\`\\`\n"
+            await ctx.send(
+                embed=discord.Embed(
+                    description=(
+                        "\n**NO PYTHON CODE BLOCK FOUND**\n\nThe command format is as follows:\n\n"
+                        "\n!exec \\`\\`\\`py\nYOUR CODE HERE\n\\`\\`\\`\n"
+                    ),
+                    color=0xEA4335
+                ).set_author(
+                    name="Exec - No Code", icon_url=self.server.icon_url
+                )
             )
-            title = "Exec - No Code"
 
         else:
+            title = "Exec - Success"
+            color = 0x4285F4
+
             start = content.find("```python")
             if start >= 0:
                 start += 9
@@ -100,50 +106,58 @@ class CodeRunner(Cog):
                 start = content.find("```py") + 5
             code = content[start: -3]
 
+            code_message = f"{ctx.author.mention} here's the output from [your code]({ctx.message.jump_url})"
             code_message += f"\n```py\n{code}\n```"
 
-            proc = await asyncio.create_subprocess_shell(
-                "python -m beginner.runner", stdin=asyncio.subprocess.PIPE, stdout=asyncio.subprocess.PIPE
-            )
-            try:
-                stdout, stderr = await asyncio.wait_for(proc.communicate(base64.b64encode(code.encode())), 2)
-                if stdout:
-                    out, *exceptions = map(lambda line: base64.b64decode(line).decode(), stdout.split(b"\n"))
-                    if out:
-                        out = out.strip()
-                    else:
-                        out = ""
-                else:
-                    out = ""
-                    exceptions = [stderr]
+            message, exceptions = await self.code_runner("exec", code)
 
-            except asyncio.exceptions.TimeoutError:
-                proc.kill()
-                out, exceptions = "", ("TimeoutError: Your script took too long and was killed",)
+            if exceptions:
+                title = "Exec - Exception Raised"
+                color = 0xEA4335
 
-            if not out and (not exceptions[0] or not exceptions[0].strip()):
-                message.append("\n*No output or exceptions*")
+            output = "\n".join(message)
+            if not message:
+                output = "*No output or exceptions*"
             else:
-                message.append(f"```\n")
-                if out:
-                    message.append(f"{out[:1000]}{'...' if len(out) > 1000 else ''}")
+                output = f"```\n{output}\n```"
 
-                if exceptions[0].strip():
-                    color = 0xEA4335
-                    title = "Exec - Exception Raised"
-                    if out:
-                        message.append("")
+            await ctx.send(
+                embed=discord.Embed(description=code_message, color=color).set_author(
+                    name=title, icon_url=self.server.icon_url
+                ).add_field(name="Output", value=output, inline=False)
+            )
 
-                    for exception in exceptions:
-                        if exception:
-                            message.append(f"{'...' if len(exception) > 500 else ''}{exception[-500:]}")
-                message.append("```")
+    async def code_runner(self, mode: str, code: str) -> Tuple[List[str], bool]:
+        message = []
 
-        await ctx.send(
-            embed=discord.Embed(description=code_message, color=color).set_author(
-                name=title, icon_url=self.server.icon_url
-            ).add_field(name="Output", value="\n".join(message), inline=False)
+        proc = await asyncio.create_subprocess_shell(
+            f"python -m beginner.runner {mode}", stdin=asyncio.subprocess.PIPE, stdout=asyncio.subprocess.PIPE
         )
+        stdout, stderr = await proc.communicate(base64.b64encode(code.encode()))
+        if stdout:
+            out, *exceptions = map(lambda line: base64.b64decode(line).decode(), stdout.split(b"\n"))
+            exceptions = list(filter(bool, exceptions))
+            if out:
+                out = out.strip()
+            else:
+                out = ""
+        else:
+            out = ""
+            exceptions = [stderr]
+
+        if out or exceptions:
+            if out:
+                message.append(f"{out[:1000]}{'...' if len(out) > 1000 else ''}")
+
+            if exceptions:
+                if out:
+                    message.append("")
+
+                for exception in exceptions:
+                    if exception:
+                        message.append(f"{'...' if len(exception) > 500 else ''}{exception[-500:]}")
+
+        return message, len(exceptions) > 0
 
     @Cog.command()
     async def eval(self, ctx, *, content):
@@ -156,7 +170,7 @@ class CodeRunner(Cog):
                 embed=discord.Embed(
                     description=(
                         "This command allows you to run a single statement and see the results. For security "
-                        "reasons what code you can run is very limited. Use `!eval limits` for more details."
+                        "reasons what code you can run is very limited."
                     ),
                     color=0xFBBC05
                 ).set_author(
@@ -165,45 +179,23 @@ class CodeRunner(Cog):
             )
             return
 
-        if content.casefold().strip() == "limits":
-            await ctx.send(
-                embed=discord.Embed(
-                    description=(
-                        "For security purposes the following limits are placed on the eval command.\n"
-                        "- Function stack is limited to 50\n"
-                        "- `range` is limited to 50 steps\n"
-                        "- Dunder functions, properties, methods, and variables are not accessible\n"
-                        "- Protected builtins (name starts with `_` or `__`) are blacklisted\n"
-                        "- The following are blacklisted:\n```"
-                        + "".join(f"{name:12}" for name in sorted(self.blacklist))
-                        + "```"
-                    ),
-                    color=0xFBBC05
-                ).set_author(
-                    name=f"Statement Eval - Limits", icon_url=self.server.icon_url
-                )
-            )
-            return
-
         code = re.sub(r"^\s*(```(python|py)?)\s*|\s*(```|`)\s*$", "", content)
-        result, prints, exception = self.evaluate(code)
-        formatted_code = ">>> " + code.replace("\n", "\n>>> ")
-        output = ''.join(prints)
+        title = "Eval - Success"
         color = 0x4285F4
-        if exception:
+
+        code_message = f"{ctx.author.mention} here's the output from [your code]({ctx.message.jump_url})"
+        code_message += f"\n```py\n>>> {code}"
+
+        message, exceptions = await self.code_runner("eval", code)
+
+        if exceptions:
+            title = "Eval - Exception Raised"
             color = 0xEA4335
-            if output:
-                output += "\n"
-            output += f"\n{exception.__class__.__name__}: {str(exception)}"
-        elif not prints or result:
-            output += "" if not output or output[-1] == "\n" else "\n"
-            output += repr(result)
+
+        output = "\n".join(message)
         await ctx.send(
-            embed=discord.Embed(
-                description=f"```py\n{formatted_code}\n\n{output}```",
-                color=color
-            ).set_author(
-                name=f"Statement Eval", icon_url=self.server.icon_url
+            embed=discord.Embed(description=f"{code_message.strip()}\n\n{output}\n```", color=color).set_author(
+                name=title, icon_url=self.server.icon_url
             )
         )
 
