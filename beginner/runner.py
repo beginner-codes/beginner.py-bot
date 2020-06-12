@@ -7,6 +7,7 @@ import sys
 import traceback
 import resource
 import signal
+import sys
 
 
 class CPUTimeExceeded(Exception):
@@ -77,12 +78,12 @@ class Executer:
             kwargs["file"] = self.stdout
         print(*args, **kwargs)
 
-    def run(self, code):
+    def run(self, code, runner=exec):
         exceptions = []
 
         with self.set_recursion_depth(50):
             try:
-                code_tree = ast.parse(code, "<string>", "exec")
+                code_tree = ast.parse(code, "<string>", runner.__name__)
             except SyntaxError as excp:
                 msg, (file, line_no, column, line) = excp.args
                 spaces = " " * (column - 1)
@@ -94,14 +95,15 @@ class Executer:
                     exceptions.append(f"NameError: These attributes are not whitelisted: {prohibited_attributes}")
 
                 if not exceptions:
-                    code_object = compile(code_tree, "<string>", "exec")
+                    code_object = compile(code_tree, "<string>", runner.__name__)
                     try:
                         ns_globals = self.generate_globals()
-                        soft, hard = resource.getrlimit(resource.RLIMIT_AS)
-                        soft, hard = resource.getrlimit(resource.RLIMIT_CPU)
+                        _, hard = resource.getrlimit(resource.RLIMIT_CPU)
                         resource.setrlimit(resource.RLIMIT_AS, (1000, 1000))
                         resource.setrlimit(resource.RLIMIT_CPU, (1, hard))
-                        exec(code_object, ns_globals, ns_globals)
+                        result = runner(code_object, ns_globals, ns_globals)
+                        if runner == eval:
+                            self.stdout.write(repr(result))
                     except MemoryError:
                         exceptions.append("MemoryError: Exceeded process memory limits")
                     except CPUTimeExceeded:
@@ -156,7 +158,12 @@ if __name__ == "__main__":
 
         }
     )
-    out, exceptions = executer.run(code)
+    runners = {
+        "eval": eval,
+        "exec": exec
+    }
+    runner = runners.get(len(sys.argv) < 2 or sys.argv[1], exec)
+    out, exceptions = executer.run(code, runner)
     print(base64.b64encode(out.encode()).decode())
     for exception in exceptions:
         print(base64.b64encode(exception.encode()).decode())
