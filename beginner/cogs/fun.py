@@ -52,7 +52,6 @@ class Fun(Cog):
 
         await ctx.send(message)
 
-
     @Cog.command()
     async def remove_extras(self, ctx, count: int, *, raw_literals):
         try:
@@ -63,6 +62,22 @@ class Fun(Cog):
 
         result = [item for index, item in enumerate(literals) if literals[:index].count(item) < count]
         await ctx.send(f"Result: {result}")
+
+    @Cog.command()
+    async def directionally_challenged(self, ctx, *, raw_directions: str):
+        try:
+            directions = ast.literal_eval(raw_directions)
+        except (SyntaxError, ValueError):
+            await ctx.send("You must provide a sequence of strings")
+            return
+
+        walked = len(directions)
+        shortest = abs(directions.count("N") - directions.count("S")) - abs(directions.count("E") - directions.count("W"))
+        await ctx.send(
+            f"Your path had a length of `{walked}`\n"
+            f"The shortest path had a length of `{shortest}`\n"
+            f"The answer was that they have a difference of `{walked - shortest}`"
+        )
 
 
 def setup(client):
