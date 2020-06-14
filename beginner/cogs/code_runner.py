@@ -179,7 +179,7 @@ class CodeRunner(Cog):
             )
             return
 
-        code = re.sub(r"^\s*(```(python|py)?)\s*|\s*(```|`)\s*$", "", content)
+        code = re.sub(r"^\s*(```(python|py)|`?)\s*|\s*(```|`)\s*$", "", content)
         title = "Eval - Success"
         color = 0x4285F4
 
