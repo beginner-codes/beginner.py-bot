@@ -14,6 +14,10 @@ class CPUTimeExceeded(Exception):
     ...
 
 
+class ScriptTimedOut(Exception):
+    ...
+
+
 class Executer:
     def __init__(self, name_whitelist, dunder_whitelist, import_whitelist):
         self.name_whitelist = name_whitelist
@@ -27,9 +31,13 @@ class Executer:
         self.exception = False
 
         signal.signal(signal.SIGXCPU, self.cpu_time_exceeded)
+        signal.signal(signal.SIGALRM, self.script_timed_out)
 
     def cpu_time_exceeded(self, signo, frame):
         raise CPUTimeExceeded()
+
+    def script_timed_out(self, signo, frame):
+        raise ScriptTimedOut()
 
     def dunder_attributes(self, code_tree):
         attributes = set()
@@ -101,13 +109,17 @@ class Executer:
                         _, hard = resource.getrlimit(resource.RLIMIT_CPU)
                         resource.setrlimit(resource.RLIMIT_AS, (1000, 1000))
                         resource.setrlimit(resource.RLIMIT_CPU, (1, hard))
+                        signal.alarm(2)
                         result = runner(code_object, ns_globals, ns_globals)
+                        signal.alarm(0)
                         if runner == eval:
                             self.stdout.write(repr(result))
                     except MemoryError:
                         exceptions.append("MemoryError: Exceeded process memory limits")
                     except CPUTimeExceeded:
                         exceptions.append("Beginnerpy.CPUTimeError: Exceeded process CPU time limits")
+                    except ScriptTimedOut:
+                        exceptions.append("Beginnerpy.ScriptTimedOut: Script took too long to complete")
                     except ImportError as ex:
                         exceptions.append(f"ImportError: {ex.args[0]}")
                     except Exception as ex:
