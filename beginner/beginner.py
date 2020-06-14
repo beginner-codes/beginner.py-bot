@@ -40,6 +40,14 @@ class BeginnerCog(Cog):
         )
         initialize_scheduler(loop=client.loop)
 
+    @commands.Cog.listener()
+    async def on_ready(self):
+        self.logger.debug("Cog ready")
+        if not BeginnerCog.is_dev_env():
+            await self.get_channel("bot-dev").send(
+                f"Bot back online! Image Version: {self.settings.get('BOT_IMAGE_VERSION', 'NOT SET')}"
+            )
+
     @Cog.command()
     async def export(self, ctx, namespace):
         if len([r for r in ctx.author.roles if r.id == 644301991832453120]) == 0:
