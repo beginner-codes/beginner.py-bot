@@ -30,6 +30,37 @@ class ModerationCog(Cog):
                 ).set_author(name="Member Rejoined")
             )
 
+    @Cog.command(name="lookup")
+    @commands.has_guild_permissions(manage_messages=True)
+    async def lookup(self, ctx, username_part: str):
+        members = []
+        name_part = username_part.casefold()
+        user_id = int(username_part) if username_part.isdigit() else 0
+        for member in self.server.members:
+            display_name = member.name.casefold() if member.name else ""
+            nick = member.nick.casefold() if member.nick else ""
+            if user_id and member.id == user_id:
+                members.append(member)
+            if name_part in display_name or name_part in nick:
+                members.append(member)
+
+        message = (
+                f"Found {len(members)} members with names that contain '{username_part}'\n"
+                + "\n".join(
+                    (
+                        f"-  **{member.name}#{member.discriminator}**  ({member.nick if member.nick else '*No Nick Name*'})\n"
+                        f"   Joined {member.joined_at: %b %-d %Y}\n"
+                        f"   Top Role `@{member.top_role.name.strip('@')}`\n"
+                        f"   {member.id}"
+                    )
+                    for member in members[:15]
+                )
+                + (f"\n\n*There are {len(members) - 15} more members who matched*" if len(members) - 15 > 0 else "")
+        )
+
+        await ctx.send(message)
+
+
     @Cog.command(name="ban")
     @commands.has_guild_permissions(manage_messages=True)
     async def ban(self, ctx, user_detail: str, *, reason=None):
