@@ -11,7 +11,7 @@ import os.path
 class SpamCog(Cog):
     @cached_property
     def admin_channels(self) -> Set:
-        return set(channel.name for channel in self.get_category("staff").text_channels)
+        return set(channel.name for channel in self.get_category("Staff").text_channels)
 
     @Cog.listener()
     async def on_message(self, message):
