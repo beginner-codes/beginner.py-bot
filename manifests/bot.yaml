@@ -43,6 +43,8 @@ spec:
               value: "beginnerpy"
             - name: "DB_NAME"
               value: "bpydb-pool"
+            - name: "BOT_IMAGE_VERSION"
+              value: "<IMAGE_VERSION>"
             - name: "DB_PASSWORD"
               valueFrom:
                 secretKeyRef:
