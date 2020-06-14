@@ -45,7 +45,7 @@ class BeginnerCog(Cog):
         self.logger.debug("Cog ready")
         if not BeginnerCog.is_dev_env():
             await self.get_channel("bot-dev").send(
-                f"Bot back online! Image Version: {self.settings.get('BOT_IMAGE_VERSION', 'NOT SET')}"
+                f"Bot back online! Image Version: {os.environ.get('BOT_IMAGE_VERSION', 'NOT SET')}"
             )
 
     @Cog.command()
