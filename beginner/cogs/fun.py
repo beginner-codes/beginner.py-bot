@@ -91,6 +91,14 @@ class Fun(Cog):
         result = math.prod(map(int, str(number)))
         await ctx.send(f"```py\n>>> mystery_function({number})\n{result}```")
 
+    @Cog.command()
+    async def dgo(self, ctx):
+        await ctx.send(
+            embed=discord.Embed().set_image(
+                url="https://media1.tenor.com/images/f688c77103e32fdd6a9599713b546435/tenor.gif?itemid=7666830"
+            )
+        )
+
 
 def setup(client):
     client.add_cog(Fun(client))
