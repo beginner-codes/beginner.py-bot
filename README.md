@@ -38,3 +38,4 @@ It will be necessary to create a file at the root of the project named `bot.conf
     DISCORD_TOKEN=TOKEN GOES HERE
     
 To simplify this process you can make a copy of the `example_bot.config` and fill in the token. Docker compose will load the contents of this file into the bot's container environment.
+
