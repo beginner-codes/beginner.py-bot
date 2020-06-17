@@ -82,7 +82,7 @@ class Fun(Cog):
             f"The answer was that they have a difference of `{walked - shortest}`"
         )
 
-    @Cog.command()
+    @Cog.command(aliases=["mystery_func", "mystery_fun", "mysteryfunction", "mysteryfunc", "mysteryfun"])
     async def mystery_function(self, ctx, *, number: str):
         if not number.isdigit():
             await ctx.send("You must provide a positive integer")
