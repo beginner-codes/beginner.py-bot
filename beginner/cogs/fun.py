@@ -1,5 +1,8 @@
 from beginner.cog import Cog
+import discord
 import ast
+import os
+import math
 
 
 class Fun(Cog):
@@ -78,6 +81,15 @@ class Fun(Cog):
             f"The shortest path had a length of `{shortest}`\n"
             f"The answer was that they have a difference of `{walked - shortest}`"
         )
+
+    @Cog.command()
+    async def mystery_function(self, ctx, *, number: str):
+        if not number.isdigit():
+            await ctx.send("You must provide a positive integer")
+            return
+
+        result = math.prod(map(int, str(number)))
+        await ctx.send(f"```py\n>>> mystery_function({number})\n{result}```")
 
 
 def setup(client):
