@@ -31,7 +31,7 @@ class Settings(Cog):
         if self.get_role("jedi council") not in ctx.author.roles:
             return
 
-        await ctx.send("\n".join(f"`{name} = {repr(value)}`" for name, value in self.settings.all().items()))
+        await ctx.send("\n".join(f"`{name} = {repr(value)}`" for name, value in self.settings.all().items() if not name.startswith("_")))
 
 
 def setup(client):
