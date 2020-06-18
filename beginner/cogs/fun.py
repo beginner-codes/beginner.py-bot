@@ -91,6 +91,20 @@ class Fun(Cog):
         result = math.prod(map(int, str(number)))
         await ctx.send(f"```py\n>>> mystery_function({number})\n{result}```")
 
+    @Cog.command(aliases=["minipeaks", "peaks"])
+    async def mini_peaks(self, ctx, *, raw_numbers: str):
+        try:
+            numbers = ast.literal_eval(raw_numbers)
+        except (SyntaxError, ValueError):
+            numbers = None
+
+        if not hasattr(numbers, "__iter__") or any(not isinstance(item, (int, float)) for item in numbers):
+            await ctx.send("You must provide a sequence of integers")
+            return
+
+        result = [y for x, y, z in zip(numbers[:-2], numbers[1:-1], numbers[2:]) if y > x and y > z]
+        await ctx.send(f"```py\n>>> mini_peaks({raw_numbers})\n{result}```")
+
     @Cog.command()
     async def dgo(self, ctx):
         await ctx.send(
