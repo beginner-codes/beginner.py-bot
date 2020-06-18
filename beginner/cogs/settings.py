@@ -1,13 +1,11 @@
-from beginner.cog import Cog
+from beginner.cog import Cog, commands
 from ast import literal_eval
 
 
 class Settings(Cog):
     @Cog.command()
+    @commands.has_guild_permissions(manage_messages=True)
     async def setvalue(self, ctx, raw_name, *, raw_value):
-        if self.get_role("jedi council") not in ctx.author.roles:
-            return
-
         try:
             value = literal_eval(raw_value.strip())
         except Exception as ex:
@@ -18,20 +16,20 @@ class Settings(Cog):
             await ctx.send(f"```\n{name} = {repr(value)}```")
 
     @Cog.command()
+    @commands.has_guild_permissions(manage_messages=True)
     async def getvalue(self, ctx, raw_name):
-        if self.get_role("jedi council") not in ctx.author.roles:
-            return
-
         name = raw_name.strip()
         value = self.settings[name]
         await ctx.send(f"```\n{name} = {repr(value)}```")
 
     @Cog.command()
+    @commands.has_guild_permissions(manage_messages=True)
     async def listvalues(self, ctx):
-        if self.get_role("jedi council") not in ctx.author.roles:
-            return
-
-        await ctx.send("\n".join(f"`{name} = {repr(value)}`" for name, value in self.settings.all().items()))
+        await ctx.send(
+            "\n".join(
+                f"`{name} = {repr(value)}`" for name, value in self.settings.all().items() if not name.startswith("_")
+            )
+        )
 
 
 def setup(client):
