@@ -84,8 +84,10 @@ class Bumping(Cog):
             return
 
         next_bump = timedelta(seconds=self.get_next_bump_timer())
-        message = "successfully bumped!" if next_bump.seconds > 7000 else "server was already bumped."
-        title = "Bump Successful!" if next_bump.seconds > 7000 else "Already Bumped"
+        message = f"Successfully bumped! Thanks {ctx.author.mention}!"
+        if next_bump.seconds <= 7000:
+            message = f"Server was already bumped. {ctx.author.mention} try again at the next bump reminder."
+        title = f"Thanks {ctx.author.display_name}!" if next_bump.seconds > 7000 else "Already Bumped"
         color = BLUE if next_bump.seconds > 7000 else YELLOW
 
         schedule("bump-reminder", next_bump, self.bump_reminder)
@@ -103,12 +105,9 @@ class Bumping(Cog):
             embed=(
                 discord.Embed(
                     color=color,
-                    description=(
-                        f"{ctx.author.mention}, {message} "
-                        f"Next bump in {' & '.join(next_bump_message)}"
-                    )
+                    description=f"{message} Next bump in {' & '.join(next_bump_message)}"
                 )
-                .set_author(name=title, icon_url=self.server.icon_url)
+                .set_author(name=title, icon_url=ctx.author.avatar_url)
                 .set_thumbnail(url="https://cdn.discordapp.com/emojis/711749954837807135.png?v=1")
             )
         )
