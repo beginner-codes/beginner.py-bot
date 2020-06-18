@@ -42,7 +42,7 @@ class Kudos(Cog):
             )
         return self._reactions
 
-    @Cog.command()
+    @Cog.command(aliases=["k"])
     async def kudos(self, ctx: commands.Context, option: str = ""):
         if self.dev_author and ctx.author.id != self.dev_author:
             return
@@ -50,7 +50,7 @@ class Kudos(Cog):
         if ctx.author.bot:
             return
 
-        if option.casefold() == "help":
+        if option.casefold() in {"help", "h"}:
             await ctx.send(
                 embed=(
                     discord.Embed(
@@ -79,6 +79,11 @@ class Kudos(Cog):
                             f"{'s' if self.pool_regeneration else ''}."
                         )
                     )
+                    .add_field(
+                        name="Leaderboard",
+                        inline=False,
+                        value="You can see a kudos leader board by using `!kudos leaderboard`."
+                    )
                     .set_author(name="Kudos - Help", icon_url=self.server.icon_url)
                     .set_thumbnail(url="https://cdn.discordapp.com/emojis/669941420454576131.png?v=1")
                 )
@@ -92,46 +97,52 @@ class Kudos(Cog):
         if author_kudos == 0:
             message.append("\nKeep helping and contributing and you're bound to get some kudos!")
 
-        leader_board = []
-        for index, (member_id, member_kudos) in enumerate(kudos.get_highest_kudos(5)):
-            member = self.server.get_member(member_id)
-            name = member.display_name if member else "*Old Member*"
-            entry = f"{index + 1}. {name} has {member_kudos} kudos"
-            if member.id == ctx.author.id:
-                entry = f"**{entry}**"
-            leader_board.append(entry)
-
-        points_left = self.points_left_to_give(ctx.author.id)
-        kudos_to_give = f"You can give {points_left} kudos right now"
-        if points_left == 0:
-            kudos_to_give = "You cannot give any kudos right now"
-        if points_left < self.pool_size:
-            kudos_to_give += (
-                f", your kudos will regenerate 1 point every {self.pool_regeneration} minute"
-                f"{'s' if self.pool_regeneration > 1 else ''} up to {self.pool_size} kudos"
+        embed = (
+            discord.Embed(
+                color=BLUE,
+                description="\n".join(message)
             )
-
-        await ctx.send(
-            embed=(
-                  discord.Embed(
-                        color=BLUE,
-                        description="\n".join(message)
-                  )
-                  .add_field(name="Leader Board", value="\n".join(leader_board), inline=False)
-                  .add_field(
-                      name="Instructions",
-                      value="Use the command `!kudos help` to learn about our kudos system.",
-                      inline=False
-                  )
-                  .add_field(
-                      name="Kudos Remaining",
-                      value=kudos_to_give,
-                      inline=False
-                  )
-                  .set_author(name="Kudos", icon_url=self.server.icon_url)
-                  .set_thumbnail(url="https://cdn.discordapp.com/emojis/669941420454576131.png?v=1")
-            )
+            .set_author(name="Kudos", icon_url=self.server.icon_url)
+            .set_thumbnail(url="https://cdn.discordapp.com/emojis/669941420454576131.png?v=1")
         )
+
+        if option.casefold() in {"leaderboard", "lb", "l", "leaders", "highscores", "hs"}:
+            leader_board = []
+            for index, (member_id, member_kudos) in enumerate(kudos.get_highest_kudos(5)):
+                member = self.server.get_member(member_id)
+                name = member.display_name if member else "*Old Member*"
+                entry = f"{index + 1}. {name} has {member_kudos} kudos"
+                if member.id == ctx.author.id:
+                    entry = f"**{entry}**"
+                leader_board.append(entry)
+
+            embed.add_field(name="Leader Board", value="\n".join(leader_board), inline=False)
+        else:
+            points_left = self.points_left_to_give(ctx.author.id)
+            kudos_to_give = f"You can give {points_left} kudos right now"
+            if points_left == 0:
+                kudos_to_give = "You cannot give any kudos right now"
+            if points_left < self.pool_size:
+                kudos_to_give += (
+                    f", your kudos will regenerate 1 point every {self.pool_regeneration} minute"
+                    f"{'s' if self.pool_regeneration > 1 else ''} up to {self.pool_size} kudos"
+                )
+
+            embed.add_field(
+                name="Kudos Remaining",
+                value=kudos_to_give,
+                inline=False
+            )
+
+        embed.add_field(
+            name="Instructions",
+            value=(
+                "Use the command `!kudos help` to learn about our kudos system or "
+                "`!kudos leaderboard` to see the high scores!"
+            ),
+            inline=False
+        )
+        await ctx.send(embed=embed)
 
     @Cog.listener()
     async def on_raw_reaction_add(self, reaction):
