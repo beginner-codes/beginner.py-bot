@@ -55,23 +55,31 @@ class Bumping(Cog):
 
         if not self.disboard.status == discord.Status.online:
             await ctx.send(
-                embed=discord.Embed(
-                    color=RED,
-                    description=(
-                        f"{ctx.author.mention} bump failed, {self.disboard.mention} appears to be offline. "
-                        "I'll check once a minute and let you know when it comes back online"
+                embed=(
+                    discord.Embed(
+                        color=RED,
+                        description=(
+                            f"{ctx.author.mention} bump failed, {self.disboard.mention} appears to be offline. "
+                            "I'll check once a minute and let you know when it comes back online"
+                        )
                     )
-                ).set_author(name="Bump Failed - Offline", icon_url=self.server.icon_url)
+                    .set_author(name="Bump Failed - Offline", icon_url=self.server.icon_url)
+                    .set_thumbnail(url="https://cdn.discordapp.com/emojis/651959497698574338.png?v=1")
+                )
             )
             await self.bump_recovery()
             return
 
         if not list(filter(lambda mem: mem.id == self.disboard.id, self.channel.members)):
             await ctx.send(
-                embed=discord.Embed(
-                    color=RED,
-                    description=f"{ctx.author.mention} bump failed, cannot see {self.disboard.mention}"
-                ).set_author(name="Bump Failed - Cannot See", icon_url=self.server.icon_url)
+                embed=(
+                    discord.Embed(
+                        color=RED,
+                        description=f"{ctx.author.mention} bump failed, cannot see {self.disboard.mention}"
+                    )
+                    .set_author(name="Bump Failed - Cannot See", icon_url=self.server.icon_url)
+                    .set_thumbnail(url="https://cdn.discordapp.com/emojis/651959497698574338.png?v=1")
+                )
             )
             return
 
@@ -92,13 +100,17 @@ class Bumping(Cog):
             next_bump_message.append(f"{next_bump_minutes} minute{'s' if next_bump_minutes > 1 else ''}")
 
         await ctx.send(
-            embed=discord.Embed(
-                color=color,
-                description=(
-                    f"{ctx.author.mention}, {message} "
-                    f"Next bump in {' & '.join(next_bump_message)}"
+            embed=(
+                discord.Embed(
+                    color=color,
+                    description=(
+                        f"{ctx.author.mention}, {message} "
+                        f"Next bump in {' & '.join(next_bump_message)}"
+                    )
                 )
-            ).set_author(name=title, icon_url=self.server.icon_url)
+                .set_author(name=title, icon_url=self.server.icon_url)
+                .set_thumbnail(url="https://cdn.discordapp.com/emojis/711749954837807135.png?v=1")
+            )
         )
 
         if next_bump.seconds > 7000:
