@@ -105,6 +105,24 @@ class Fun(Cog):
         result = [y for x, y, z in zip(numbers[:-2], numbers[1:-1], numbers[2:]) if y > x and y > z]
         await ctx.send(f"```py\n>>> mini_peaks({raw_numbers})\n{result}```")
 
+    @Cog.command(aliases=["compass", "directions", "compassdirections"])
+    async def compass_directions(self, ctx, raw_facing: str, *, raw_directions: str):
+        try:
+            facing = ast.literal_eval(raw_facing)
+            assert isinstance(facing, str)
+            directions = ast.literal_eval(raw_directions)
+            assert hasattr(directions, "__iter__") and list(filter(lambda item: isinstance(item, str), directions))
+        except (AssertionError, SyntaxError, ValueError):
+            await ctx.send("Facing must be a string, directions must be a sequence of strings")
+            return
+
+        cardinals = {"N": 0, "E": 1, "S": 2, "W": 3}
+        direction = cardinals[facing]
+        direction -= directions.count("L")
+        direction += directions.count("R")
+        result = {item: key for key, item in cardinals.items()}[direction % 4]
+        await ctx.send(f"```py\n>>> final_direction({raw_facing}, {raw_directions})\n{result}```")
+
     @Cog.command()
     async def dgo(self, ctx):
         await ctx.send(
