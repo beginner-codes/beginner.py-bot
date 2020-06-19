@@ -8,6 +8,7 @@ import traceback
 import resource
 import signal
 import sys
+import os
 
 
 class CPUTimeExceeded(Exception):
@@ -107,8 +108,14 @@ class Executer:
                     try:
                         ns_globals = self.generate_globals()
                         _, hard = resource.getrlimit(resource.RLIMIT_CPU)
-                        resource.setrlimit(resource.RLIMIT_AS, (2000, 2000))
-                        resource.setrlimit(resource.RLIMIT_CPU, (10, hard))
+                        resource.setrlimit(
+                            resource.RLIMIT_AS,
+                            (os.environ.get("MAX_SOFT_AS", 5000), os.environ.get("MAX_HARD_AS", 5000))
+                        )
+                        resource.setrlimit(
+                            resource.RLIMIT_CPU,
+                            (os.environ.get("MAX_SOFT_CPU", 10), os.environ.get("MAX_HARD_CPU", hard))
+                        )
                         signal.alarm(2)
                         result = runner(code_object, ns_globals, ns_globals)
                         signal.alarm(0)
