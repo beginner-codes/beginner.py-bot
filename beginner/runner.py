@@ -107,8 +107,8 @@ class Executer:
                     try:
                         ns_globals = self.generate_globals()
                         _, hard = resource.getrlimit(resource.RLIMIT_CPU)
-                        resource.setrlimit(resource.RLIMIT_AS, (1000, 1000))
-                        resource.setrlimit(resource.RLIMIT_CPU, (1, hard))
+                        # resource.setrlimit(resource.RLIMIT_AS, (1000, 1000))
+                        # resource.setrlimit(resource.RLIMIT_CPU, (1, hard))
                         signal.alarm(2)
                         result = runner(code_object, ns_globals, ns_globals)
                         signal.alarm(0)
