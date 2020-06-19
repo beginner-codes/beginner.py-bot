@@ -3,12 +3,12 @@ import ast
 import base64
 import contextlib
 import inspect
-import sys
 import traceback
 import resource
 import signal
 import sys
 import random
+import unicodedata
 
 
 class CPUTimeExceeded(Exception):
