@@ -8,6 +8,7 @@ import resource
 import signal
 import sys
 import random
+import unicodedata
 
 
 class CPUTimeExceeded(Exception):
