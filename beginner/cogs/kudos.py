@@ -106,6 +106,8 @@ class Kudos(Cog):
             .set_thumbnail(url="https://cdn.discordapp.com/emojis/669941420454576131.png?v=1")
         )
 
+        footer = "'!kudos help' or '!kudos leaderboard'"
+
         if option.casefold() in {"leaderboard", "lb", "l", "leaders", "highscores", "hs"}:
             leader_board = []
             for index, (member_id, member_kudos) in enumerate(kudos.get_highest_kudos(5)):
@@ -119,29 +121,10 @@ class Kudos(Cog):
             embed.add_field(name="Leader Board", value="\n".join(leader_board), inline=False)
         else:
             points_left = self.points_left_to_give(ctx.author.id)
-            kudos_to_give = f"You can give {points_left} kudos right now"
-            if points_left == 0:
-                kudos_to_give = "You cannot give any kudos right now"
-            if points_left < self.pool_size:
-                kudos_to_give += (
-                    f", your kudos will regenerate 1 point every {self.pool_regeneration} minute"
-                    f"{'s' if self.pool_regeneration > 1 else ''} up to {self.pool_size} kudos"
-                )
+            kudos_to_give = f"{points_left} of {self.pool_size}"
+            footer += f" | {kudos_to_give} to give"
 
-            embed.add_field(
-                name="Kudos Remaining",
-                value=kudos_to_give,
-                inline=False
-            )
-
-        embed.add_field(
-            name="Instructions",
-            value=(
-                "Use the command `!kudos help` to learn about our kudos system or "
-                "`!kudos leaderboard` to see the high scores!"
-            ),
-            inline=False
-        )
+        embed.set_footer(text=footer)
         await ctx.send(embed=embed)
 
     @Cog.listener()
@@ -198,7 +181,7 @@ class Kudos(Cog):
                     f"{reacter.mention} gave {message.author.mention} {kudos_points} kudos! "
                     f"[Jump To Message]({message.jump_url})"
                 )
-            ).set_footer(text=f"{reacter.display_name} you have {max(0, kudos_left - kudos_points)} kudos remaining")
+            ).set_footer(text=f"'!kudos help' or '!kudos leaderboard' | {max(0, kudos_left - kudos_points)} of {self.pool_size} to give")
         )
 
     @Cog.listener()
