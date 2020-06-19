@@ -84,7 +84,7 @@ class Bumping(Cog):
             return
 
         next_bump = timedelta(seconds=self.get_next_bump_timer())
-        message = f"Successfully bumped! Thanks {ctx.author.mention}!"
+        message = f"Successfully bumped!"
         if next_bump.seconds <= 7000:
             message = f"Server was already bumped. {ctx.author.mention} try again at the next bump reminder."
         title = f"Thanks {ctx.author.display_name}!" if next_bump.seconds > 7000 else "Already Bumped"
