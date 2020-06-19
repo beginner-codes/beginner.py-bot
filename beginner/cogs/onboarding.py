@@ -18,7 +18,9 @@ class OnBoarding(Cog):
         message = await channel.fetch_message(reaction.message_id)
         if message.mentions and message.mentions[0].id == reaction.user_id:
             await self.server.get_member(reaction.user_id).add_roles(
-                self.get_role("coders")
+                self.get_role("coders"),
+                self.get_role("new member"),
+                reason="New member role assignment"
             )
             await message.delete()
 
