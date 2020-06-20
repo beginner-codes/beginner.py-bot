@@ -3,6 +3,7 @@ import discord
 import ast
 import os
 import math
+import re
 
 
 class Fun(Cog):
@@ -122,6 +123,26 @@ class Fun(Cog):
         direction += directions.count("R")
         result = {item: key for key, item in cardinals.items()}[direction % 4]
         await ctx.send(f"```py\n>>> final_direction({raw_facing}, {raw_directions})\n{result}```")
+
+    @Cog.command(aliases=["intersection", "union", "intersectionunion"])
+    async def intersection_union(self, ctx, *, code: str):
+        def intersection_union(list_a, list_b):
+            intersection = list({item for item in list_a if item in list_b})
+            intersection.sort()
+            union = list(set(list_a) | set(list_b))
+            union.sort()
+            return intersection, union
+
+        try:
+            lists = re.findall(r"(\[[0-9,\s]+\])", code)
+            print(lists)
+            list_a = ast.literal_eval(lists[0])
+            list_b = ast.literal_eval(lists[1])
+        except (SyntaxError, ValueError) as e:
+            await ctx.send(f"There was an exception: {e.__name__}")
+        else:
+            result = intersection_union(list_a, list_b)
+            await ctx.send(f"```py\n>>> intersection_union({str(list_a)}, {str(list_b)})\n{result}```")
 
     @Cog.command()
     async def dgo(self, ctx):
