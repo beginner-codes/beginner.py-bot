@@ -96,7 +96,8 @@ class Bumping(Cog):
             title = f"Bump Did Not Go Through"
             color = YELLOW
 
-        schedule("bump-reminder", next_bump, self.bump_reminder)
+        if next_bump_timer >= 0:
+            schedule("bump-reminder", next_bump, self.bump_reminder)
         await self.clear_channel()
 
         next_bump_message = []
