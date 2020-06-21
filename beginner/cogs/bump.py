@@ -10,6 +10,7 @@ import discord.ext.commands
 import os
 import peewee
 import requests
+import re
 import bs4
 
 
@@ -209,31 +210,31 @@ class Bumping(Cog):
         await self.channel.purge(check=lambda m: m.author.id == self.client.user.id and not m.id == explanation.id)
 
     def get_next_bump_timer(self):
+        bot_version = os.environ.get('BOT_IMAGE_VERSION')
         # Make sure we look legit-ish
         headers = {
-            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.97 Safari/537.36'
+            "User-Agent": f"Beginner.py Server Bot{' - ' if bot_version else ''}{bot_version} - Find us at https://beginnerpy.com/"
         }
-        # Load the disboard server admin session cookie so disboard shows us the granular timer
-        cookies = {
-            "_disboard": self.settings.get("_disboard", "")
-        }
-        server_page = requests.get("https://disboard.org/server/644299523686006834", headers=headers, cookies=cookies)
-        # Save the cookie for the next bump check
-        self.settings["_disboard"] = server_page.cookies.get("_disboard")
+        server_page = requests.get("https://disboard.org/server/644299523686006834", headers=headers)
 
         dom = bs4.BeautifulSoup(server_page.content, 'html.parser')
-        # Find the bump button that has the granular timer
-        bump_buttons = dom.find_all(attrs={"href": "/server/bump/644299523686006834"})
-        if bump_buttons:
-            if "data-remaining" not in bump_buttons[0]:
-                return -1
 
-            next_bump = bump_buttons[0]["data-remaining"]
-            # Make sure it's a number
-            if next_bump.isdigit():
-                return int(next_bump)
-        # Didn't find it or it wasn't a valid number so we likely can bump now
-        return 0
+        bump_statuses = dom.find_all(attrs={"class": "server-bumped-at"})
+        bump_time = -1
+        if bump_statuses:
+            bump_status = bump_statuses[0].text.strip().casefold()
+            time_since = int(t.group()) if (t := re.search(r"\d+", bump_status)) else 0
+            bump_time = 2 * 60 * 60
+            if "second" in bump_status:
+                bump_time -= time_since
+            elif "minute" in bump_status:
+                bump_time -= time_since * 60
+            elif "hour" in bump_status:
+                bump_time -= time_since * 60 * 60
+            elif "day" in bump_status:
+                bump_time = 0
+
+        return bump_time
 
     @Cog.listener()
     async def on_raw_reaction_add(self, reaction):
