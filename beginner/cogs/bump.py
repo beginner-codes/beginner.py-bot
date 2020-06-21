@@ -83,12 +83,18 @@ class Bumping(Cog):
             )
             return
 
-        next_bump = timedelta(seconds=self.get_next_bump_timer())
+        next_bump_timer = self.get_next_bump_timer()
+        next_bump = timedelta(seconds=next_bump_timer)
         message = f"Successfully bumped!"
         if next_bump.seconds <= 7000:
             message = f"Server was already bumped. {ctx.author.mention} try again at the next bump reminder."
         title = f"Thanks {ctx.author.display_name}!" if next_bump.seconds > 7000 else "Already Bumped"
         color = BLUE if next_bump.seconds > 7000 else YELLOW
+
+        if next_bump_timer == -1:
+            message = f"Bump did not go through. Try again in a little while."
+            title = f"Bump Did Not Go Through"
+            color = YELLOW
 
         schedule("bump-reminder", next_bump, self.bump_reminder)
         await self.clear_channel()
@@ -211,7 +217,6 @@ class Bumping(Cog):
             "_disboard": self.settings.get("_disboard", "")
         }
         server_page = requests.get("https://disboard.org/server/644299523686006834", headers=headers, cookies=cookies)
-
         # Save the cookie for the next bump check
         self.settings["_disboard"] = server_page.cookies.get("_disboard")
 
@@ -219,6 +224,9 @@ class Bumping(Cog):
         # Find the bump button that has the granular timer
         bump_buttons = dom.find_all(attrs={"href": "/server/bump/644299523686006834"})
         if bump_buttons:
+            if "data-remaining" not in bump_buttons[0]:
+                return -1
+
             next_bump = bump_buttons[0]["data-remaining"]
             # Make sure it's a number
             if next_bump.isdigit():
