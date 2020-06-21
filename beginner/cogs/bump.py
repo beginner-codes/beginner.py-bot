@@ -71,57 +71,58 @@ class Bumping(Cog):
             await self.bump_recovery()
             return
 
-        if not list(filter(lambda mem: mem.id == self.disboard.id, self.channel.members)):
+        async with ctx.channel.typing():
+            if not list(filter(lambda mem: mem.id == self.disboard.id, self.channel.members)):
+                await ctx.send(
+                    embed=(
+                        discord.Embed(
+                            color=RED,
+                            description=f"{ctx.author.mention} bump failed, cannot see {self.disboard.mention}"
+                        )
+                        .set_author(name="Bump Failed - Cannot See", icon_url=self.server.icon_url)
+                        .set_thumbnail(url="https://cdn.discordapp.com/emojis/651959497698574338.png?v=1")
+                    )
+                )
+                return
+
+            next_bump_timer = self.get_next_bump_timer()
+            next_bump = timedelta(seconds=next_bump_timer)
+            message = f"Successfully bumped!"
+            if next_bump.seconds <= 7000:
+                message = f"Server was already bumped. {ctx.author.mention} try again at the next bump reminder."
+            title = f"Thanks {ctx.author.display_name}!" if next_bump.seconds > 7000 else "Already Bumped"
+            color = BLUE if next_bump.seconds > 7000 else YELLOW
+
+            if next_bump_timer == -1:
+                message = f"Bump did not go through. Try again in a little while."
+                title = f"Bump Did Not Go Through"
+                color = YELLOW
+
+            if next_bump_timer >= 0:
+                schedule("bump-reminder", next_bump, self.bump_reminder)
+            await self.clear_channel()
+
+            next_bump_message = []
+            next_bump_hour = next_bump.seconds//3600
+            next_bump_minutes = next_bump.seconds // 60 % 60
+            if next_bump_hour > 0:
+                next_bump_message.append(f"{next_bump_hour} hour{'s' if next_bump_hour > 1 else ''}")
+            if next_bump_minutes > 0:
+                next_bump_message.append(f"{next_bump_minutes} minute{'s' if next_bump_minutes > 1 else ''}")
+
             await ctx.send(
                 embed=(
                     discord.Embed(
-                        color=RED,
-                        description=f"{ctx.author.mention} bump failed, cannot see {self.disboard.mention}"
+                        color=color,
+                        description=f"{message} Next bump in {' & '.join(next_bump_message)}"
                     )
-                    .set_author(name="Bump Failed - Cannot See", icon_url=self.server.icon_url)
-                    .set_thumbnail(url="https://cdn.discordapp.com/emojis/651959497698574338.png?v=1")
+                    .set_author(name=title, icon_url=ctx.author.avatar_url)
+                    .set_thumbnail(url="https://cdn.discordapp.com/emojis/711749954837807135.png?v=1")
                 )
             )
-            return
 
-        next_bump_timer = self.get_next_bump_timer()
-        next_bump = timedelta(seconds=next_bump_timer)
-        message = f"Successfully bumped!"
-        if next_bump.seconds <= 7000:
-            message = f"Server was already bumped. {ctx.author.mention} try again at the next bump reminder."
-        title = f"Thanks {ctx.author.display_name}!" if next_bump.seconds > 7000 else "Already Bumped"
-        color = BLUE if next_bump.seconds > 7000 else YELLOW
-
-        if next_bump_timer == -1:
-            message = f"Bump did not go through. Try again in a little while."
-            title = f"Bump Did Not Go Through"
-            color = YELLOW
-
-        if next_bump_timer >= 0:
-            schedule("bump-reminder", next_bump, self.bump_reminder)
-        await self.clear_channel()
-
-        next_bump_message = []
-        next_bump_hour = next_bump.seconds//3600
-        next_bump_minutes = next_bump.seconds // 60 % 60
-        if next_bump_hour > 0:
-            next_bump_message.append(f"{next_bump_hour} hour{'s' if next_bump_hour > 1 else ''}")
-        if next_bump_minutes > 0:
-            next_bump_message.append(f"{next_bump_minutes} minute{'s' if next_bump_minutes > 1 else ''}")
-
-        await ctx.send(
-            embed=(
-                discord.Embed(
-                    color=color,
-                    description=f"{message} Next bump in {' & '.join(next_bump_message)}"
-                )
-                .set_author(name=title, icon_url=ctx.author.avatar_url)
-                .set_thumbnail(url="https://cdn.discordapp.com/emojis/711749954837807135.png?v=1")
-            )
-        )
-
-        if next_bump.seconds > 7000:
-            await self.award_points(ctx.message)
+            if next_bump.seconds > 7000:
+                await self.award_points(ctx.message)
 
     @Cog.listener()
     async def on_message(self, message: discord.Message):
