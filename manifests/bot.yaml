@@ -45,7 +45,7 @@ spec:
               value: "bpydb-pool"
             - name: "BOT_IMAGE_VERSION"
               value: "<IMAGE_VERSION>"
-            - name: "beginner.cogs.bump"
+            - name: "beginner.cogs.bumping"
               value: "0"
             - name: "DB_PASSWORD"
               valueFrom:
