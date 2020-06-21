@@ -18,6 +18,10 @@ class Cog(commands.Cog, metaclass=TaggableMeta):
     @commands.Cog.listener()
     async def on_ready(self):
         self.logger.debug("Cog ready")
+        await self.ready()
+
+    async def ready(self):
+        return
 
     @property
     def server(self) -> Guild:
