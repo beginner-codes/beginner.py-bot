@@ -144,6 +144,21 @@ class Fun(Cog):
             result = intersection_union(list_a, list_b)
             await ctx.send(f"```py\n>>> intersection_union({str(list_a)}, {str(list_b)})\n{result}```")
 
+    @Cog.command(aliases=["countoverlapping", "overlapping"])
+    async def count_overlapping(self, ctx, *, code: str):
+        def count_overlapping(intervals, point):
+            return len([a for a, b in intervals if a <= point <= b])
+
+        try:
+            data = re.findall(r"(\[[0-9,\s\[\]]+\]|\d+)", code)
+            intervals = ast.literal_eval(data[0])
+            point = ast.literal_eval(data[1])
+        except (SyntaxError, ValueError) as e:
+            await ctx.send(f"There was an exception: {e.__name__}")
+        else:
+            result = count_overlapping(intervals, point)
+            await ctx.send(f"```py\n>>> count_overlapping({intervals}, {point})\n{result}```")
+
     @Cog.command()
     async def dgo(self, ctx):
         await ctx.send(
