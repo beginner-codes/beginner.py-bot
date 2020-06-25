@@ -174,7 +174,6 @@ class Kudos(Cog):
         )
 
         await channel.send(
-            delete_after=15,
             embed=discord.Embed(
                 color=BLUE,
                 description=(
