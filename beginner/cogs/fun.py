@@ -159,6 +159,11 @@ class Fun(Cog):
             result = count_overlapping(intervals, point)
             await ctx.send(f"```py\n>>> count_overlapping({intervals}, {point})\n{result}```")
 
+    @Cog.command(aliases=["rearranged"])
+    async def rearranged_difference(self, ctx, number: int):
+        result = int("".join(reversed(sorted(str(number))))) - int("".join(sorted(str(number))))
+        await ctx.send(f"```py\n>>> rearranged_difference({number})\n{result}```")
+
     @Cog.command()
     async def dgo(self, ctx):
         await ctx.send(
