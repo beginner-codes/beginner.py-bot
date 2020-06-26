@@ -13,6 +13,7 @@ requests = "^2.22"
 google = "^2.0"
 google-api-python-client = "^1.7"
 numpy = "^1.19.0"
+bevy = "^0.2.0"
 
 [tool.poetry.dev-dependencies]
 
