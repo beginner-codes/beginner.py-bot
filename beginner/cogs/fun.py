@@ -175,7 +175,7 @@ class Fun(Cog):
         result = left_digit(input_string)
         await ctx.send(f"```py\n>>> rearranged_difference(\"{input_string}\")\n{result}```")
 
-@Cog.command()
+    @Cog.command()
     async def dgo(self, ctx):
         await ctx.send(
             embed=discord.Embed().set_image(
