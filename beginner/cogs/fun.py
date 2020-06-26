@@ -162,9 +162,20 @@ class Fun(Cog):
     @Cog.command(aliases=["rearranged"])
     async def rearranged_difference(self, ctx, number: int):
         result = int("".join(reversed(sorted(str(number))))) - int("".join(sorted(str(number))))
-        await ctx.send(f"```py\n>>> rearranged_difference({number})\n{result}```")
+        await ctx.send(f"```py\n>>> rearranged_difference({number})\n{result}```")\
 
-    @Cog.command()
+    @Cog.command(aliases=["left", "leftdigit", "leftmost", "left_most", "leftmost_digit", "left_most_digit", "leftmostdigit"])
+    async def left_digit(self, ctx, input_string: str):
+        def left_digit(string: str):
+            for c in string:
+                if c.isdigit():
+                    return int(c)
+            return None
+
+        result = left_digit(input_string)
+        await ctx.send(f"```py\n>>> rearranged_difference(\"{input_string}\")\n{result}```")
+
+@Cog.command()
     async def dgo(self, ctx):
         await ctx.send(
             embed=discord.Embed().set_image(
