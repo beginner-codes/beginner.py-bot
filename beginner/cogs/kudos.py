@@ -148,7 +148,7 @@ class Kudos(Cog):
         kudos_left = self.points_left_to_give(reaction.user_id)
         kudos_points = self.point_values[level]
 
-        if kudos_left < kudos_points:
+        if -1 < kudos_left < kudos_points:
             await channel.send(
                 delete_after=5,
                 embed=discord.Embed(
@@ -173,6 +173,11 @@ class Kudos(Cog):
             kudos_points, message.author.id, reaction.user_id, message.id
         )
 
+        multiplier = self.get_pool_multiplier(reaction.member)
+        kudos_message = f"{max(0, kudos_left - kudos_points)} of {self.pool_size * multiplier}"
+        if multiplier == 0:
+            kudos_message = "∞"
+
         await channel.send(
             embed=discord.Embed(
                 color=BLUE,
@@ -180,7 +185,7 @@ class Kudos(Cog):
                     f"{reacter.mention} gave {message.author.mention} {kudos_points} kudos! "
                     f"[Jump To Message]({message.jump_url})"
                 )
-            ).set_footer(text=f"'!kudos help' or '!kudos leaderboard' | {max(0, kudos_left - kudos_points)} of {self.pool_size} to give")
+            ).set_footer(text=f"'!kudos help' or '!kudos leaderboard' | {kudos_message} kudos to give")
         )
 
     @Cog.listener()
@@ -211,18 +216,26 @@ class Kudos(Cog):
             await reaction.remove(user)
 
     def points_left_to_give(self, user_id: int):
-        since = datetime.utcnow() - timedelta(minutes=self.pool_regeneration * self.pool_size)
+        member = self.server.get_member(user_id)
+        multiplier = self.get_pool_multiplier(member)
+
+        if multiplier == 0:
+            return -1  # Infinite kudos
+
+        pool_size = self.pool_size * multiplier
+
+        since = datetime.utcnow() - timedelta(minutes=self.pool_regeneration * pool_size)
         kudos_given = kudos.get_kudos_given_since(user_id, since)
 
         if not kudos_given:
-            return self.pool_size
+            return pool_size
 
-        total_points = self.pool_size
+        total_points = pool_size
         last_given = kudos_given[-1][0]
         for given, points in reversed(kudos_given):
             # Regenerate points since the last time they were given
             total_points = min(
-                self.pool_size,
+                pool_size,
                 total_points + (given - last_given).seconds // 60 // self.pool_regeneration
             )
             last_given = given
@@ -231,11 +244,20 @@ class Kudos(Cog):
 
         # Regenerate all points
         total_points = min(
-            self.pool_size,
+            pool_size,
             total_points + (datetime.utcnow() - last_given).seconds // 60 // self.pool_regeneration
         )
 
         return total_points
+
+    def get_pool_multiplier(self, member: discord.Member) -> int:
+        if self.get_role("jedi council") in member.roles:
+            return 0  # Infinite kudos
+        elif self.get_role("mods") in member.roles:
+            return 4
+        elif self.get_role("helpers") in member.roles:
+            return 2
+        return 1
 
 
 def setup(client):
