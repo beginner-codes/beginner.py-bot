@@ -87,7 +87,7 @@ class Executer:
             kwargs["file"] = self.stdout
         print(*args, **kwargs)
 
-    def run(self, code, runner=exec):
+    def run(self, code, runner=exec, docs=False):
         exceptions = []
 
         with self.set_recursion_depth(50):
@@ -114,7 +114,14 @@ class Executer:
                         result = runner(code_object, ns_globals, ns_globals)
                         signal.alarm(0)
                         if runner == eval:
-                            self.stdout.write(repr(result))
+                            if docs:
+                                self.stdout.write(
+                                    result.__doc__
+                                    if hasattr(result, "__doc__") and result.__doc__.strip()
+                                    else "NO DOCS"
+                                )
+                            else:
+                                self.stdout.write(repr(result))
                     except MemoryError:
                         exceptions.append("MemoryError: Exceeded process memory limits")
                     except CPUTimeExceeded:
@@ -173,10 +180,12 @@ if __name__ == "__main__":
     )
     runners = {
         "eval": eval,
-        "exec": exec
+        "exec": exec,
+        "docs": eval
     }
-    runner = runners.get(len(sys.argv) < 2 or sys.argv[1], exec)
-    out, exceptions = executer.run(code, runner)
+    arg = len(sys.argv) < 2 or sys.argv[1]
+    runner = runners.get(arg, exec)
+    out, exceptions = executer.run(code, runner, arg == "docs")
     print(base64.b64encode(out.encode()).decode())
     for exception in exceptions:
         print(base64.b64encode(exception.encode()).decode())

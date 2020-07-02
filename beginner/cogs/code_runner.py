@@ -199,6 +199,32 @@ class CodeRunner(Cog):
             )
         )
 
+    @Cog.command()
+    async def docs(self, ctx, *, content):
+        if not self.settings.get("EVAL_ENABLED", False):
+            await ctx.send("The docs command has been disabled.")
+            return
+
+        code = re.sub(r"^\s*(```(python|py)|`?)\s*|\s*(```|`)\s*$", "", content)
+        title = "Code Docs"
+        color = 0x4285F4
+
+        code_message = f"{ctx.author.mention} here are the docs you [requested]({ctx.message.jump_url})"
+        code_message += f"\n```py\n{code}```"
+
+        message, exceptions = await self.code_runner("docs", code)
+
+        if exceptions:
+            title = "Code Docs - Unable to retrieve"
+            color = 0xEA4335
+
+        output = "\n".join(message)
+        await ctx.send(
+            embed=discord.Embed(description=f"{code_message.strip()} ```{output}\n```", color=color).set_author(
+                name=title, icon_url=self.server.icon_url
+            )
+        )
+
 
 def setup(client):
     client.add_cog(CodeRunner(client))
