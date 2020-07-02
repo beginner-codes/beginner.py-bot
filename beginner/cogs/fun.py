@@ -175,6 +175,42 @@ class Fun(Cog):
         result = left_digit(input_string)
         await ctx.send(f"```py\n>>> left_digit(\"{input_string}\")\n{result}```")
 
+    @Cog.command(aliases=["correctinequality", "inequality"])
+    async def correct_inequality(self, ctx, *, expression: str):
+        def correct_inequality(expression: str):
+            tokens = expression.split(" ")
+            steps = []
+
+            if len(tokens) < 3 or (len(tokens) - 3) % 2 != 0:
+                steps.append("INVALID INPUT")
+                return steps
+
+            valid = True
+            for index in range(0, len(tokens) - 2, 2):
+                a, op, b = tokens[index:index + 3]
+                steps.append(f"{a} {op} {b}")
+                if op not in {">", "<"} or not a.isdigit() or not b.isdigit():
+                    steps[-1] += " - INVALID"
+                    valid = False
+                    break
+                elif op == "<" and int(a) >= int(b):
+                    steps[-1] += " - False"
+                    valid = False
+                    break
+                elif op == ">" and int(a) <= int(b):
+                    steps[-1] += " - False"
+                    valid = False
+                    break
+                else:
+                    steps[-1] += " - True"
+
+            steps.append("VALID EXPRESSION" if valid else "INVALID EXPRESSION")
+            return steps
+
+        result = "\n".join(correct_inequality(expression))
+        await ctx.send(f"`{expression}`\n```py\n{result}\n```")
+
+
     @Cog.command()
     async def dgo(self, ctx):
         await ctx.send(
