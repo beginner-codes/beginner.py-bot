@@ -72,6 +72,7 @@ class Bumping(Cog):
             return
 
         async with ctx.channel.typing():
+            await asyncio.sleep(20)
             if not list(filter(lambda mem: mem.id == self.disboard.id, self.channel.members)):
                 await ctx.send(
                     embed=(
