@@ -205,7 +205,7 @@ class Bumping(Cog):
             await self.bump_reminder()
             return
 
-        schedule("disboard-recovery", timedelta(minutes=1), self.bump_recovery)
+        schedule("disboard-recovery", timedelta(minutes=1), self.bump_recovery, no_duplication=True)
 
     async def clear_channel(self):
         explanation = await self.get_explanation_message()
