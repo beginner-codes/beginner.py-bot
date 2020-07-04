@@ -74,7 +74,9 @@ class Bumping(Cog):
                 return
 
             async with ctx.channel.typing():
+                confirmation = await ctx.send("Watching for the bump confirmation...")
                 await asyncio.sleep(20)
+                await confirmation.delete()
                 if not list(filter(lambda mem: mem.id == self.disboard.id, self.channel.members)):
                     await ctx.send(
                         embed=(
