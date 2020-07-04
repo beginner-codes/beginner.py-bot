@@ -20,6 +20,7 @@ class Bumping(Cog):
         self._channel = None
         self._disboard = None
         self._role = None
+        self._bump_lock = asyncio.Lock()
 
     @property
     def channel(self) -> discord.TextChannel:
@@ -41,89 +42,90 @@ class Bumping(Cog):
 
     @Cog.command(name="d")
     async def bump_handler(self, ctx: discord.ext.commands.Context, action: str):
-        if not action.casefold() == "bump":
-            return
+        async with self._bump_lock:
+            if not action.casefold() == "bump":
+                return
 
-        if task_scheduled("bump-reminder"):
-            await ctx.send(
-                embed=discord.Embed(
-                    color=YELLOW,
-                    description=f"{ctx.author.mention} please wait until the next bump reminder"
-                ).set_author(name="Please Wait", icon_url=self.server.icon_url),
-                delete_after=10
-            )
-            return
-
-        if not self.disboard.status == discord.Status.online:
-            await ctx.send(
-                embed=(
-                    discord.Embed(
-                        color=RED,
-                        description=(
-                            f"{ctx.author.mention} bump failed, {self.disboard.mention} appears to be offline. "
-                            "I'll check once a minute and let you know when it comes back online"
-                        )
-                    )
-                    .set_author(name="Bump Failed - Offline", icon_url=self.server.icon_url)
-                    .set_thumbnail(url="https://cdn.discordapp.com/emojis/651959497698574338.png?v=1")
+            if task_scheduled("bump-reminder"):
+                await ctx.send(
+                    embed=discord.Embed(
+                        color=YELLOW,
+                        description=f"{ctx.author.mention} please wait until the next bump reminder"
+                    ).set_author(name="Please Wait", icon_url=self.server.icon_url),
+                    delete_after=10
                 )
-            )
-            await self.bump_recovery()
-            return
+                return
 
-        async with ctx.channel.typing():
-            await asyncio.sleep(20)
-            if not list(filter(lambda mem: mem.id == self.disboard.id, self.channel.members)):
+            if not self.disboard.status == discord.Status.online:
                 await ctx.send(
                     embed=(
                         discord.Embed(
                             color=RED,
-                            description=f"{ctx.author.mention} bump failed, cannot see {self.disboard.mention}"
+                            description=(
+                                f"{ctx.author.mention} bump failed, {self.disboard.mention} appears to be offline. "
+                                "I'll check once a minute and let you know when it comes back online"
+                            )
                         )
-                        .set_author(name="Bump Failed - Cannot See", icon_url=self.server.icon_url)
+                        .set_author(name="Bump Failed - Offline - DEV", icon_url=self.server.icon_url)
                         .set_thumbnail(url="https://cdn.discordapp.com/emojis/651959497698574338.png?v=1")
                     )
                 )
+                await self.bump_recovery()
                 return
 
-            next_bump_timer = self.get_next_bump_timer()
-            next_bump = timedelta(seconds=next_bump_timer)
-            message = f"Successfully bumped!"
-            if next_bump.seconds <= 7000:
-                message = f"Server was already bumped. {ctx.author.mention} try again at the next bump reminder."
-            title = f"Thanks {ctx.author.display_name}!" if next_bump.seconds > 7000 else "Already Bumped"
-            color = BLUE if next_bump.seconds > 7000 else YELLOW
-
-            if next_bump_timer == -1:
-                message = f"Bump did not go through. Try again in a little while."
-                title = f"Bump Did Not Go Through"
-                color = YELLOW
-
-            if next_bump_timer >= 0:
-                schedule("bump-reminder", next_bump, self.bump_reminder)
-            await self.clear_channel()
-
-            next_bump_message = []
-            next_bump_hour = next_bump.seconds//3600
-            next_bump_minutes = next_bump.seconds // 60 % 60
-            if next_bump_hour > 0:
-                next_bump_message.append(f"{next_bump_hour} hour{'s' if next_bump_hour > 1 else ''}")
-            if next_bump_minutes > 0:
-                next_bump_message.append(f"{next_bump_minutes} minute{'s' if next_bump_minutes > 1 else ''}")
-
-            await ctx.send(
-                embed=(
-                    discord.Embed(
-                        color=color,
-                        description=f"{message} Next bump in {' & '.join(next_bump_message)}"
+            async with ctx.channel.typing():
+                await asyncio.sleep(20)
+                if not list(filter(lambda mem: mem.id == self.disboard.id, self.channel.members)):
+                    await ctx.send(
+                        embed=(
+                            discord.Embed(
+                                color=RED,
+                                description=f"{ctx.author.mention} bump failed, cannot see {self.disboard.mention}"
+                            )
+                            .set_author(name="Bump Failed - Cannot See", icon_url=self.server.icon_url)
+                            .set_thumbnail(url="https://cdn.discordapp.com/emojis/651959497698574338.png?v=1")
+                        )
                     )
-                    .set_author(name=title, icon_url=ctx.author.avatar_url)
-                    .set_thumbnail(url="https://cdn.discordapp.com/emojis/711749954837807135.png?v=1")
-                )
-            )
+                    return
 
-            if next_bump.seconds > 7000:
-                await self.award_points(ctx.message)
+                next_bump_timer = self.get_next_bump_timer()
+                next_bump = timedelta(seconds=next_bump_timer)
+                message = f"Successfully bumped!"
+                if next_bump.seconds <= 7000:
+                    message = f"Server was already bumped. {ctx.author.mention} try again at the next bump reminder."
+                title = f"Thanks {ctx.author.display_name}!" if next_bump.seconds > 7000 else "Already Bumped"
+                color = BLUE if next_bump.seconds > 7000 else YELLOW
+
+                if next_bump_timer == -1:
+                    message = f"Bump did not go through. Try again in a little while."
+                    title = f"Bump Did Not Go Through"
+                    color = YELLOW
+
+                if next_bump_timer >= 0:
+                    schedule("bump-reminder", next_bump, self.bump_reminder)
+                await self.clear_channel()
+
+                next_bump_message = []
+                next_bump_hour = next_bump.seconds//3600
+                next_bump_minutes = next_bump.seconds // 60 % 60
+                if next_bump_hour > 0:
+                    next_bump_message.append(f"{next_bump_hour} hour{'s' if next_bump_hour > 1 else ''}")
+                if next_bump_minutes > 0:
+                    next_bump_message.append(f"{next_bump_minutes} minute{'s' if next_bump_minutes > 1 else ''}")
+
+                await ctx.send(
+                    embed=(
+                        discord.Embed(
+                            color=color,
+                            description=f"{message} Next bump in {' & '.join(next_bump_message)}"
+                        )
+                        .set_author(name=title, icon_url=ctx.author.avatar_url)
+                        .set_thumbnail(url="https://cdn.discordapp.com/emojis/711749954837807135.png?v=1")
+                    )
+                )
+
+                if next_bump.seconds > 7000:
+                    await self.award_points(ctx.message)
 
     @Cog.listener()
     async def on_message(self, message: discord.Message):
