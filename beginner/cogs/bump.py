@@ -10,6 +10,7 @@ import discord.ext.commands
 import os
 import peewee
 import requests
+import re
 import bs4
 
 
@@ -70,50 +71,59 @@ class Bumping(Cog):
             await self.bump_recovery()
             return
 
-        if not list(filter(lambda mem: mem.id == self.disboard.id, self.channel.members)):
+        async with ctx.channel.typing():
+            await asyncio.sleep(20)
+            if not list(filter(lambda mem: mem.id == self.disboard.id, self.channel.members)):
+                await ctx.send(
+                    embed=(
+                        discord.Embed(
+                            color=RED,
+                            description=f"{ctx.author.mention} bump failed, cannot see {self.disboard.mention}"
+                        )
+                        .set_author(name="Bump Failed - Cannot See", icon_url=self.server.icon_url)
+                        .set_thumbnail(url="https://cdn.discordapp.com/emojis/651959497698574338.png?v=1")
+                    )
+                )
+                return
+
+            next_bump_timer = self.get_next_bump_timer()
+            next_bump = timedelta(seconds=next_bump_timer)
+            message = f"Successfully bumped!"
+            if next_bump.seconds <= 7000:
+                message = f"Server was already bumped. {ctx.author.mention} try again at the next bump reminder."
+            title = f"Thanks {ctx.author.display_name}!" if next_bump.seconds > 7000 else "Already Bumped"
+            color = BLUE if next_bump.seconds > 7000 else YELLOW
+
+            if next_bump_timer == -1:
+                message = f"Bump did not go through. Try again in a little while."
+                title = f"Bump Did Not Go Through"
+                color = YELLOW
+
+            if next_bump_timer >= 0:
+                schedule("bump-reminder", next_bump, self.bump_reminder)
+            await self.clear_channel()
+
+            next_bump_message = []
+            next_bump_hour = next_bump.seconds//3600
+            next_bump_minutes = next_bump.seconds // 60 % 60
+            if next_bump_hour > 0:
+                next_bump_message.append(f"{next_bump_hour} hour{'s' if next_bump_hour > 1 else ''}")
+            if next_bump_minutes > 0:
+                next_bump_message.append(f"{next_bump_minutes} minute{'s' if next_bump_minutes > 1 else ''}")
+
             await ctx.send(
                 embed=(
                     discord.Embed(
-                        color=RED,
-                        description=f"{ctx.author.mention} bump failed, cannot see {self.disboard.mention}"
+                        color=color,
+                        description=f"{message} Next bump in {' & '.join(next_bump_message)}"
                     )
-                    .set_author(name="Bump Failed - Cannot See", icon_url=self.server.icon_url)
-                    .set_thumbnail(url="https://cdn.discordapp.com/emojis/651959497698574338.png?v=1")
+                    .set_author(name=title, icon_url=ctx.author.avatar_url)
+                    .set_thumbnail(url="https://cdn.discordapp.com/emojis/711749954837807135.png?v=1")
                 )
             )
-            return
 
-        next_bump = timedelta(seconds=self.get_next_bump_timer())
-        message = f"Successfully bumped!"
-        if next_bump.seconds <= 7000:
-            message = f"Server was already bumped. {ctx.author.mention} try again at the next bump reminder."
-        title = f"Thanks {ctx.author.display_name}!" if next_bump.seconds > 7000 else "Already Bumped"
-        color = BLUE if next_bump.seconds > 7000 else YELLOW
-
-        schedule("bump-reminder", next_bump, self.bump_reminder)
-        await self.clear_channel()
-
-        next_bump_message = []
-        next_bump_hour = next_bump.seconds//3600
-        next_bump_minutes = next_bump.seconds // 60 % 60
-        if next_bump_hour > 0:
-            next_bump_message.append(f"{next_bump_hour} hour{'s' if next_bump_hour > 1 else ''}")
-        if next_bump_minutes > 0:
-            next_bump_message.append(f"{next_bump_minutes} minute{'s' if next_bump_minutes > 1 else ''}")
-
-        await ctx.send(
-            embed=(
-                discord.Embed(
-                    color=color,
-                    description=f"{message} Next bump in {' & '.join(next_bump_message)}"
-                )
-                .set_author(name=title, icon_url=ctx.author.avatar_url)
-                .set_thumbnail(url="https://cdn.discordapp.com/emojis/711749954837807135.png?v=1")
-            )
-        )
-
-        if next_bump.seconds > 7000:
-            await self.award_points(ctx.message)
+            if next_bump.seconds > 7000:
+                await self.award_points(ctx.message)
 
     @Cog.listener()
     async def on_message(self, message: discord.Message):
@@ -202,29 +212,31 @@ class Bumping(Cog):
         await self.channel.purge(check=lambda m: m.author.id == self.client.user.id and not m.id == explanation.id)
 
     def get_next_bump_timer(self):
+        bot_version = os.environ.get('BOT_IMAGE_VERSION')
         # Make sure we look legit-ish
         headers = {
-            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.97 Safari/537.36'
+            "User-Agent": f"Beginner.py Server Bot{' - ' if bot_version else ''}{bot_version} - Find us at https://beginnerpy.com/"
         }
-        # Load the disboard server admin session cookie so disboard shows us the granular timer
-        cookies = {
-            "_disboard": self.settings.get("_disboard", "")
-        }
-        server_page = requests.get("https://disboard.org/server/644299523686006834", headers=headers, cookies=cookies)
-
-        # Save the cookie for the next bump check
-        self.settings["_disboard"] = server_page.cookies.get("_disboard")
+        server_page = requests.get("https://disboard.org/server/644299523686006834", headers=headers)
 
         dom = bs4.BeautifulSoup(server_page.content, 'html.parser')
-        # Find the bump button that has the granular timer
-        bump_buttons = dom.find_all(attrs={"href": "/server/bump/644299523686006834"})
-        if bump_buttons:
-            next_bump = bump_buttons[0]["data-remaining"]
-            # Make sure it's a number
-            if next_bump.isdigit():
-                return int(next_bump)
-        # Didn't find it or it wasn't a valid number so we likely can bump now
-        return 0
+
+        bump_statuses = dom.find_all(attrs={"class": "server-bumped-at"})
+        bump_time = -1
+        if bump_statuses:
+            bump_status = bump_statuses[0].text.strip().casefold()
+            time_since = int(t.group()) if (t := re.search(r"\d+", bump_status)) else 0
+            bump_time = 2 * 60 * 60
+            if "second" in bump_status:
+                bump_time -= time_since
+            elif "minute" in bump_status:
+                bump_time -= time_since * 60
+            elif "hour" in bump_status:
+                bump_time -= time_since * 60 * 60
+            elif "day" in bump_status:
+                bump_time = 0
+
+        return bump_time
 
     @Cog.listener()
     async def on_raw_reaction_add(self, reaction):
