@@ -66,7 +66,7 @@ class Bumping(Cog):
                                 "I'll check once a minute and let you know when it comes back online"
                             )
                         )
-                        .set_author(name="Bump Failed - Offline - DEV", icon_url=self.server.icon_url)
+                        .set_author(name="Bump Failed - Offline", icon_url=self.server.icon_url)
                         .set_thumbnail(url="https://cdn.discordapp.com/emojis/651959497698574338.png?v=1")
                     )
                 )
