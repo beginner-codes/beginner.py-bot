@@ -161,6 +161,12 @@ class RulesCog(Cog):
                 )
             )
 
+    @Cog.command(name="formatting", aliases=("format", "code"))
+    async def show_formatting_rule(self, ctx, *, _=None):
+        rule = RulesCog.get_rule("formatting", fuzzy=True)
+        if rule:
+            await ctx.send(embed=self.build_rule_embed(rule))
+
     def build_rule_embed(self, rule):
         return Embed(description=self.clean_rule(rule.message), color=0x306998).set_author(
             name=rule.title, icon_url=self.server.icon_url
