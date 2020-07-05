@@ -1,4 +1,5 @@
 from beginner.cog import Cog
+from beginner.colors import *
 import discord
 import discord.ext.commands
 import asyncio
@@ -30,6 +31,12 @@ class HelpRotatorCog(Cog):
 
         next_channel = self.get_next_channel()
         available_insert = self.get_channel("web-dev").position
+        await next_channel.send(
+            embed=discord.Embed(
+                description="Feel free to ask any of your Python related questions in this channel!",
+                color=GREEN
+            ).set_author(name="This Channel Is Available", icon_url=self.server.icon_url)
+        )
         await next_channel.edit(category=self.available_category, position=available_insert)
 
     async def rotate_occupied_channels(self, message: discord.Message):
