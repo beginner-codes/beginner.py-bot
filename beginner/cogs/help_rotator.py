@@ -1,8 +1,10 @@
 from beginner.cog import Cog
 from beginner.colors import *
+from beginner.scheduler import schedule
+from beginner.tags import tag
+import datetime
 import discord
 import discord.ext.commands
-import asyncio
 
 
 class HelpRotatorCog(Cog):
@@ -20,6 +22,44 @@ class HelpRotatorCog(Cog):
             await self.rotate_available_channels(message)
         elif self.is_occupied_python_help_channel(message.channel):
             await self.rotate_occupied_channels(message)
+
+    @Cog.command("remind", aliases=["remind-me", "remindme"])
+    async def remind(self, ctx: discord.ext.commands.Context, duration:str, *, message: str):
+        minutes = 0
+        hours = 0
+        days = 0
+        if duration.casefold().endswith("d"):
+            days = int(duration[:-1])
+        elif duration.casefold().endswith("h"):
+            hours = int(duration[:-1])
+        elif duration.casefold().endswith("m"):
+            minutes = int(duration[:-1])
+        elif duration.isdigit():
+            minutes = int(duration)
+        else:
+            await ctx.send(f"{ctx.author.mention} durations must be of the format `123d`, `123h`, or `123m`/`123`.", delete_after=15)
+            return
+
+        if minutes < 1 and hours < 1 and days < 1:
+            await ctx.send(f"{ctx.author.mention} cannot set a reminder for less than a minute", delete_after=15)
+            return
+
+        time_duration = datetime.timedelta(days=days, hours=hours, minutes=minutes)
+        schedule("reminder", time_duration, self.reminder_handler, message, ctx.message.id, ctx.channel.id)
+        await ctx.send(f"{ctx.author.mention} a reminder has been set", delete_after=15)
+
+    @tag("schedule", "reminder")
+    async def reminder_handler(self, content: str, message_id: int, channel_id: int):
+        channel: discord.TextChannel = self.server.get_channel(channel_id)
+        message: discord.Message = await channel.fetch_message(message_id)
+        author: discord.Member = message.author
+        await channel.send(
+            content=f"{author.mention}",
+            embed=discord.Embed(
+                description=content,
+                color=BLUE
+            ).set_author(name="Reminder ⏰")
+        )
 
     @Cog.command("free-channel", aliases=["free"])
     async def free_channel(self, ctx: discord.ext.commands.Context):
