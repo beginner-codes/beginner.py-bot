@@ -45,8 +45,11 @@ class HelpRotatorCog(Cog):
             return
 
         time_duration = datetime.timedelta(days=days, hours=hours, minutes=minutes)
-        schedule("reminder", time_duration, self.reminder_handler, message, ctx.message.id, ctx.channel.id)
-        await ctx.send(f"{ctx.author.mention} a reminder has been set", delete_after=15)
+        scheduled = schedule(f"reminder-{ctx.author.id}", time_duration, self.reminder_handler, message, ctx.message.id, ctx.channel.id, no_duplication=True)
+        if scheduled:
+            await ctx.send(f"{ctx.author.mention} a reminder has been set", delete_after=15)
+        else:
+            await ctx.send(f"{ctx.author.mention} you already have a reminder scheduled", delete_after=15)
 
     @tag("schedule", "reminder")
     async def reminder_handler(self, content: str, message_id: int, channel_id: int):
