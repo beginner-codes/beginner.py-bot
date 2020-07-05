@@ -26,11 +26,9 @@ class HelpRotatorCog(Cog):
         await ctx.send(f"Please use this free channel which is currently not in use:\n{self.available_category.channels[0].mention}")
 
     async def rotate_available_channels(self, message: discord.Message):
-        current_top_occupied = self.occupied_category.channels[0].position
-        await message.channel.edit(category=self.occupied_category, position=current_top_occupied)
-
+        # Rotate next occupied channel into active
         next_channel = self.get_next_channel()
-        available_insert = self.get_channel("web-dev").position
+        available_insert = self.get_channel("web-dev-help").position
         await next_channel.send(
             embed=discord.Embed(
                 description="Feel free to ask any of your Python related questions in this channel!",
@@ -38,6 +36,10 @@ class HelpRotatorCog(Cog):
             ).set_author(name="This Channel Is Available", icon_url=self.server.icon_url)
         )
         await next_channel.edit(category=self.available_category, position=available_insert)
+
+        # Rotate active channel to occupied
+        current_top_occupied = self.occupied_category.channels[0].position
+        await message.channel.edit(category=self.occupied_category, position=current_top_occupied)
 
     async def rotate_occupied_channels(self, message: discord.Message):
         current_top_occupied = self.occupied_category.channels[0].position
