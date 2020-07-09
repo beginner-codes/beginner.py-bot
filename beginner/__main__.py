@@ -1,14 +1,8 @@
-from beginner.beginner import BeginnerCog
-from beginner.logging import create_logger
+import beginner.bootstrap
 
 
-logger = create_logger()
-BeginnerCog.setup_logging()
-
-logger.debug("Hello")
-client = BeginnerCog.get_client()
-logger.debug("Created client")
-BeginnerCog.load_cogs(client)
-logger.debug("Created cogs")
-client.run(BeginnerCog.get_token())
-logger.debug("Good bye")
+logger = beginner.bootstrap.setup_logger()
+client = beginner.bootstrap.create_bot(logger)
+beginner.bootstrap.load_cogs(client, logger)
+beginner.bootstrap.connect_db(logger)
+beginner.bootstrap.run(client, logger)
