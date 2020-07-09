@@ -56,3 +56,19 @@ def get_setting(
         value = os.getenv(env_name if env_name else name, not_set)
 
     return default if value is not_set else value
+
+
+def get_scope(
+    scope: str,
+    *,
+    filenames: Sequence[str] = ("production", "development")
+) -> Any:
+    keys = set()
+    for file in (get_config(filename) for filename in filenames):
+        keys.update(file.get(scope, {}).keys())
+
+    for key in keys:
+        value = None
+        for file in (get_config(filename) for filename in filenames):
+            value = file.get(scope, {}).get(key, value)
+        yield key, value
