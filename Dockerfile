@@ -8,6 +8,7 @@ ENV TMPDIR /usr/src/app/tmp
 
 COPY ./data ./data
 COPY ./icon.png .
+COPY ./production.yaml .
 
 COPY ./beginner ./beginner
 
