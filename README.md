@@ -46,4 +46,9 @@ Host: 0.0.0.0
 You’ll need to update `development.yaml` with your database configuration by changing the values in the `database` section.
 
 ## The Hard Stuff
-Currently working on the Google cog requires a Google Custom Search Key and a Google Custom Search Engine token. This is kinda complicated to get setup. As such no one will be expected to work on that cog. However if you’re feeling adventurous you’ll just need to set two environment variables with the appropriate values from the Google Developer Console: `GOOGLE_CUSTOM_SEARCH_KEY` and `GOOGLE_CUSTOM_SEARCH_ENGINE`.
+Currently working on the Google cog requires a Google Custom Search Key and a Google Custom Search Engine token. This is kinda complicated to get setup. As such no one will be expected to work on that cog. However if you’re feeling adventurous you’ll just need to add and fillout the following in your `develompent.yaml`:
+```yaml
+google:
+  custom_search_key: "YOUR KEY HERE"
+  custom_search_engine: "YOUR SEARCH ENGINE HERE"
+```
