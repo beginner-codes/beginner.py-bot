@@ -63,3 +63,7 @@ class DevCog(Cog):
             await ctx.send(
                 f"{ctx.author.display_name} reloaded these cogs: {', '.join(extensions)}"
             )
+
+
+def setup(client):
+    client.add_cog(DevCog(client))
