@@ -1,5 +1,4 @@
 from beginner.cog import Cog
-import os
 
 
 class DevCog(Cog):
