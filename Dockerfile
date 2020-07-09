@@ -1,4 +1,4 @@
-FROM zzmmrmn/beginner-py-bot-base:20200709
+FROM zzmmrmn/beginner-py-bot-base:20200709.1
 MAINTAINER Zech Zimmerman "hi@zech.codes"
 
 WORKDIR /usr/src/app
