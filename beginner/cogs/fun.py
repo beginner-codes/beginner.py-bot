@@ -4,6 +4,7 @@ import ast
 import os
 import math
 import re
+import socket
 
 
 class Fun(Cog):
@@ -218,6 +219,16 @@ class Fun(Cog):
                 url="https://media1.tenor.com/images/f688c77103e32fdd6a9599713b546435/tenor.gif?itemid=7666830"
             )
         )
+
+    @Cog.command()
+    async def dns(self, ctx, domain_name: str):
+        try:
+            ip = socket.gethostbyname(domain_name)
+        except socket.gaierror:
+            message = f"Could not find the domain {domain_name}"
+        else:
+            message = f"The IP address for {domain_name} is {ip}"
+        await ctx.send(message)
 
 
 def setup(client):
