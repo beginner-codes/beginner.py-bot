@@ -3,5 +3,9 @@ MAINTAINER Zech Zimmerman "hi@zech.codes"
 
 WORKDIR /usr/src/app
 
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir poetry
+RUN poetry config virtualenvs.in-project true
+
+COPY pyproject.toml .
+COPY poetry.lock .
+RUN poetry install
