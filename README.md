@@ -1,41 +1,49 @@
-# beginner.py-bot
-Discord bot for the beginner.py server. A bit of a hodge podge of coding style and experience levels as it is a collaboration between various people, all of whom had no experience with Discord.py before this.
+# Beginner.py Discord Bot
+This is the discord bot for the beginner.py discord server. A bit of a hodge podge of coding style and experience levels as it is a collaboration between various people, all of whom had no experience with Discord.py before this.
 
-## Setup & Running
-To run the bot you need to first define the authentication token. Then you the bot can be run either directly with the local python interpreter or using the included Dockerfile.
+## Wanna Join Us?
+If you'd like to join us, we're a welcoming community with over 1,000 members. [We will happily have you!!!](https://discord.gg/qh5r9w3)
 
-### Authentication Token
-The authentication token can be stored either as an environment variable or as a file at the root of the bot file structure.
+## Requirements
+The bot uses [Poetry](https://python-poetry.org/) for packaging and dependency management. You will need to follow the [installation instructions](https://python-poetry.org/docs/#installation) before you can get started with the bot.
 
-Environment variable in a bash shell
+Additionally you will need a bot token from Discord. You can read about how to get yours [here](https://realpython.com/how-to-make-a-discord-bot-python/#creating-an-application).
 
-    EXPORT DISCORD_TOKEN="token value"
+## Configuration & Setup
+First things first, we need to install all of the dependencies. To do that run:
+```sh
+poetry install
+```
+Next you need to configure the bot with the local dev settings. To do this copy the `development.example.yaml` file and name the new copy `development.yaml`. 
 
-Environment variable in a Windows shell
+Once that’s done open it up and in the `bot` section change the `token` string to your dev bot token.
+## Running
+To run the bot you’ll need to be in the directory which you cloned the repo, and run the following command:
+```sh
+poetry run python -m beginner
+```
+This will create a virtual environment with all the required dependencies and run the beginner.py bot package.
 
-    setx DISCORD_TOKEN "token value"
+Of course this will not have any real cogs enabled. By default the `development.yaml` only has the `devcog` enabled which allows you to load, unload, and reload cogs using discord commands. To enable a cog open `development.yaml` and in the `cogs` section find the cog you want and change its value from `false` to `true`. If it has an `enabled` field you’d update that field’s value to `true` instead. This allows you to work with just the cogs you are making changes to and not have to have them all running all the time.
 
-Or the token value can be placed into a file named `bot.token` in the same directory as the `beginner.py` file.
+## Building
+The bot uses Docker containers for deployment. We also use GitHub Actions for our Continuous Delivery pipeline, however because it doesn’t support docker image layer caching we’ve split the dockerfile into two parts. `base.Dockerfile` installs Poetry and all the necessary dependencies on top of a `slim-buster` Python image. `Dockerfile` then copies in all the code and configuration files needed and runs the bot using the image created using `base.Dockerfile` as a base.
 
-### Running
-First install the requirements
+Now because this requires publishing the image for `base.Dockerfile` we’ve also included `dev.Dockerfile` which is the other two dockerfiles in one. This image is the one that can be built locally like this:
+```sh
+docker build -f dev.Dockerfile .
+```
 
-    pip install -r requirements.txt
+## Database
+We use PostgreSQL for the bot. If you’d like to run one locally we’ve included a Docker Compose file that will spin up a local server: `compose/postgres.yaml`. It’ll have the following config settings:
+```
+User: postgresadmin
+Pass: dev-env-password-safe-to-be-public
+DB:   bpydb
+Port: 5432
+Host: 0.0.0.0
+```
+You’ll need to update `development.yaml` with your database configuration by changing the values in the `database` section.
 
-Then you can run as normal
-
-    python -m beginner
-
-#### Docker Compose
-Alternatively if you have docker installed you can have it handle all of that for you by running it with the this command:
-
-    docker-compose -f bot-compose.yaml up
-
-To stop the bot press `CTRL-C`.
-
-It will be necessary to create a file at the root of the project named `bot.config`, inside the file you will need to provide the bot token like this:
-
-    DISCORD_TOKEN=TOKEN GOES HERE
-    
-To simplify this process you can make a copy of the `example_bot.config` and fill in the token. Docker compose will load the contents of this file into the bot's container environment.
-
+## The Hard Stuff
+Currently working on the Google cog requires a Google Custom Search Key and a Google Custom Search Engine token. This is kinda complicated to get setup. As such no one will be expected to work on that cog. However if you’re feeling adventurous you’ll just need to set two environment variables with the appropriate values from the Google Developer Console: `GOOGLE_CUSTOM_SEARCH_KEY` and `GOOGLE_CUSTOM_SEARCH_ENGINE`.
