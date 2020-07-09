@@ -113,6 +113,27 @@ class Admin(Cog):
         await channel.edit(**settings)
         await ctx.send(f"{ctx.author.mention} {channel.mention} has been edited")
 
+    @channel.command()
+    @commands.has_guild_permissions(manage_channels=True)
+    async def permissions(
+            self,
+            ctx: discord.ext.commands.Context,
+            channel: discord.TextChannel,
+            raw_role: str,
+            *,
+            raw_permissions: str
+    ):
+        role = self.get_role(raw_role.casefold())
+        permissions = channel.overwrites_for(role)
+        permissions.update(**ast.literal_eval(raw_permissions))
+        await channel.set_permissions(target=role, overwrite=permissions)
+        await ctx.send(
+            embed=discord.Embed(
+                description=f"{ctx.author.mention} {channel.mention} permissions for {role.mention} have been updated",
+                color=BLUE
+            )
+        )
+
 
 def setup(client):
     client.add_cog(Admin(client))
