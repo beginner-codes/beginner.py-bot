@@ -12,4 +12,4 @@ COPY ./production.yaml .
 
 COPY ./beginner ./beginner
 
-CMD ["python3", "-u", "-m", "beginner"]
+CMD ["poetry", "run", "python", "-u", "-m", "beginner"]
