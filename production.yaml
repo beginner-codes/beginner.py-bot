@@ -23,6 +23,9 @@ cogs:
   statistics: true
   tips: true
   user_roles: true
+  beginner_cog:
+    enabled: true
+    from: beginner.beginner
 
 logging:
   format: "%(asctime)s: %(levelname)-9s %(name)-16s :: %(message)s"
