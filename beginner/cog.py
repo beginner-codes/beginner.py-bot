@@ -76,6 +76,10 @@ class Cog(commands.Cog, metaclass=TaggableMeta):
     def command(*args, **kwargs) -> Any:
         return commands.command(*args, **kwargs)
 
+    @staticmethod
+    def group(*args, **kwargs) -> commands.Group:
+        return commands.group(*args, **kwargs)
+
 
 class AdvancedCommand:
     def __init__(self, default: Coroutine, fail: Optional[Coroutine] = None):
