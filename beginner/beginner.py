@@ -1,10 +1,7 @@
-from asyncio import sleep
 from beginner.cog import Cog
 from beginner.logging import create_logger
 from beginner.models import set_database, PostgresqlDatabase
-from beginner.scheduler import initialize_scheduler, schedule
-from beginner.tags import tag
-from datetime import datetime, timedelta
+from beginner.scheduler import initialize_scheduler
 from discord.ext import commands
 from functools import lru_cache
 import discord
