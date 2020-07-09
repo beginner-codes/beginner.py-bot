@@ -441,13 +441,8 @@ googleapis-common-protos = [
     {file = "googleapis_common_protos-1.52.0-py2.py3-none-any.whl", hash = "sha256:c8961760f5aad9a711d37b675be103e0cc4e9a39327e0d6d857872f698403e24"},
 ]
 httplib2 = [
-<<<<<<< HEAD
-    {file = "httplib2-0.18.0-py3-none-any.whl", hash = "sha256:4f6988e6399a2546b525a037d56da34aed4d149bbdc0e78523018d5606c26e74"},
-    {file = "httplib2-0.18.0.tar.gz", hash = "sha256:b0e1f3ed76c97380fe2485bc47f25235453b40ef33ca5921bb2897e257a49c4c"},
-=======
     {file = "httplib2-0.18.1-py3-none-any.whl", hash = "sha256:ca2914b015b6247791c4866782fa6042f495b94401a0f0bd3e1d6e0ba2236782"},
     {file = "httplib2-0.18.1.tar.gz", hash = "sha256:8af66c1c52c7ffe1aa5dc4bcd7c769885254b0756e6e69f953c7f0ab49a70ba3"},
->>>>>>> Update required discord.py version
 ]
 idna = [
     {file = "idna-2.9-py2.py3-none-any.whl", hash = "sha256:a068a21ceac8a4d63dbfd964670474107f541babbd2250d61922f029858365fa"},
