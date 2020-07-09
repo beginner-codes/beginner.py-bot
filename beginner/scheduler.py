@@ -1,6 +1,6 @@
 from __future__ import annotations
 from beginner.exceptions import BeginnerException
-from beginner.logging import create_logger
+from beginner.logging import get_logger
 from beginner.models.scheduler import Scheduler
 from beginner.tags import build_tag_set, fetch_tags
 from datetime import datetime, timedelta
@@ -9,7 +9,7 @@ import asyncio
 import pickle
 
 
-logger = create_logger("scheduler")
+logger = get_logger(("beginner.py", "scheduler"))
 
 
 def initialize_scheduler(loop=asyncio.get_event_loop()):
