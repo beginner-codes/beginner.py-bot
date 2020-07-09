@@ -1,3 +1,29 @@
+bot:
+  prefix: "!"
+  status: "for '!help' to show you all commands"
+
+cogs:
+  admin: true
+  bump: true
+  candidates: true
+  challenges: true
+  code_runner: true
+  fun: true
+  google: true
+  help: true
+  help_rotator: true
+  kudos: true
+  moderation: true
+  onboarding: true
+  python: true
+  repeater: true
+  rules: true
+  settings: true
+  spam: true
+  statistics: true
+  tips: true
+  user_roles: true
+
 logging:
   format: "%(asctime)s: %(levelname)-9s %(name)-16s :: %(message)s"
   date_format: "%m/%d/%Y %I:%M:%S %p"
