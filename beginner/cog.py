@@ -1,5 +1,5 @@
 from __future__ import annotations
-from beginner.logging import create_logger
+from beginner.logging import get_logger
 from beginner.settings import Settings
 from beginner.tags import TaggableMeta
 from discord.ext import commands
@@ -13,7 +13,7 @@ class Cog(commands.Cog, metaclass=TaggableMeta):
     def __init__(self, client: Client):
         self.settings = Settings()
         self.client = client
-        self.logger = create_logger(self.__class__.__name__)
+        self.logger = get_logger(("beginner.py", self.__class__.__name__))
 
     @commands.Cog.listener()
     async def on_ready(self):
