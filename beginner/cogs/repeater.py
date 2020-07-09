@@ -1,6 +1,5 @@
 from beginner.cog import Cog
-from beginner.logging import create_logger
-from discord import Embed, Status
+from discord import Embed
 
 
 class RepeaterCog(Cog):

@@ -1,10 +1,8 @@
 from beginner.cog import Cog
 from beginner.colors import *
-from beginner.logging import create_logger
 from beginner.scheduler import schedule
 from beginner.tags import tag
 from datetime import timedelta, datetime
-from typing import List, Optional
 import asyncio
 import discord
 

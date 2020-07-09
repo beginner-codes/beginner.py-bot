@@ -1,6 +1,5 @@
 import discord
 from beginner.cog import Cog
-from beginner.logging import create_logger
 
 
 class Help(Cog):

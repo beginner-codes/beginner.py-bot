@@ -4,7 +4,7 @@ from beginner.settings import Settings
 from beginner.tags import TaggableMeta
 from discord.ext import commands
 from discord import TextChannel, Client, Guild, Emoji, CategoryChannel, Role
-from typing import Any, AnyStr, Callable, Coroutine, List, Optional, Union
+from typing import Any, AnyStr, Coroutine, List, Optional
 import json
 import os.path
 

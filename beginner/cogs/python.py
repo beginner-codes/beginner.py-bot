@@ -1,7 +1,6 @@
 import discord
 import json
 from beginner.cog import Cog
-from beginner.logging import create_logger
 
 
 class Python(Cog):

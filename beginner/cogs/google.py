@@ -1,6 +1,5 @@
 import discord
 from beginner.cog import Cog
-from beginner.logging import create_logger
 from googleapiclient.discovery import build as google
 from urllib.parse import quote_plus
 from random import choice
