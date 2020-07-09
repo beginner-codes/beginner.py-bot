@@ -1,0 +1,4 @@
+logging:
+  format: "%(asctime)s: %(levelname)-9s %(name)-16s :: %(message)s"
+  date_format: "%m/%d/%Y %I:%M:%S %p"
+  level: WARN
