@@ -14,7 +14,6 @@ RUN mkdir -p /usr/src/app/tmp
 ENV TMPDIR /usr/src/app/tmp
 
 COPY ./data ./data
-COPY ./icon.png .
 COPY ./production.yaml .
 
 COPY ./beginner ./beginner
