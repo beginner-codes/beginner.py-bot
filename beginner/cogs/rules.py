@@ -45,7 +45,6 @@ class RulesCog(Cog):
 
     @staticmethod
     def get_rule(label, fuzzy=False):
-        return Message(message_type="RULE", message="<p>Testing rules</p>", title="Rule title", label="label", author="Zech")
         rule = Message.get_or_none(
             (Message.message_type == MessageTypes.RULE.name)
             & (Message.label.startswith(label))
