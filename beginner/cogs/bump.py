@@ -42,6 +42,7 @@ class Bumping(Cog):
 
     @Cog.command(name="d")
     async def bump_handler(self, ctx: discord.ext.commands.Context, action: str):
+        await ctx.send(f"{ctx.author.display_name} bumped", delete_after=10)
         async with self._bump_lock:
             if not action.casefold() == "bump":
                 return
