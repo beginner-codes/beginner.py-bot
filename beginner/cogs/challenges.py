@@ -34,9 +34,16 @@ class Challenges(Cog):
         if message.author.bot:
             return
 
-        if message.channel != self.get_channel(
-            os.environ.get("SUBMISSION_CHANNEL", "challenge-submissions")
-        ):
+        channels = {
+            self.get_channel(
+                os.environ.get("SUBMISSION_CHANNEL", "challenge-submissions")
+            ),
+            self.get_channel(
+                os.environ.get("ADVANCED_SUBMISSION_CHANNEL", "elite-challenge-submissions")
+            )
+        }
+
+        if message.channel not in channels:
             return
 
         content = message.content
