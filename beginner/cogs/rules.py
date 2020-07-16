@@ -1,4 +1,5 @@
 from beginner.cog import Cog
+from beginner.colors import *
 from beginner.models.messages import Message, MessageTypes
 from discord import Embed
 import re
@@ -33,10 +34,27 @@ class RulesCog(Cog):
             )
 
     @Cog.command(name="formatting", aliases=("format", "code"))
-    async def show_formatting_rule(self, ctx, *, _=None):
-        rule = RulesCog.get_rule("formatting", fuzzy=True)
-        if rule:
-            await ctx.send(embed=self.build_rule_embed(rule))
+    async def show_formatting_rule(self, ctx, language: str = "py", *, _=None):
+        await ctx.send(
+            embed=(
+                Embed(
+                    title="Code Formatting",
+                    description=f"When sharing code with the community, please use the correct formatting for ease of readability.",
+                    color=BLUE
+                )
+                .add_field(
+                    name="Example",
+                    value=(
+                        f"\\`\\`\\`{language}\n"
+                        f"YOUR CODE HERE\n"
+                        f"\\`\\`\\`\n\n"
+                        f"*Those are back ticks not single quotes, typically the key above `TAB`*"
+                    ),
+                    inline=False
+                )
+                .set_thumbnail(url=ctx.guild.icon_url)
+            )
+        )
 
     def build_rule_embed(self, rule):
         return Embed(description=self.clean_rule(rule.message), color=0x306998).set_author(
