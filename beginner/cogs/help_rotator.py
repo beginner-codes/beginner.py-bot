@@ -2,12 +2,17 @@ from beginner.cog import Cog
 from beginner.colors import *
 from beginner.scheduler import schedule
 from beginner.tags import tag
+import asyncio
 import datetime
 import discord
 import discord.ext.commands
 
 
 class HelpRotatorCog(Cog):
+    def __init__(self, client):
+        super().__init__(client)
+        self.rotation_lock = asyncio.Lock()
+
     @property
     def available_category(self) -> discord.CategoryChannel:
         return self.get_category("Help: Available")
@@ -71,22 +76,25 @@ class HelpRotatorCog(Cog):
     async def rotate_available_channels(self, message: discord.Message):
         # Rotate next occupied channel into active
         next_channel = self.get_next_channel()
-        available_insert = self.get_channel("web-dev-help").position
         await next_channel.send(
             embed=discord.Embed(
                 description="Feel free to ask any of your Python related questions in this channel!",
                 color=GREEN
             ).set_author(name="This Channel Is Available", icon_url=self.server.icon_url)
         )
-        await next_channel.edit(category=self.available_category, position=available_insert)
 
-        # Rotate active channel to occupied
-        current_top_occupied = self.occupied_category.channels[0].position
-        await message.channel.edit(category=self.occupied_category, position=current_top_occupied)
+        async with self.rotation_lock:
+            available_insert = self.get_channel("web-dev-help").position
+            await next_channel.edit(category=self.available_category, position=available_insert)
+
+            # Rotate active channel to occupied
+            current_top_occupied = self.occupied_category.channels[0].position
+            await message.channel.edit(category=self.occupied_category, position=current_top_occupied)
 
     async def rotate_occupied_channels(self, message: discord.Message):
-        current_top_occupied = self.occupied_category.channels[0].position
-        await message.channel.edit(category=self.occupied_category, position=current_top_occupied)
+        async with self.rotation_lock:
+            current_top_occupied = self.occupied_category.channels[0].position
+            await message.channel.edit(category=self.occupied_category, position=current_top_occupied)
 
     def get_next_channel(self) -> discord.TextChannel:
         return self.occupied_category.text_channels[-1]
