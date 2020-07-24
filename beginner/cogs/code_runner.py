@@ -136,6 +136,7 @@ class CodeRunner(Cog):
         try:
             stdout, stderr = await asyncio.wait_for(proc.communicate(base64.b64encode(code.encode())), timeout=5)
         except asyncio.exceptions.TimeoutError:
+            proc.kill()
             stdout = ""
             stderr = "TimeoutError"
 
