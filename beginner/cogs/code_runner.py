@@ -133,7 +133,12 @@ class CodeRunner(Cog):
         proc = await asyncio.create_subprocess_shell(
             f"python -m beginner.runner {mode}", stdin=asyncio.subprocess.PIPE, stdout=asyncio.subprocess.PIPE
         )
-        stdout, stderr = await proc.communicate(base64.b64encode(code.encode()))
+        try:
+            stdout, stderr = await asyncio.wait_for(proc.communicate(base64.b64encode(code.encode())), timeout=5)
+        except asyncio.exceptions.TimeoutError:
+            stdout = ""
+            stderr = "TimeoutError"
+
         if stdout:
             out, *exceptions = map(lambda line: base64.b64decode(line).decode(), stdout.split(b"\n"))
             exceptions = list(filter(bool, exceptions))
