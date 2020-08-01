@@ -57,6 +57,9 @@ class OnBoarding(Cog):
 
         message = await channel.fetch_message(reaction.message_id)
         member = self.server.get_member(reaction.user_id)
+        if member.bot:
+            return
+
         await message.remove_reaction("✅", member)
         await member.add_roles(
             self.get_role("coders"),
