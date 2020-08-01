@@ -3,7 +3,6 @@ from beginner.colors import *
 from beginner.scheduler import schedule
 from beginner.tags import tag
 from datetime import timedelta, datetime
-import asyncio
 import discord
 
 
@@ -24,17 +23,13 @@ class OnBoarding(Cog):
         onboarding = 0
         role = self.get_role("new member")
 
-        # Find all users who can be onboarded
-        removing = []
+        # Onboard all users who have been members for at least 48 hours
         for member in self.server.members:
             if role in member.roles:
                 found += 1
                 if await self.member_can_be_onboarded(member):
-                    removing.append(member.remove_roles(role, reason="Onboard recently active member"))
+                    await member.remove_roles(role, reason="Onboard recently active member")
                     onboarding += 1
-
-        # Remove new member roles
-        await asyncio.gather(*removing)
 
         # Log results
         self.logger.debug(f"Found {found} new members, {onboarding} were onboarded")
