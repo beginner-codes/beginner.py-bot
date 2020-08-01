@@ -1,13 +1,81 @@
 from beginner.cog import Cog
 from beginner.colors import *
 from beginner.models.messages import Message, MessageTypes
+from datetime import datetime
 from discord import Embed
 import re
+import discord.utils
+import pytz
 
 
 class RulesCog(Cog):
+    def __init__(self, client: discord.Client):
+        super().__init__(client)
+        self.message_fields = {
+            "Keep It Friendly": (
+                "Be courteous and understanding. We're friends here and we're all working towards being better "
+                "programmers."
+            ),
+            "Keep It Legal": (
+                "We can't judge what your goals are. So we ask that you not ask about or discuss  anything that "
+                "violates any laws or that breaks the terms of service (ToS) for any app/service/program/etc. If "
+                "you're not sure __please ask__, we don't mind."
+            ),
+            "Getting Help": (
+                "If you have a question ask it, someone will answer. Please don't ask to DM. This prevents others from "
+                "being able to contribute and it makes it impossible for us to ensure you get the highest quality help."
+            ),
+            "Finally": (
+                "It should go without saying: flaming, trolling, spamming, and harassing, along with racism and "
+                "bigotry of any kind towards any group or individual is strictly prohibited and will be dealt with "
+                "appropriately."
+            )
+        }
+
     def clean_rule(self, rule_content: str):
         return "\n".join(re.findall(r"<p.*?>(.+?)</p>", rule_content))
+
+    async def ready(self):
+        rules: discord.TextChannel = discord.utils.get(self.server.channels, name="rules")
+        messages = await rules.history(limit=1).flatten()
+        if not messages:
+            message = await rules.send(
+                embed=self.build_rule_message_embed(
+                    "Rules, Guidlines, & Conduct",
+                    (
+                        "Welcome!!! We're happy to have you! Please give these rules and guidelines a quick read and "
+                        "then hit the ✅ to gain access to the rest of the server."
+                    )
+                )
+            )
+            await message.add_reaction("✅")
+
+            rules = discord.utils.get(self.server.channels, name="server-rules")
+            await rules.send(
+                embed=self.build_rule_message_embed(
+                    "Rules, Guidlines, & Conduct",
+                    ""
+                )
+            )
+
+    def build_rule_message_embed(self, title: str, message: str) -> discord.Embed:
+        admin: discord.Member = self.server.get_member(266432511897370625)
+        embed = Embed(
+            title=title,
+            description=message,
+            timestamp=datetime(2020, 8, 31, 0, 0, 0, 0, pytz.timezone("US/Eastern")),
+            color=BLUE
+        )
+        embed.set_footer(text=admin.name, icon_url=admin.avatar_url)
+
+        for field_title, field_content in self.message_fields.items():
+            embed.add_field(
+                name=field_title,
+                value=field_content,
+                inline=False
+            )
+
+        return embed
 
     @Cog.command(name="rule")
     async def show_rule(self, ctx, label=None, *_):
@@ -42,7 +110,7 @@ class RulesCog(Cog):
                     description=f"When sharing code with the community, please use the correct formatting for ease of readability.",
                     color=BLUE
                 )
-                .add_field(
+                    .add_field(
                     name="Example",
                     value=(
                         f"\\`\\`\\`{language}\n"
@@ -52,7 +120,7 @@ class RulesCog(Cog):
                     ),
                     inline=False
                 )
-                .set_thumbnail(url=ctx.guild.icon_url)
+                    .set_thumbnail(url=ctx.guild.icon_url)
             )
         )
 
