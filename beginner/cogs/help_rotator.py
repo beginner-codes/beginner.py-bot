@@ -86,11 +86,19 @@ class HelpRotatorCog(Cog):
 
         async with self.rotation_lock:
             current_bottom_available = self.available_category.channels[-1].position
-            await next_channel.edit(category=self.available_category, position=current_bottom_available)
+            await next_channel.edit(
+                category=self.available_category,
+                position=current_bottom_available,
+                sync_permissions=True
+            )
 
             # Rotate active channel to occupied
             current_top_occupied = self.occupied_category.channels[0].position
-            await channel.edit(category=self.occupied_category, position=current_top_occupied)
+            await channel.edit(
+                category=self.occupied_category,
+                position=current_top_occupied,
+                sync_permissions=True
+            )
 
         author: discord.Member = message.author
         await author.add_roles(self.get_role("receiving_help"))
