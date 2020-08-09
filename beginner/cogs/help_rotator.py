@@ -112,7 +112,8 @@ class HelpRotatorCog(Cog):
     @tag("schedule", "remove-help-role")
     async def remove_help_role(self, member_id: int):
         member = self.server.get_member(member_id)
-        await member.remove_roles(self.get_role("receiving_help"))
+        if member:
+            await member.remove_roles(self.get_role("receiving_help"))
 
     async def rotate_occupied_channels(self, message: discord.Message):
         async with self.rotation_lock:
