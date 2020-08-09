@@ -74,6 +74,7 @@ class HelpRotatorCog(Cog):
         await ctx.send(f"Please use this free channel which is currently not in use:\n{self.available_category.channels[0].mention}")
 
     async def rotate_available_channels(self, message: discord.Message):
+        channel: discord.TextChannel = message.channel
         # Rotate next occupied channel into active
         next_channel = self.get_next_channel()
         await next_channel.send(
@@ -89,7 +90,7 @@ class HelpRotatorCog(Cog):
 
             # Rotate active channel to occupied
             current_top_occupied = self.occupied_category.channels[0].position
-            await message.channel.edit(category=self.occupied_category, position=current_top_occupied)
+            await channel.edit(category=self.occupied_category, position=current_top_occupied)
 
     async def rotate_occupied_channels(self, message: discord.Message):
         async with self.rotation_lock:
