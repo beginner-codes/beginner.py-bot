@@ -96,6 +96,11 @@ class HelpRotatorCog(Cog):
         await author.add_roles(self.get_role("receiving_help"))
         schedule("remove-help-role", datetime.timedelta(minutes=15), self.remove_help_role, author.id)
 
+        await channel.send(
+            f"{author.mention} You've claimed this channel! Someone will try to help you when they get a chance.",
+            delete_after=30
+        )
+
     @tag("schedule", "remove-help-role")
     async def remove_help_role(self, member_id: int):
         member = self.server.get_member(member_id)
