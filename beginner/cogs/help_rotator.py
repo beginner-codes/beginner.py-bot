@@ -92,6 +92,15 @@ class HelpRotatorCog(Cog):
             current_top_occupied = self.occupied_category.channels[0].position
             await channel.edit(category=self.occupied_category, position=current_top_occupied)
 
+        author: discord.Member = message.author
+        await author.add_roles(self.get_role("receiving_help"))
+        schedule("remove-help-role", datetime.timedelta(minutes=15), self.remove_help_role, author.id)
+
+    @tag("schedule", "remove-help-role")
+    async def remove_help_role(self, member_id: int):
+        member = self.server.get_member(member_id)
+        await member.remove_roles(self.get_role("receiving_help"))
+
     async def rotate_occupied_channels(self, message: discord.Message):
         async with self.rotation_lock:
             current_top_occupied = self.occupied_category.channels[0].position
