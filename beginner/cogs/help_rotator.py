@@ -85,7 +85,7 @@ class HelpRotatorCog(Cog):
         )
 
         async with self.rotation_lock:
-            current_bottom_available = self.available_category.channels[-1].positon
+            current_bottom_available = self.available_category.channels[-1].position
             await next_channel.edit(category=self.available_category, position=current_bottom_available)
 
             # Rotate active channel to occupied
