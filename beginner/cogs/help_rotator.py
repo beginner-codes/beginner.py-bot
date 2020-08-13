@@ -105,7 +105,8 @@ class HelpRotatorCog(Cog):
         schedule("remove-help-role", datetime.timedelta(minutes=15), self.remove_help_role, author.id)
 
         await channel.send(
-            f"{author.mention} You've claimed this channel! Someone will try to help you when they get a chance.",
+            f"{author.mention} You've claimed this channel! Make sure to fully ask your question and provide as much "
+            f"detail as you can, someone will try to help you when they get a chance.",
             delete_after=30
         )
 
