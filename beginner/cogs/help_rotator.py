@@ -12,6 +12,14 @@ class HelpRotatorCog(Cog):
     def __init__(self, client):
         super().__init__(client)
         self.rotation_lock = asyncio.Lock()
+        self.available_channel_ids = []
+
+    async def ready(self):
+        self.available_channel_ids = [
+            channel.id
+            for channel in self.server.channels
+            if channel.category_id == self.available_category.id
+        ]
 
     @property
     def available_category(self) -> discord.CategoryChannel:
@@ -75,6 +83,11 @@ class HelpRotatorCog(Cog):
 
     async def rotate_available_channels(self, message: discord.Message):
         channel: discord.TextChannel = message.channel
+        if channel.id not in self.available_channel_ids:
+            return
+
+        self.available_channel_ids.remove(channel.id)
+
         # Rotate next occupied channel into active
         next_channel = self.get_next_channel()
         await next_channel.send(
@@ -91,6 +104,7 @@ class HelpRotatorCog(Cog):
                 position=current_bottom_available,
                 sync_permissions=True
             )
+            self.available_channel_ids.append(next_channel.id)
 
             # Rotate active channel to occupied
             current_top_occupied = self.occupied_category.channels[0].position
