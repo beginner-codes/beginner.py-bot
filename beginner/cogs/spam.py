@@ -1,8 +1,9 @@
 from beginner.cog import Cog
+from beginner.colors import *
 from beginner.scheduler import schedule
 from beginner.tags import tag
 from datetime import timedelta
-from discord import Embed
+from discord import Embed, utils
 from functools import cached_property
 from typing import Set
 import os.path
@@ -30,8 +31,21 @@ class SpamCog(Cog):
             return
 
         if self.has_disallowed_attachments(message):
-            await message.channel.send(embed=self.build_embed(message))
+            mod_action_channel = utils.get(self.server.channels, name="mod-action-log")
+            info_message = await message.channel.send(embed=self.build_embed(message))
             await message.delete()
+            await mod_action_channel.send(
+                embed=Embed(
+                    color=RED,
+                    description=(
+                        f"Deleted message in {message.channel.mention} [Jump To]({info_message.jump_url}"
+                    ),
+                    title=f"Deleted Message w/ File Attachments: @{message.author.display_name}"
+                ).add_field(
+                    name="Attachments",
+                    value="\n".join(f"[{attachment.filename}]({attachment.url})" for attachment in message.attachments)
+                )
+            )
 
     def build_embed(self, message):
         """ Construct the embed for the moderation message. """
