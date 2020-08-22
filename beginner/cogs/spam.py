@@ -38,7 +38,7 @@ class SpamCog(Cog):
                 embed=Embed(
                     color=RED,
                     description=(
-                        f"Deleted message in {message.channel.mention} [Jump To]({info_message.jump_url}"
+                        f"Deleted message in {message.channel.mention} [Jump To]({info_message.jump_url})"
                     ),
                     title=f"Deleted Message w/ File Attachments: @{message.author.display_name}"
                 ).add_field(
