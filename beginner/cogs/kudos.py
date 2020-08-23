@@ -136,6 +136,9 @@ class Kudos(Cog):
         channel: discord.TextChannel = self.server.get_channel(reaction.channel_id)
         message: discord.Message = await channel.fetch_message(reaction.message_id)
 
+        if not channel.permissions_for(reacter).send_messages:
+            return
+
         if reacter.bot or message.author.bot:
             return
 
@@ -196,8 +199,12 @@ class Kudos(Cog):
         if reaction.emoji.id not in self.reactions:
             return
 
+        reacter: discord.Member = self.server.get_member(reaction.user_id)
         channel = self.server.get_channel(reaction.channel_id)
         message = await channel.fetch_message(reaction.message_id)
+
+        if not channel.permissions_for(reacter).send_messages:
+            return
 
         if message.author == reaction.user_id and not self.dev_author:
             return
