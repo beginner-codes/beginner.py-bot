@@ -2,6 +2,7 @@ from __future__ import annotations
 from discord.ext.commands import Context
 from beginner.cog import Cog
 from beginner.config import get_setting
+from beginner.colors import *
 import discord
 
 
@@ -19,6 +20,7 @@ class ResourcesCog(Cog):
             embed=discord.Embed(
                 title=f"Helpful {lang['name']} Resources",
                 description="Here are some resources you may find helpful.",
+                color=YELLOW
             ).add_field(
                 name="YouTube",
                 value="\n".join(
