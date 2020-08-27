@@ -31,3 +31,12 @@ logging:
   format: "%(asctime)s: %(levelname)-9s %(name)-16s :: %(message)s"
   date_format: "%m/%d/%Y %I:%M:%S %p"
   level: WARN
+
+resources:
+  py:
+    name: Python
+    youtube:
+      Corey Schafer: https://www.youtube.com/c/Coreyms/playlists
+      Mosh: https://www.youtube.com/playlist?list=PLTjRvDozrdlxj5wgH4qkvwSOdHLOCx10f
+    books:
+      Automate the Boring Stuff with Python: https://automatetheboringstuff.com/2e/chapter0/
