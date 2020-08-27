@@ -40,3 +40,8 @@ resources:
       Mosh: https://www.youtube.com/playlist?list=PLTjRvDozrdlxj5wgH4qkvwSOdHLOCx10f
     books:
       Automate the Boring Stuff with Python: https://automatetheboringstuff.com/2e/chapter0/
+
+lang_aliases:
+  python: py
+  python3: py
+  python2: py
