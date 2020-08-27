@@ -52,7 +52,10 @@ class SpamCog(Cog):
         if self.has_disallowed_attachments(message):
             mod_action_channel = utils.get(self.server.channels, name="mod-action-log")
             info_message = await message.channel.send(embed=self.build_embed(message))
-            await message.delete()
+            try:
+                await message.delete()
+            except discord.errors.NotFound:
+                pass
             await mod_action_channel.send(
                 embed=Embed(
                     color=RED,
