@@ -16,8 +16,11 @@ class SpamCog(Cog):
 
     @Cog.listener()
     async def on_message(self, message):
+        await self.attachment_filter(message)
+
+    async def attachment_filter(self, message):
         """ When a message is sent by normal users ensure it doesn't have any non-image attachments. Delete it and send
-        a mod message if it does."""
+            a mod message if it does."""
         if message.author.bot:
             return
 
