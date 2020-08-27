@@ -17,6 +17,7 @@ cogs:
   onboarding: true
   python: true
   repeater: true
+  resources: true
   rules: true
   settings: true
   spam: true
