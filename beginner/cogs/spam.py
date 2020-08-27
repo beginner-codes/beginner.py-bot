@@ -6,6 +6,8 @@ from datetime import timedelta
 from discord import Embed, utils
 from functools import cached_property
 from typing import Set
+import asyncio
+import discord
 import os.path
 
 
@@ -16,7 +18,21 @@ class SpamCog(Cog):
 
     @Cog.listener()
     async def on_message(self, message):
-        await self.attachment_filter(message)
+        await asyncio.gather(self.attachment_filter(message), self.mention_filter(message))
+
+    async def mention_filter(self, message: discord.Message):
+        if "@everyone" not in message.content and "@here" not in message.content:
+            return
+
+        if message.channel.permissions_for(message.author).manage_messages:
+            return
+
+        await asyncio.gather(
+            message.channel.send(
+                f"{message.author.mention} please don't mention everyone, your message has been deleted."
+            ),
+            message.delete()
+        )
 
     async def attachment_filter(self, message):
         """ When a message is sent by normal users ensure it doesn't have any non-image attachments. Delete it and send
