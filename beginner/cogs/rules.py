@@ -23,8 +23,13 @@ class RulesCog(Cog):
             ),
             "Getting Help": (
                 "If you have a question ask it, someone will answer. **Please don't ask to DM**. This prevents others "
-                "from being able to contribute and it makes it impossible for us to ensure you get the highest quality"
+                "from being able to contribute and it makes it impossible for us to ensure you get the highest quality "
                 "help.\n\nWe don't allow solicitation for work or help as this is a beginner oriented server."
+            ),
+            "Language": (
+                "While we try to accommodate everyone we must ask that you use *English* on this server. This allows "
+                "the largest possible number of people to participate and ensures the mod team can maintain the "
+                "highest quality of discussion."
             ),
             "Finally": (
                 "It should go without saying: flaming, trolling, spamming, and harassing, along with racism and "
