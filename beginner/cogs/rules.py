@@ -51,14 +51,6 @@ class RulesCog(Cog):
             )
             await message.add_reaction("✅")
 
-            rules = discord.utils.get(self.server.channels, name="server-rules")
-            await rules.send(
-                embed=self.build_rule_message_embed(
-                    "Rules, Guidlines, & Conduct",
-                    ""
-                )
-            )
-
     def build_rule_message_embed(self, title: str, message: str) -> discord.Embed:
         admin: discord.Member = self.server.get_member(266432511897370625)
         embed = Embed(
