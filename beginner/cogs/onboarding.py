@@ -61,8 +61,13 @@ class OnBoarding(Cog):
             return
 
         await message.remove_reaction("✅", member)
+
+        role = self.get_role("coders")
+        if role in member.roles:
+            return
+
         await member.add_roles(
-            self.get_role("coders"),
+            role,
             self.get_role("new member"),
             reason="New member role assignment",
             atomic=True
