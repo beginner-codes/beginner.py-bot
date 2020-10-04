@@ -33,18 +33,14 @@ class StatisticsCog(Cog):
 
         await self.online_counter()
 
-    @Cog.command()
-    async def norole(self, ctx):
-        if self.get_role("jedi council") not in ctx.author.roles:
-            return
-
+    def get_norole(self):
         coders_role = self.get_role("coders")
         count = 0
         for member in self.server.members:
             if not member.bot and coders_role not in member.roles:
                 count += 1
 
-        await ctx.send(f"There are {count} users who haven't verified")
+        return count
 
     @Cog.command()
     async def stats(self, ctx):
@@ -82,7 +78,7 @@ class StatisticsCog(Cog):
             f"Today             {today.max_seen:9}  {today.min_seen:10}\n"
             f"In {month_name:15}{month.max_seen:9}  {month.min_seen:10}\n"
             f"31 Day High Score {highest.max_seen if highest else '---':9} on {highest_date}"
-            f"\n```"
+            f"\n\n{self.get_norole()} have not verified, {len(self.server.members)} total members\n```"
         )
         embed = Embed(description=message, color=0x306998).set_author(
             name=f"Server Statistics{' DEV' if BeginnerCog.is_dev_env() else ''}",
