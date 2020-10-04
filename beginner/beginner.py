@@ -17,6 +17,22 @@ class BeginnerCog(Cog):
                 f"Bot back online! Image Version: {os.environ.get('BOT_IMAGE_VERSION', 'NOT SET')}"
             )
 
+    @Cog.listener()
+    async def on_message(self, message: discord.Message):
+        if message.author.bot:
+            return
+
+        if self.server.me not in message.mentions:
+            return
+
+        m: discord.Message = await message.channel.send(
+            f"Hi {message.author.mention}! I'm the beginner.py bot developed collaboratively by members of this server "
+            f"using the Discord.py package! If you'd like to see my code or even contribute yourself I'm on GitHub "
+            f"https://github.com/beginnerpy-com/beginner.py-bot",
+            allowed_mentions=discord.AllowedMentions(users=[message.author])
+        )
+        await m.edit(suppress=True)
+
     @Cog.command()
     async def export(self, ctx, namespace):
         if len([r for r in ctx.author.roles if r.id == 644301991832453120]) == 0:
