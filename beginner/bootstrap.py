@@ -40,6 +40,8 @@ def connect_db(logger):
 
 def create_bot(logger) -> discord.ext.commands.Bot:
     bot_settings = beginner.config.scope_getter("bot")
+    intents = discord.Intents.default()
+    intents.members = True
 
     logger.debug(f"Creating bot with prefix '{bot_settings('prefix')}'")
     client = discord.ext.commands.Bot(
@@ -48,6 +50,7 @@ def create_bot(logger) -> discord.ext.commands.Bot:
             name=bot_settings("status"),
             type=discord.ActivityType.watching,
         ),
+        intents=intents
     )
     client.remove_command("help")
     return client
