@@ -18,7 +18,6 @@ class TipsCog(Cog):
                 await self.show_tip(tips[0], ctx.message.channel)
             else:
                 await self.list_tips(ctx.message.channel, tips, label)
-        await ctx.message.delete()
 
     @Cog.command(name="create-tip")
     async def create_tip(self, ctx, message_id, *, unsanitized_label):
