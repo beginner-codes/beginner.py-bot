@@ -42,6 +42,7 @@ def create_bot(logger) -> discord.ext.commands.Bot:
     bot_settings = beginner.config.scope_getter("bot")
     intents = discord.Intents.default()
     intents.members = True
+    intents.presences = True
 
     logger.debug(f"Creating bot with prefix '{bot_settings('prefix')}'")
     client = discord.ext.commands.Bot(
