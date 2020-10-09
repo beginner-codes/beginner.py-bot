@@ -248,7 +248,7 @@ class Bumping(Cog):
         if reaction.emoji.name != "🔔":
             return
 
-        if reaction.message_id != self.explanation_message.id:
+        if reaction.message_id != (await self.get_explanation_message()).id:
             return
 
         member = self.server.get_member(reaction.user_id)
@@ -263,7 +263,7 @@ class Bumping(Cog):
         if reaction.emoji.name != "🔔":
             return
 
-        if reaction.message_id != self.explanation_message.id:
+        if reaction.message_id != (await self.get_explanation_message()).id:
             return
 
         member = self.server.get_member(reaction.user_id)
