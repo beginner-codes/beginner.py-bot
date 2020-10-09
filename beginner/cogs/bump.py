@@ -40,6 +40,19 @@ class Bumping(Cog):
             self._role = self.get_role("bumpers")
         return self._role
 
+    @Cog.command(name="d-correct-roles")
+    @discord.ext.commands.has_guild_permissions(administrator=True)
+    async def bump_correct_roles(self, ctx: discord.ext.commands.Context):
+        message = await self.get_explanation_message()
+        reaction = discord.utils.get(message.reactions, emoji="🔔")
+        async for member in reaction.users():
+            if not isinstance(member, discord.Member):
+                print(">>>", member)
+            elif self.role not in member.roles:
+                await ctx.send(f"Giving role to {member.display_name}")
+                await member.add_roles(self.role)
+                await asyncio.sleep(1)
+
     @Cog.command(name="d")
     async def bump_handler(self, ctx: discord.ext.commands.Context, action: str):
         await ctx.send(f"{ctx.author.display_name} bumped", delete_after=10)
