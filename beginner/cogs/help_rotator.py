@@ -121,7 +121,6 @@ class HelpRotatorCog(Cog):
         await channel.send(
             f"{author.mention} You've claimed this channel! Make sure to fully ask your question and provide as much "
             f"detail as you can, someone will try to help you when they get a chance.",
-            delete_after=30
         )
 
     @tag("schedule", "remove-help-role")
