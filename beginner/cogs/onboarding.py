@@ -48,19 +48,13 @@ class OnBoarding(Cog):
 
     @Cog.listener()
     async def on_raw_reaction_add(self, reaction):
-        if reaction.emoji.name != "✅":
-            return
-
         channel = self.get_channel("rules")
         if reaction.channel_id != channel.id:
             return
 
-        message = await channel.fetch_message(reaction.message_id)
         member = self.server.get_member(reaction.user_id)
         if member.bot:
             return
-
-        await message.remove_reaction("✅", member)
 
         role = self.get_role("coders")
         if role in member.roles:
