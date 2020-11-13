@@ -59,6 +59,7 @@ class Executer:
             builtins["getattr"] = self.getattr
         if "__import__" in builtins:
             builtins["__import__"] = self.importer
+        builtins["getsizeof"] = sys.getsizeof
         return builtins
 
     def generate_globals(self):
