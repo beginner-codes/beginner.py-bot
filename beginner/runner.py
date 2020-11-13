@@ -9,6 +9,7 @@ import signal
 import sys
 import random
 import unicodedata
+import numpy
 
 
 class CPUTimeExceeded(Exception):
@@ -175,7 +176,7 @@ if __name__ == "__main__":
             "unicodedata", "stringprep", "struct", "calendar", "collections", "heapq", "bisect", "array", "weakref",
             "types", "copy", "pprint", "reprlib", "enum", "numbers", "cmath", "fractions", "statistics", "operator",
             "pickle", "copyreg", "hashlib", "hmac", "secrets", "time", "json", "base64", "binascii", "typing",
-            "dectest", "unittest", "dataclasses", "contextlib", "abc",
+            "dectest", "unittest", "dataclasses", "contextlib", "abc", "numpy"
 
         }
     )
