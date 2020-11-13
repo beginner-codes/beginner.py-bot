@@ -48,8 +48,7 @@ class CodeRunner(Cog):
         builtins.update({
             "print": printer,
             "range": ranger,
-            "getattr": attergetter,
-            "getsizeof": sys.getsizeof
+            "getattr": attergetter
         })
         internal_globals["__builtins__"] = builtins
         old_limit = sys.getrecursionlimit()
