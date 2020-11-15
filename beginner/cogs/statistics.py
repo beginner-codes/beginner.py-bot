@@ -69,6 +69,7 @@ class StatisticsCog(Cog):
             else "--/--/----"
         )
         month_name = f"{month.taken:%B}"
+        bots = [member for member in self.server.members if member.bot]
         message = (
             f"There are currently {self._get_online_count()} coders online "
             f"of {self._get_coders_count()} coders!!!"
@@ -78,7 +79,7 @@ class StatisticsCog(Cog):
             f"Today             {today.max_seen:9}  {today.min_seen:10}\n"
             f"In {month_name:15}{month.max_seen:9}  {month.min_seen:10}\n"
             f"31 Day High Score {highest.max_seen if highest else '---':9} on {highest_date}"
-            f"\n\n{self.get_norole()} have not verified, {len(self.server.members)} total members\n```"
+            f"\n\n{self.get_norole()} have not verified, {len(self.server.members) - len(bots)} total members\n```"
         )
         embed = Embed(description=message, color=0x306998).set_author(
             name=f"Server Statistics{' DEV' if BeginnerCog.is_dev_env() else ''}",
