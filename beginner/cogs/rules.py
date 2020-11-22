@@ -41,20 +41,21 @@ class RulesCog(Cog):
     def clean_rule(self, rule_content: str):
         return "\n".join(re.findall(r"<p.*?>(.+?)</p>", rule_content))
 
-    async def ready(self):
+    @Cog.command(name="update-rules")
+    async def update_rules_message(self):
         rules: discord.TextChannel = discord.utils.get(self.server.channels, name="rules")
         messages = await rules.history(limit=1).flatten()
-        if not messages:
-            message = await rules.send(
+        if messages:
+            await messages[0].edit(
                 embed=self.build_rule_message_embed(
                     "Rules, Guidlines, & Conduct",
                     (
-                        "Welcome!!! We're happy to have you! Please give these rules and guidelines a quick read and "
-                        "then hit the ✅ to gain access to the rest of the server."
+                        "Welcome!!! We're happy to have you! Please give these rules and guidelines a quick read! Once "
+                        "you're done react to this message to gain access to the rest of the server."
                     )
-                )
+                ),
+                allowed_mentions=discord.AllowedMentions(everyone=False, users=False, roles=False)
             )
-            await message.add_reaction("✅")
 
     def build_rule_message_embed(self, title: str, message: str) -> discord.Embed:
         admin: discord.Member = self.server.get_member(266432511897370625)
