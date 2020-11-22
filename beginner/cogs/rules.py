@@ -22,7 +22,7 @@ class RulesCog(Cog):
                 "you're not sure __please ask__, we don't mind."
             ),
             "Getting Help": (
-                "If you have a question ask it, someone will answer. **Please don't ask to DM**. This prevents others "
+                "If you have a question ask it, someone will answer. **Please do not DM people.** This prevents others "
                 "from being able to contribute and it makes it impossible for us to ensure you get the highest quality "
                 "help.\n\nWe don't allow solicitation for work or help as this is a beginner oriented server."
             ),
