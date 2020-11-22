@@ -31,6 +31,12 @@ class RulesCog(Cog):
                 "the largest possible number of people to participate and ensures the mod team can maintain the "
                 "highest quality of discussion."
             ),
+            "Display Names & Avatar Images": (
+                "Your display name should be readable (not invisible or illegible), reasonably inoffensive, and should "
+                "not contain any words or phrases that could be consider rude or that may look/sound like something "
+                "that is.\n\n"
+                "Your avatar image/PFP should be reasonably inoffensive."
+            ),
             "Finally": (
                 "It should go without saying: flaming, trolling, spamming, and harassing, along with racism and "
                 "bigotry of any kind towards any group or individual is strictly prohibited and will be dealt with "
