@@ -44,7 +44,7 @@ class RulesCog(Cog):
     @Cog.command(name="update-rules")
     async def update_rules_message(self, reason: str):
         rules: discord.TextChannel = discord.utils.get(self.server.channels, name="rules")
-        messages = await rules.history(limit=1).flatten()
+        messages = await rules.history(limit=1, oldest_first=True).flatten()
         if messages:
             await messages[0].edit(
                 embed=self.build_rule_message_embed(
