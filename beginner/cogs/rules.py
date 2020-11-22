@@ -1,4 +1,4 @@
-from beginner.cog import Cog
+from beginner.cog import Cog, commands
 from beginner.colors import *
 from beginner.models.messages import Message, MessageTypes
 from datetime import datetime
@@ -42,6 +42,7 @@ class RulesCog(Cog):
         return "\n".join(re.findall(r"<p.*?>(.+?)</p>", rule_content))
 
     @Cog.command(name="update-rules")
+    @commands.has_guild_permissions(manage_channels=True)
     async def update_rules_message(self, reason: str):
         rules: discord.TextChannel = discord.utils.get(self.server.channels, name="rules")
         messages = await rules.history(limit=1, oldest_first=True).flatten()
