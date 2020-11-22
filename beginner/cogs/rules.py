@@ -42,7 +42,7 @@ class RulesCog(Cog):
         return "\n".join(re.findall(r"<p.*?>(.+?)</p>", rule_content))
 
     @Cog.command(name="update-rules")
-    async def update_rules_message(self):
+    async def update_rules_message(self, reason: str):
         rules: discord.TextChannel = discord.utils.get(self.server.channels, name="rules")
         messages = await rules.history(limit=1).flatten()
         if messages:
@@ -56,6 +56,7 @@ class RulesCog(Cog):
                 ),
                 allowed_mentions=discord.AllowedMentions(everyone=False, users=False, roles=False)
             )
+            await rules.send(f"Rules message has been updated: {reason}", delete_after=60)
 
     def build_rule_message_embed(self, title: str, message: str) -> discord.Embed:
         admin: discord.Member = self.server.get_member(266432511897370625)
