@@ -74,6 +74,8 @@ class OnBoarding(Cog):
             atomic=True
         )
 
+        await member.remove_roles(self.get_role("unverified"))
+
 
 def setup(client):
     client.add_cog(OnBoarding(client))
