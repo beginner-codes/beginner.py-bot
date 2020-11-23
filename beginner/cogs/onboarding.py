@@ -47,6 +47,13 @@ class OnBoarding(Cog):
         return (datetime.utcnow() - member.joined_at).days >= 2
 
     @Cog.listener()
+    async def on_member_join(self, member: discord.Member):
+        if member.bot:
+            return
+
+        await member.add_roles(self.get_role("unverified"))
+
+    @Cog.listener()
     async def on_raw_reaction_add(self, reaction):
         channel = self.get_channel("rules")
         if reaction.channel_id != channel.id:
