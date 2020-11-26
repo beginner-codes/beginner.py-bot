@@ -22,7 +22,7 @@ class TipsCog(Cog):
     @Cog.command(name="create-tip")
     async def create_tip(self, ctx, *, unsanitized_label):
         label = self.sanitize_label(unsanitized_label)
-        if not ctx.author.guild_permissions.manage_guild:
+        if not ctx.author.guild_permissions.manage_messages and self.get_role("helpers") not in ctx.author.roles:
             return
 
         if not ctx.message.reference:
