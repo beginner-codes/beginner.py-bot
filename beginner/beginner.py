@@ -25,6 +25,9 @@ class BeginnerCog(Cog):
         if self.server.me not in message.mentions:
             return
 
+        if message.reference:
+            return
+
         m: discord.Message = await message.channel.send(
             f"Hi {message.author.mention}! I'm the beginner.py bot developed collaboratively by members of this server "
             f"using the Discord.py package! If you'd like to see my code or even contribute yourself I'm on GitHub "
