@@ -20,16 +20,24 @@ class TipsCog(Cog):
                 await self.list_tips(ctx.message.channel, tips, label)
 
     @Cog.command(name="create-tip")
-    async def create_tip(self, ctx, message_id, *, unsanitized_label):
+    async def create_tip(self, ctx, *, unsanitized_label):
         label = self.sanitize_label(unsanitized_label)
         if not ctx.author.guild_permissions.manage_guild:
             return
 
+        if not ctx.message.reference:
+            await ctx.send("You must reply to the message that you would like to make into a tip.")
+            return
+
+        if not label:
+            await ctx.send("You must provide a label that can be used to lookup the tip.")
+            return
+
         tip = self.get_tip(label)
-        message = await ctx.message.channel.fetch_message(int(message_id))
+        message = await ctx.message.channel.fetch_message(ctx.message.reference.message_id)
         await ctx.send(
             'What would you like the title to be? Say "empty" if you\'d like to not have a title or "keep" if you\'re '
-            "editing an existing tip."
+            "editing an existing tip and don't want to change the title."
         )
         title_message = await self.client.wait_for(
             "message",
@@ -44,7 +52,7 @@ class TipsCog(Cog):
         response = f'Created tip labeled "{label}"'
         if tip:
             await ctx.send(
-                'What would you like the label to be? Say "keep" if you don\'t want it changed.'
+                'Found an existing tip with that label, what would you like the label to be changed to? Say "keep" if you don\'t want it changed.'
             )
             label_message = await self.client.wait_for(
                 "message",
