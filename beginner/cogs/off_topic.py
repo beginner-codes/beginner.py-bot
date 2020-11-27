@@ -49,7 +49,7 @@ class OffTopicCog(Cog):
         )
 
         await self.assignment_message.remove_reaction(reaction.emoji, reaction.member)
-        await channel.send(f"{reaction.member.mention} you've been given access to {channel.mention}", delete_after=10)
+        await channel.send(f"{reaction.member.mention} you've been given access to {off_topic.mention}", delete_after=10)
 
 
 def setup(client):
