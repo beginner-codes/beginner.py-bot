@@ -24,6 +24,7 @@ cogs:
   statistics: true
   tips: true
   user_roles: true
+  off_topic: true
   beginner_cog:
     enabled: true
     from: beginner.beginner
