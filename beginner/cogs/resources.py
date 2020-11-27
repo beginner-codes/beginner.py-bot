@@ -16,25 +16,22 @@ class ResourcesCog(Cog):
             await ctx.send(f"Could not find any resources for `{lang_code}`")
             return
 
-        await ctx.send(
-            embed=discord.Embed(
-                title=f"Helpful {lang['name']} Resources",
-                description="Here are some resources you may find helpful.",
-                color=YELLOW
-            ).add_field(
-                name="YouTube",
+        embed = discord.Embed(
+            title=f"Helpful {lang['name']} Resources",
+            description="Here are some resources you may find helpful.",
+            color=YELLOW
+        )
+
+        for title, resources in (section for section in lang.items() if section[0] != "name"):
+            embed.add_field(
+                name=title,
                 value="\n".join(
-                    f"[{name}]({url})" for name, url in lang["youtube"].items()
-                ),
-                inline=False,
-            ).add_field(
-                name="Books",
-                value="\n".join(
-                    f"[{name}]({url})" for name, url in lang["books"].items()
+                    f"[{name}]({url})" for name, url in resources.items()
                 ),
                 inline=False,
             )
-        )
+
+        await ctx.send(embed=embed)
 
 
 def setup(client):
