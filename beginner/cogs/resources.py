@@ -8,7 +8,7 @@ import discord
 
 class ResourcesCog(Cog):
     @Cog.command(aliases=("r", "resource"))
-    async def resources(self, ctx: Context, lang_name: str = "py"):
+    async def resources(self, ctx: Context, *, lang_name: str = "py"):
         lang_code = get_setting(lang_name.casefold(), scope="lang_aliases", default=lang_name.casefold())
         lang = get_setting(lang_code, scope="resources")
 
