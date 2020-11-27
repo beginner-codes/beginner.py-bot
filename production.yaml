@@ -56,3 +56,6 @@ lang_aliases:
   python: py
   python3: py
   python2: py
+  datascience: ds
+  data science: ds
+  data: ds
