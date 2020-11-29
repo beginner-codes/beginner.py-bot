@@ -109,7 +109,8 @@ class RulesCog(Cog):
             )
 
     @Cog.command(name="formatting", aliases=("format", "code"))
-    async def show_formatting_rule(self, ctx, language: str = "py", *, _=None):
+    async def show_formatting_rule(self, ctx, raw_language: str = "py", *, _=None):
+        language = "".join(re.findall(r"[a-z0-9]+", raw_language, re.I))
         await ctx.send(
             embed=(
                 Embed(
