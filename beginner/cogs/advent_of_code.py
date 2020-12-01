@@ -5,16 +5,17 @@ from beginner.tags import tag
 from datetime import datetime, timedelta
 import discord
 import discord.ext.commands
+import dateutil.tz
 
 
 class AdventOfCode(Cog):
     @property
     def now(self):
-        return datetime.now().replace(hour=0, minute=0, second=0, microsecond=0) - timedelta(hours=5)
+        return datetime.now(dateutil.tz.gettz("America/New_York")).replace(hour=0, minute=0, second=0, microsecond=0)
 
     @property
     def christmas(self):
-        return datetime(2020, 12, 25, 0, 0, 0) - timedelta(hours=5)
+        return datetime(2020, 12, 25, 0, 0, 0, tzinfo=dateutil.tz.gettz("America/New_York"))
 
     @property
     def days_till_christmas(self):
