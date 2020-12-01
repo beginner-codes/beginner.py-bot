@@ -10,7 +10,7 @@ import discord.ext.commands
 class AdventOfCode(Cog):
     @property
     def now(self):
-        return datetime.now().replace(hour=0, minute=0, second=0, microsecond=0) - timedelta(hours=-5)
+        return datetime.now().replace(hour=0, minute=0, second=0, microsecond=0) - timedelta(hours=5)
 
     @property
     def christmas(self):
@@ -28,9 +28,9 @@ class AdventOfCode(Cog):
 
     def schedule_next_challenge_announcement(self):
         if self.days_till_christmas:
-            schedule("bpy-advent-of-code-2020", self.now + timedelta(days=1, minutes=1), self.send_daily_link, no_duplication=True)
+            schedule("advent-of-code-2020", self.now + timedelta(days=1, minutes=1), self.send_daily_link, no_duplication=True)
 
-    @tag("schedule", "advent-of-code-daily-link")
+    @tag("schedule", "advent-of-code-daily-update")
     async def send_daily_link(self):
         channel = self.get_channel("🎅announcements")
         show_off = self.get_channel("⛄discussion")
