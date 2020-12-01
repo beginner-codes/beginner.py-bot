@@ -10,8 +10,12 @@ import dateutil.tz
 
 class AdventOfCode(Cog):
     @property
+    def raw_now(self):
+        return datetime.now(dateutil.tz.gettz("America/New_York"))
+
+    @property
     def now(self):
-        return datetime.now(dateutil.tz.gettz("America/New_York")).replace(hour=0, minute=0, second=0, microsecond=0)
+        return self.raw_now.replace(hour=0, minute=0, second=0, microsecond=0)
 
     @property
     def christmas(self):
@@ -31,7 +35,7 @@ class AdventOfCode(Cog):
         if self.days_till_christmas:
             schedule(
                 "beginnerpy-advent-of-code-2020",
-                self.now + timedelta(days=1, minutes=1),
+                self.now + timedelta(days=1, minutes=1) - self.raw_now,
                 self.send_daily_link,
                 no_duplication=True
             )
