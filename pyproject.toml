@@ -15,6 +15,7 @@ google-api-python-client = "^1.7"
 numpy = "^1.19.0"
 bevy = "^0.2.0"
 pyyaml = "^5.3.1"
+python-dateutil = "^2.8.1"
 
 [tool.poetry.dev-dependencies]
 
