@@ -25,6 +25,7 @@ cogs:
   tips: true
   user_roles: true
   off_topic: true
+  advent_of_code: true
   beginner_cog:
     enabled: true
     from: beginner.beginner
@@ -32,7 +33,7 @@ cogs:
 logging:
   format: "%(asctime)s: %(levelname)-9s %(name)-16s :: %(message)s"
   date_format: "%m/%d/%Y %I:%M:%S %p"
-  level: WARN
+  level: DEBUG
 
 resources:
   py:
