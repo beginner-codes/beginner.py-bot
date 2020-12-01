@@ -4,6 +4,7 @@ from beginner.scheduler import schedule
 from beginner.tags import tag
 from datetime import timedelta, datetime
 import discord
+import random
 
 
 class OnBoarding(Cog):
@@ -75,6 +76,16 @@ class OnBoarding(Cog):
         )
 
         await member.remove_roles(self.get_role("unverified"))
+
+        welcome_messages = [
+            "Everybody say hi to {}!!!",
+            "Say hello to our newest member {}!!!",
+            "Welcome to our newest & coolest member {}!!!",
+            "Hey hey hey!!! {} has joined the party!!!"
+        ]
+        await self.get_channel("🙋hello-world").send(
+            random.choice(welcome_messages).format(member.mention)
+        )
 
 
 def setup(client):
