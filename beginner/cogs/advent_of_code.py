@@ -57,7 +57,7 @@ class AdventOfCode(Cog):
                     f"**Good luck!!!**"
                 ),
                 title=(
-                    f"TESTING🎄 {self.days_till_christmas} Days Until Christmas 🎄"
+                    f"🎄 {self.days_till_christmas} Days Until Christmas 🎄"
                     if self.days_till_christmas else
                     "🎄🎅☃️  MERRY CHRISTMAS ☃️ 🎅🎄"
                 ),
