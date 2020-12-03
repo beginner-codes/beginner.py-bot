@@ -12,6 +12,7 @@ class Challenges(Cog):
             "paste.pythondiscord.com",
             "hastebin.com",
             "pastebin.com",
+            "github.com",
         ]
 
     @Cog.listener()
