@@ -62,6 +62,13 @@ class AdventOfCode(Cog):
                     "🎄🎅☃️  MERRY CHRISTMAS ☃️ 🎅🎄"
                 ),
                 color=BLUE,
+            ).add_field(
+                name="Beginner.py Leaderboard",
+                value=(
+                    "To join our server's leaderboard go [here](https://adventofcode.com/2020/leaderboard/private), "
+                    "enter our code in the text box, and then click join.\n\n"
+                    "**Beginner.py Leaderboard Code:** `990847-0adb2be3`"
+                )
             )
         )
 
