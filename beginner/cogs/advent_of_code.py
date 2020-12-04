@@ -72,6 +72,12 @@ class AdventOfCode(Cog):
             )
         )
 
+        await self.get_channel("🎁solutions").send(
+            embed=discord.Embed(
+                description=f"🎄🎅❄️ Share your Day {self.now.day} solutions!!! ❄️🎅🎄"
+            )
+        )
+
         self.schedule_next_challenge_announcement()
 
 
