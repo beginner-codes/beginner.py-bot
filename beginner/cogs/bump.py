@@ -191,7 +191,7 @@ class Bumping(Cog):
             Points.select(Points.user_id, peewee.fn.sum(Points.points))
             .order_by(peewee.fn.sum(Points.points).desc())
             .group_by(Points.user_id)
-            .filter(Points.point_type == "BUMP",  Points.awarded > datetime.utcnow() - timedelta(days=7))
+            .filter(Points.point_type == "BUMP",  Points.awarded > datetime.utcnow() - timedelta(days=2))
             .limit(1)
         )
         return scores.scalar() if scores.count() else None
