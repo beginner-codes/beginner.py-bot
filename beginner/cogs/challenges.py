@@ -41,7 +41,7 @@ class Challenges(Cog):
         content = message.content
         if content.startswith("http"):
             parsed = urlparse(content)
-            if parsed.netloc.lower() in self.approved_hosts:
+            if parsed.netloc.lower().replace("www.", "") in self.approved_hosts:
                 return
 
         elif content.startswith("||") and content.endswith("||"):
