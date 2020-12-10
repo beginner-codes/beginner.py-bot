@@ -219,8 +219,8 @@ class Bumping(Cog):
             if scores:
                 embed.add_field(
                     name="Runners Up",
-                    value="- ".join(
-                        f"{ctx.guild.get_member(bumper.user_id).mention} has bumped {bumper.sum} times\n"
+                    value="\n".join(
+                        f"- {ctx.guild.get_member(bumper.user_id).mention} has bumped {bumper.sum} times"
                         for bumper in scores
                     ),
                     inline=False
