@@ -22,7 +22,7 @@ class Challenges(Cog):
 
     async def challenge_alerts(self, message):
         if message.channel != self.get_channel(
-                os.environ.get("DAILY_CHALLENGE_CHANNEL", "daily-challenges")
+                os.environ.get("DAILY_CHALLENGE_CHANNEL", "weekday-challenges")
         ):
             return
 
