@@ -216,7 +216,7 @@ class Bumping(Cog):
             king = scores.pop(0)
             embed = discord.Embed(
                 title="Bump Leaders",
-                content="Here are the people who have bumped the most in the last 48 hours!",
+                description=f"Here are the people who have bumped the most in the last {self._bump_score_days} days!",
                 color=YELLOW
             ).add_field(
                 name="👑 Bump King 👑",
