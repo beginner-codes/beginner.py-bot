@@ -196,6 +196,39 @@ class Bumping(Cog):
         )
         return scores.scalar() if scores.count() else None
 
+    @Cog.command()
+    async def bump_leaderboard(self, ctx):
+        scores = list(
+            Points.select(Points.user_id, peewee.fn.sum(Points.points))
+                .order_by(peewee.fn.sum(Points.points).desc())
+                .group_by(Points.user_id)
+                .filter(Points.point_type == "BUMP", Points.awarded > datetime.utcnow() - timedelta(days=2))
+                .limit(5)
+        )
+        if scores:
+            king = scores.pop(0)
+            embed = discord.Embed(
+                title="Bump Leaders",
+                content="Here are the people who have bumped the most in the last 48 hours!",
+                color=YELLOW
+            ).add_field(
+                name="👑 Bump King 👑",
+                value=f"{ctx.guild.get_member(king.user_id).mention} is our Bump King with {king.sum} bumps!",
+                inline=False
+            )
+            if scores:
+                embed.add_field(
+                    name="Runners Up",
+                    value="- ".join(
+                        f"{ctx.guild.get_member(bumper.user_id).mention} has bumped {bumper.sum} times\n"
+                        for bumper in scores
+                    ),
+                    inline=False
+                )
+            await ctx.send(embed=embed)
+        else:
+            await ctx.send("No bumpers found")
+
     @tag("schedule", "disboard-bump-reminder")
     async def bump_reminder(self):
         self.logger.debug(f"SENDING BUMP REMINDER: {self.role.name}")
