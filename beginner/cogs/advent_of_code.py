@@ -50,7 +50,7 @@ class AdventOfCode(Cog):
         await channel.send(
             embed=discord.Embed(
                 description=(
-                    f"Here's the [{self.now.day}{suffixes.get(self.now.day, 'th')} challenge]"
+                    f"**Here's the [{self.now.day}{suffixes.get(self.now.day, 'th')} challenge]**"
                     f"(https://adventofcode.com/2020/day/{self.now.day})!!!\n\n"
                     f"Show off (spoiler tag please) & discuss in {show_off.mention}!!! Get help in {help_1.mention} or "
                     f"{help_2.mention}.\n\n"
