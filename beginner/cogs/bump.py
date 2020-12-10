@@ -21,6 +21,7 @@ class Bumping(Cog):
         self._disboard = None
         self._role = None
         self._bump_lock = asyncio.Lock()
+        self._bump_score_days = 7
 
     @property
     def channel(self) -> discord.TextChannel:
@@ -191,7 +192,10 @@ class Bumping(Cog):
             Points.select(Points.user_id, peewee.fn.sum(Points.points))
             .order_by(peewee.fn.sum(Points.points).desc())
             .group_by(Points.user_id)
-            .filter(Points.point_type == "BUMP",  Points.awarded > datetime.utcnow() - timedelta(days=2))
+            .filter(
+                Points.point_type == "BUMP",
+                Points.awarded > datetime.utcnow() - timedelta(days=self._bump_score_days)
+            )
             .limit(1)
         )
         return scores.scalar() if scores.count() else None
@@ -202,7 +206,10 @@ class Bumping(Cog):
             Points.select(Points.user_id, peewee.fn.sum(Points.points))
                 .order_by(peewee.fn.sum(Points.points).desc())
                 .group_by(Points.user_id)
-                .filter(Points.point_type == "BUMP", Points.awarded > datetime.utcnow() - timedelta(days=2))
+                .filter(
+                    Points.point_type == "BUMP",
+                    Points.awarded > datetime.utcnow() - timedelta(days=self._bump_score_days)
+                )
                 .limit(5)
         )
         if scores:
