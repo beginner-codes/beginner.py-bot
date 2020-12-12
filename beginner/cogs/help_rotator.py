@@ -146,13 +146,13 @@ class HelpRotatorCog(Cog):
         if channel.category_id != self.available_category.id:
             return False
 
-        return channel.name.startswith("python-help-")
+        return channel.name.startswith("🐍python-help-")
 
     def is_occupied_python_help_channel(self, channel: discord.TextChannel) -> bool:
         if channel.category_id != self.occupied_category.id:
             return False
 
-        return channel.name.startswith("python-help-")
+        return channel.name.startswith("🐍python-help-")
 
 
 def setup(client):
