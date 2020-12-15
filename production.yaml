@@ -4,7 +4,7 @@ bot:
 
 cogs:
   admin: true
-  bump: true
+  bump: false
   candidates: true
   challenges: true
   code_runner: true
