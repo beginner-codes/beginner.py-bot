@@ -270,10 +270,11 @@ class Bumping(Cog):
         await self.channel.purge(check=lambda m: m.author.id == self.client.user.id and not m.id == explanation.id)
 
     def get_next_bump_timer(self):
-        bot_version = os.environ.get('BOT_IMAGE_VERSION')
-        # Make sure we look legit-ish
         headers = {
-            "User-Agent": f"Beginner.py Server Bot{' - ' if bot_version else ''}{bot_version} - Find us at https://beginnerpy.com/"
+            "User-Agent": (
+                "Mozilla/5.0 (Macintosh; Intel Mac OS X 11_0_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280"
+                ".88 Safari/537.36"
+            )
         }
         server_page = requests.get("https://disboard.org/server/644299523686006834", headers=headers)
         self.logger.debug(f"{server_page.status_code}: {server_page.content}")
