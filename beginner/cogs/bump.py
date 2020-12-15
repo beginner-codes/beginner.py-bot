@@ -61,7 +61,7 @@ class Bumping(Cog):
             if not action.casefold() == "bump":
                 return
 
-            if task_scheduled("bump-reminder"):
+            if task_scheduled("bump-reminder") and False:
                 await ctx.send(
                     embed=discord.Embed(
                         color=YELLOW,
@@ -276,6 +276,7 @@ class Bumping(Cog):
             "User-Agent": f"Beginner.py Server Bot{' - ' if bot_version else ''}{bot_version} - Find us at https://beginnerpy.com/"
         }
         server_page = requests.get("https://disboard.org/server/644299523686006834", headers=headers)
+        self.logger.debug(f"{server_page.status_code}: {server_page.content}")
 
         dom = bs4.BeautifulSoup(server_page.content, 'html.parser')
 
