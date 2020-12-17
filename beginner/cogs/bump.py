@@ -98,10 +98,19 @@ class Bumping(Cog):
                         )
                     )
                     next_bump_timer = 120 * 60
+                    responded = True
                 else:
                     next_bump_timer = await self.get_next_bump_timer()
+                    responded = False
 
                 next_bump = timedelta(seconds=next_bump_timer)
+                if next_bump_timer >= 0:
+                    schedule("bump-reminders", next_bump, self.bump_reminder)
+                await self.clear_channel()
+
+                if not responded:
+                    return
+
                 message = f"Successfully bumped!"
                 thumbnail = "https://cdn.discordapp.com/emojis/711749954837807135.png?v=1"
                 if next_bump.seconds <= 7000:
@@ -115,9 +124,6 @@ class Bumping(Cog):
                     color = YELLOW
                     thumbnail = "https://cdn.discordapp.com/emojis/651959497698574338.png?v=1"
 
-                if next_bump_timer >= 0:
-                    schedule("bump-reminders", next_bump, self.bump_reminder)
-                await self.clear_channel()
 
                 next_bump_message = []
                 next_bump_hour = next_bump.seconds//3600
