@@ -49,7 +49,7 @@ class Bumping(Cog):
         await ctx.send(f"{ctx.author.display_name} bumped", delete_after=10)
 
         async with self._bump_lock:
-            if task_scheduled("bump-reminders"):
+            if task_scheduled("bump-reminder"):
                 await ctx.send(
                     embed=discord.Embed(
                         color=YELLOW,
@@ -85,7 +85,7 @@ class Bumping(Cog):
 
                 next_bump = timedelta(seconds=next_bump_timer)
                 if next_bump_timer >= 0:
-                    schedule("bump-reminders", next_bump, self.bump_reminder)
+                    schedule("bump-reminder", next_bump, self.bump_reminder)
                 await self.clear_channel()
 
                 message = f"Successfully bumped!"
