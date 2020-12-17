@@ -47,7 +47,6 @@ class Bumping(Cog):
             return
 
         await ctx.send(f"{ctx.author.display_name} bumped", delete_after=10)
-        await ctx.message.delete()
 
         async with self._bump_lock:
             if task_scheduled("bump-reminders"):
