@@ -79,10 +79,28 @@ class Bumping(Cog):
                 return
 
             async with ctx.channel.typing():
-                await ctx.send("Watching for the bump confirmation...", delete_after=20)
-                # await asyncio.sleep(20)
+                await ctx.send("Watching for the bump confirmation...", delete_after=30)
 
-                next_bump_timer = await self.get_next_bump_timer()
+                try:
+                    await self.client.wait_for("message", check=lambda m: m.author == self.disboard, timeout=60)
+                except asyncio.exceptions.TimeoutError:
+                    await ctx.send(
+                        embed=(
+                            discord.Embed(
+                                color=RED,
+                                description=(
+                                    f"{ctx.author.mention} bump failed, {self.disboard.mention} didn't respond within "
+                                    f"60 seconds. Setting a reminder for 2 hours."
+                                ),
+                                title="No Bump Confirmation"
+                            )
+                            .set_thumbnail(url="https://cdn.discordapp.com/emojis/651959497698574338.png?v=1")
+                        )
+                    )
+                    next_bump_timer = 120 * 60
+                else:
+                    next_bump_timer = await self.get_next_bump_timer()
+
                 next_bump = timedelta(seconds=next_bump_timer)
                 message = f"Successfully bumped!"
                 thumbnail = "https://cdn.discordapp.com/emojis/711749954837807135.png?v=1"
