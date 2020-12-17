@@ -132,7 +132,7 @@ class Bumping(Cog):
             return
 
         if message.author.bot:
-            await asyncio.sleep(10)
+            return
 
         await message.delete()
 
