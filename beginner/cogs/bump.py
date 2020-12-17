@@ -49,7 +49,7 @@ class Bumping(Cog):
         await ctx.send(f"{ctx.author.display_name} bumped", delete_after=10)
 
         async with self._bump_lock:
-            if task_scheduled("bump-reminder"):
+            if task_scheduled("disboard-bump-reminder"):
                 await ctx.send(
                     embed=discord.Embed(
                         color=YELLOW,
@@ -85,7 +85,7 @@ class Bumping(Cog):
 
                 next_bump = timedelta(seconds=next_bump_timer)
                 if next_bump_timer >= 0:
-                    schedule("bump-reminder", next_bump, self.bump_reminder)
+                    schedule("disboard-bump-reminder", next_bump, self.bump_reminder)
                 await self.clear_channel()
 
                 message = f"Successfully bumped!"
@@ -100,7 +100,6 @@ class Bumping(Cog):
                     title = f"Bump Did Not Go Through"
                     color = YELLOW
                     thumbnail = "https://cdn.discordapp.com/emojis/651959497698574338.png?v=1"
-
 
                 next_bump_message = []
                 next_bump_hour = next_bump.seconds//3600
@@ -216,7 +215,7 @@ class Bumping(Cog):
         else:
             await ctx.send("No bumpers found")
 
-    @tag("schedule", "disboard-bump-reminder")
+    @tag("schedule", "disboard-bump-reminders")
     async def bump_reminder(self):
         self.logger.debug(f"SENDING BUMP REMINDER: {self.role.name}")
         await self.clear_channel()
