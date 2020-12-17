@@ -13,7 +13,7 @@ class BeginnerCog(Cog):
         initialize_scheduler(loop=self.client.loop)
 
         if not BeginnerCog.is_dev_env():
-            await self.get_channel("bot-dev").send(
+            await self.get_channel("🤖bot-dev").send(
                 f"Bot back online! Image Version: {os.environ.get('BOT_IMAGE_VERSION', 'NOT SET')}"
             )
 
