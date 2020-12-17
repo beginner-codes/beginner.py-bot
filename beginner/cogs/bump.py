@@ -261,7 +261,7 @@ class Bumping(Cog):
                         end_index = content.find(" minutes")
                         start_index = content[:end_index].rfind(" ") + 1
                         minutes = int(content[start_index:end_index])
-                        return minutes * 60
+                        return minutes * 60 - (datetime.utcnow() - message.created_at).seconds
                     except ValueError:
                         pass  # Something blew up, wrong type of message, so do nothing
 
