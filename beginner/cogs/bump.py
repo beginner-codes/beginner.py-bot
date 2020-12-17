@@ -247,7 +247,7 @@ class Bumping(Cog):
 
     async def clear_channel(self):
         explanation = await self.get_explanation_message()
-        await self.channel.purge(check=lambda m: m.author.id == self.client.user.id and not m.id == explanation.id)
+        await self.channel.purge(check=lambda m: not m.id == explanation.id)
 
     async def get_next_bump_timer(self):
         history = self.channel.history(limit=100)
