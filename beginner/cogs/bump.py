@@ -22,6 +22,7 @@ class Bumping(Cog):
         self._role = None
         self._bump_lock = asyncio.Lock()
         self._bump_score_days = 7
+        self._message_queue = asyncio.Queue()
 
     @property
     def channel(self) -> discord.TextChannel:
@@ -130,6 +131,9 @@ class Bumping(Cog):
 
         if message.author.id == self.client.user.id:
             return
+
+        if message.author == self.disboard:
+            await self._message_queue.put(message)
 
         if message.author.bot:
             return
