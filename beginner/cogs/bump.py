@@ -252,20 +252,28 @@ class Bumping(Cog):
         await self.channel.purge(check=lambda m: not m.id == explanation.id)
 
     async def get_next_bump_timer(self):
-        history = self.channel.history(limit=100)
-        async for message in history:
-            if message.author == self.disboard:
-                content = message.embeds[0].description
-                if ":thumbsup:" in content:
-                    return 60 * 120 - (datetime.utcnow() - message.created_at).seconds
+        while not self._message_queue.empty():
+            try:
+                message = await asyncio.wait_for(self._message_queue.get(), 60)
+            except asyncio.TimeoutError:
+                break
+
+            time_since_created = datetime.utcnow() - message.created_at
+            if time_since_created > timedelta(hours=2):
+                continue
+
+            content = message.embeds[0].description
+            if ":thumbsup:" in content:
+                return (timedelta(hours=2) - time_since_created).seconds
+            else:
+                end_index = content.find(" minutes")
+                start_index = content[:end_index].rfind(" ") + 1
+                try:
+                    minutes = int(content[start_index:end_index])
+                except ValueError:
+                    pass
                 else:
-                    try:
-                        end_index = content.find(" minutes")
-                        start_index = content[:end_index].rfind(" ") + 1
-                        minutes = int(content[start_index:end_index])
-                        return minutes * 60 - (datetime.utcnow() - message.created_at).seconds
-                    except ValueError:
-                        pass  # Something blew up, wrong type of message, so do nothing
+                    return (timedelta(minutes=minutes) - time_since_created).seconds
 
         return -1
 
