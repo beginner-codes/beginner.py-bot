@@ -81,7 +81,6 @@ class Bumping(Cog):
             async with ctx.channel.typing():
                 await ctx.send("Watching for the bump confirmation...", delete_after=30)
 
-                await asyncio.sleep(30)
                 next_bump_timer = await self.get_next_bump_timer()
 
                 next_bump = timedelta(seconds=next_bump_timer)
