@@ -35,7 +35,7 @@ class Challenges(Cog):
         if message.author.bot:
             return
 
-        if "challenge submissions" not in message.channel.topic.casefold():
+        if not message.channel.topic or "challenge submissions" not in message.channel.topic.casefold():
             return
 
         content = message.content
