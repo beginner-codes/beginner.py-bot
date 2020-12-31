@@ -258,8 +258,10 @@ class Bumping(Cog):
             except asyncio.TimeoutError:
                 break
 
-            time_since_created = datetime.utcnow() - message.created_at
-            if time_since_created > timedelta(hours=2):
+            now = datetime.utcnow()
+            created = message.created_at
+            time_since_created = now - created if now > created else timedelta()
+            if time_since_created >= timedelta(hours=2):
                 continue
 
             content = message.embeds[0].description
