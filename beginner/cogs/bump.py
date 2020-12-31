@@ -266,7 +266,7 @@ class Bumping(Cog):
 
             content = message.embeds[0].description
             if ":thumbsup:" in content:
-                return (timedelta(hours=2) - time_since_created).seconds
+                return int((timedelta(hours=2) - time_since_created).seconds)
             else:
                 end_index = content.find(" minutes")
                 start_index = content[:end_index].rfind(" ") + 1
@@ -275,7 +275,7 @@ class Bumping(Cog):
                 except ValueError:
                     pass
                 else:
-                    return (timedelta(minutes=minutes) - time_since_created).seconds
+                    return int((timedelta(minutes=minutes) - time_since_created).total_seconds())
 
         return -1
 
