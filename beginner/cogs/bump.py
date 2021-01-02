@@ -102,8 +102,8 @@ class Bumping(Cog):
                     thumbnail = "https://cdn.discordapp.com/emojis/651959497698574338.png?v=1"
 
                 next_bump_message = []
-                next_bump_hour = next_bump.total_seconds()//3600
-                next_bump_minutes = next_bump.total_seconds() // 60 % 60
+                next_bump_hour = int(next_bump.total_seconds()//3600)
+                next_bump_minutes = int(next_bump.total_seconds() // 60 % 60)
                 if next_bump_hour > 0:
                     next_bump_message.append(f"{next_bump_hour} hour{'s' if next_bump_hour > 1 else ''}")
                 if next_bump_minutes > 0:
