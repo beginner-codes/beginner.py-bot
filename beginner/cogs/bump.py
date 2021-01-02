@@ -90,10 +90,10 @@ class Bumping(Cog):
 
                 message = f"Successfully bumped!"
                 thumbnail = "https://cdn.discordapp.com/emojis/711749954837807135.png?v=1"
-                if next_bump.seconds <= 7000:
+                if next_bump.total_seconds() <= 7000:
                     message = f"Server was already bumped. {ctx.author.mention} try again at the next bump reminder."
-                title = f"Thanks {ctx.author.display_name}!" if next_bump.seconds > 7000 else "Already Bumped"
-                color = BLUE if next_bump.seconds > 7000 else YELLOW
+                title = f"Thanks {ctx.author.display_name}!" if next_bump.total_seconds() > 7000 else "Already Bumped"
+                color = BLUE if next_bump.total_seconds() > 7000 else YELLOW
 
                 if next_bump_timer == -1:
                     message = f"Bump did not go through. Try again in a little while."
@@ -102,8 +102,8 @@ class Bumping(Cog):
                     thumbnail = "https://cdn.discordapp.com/emojis/651959497698574338.png?v=1"
 
                 next_bump_message = []
-                next_bump_hour = next_bump.seconds//3600
-                next_bump_minutes = next_bump.seconds // 60 % 60
+                next_bump_hour = next_bump.total_seconds()//3600
+                next_bump_minutes = next_bump.total_seconds() // 60 % 60
                 if next_bump_hour > 0:
                     next_bump_message.append(f"{next_bump_hour} hour{'s' if next_bump_hour > 1 else ''}")
                 if next_bump_minutes > 0:
@@ -120,7 +120,7 @@ class Bumping(Cog):
                     )
                 )
 
-                if next_bump.seconds > 7000:
+                if next_bump.total_seconds() > 7000:
                     await self.award_points(ctx.message)
 
     @Cog.listener()
@@ -266,7 +266,7 @@ class Bumping(Cog):
 
             content = message.embeds[0].description
             if ":thumbsup:" in content:
-                return int((timedelta(hours=2) - time_since_created).seconds)
+                return int((timedelta(hours=2) - time_since_created).total_seconds())
             else:
                 end_index = content.find(" minutes")
                 start_index = content[:end_index].rfind(" ") + 1
