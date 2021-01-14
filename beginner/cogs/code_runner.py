@@ -12,7 +12,21 @@ from typing import List, Tuple
 class CodeRunner(Cog):
     def __init__(self, client):
         super().__init__(client)
-        self.blacklist = {"exec", "eval", "exit", "compile", "breakpoint", "credits", "help", "input", "license", "memoryview", "open", "quit", "globals"}
+        self.blacklist = {
+            "exec",
+            "eval",
+            "exit",
+            "compile",
+            "breakpoint",
+            "credits",
+            "help",
+            "input",
+            "license",
+            "memoryview",
+            "open",
+            "quit",
+            "globals",
+        }
 
     def evaluate(self, input_code):
         exception = None
@@ -39,17 +53,15 @@ class CodeRunner(Cog):
                 raise NameError("Dunder names cannot be accessed")
             return getattr(obj, name, *args, **kwargs)
 
-        scan_builtins = __builtins__ if isinstance(__builtins__, dict) else dict(__builtins__)
+        scan_builtins = (
+            __builtins__ if isinstance(__builtins__, dict) else dict(__builtins__)
+        )
         builtins = {
             name: scan_builtins[name]
             for name in scan_builtins
             if not name.startswith("_") and name not in self.blacklist
         }
-        builtins.update({
-            "print": printer,
-            "range": ranger,
-            "getattr": attergetter
-        })
+        builtins.update({"print": printer, "range": ranger, "getattr": attergetter})
         internal_globals["__builtins__"] = builtins
         old_limit = sys.getrecursionlimit()
         sys.setrecursionlimit(50)
@@ -57,7 +69,11 @@ class CodeRunner(Cog):
             lines = input_code.split("\n")
             statement = []
             for line in lines:
-                if (assignment := re.match(r"([_a-zA-Z][_a-zA-Z0-9]*)\s*=\s*([^=].*)", line)):
+                if (
+                    assignment := re.match(
+                        r"([_a-zA-Z][_a-zA-Z0-9]*)\s*=\s*([^=].*)", line
+                    )
+                ) :
                     name, value = assignment.groups()
                     print("FOUND local", name, repr(value.strip()))
                     internal_globals[name] = ast.literal_eval(value.strip())
@@ -82,17 +98,22 @@ class CodeRunner(Cog):
             await ctx.send("The exec command has been disabled.")
             return
 
-        if not len(content.strip()) or content.find("```py") < 0 or content.rfind("```") <= 0:
+        if (
+            not len(content.strip())
+            or content.find("```py") < 0
+            or content.rfind("```") <= 0
+        ):
             await ctx.send(
                 embed=discord.Embed(
+                    title="Exec - No Code",
                     description=(
                         "\n**NO PYTHON CODE BLOCK FOUND**\n\nThe command format is as follows:\n\n"
                         "\n!exec \\`\\`\\`py\nYOUR CODE HERE\n\\`\\`\\`\n"
                     ),
-                    color=0xEA4335
-                ).set_author(
-                    name="Exec - No Code", icon_url=self.server.icon_url
-                )
+                    color=0xEA4335,
+                ),
+                reference=ctx.message,
+                mention_author=True,
             )
 
         else:
@@ -104,10 +125,7 @@ class CodeRunner(Cog):
                 start += 9
             else:
                 start = content.find("```py") + 5
-            code = content[start: -3]
-
-            code_message = f"{ctx.author.mention} here's the output from [your code]({ctx.message.jump_url})"
-            code_message += f"\n```py\n{code}\n```"
+            code = content[start:-3]
 
             message, exceptions = await self.code_runner("exec", code)
 
@@ -122,26 +140,32 @@ class CodeRunner(Cog):
                 output = f"```\n{output}\n```"
 
             await ctx.send(
-                embed=discord.Embed(description=code_message, color=color).set_author(
-                    name=title, icon_url=self.server.icon_url
-                ).add_field(name="Output", value=output, inline=False)
+                embed=discord.Embed(title=title, description=output, color=color),
+                reference=ctx.message,
+                mention_author=True,
             )
 
     async def code_runner(self, mode: str, code: str) -> Tuple[List[str], bool]:
         message = []
 
         proc = await asyncio.create_subprocess_shell(
-            f"python -m beginner.runner {mode}", stdin=asyncio.subprocess.PIPE, stdout=asyncio.subprocess.PIPE
+            f"python -m beginner.runner {mode}",
+            stdin=asyncio.subprocess.PIPE,
+            stdout=asyncio.subprocess.PIPE,
         )
         try:
-            stdout, stderr = await asyncio.wait_for(proc.communicate(base64.b64encode(code.encode())), timeout=5)
+            stdout, stderr = await asyncio.wait_for(
+                proc.communicate(base64.b64encode(code.encode())), timeout=5
+            )
         except asyncio.exceptions.TimeoutError:
             proc.kill()
             stdout = ""
             stderr = "TimeoutError"
 
         if stdout:
-            out, *exceptions = map(lambda line: base64.b64decode(line).decode(), stdout.split(b"\n"))
+            out, *exceptions = map(
+                lambda line: base64.b64decode(line).decode(), stdout.split(b"\n")
+            )
             exceptions = list(filter(bool, exceptions))
             if out:
                 out = out.strip()
@@ -161,7 +185,9 @@ class CodeRunner(Cog):
 
                 for exception in exceptions:
                     if exception:
-                        message.append(f"{'...' if len(exception) > 500 else ''}{exception[-500:]}")
+                        message.append(
+                            f"{'...' if len(exception) > 500 else ''}{exception[-500:]}"
+                        )
 
         return message, len(exceptions) > 0
 
@@ -174,14 +200,13 @@ class CodeRunner(Cog):
         if content.casefold().strip() == "help":
             await ctx.send(
                 embed=discord.Embed(
+                    title="Statement Eval - Help",
                     description=(
                         "This command allows you to run a single statement and see the results. For security "
                         "reasons what code you can run is very limited."
                     ),
-                    color=0xFBBC05
-                ).set_author(
-                    name=f"Statement Eval - Help", icon_url=self.server.icon_url
-                )
+                    color=0xFBBC05,
+                ),
             )
             return
 
@@ -189,8 +214,7 @@ class CodeRunner(Cog):
         title = "Eval - Success"
         color = 0x4285F4
 
-        code_message = f"{ctx.author.mention} here's the output from [your code]({ctx.message.jump_url})"
-        code_message += f"\n```py\n>>> {code}"
+        code_message = f"\n```py\n>>> {code}"
 
         message, exceptions = await self.code_runner("eval", code)
 
@@ -200,9 +224,13 @@ class CodeRunner(Cog):
 
         output = "\n".join(message)
         await ctx.send(
-            embed=discord.Embed(description=f"{code_message.strip()}\n\n{output}\n```", color=color).set_author(
-                name=title, icon_url=self.server.icon_url
-            )
+            embed=discord.Embed(
+                title=title,
+                description=f"{code_message.strip()}\n\n{output}\n```",
+                color=color,
+            ),
+            reference=ctx.message,
+            mention_author=True,
         )
 
     @Cog.command()
@@ -215,7 +243,7 @@ class CodeRunner(Cog):
         title = "Code Docs"
         color = 0x4285F4
 
-        code_message = f"{ctx.author.mention} here are the docs you [requested]({ctx.message.jump_url})"
+        code_message = f"{ctx.author.mention} here are the docs you requested"
         code_message += f"\n```py\n{code}```"
 
         message, exceptions = await self.code_runner("docs", code)
@@ -226,9 +254,11 @@ class CodeRunner(Cog):
 
         output = "\n".join(message)
         await ctx.send(
-            embed=discord.Embed(description=f"{code_message.strip()} ```{output}\n```", color=color).set_author(
-                name=title, icon_url=self.server.icon_url
-            )
+            embed=discord.Embed(
+                title=title, description=f"```{output}\n```", color=color
+            ),
+            reference=ctx.message,
+            mention_author=True,
         )
 
 
