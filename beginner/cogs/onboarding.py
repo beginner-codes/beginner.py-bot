@@ -13,8 +13,15 @@ class OnBoarding(Cog):
 
     def schedule_onboarding(self):
         now_utc = datetime.utcnow()
-        next_onboarding = (now_utc + timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0)
-        schedule("new-member-onboarding", next_onboarding, self.onboard_new_members, no_duplication=True)
+        next_onboarding = (now_utc + timedelta(days=1)).replace(
+            hour=0, minute=0, second=0, microsecond=0
+        )
+        schedule(
+            "new-member-onboarding",
+            next_onboarding,
+            self.onboard_new_members,
+            no_duplication=True,
+        )
 
     @tag("schedule", "onboard-new-members")
     async def onboard_new_members(self):
@@ -29,7 +36,9 @@ class OnBoarding(Cog):
             if role in member.roles:
                 found += 1
                 if await self.member_can_be_onboarded(member):
-                    await member.remove_roles(role, reason="Onboard recently active member")
+                    await member.remove_roles(
+                        role, reason="Onboard recently active member"
+                    )
                     onboarding += 1
 
         # Log results
@@ -37,7 +46,7 @@ class OnBoarding(Cog):
         await self.get_channel("mod-action-log").send(
             embed=discord.Embed(
                 color=BLUE,
-                description=f"Found {found} new members, {onboarding} were onboarded"
+                description=f"Found {found} new members, {onboarding} were onboarded",
             ).set_author(name="Onboarding New Members", icon_url=self.server.icon_url)
         )
 
@@ -46,13 +55,6 @@ class OnBoarding(Cog):
 
     async def member_can_be_onboarded(self, member: discord.Member):
         return (datetime.utcnow() - member.joined_at).days >= 2
-
-    @Cog.listener()
-    async def on_member_join(self, member: discord.Member):
-        if member.bot:
-            return
-
-        await member.add_roles(self.get_role("unverified"))
 
     @Cog.listener()
     async def on_raw_reaction_add(self, reaction):
@@ -72,7 +74,7 @@ class OnBoarding(Cog):
             role,
             self.get_role("new member"),
             reason="New member role assignment",
-            atomic=True
+            atomic=True,
         )
 
         await member.remove_roles(self.get_role("unverified"))
@@ -81,7 +83,7 @@ class OnBoarding(Cog):
             "Everybody say hi to {}!!!",
             "Say hello to our newest member {}!!!",
             "Welcome to our newest & coolest member {}!!!",
-            "Hey hey hey!!! {} has joined the party!!!"
+            "Hey hey hey!!! {} has joined the party!!!",
         ]
         await self.get_channel("🙋hello-world").send(
             random.choice(welcome_messages).format(member.mention)
