@@ -57,8 +57,7 @@ class RulesCog(Cog):
                 embed=self.build_rule_message_embed(
                     "Rules, Guidlines, & Conduct",
                     (
-                        "Welcome!!! We're happy to have you! Please give these rules and guidelines a quick read! Once "
-                        "you're done react to this message to gain access to the rest of the server."
+                        "Welcome!!! We're happy to have you! Please give these rules and guidelines a quick read!"
                     ),
                 ),
                 allowed_mentions=discord.AllowedMentions(
