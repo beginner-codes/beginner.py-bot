@@ -57,27 +57,11 @@ class OnBoarding(Cog):
         return (datetime.utcnow() - member.joined_at).days >= 2
 
     @Cog.listener()
-    async def on_raw_reaction_add(self, reaction):
-        channel = self.get_channel("rules")
-        if reaction.channel_id != channel.id:
+    async def on_member_update(
+        self, old_member: discord.Member, updated_member: discord.Member
+    ):
+        if updated_member.pending or not old_member.pending:
             return
-
-        member = self.server.get_member(reaction.user_id)
-        if member.bot:
-            return
-
-        role = self.get_role("coders")
-        if role in member.roles:
-            return
-
-        await member.add_roles(
-            role,
-            self.get_role("new member"),
-            reason="New member role assignment",
-            atomic=True,
-        )
-
-        await member.remove_roles(self.get_role("unverified"))
 
         welcome_messages = [
             "Everybody say hi to {}!!!",
@@ -86,7 +70,11 @@ class OnBoarding(Cog):
             "Hey hey hey!!! {} has joined the party!!!",
         ]
         await self.get_channel("🙋hello-world").send(
-            random.choice(welcome_messages).format(member.mention)
+            random.choice(welcome_messages).format(updated_member.mention)
+        )
+
+        await updated_member.add_roles(
+            self.get_role("coders"), self.get_role("new member")
         )
 
 
