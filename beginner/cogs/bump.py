@@ -302,6 +302,7 @@ class Bumping(Cog):
 
     async def get_next_bump_timer(self):
         checked = False
+        started_watching = datetime.utcnow()
         while not self._message_queue.empty() or not checked:
             checked = True
             try:
@@ -310,10 +311,13 @@ class Bumping(Cog):
             except asyncio.TimeoutError:
                 break
 
-            now = datetime.utcnow()
             created = message.created_at
-            time_since_created = now - created if now > created else timedelta()
-            if time_since_created >= timedelta(hours=2):
+            time_since_created = (
+                started_watching - created
+                if started_watching > created
+                else timedelta()
+            )
+            if time_since_created >= timedelta(minutes=1):
                 self.log_bump(
                     f"Message is too old {time_since_created}", self.server.me
                 )
@@ -324,7 +328,7 @@ class Bumping(Cog):
                 next_reminder = int(
                     (timedelta(hours=2) - time_since_created).total_seconds()
                 )
-                self.log_bump(f"Next reinder in {next_reminder}", self.server.me)
+                self.log_bump(f"Next reminder in {next_reminder}", self.server.me)
                 return next_reminder
             else:
                 end_index = content.find(" minutes")
