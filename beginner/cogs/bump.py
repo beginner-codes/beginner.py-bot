@@ -21,6 +21,14 @@ class Bumping(Cog):
         self._bump_score_days = 7
         self._message_queue = asyncio.Queue()
 
+    def log_bump(self, message: str, bumper: discord.Member):
+        loop = asyncio.get_event_loop()
+        loop.create_task(
+            self.get_channel("bump-log").send(
+                f"{datetime.utcnow().isoformat()}: {bumper.display_name}\n> {message}"
+            )
+        )
+
     @property
     def channel(self) -> discord.TextChannel:
         if not self._channel:
@@ -45,6 +53,7 @@ class Bumping(Cog):
             return
 
         await ctx.send(f"{ctx.author.display_name} bumped", delete_after=10)
+        self.log_bump(f"Bumped", ctx.author)
 
         async with self._bump_lock:
             if task_scheduled("disboard-bump-reminder"):
@@ -52,10 +61,11 @@ class Bumping(Cog):
                     embed=discord.Embed(
                         color=YELLOW,
                         description=f"{ctx.author.mention} please wait until the next bump reminder",
-                        title="Please Wait"
+                        title="Please Wait",
                     ),
-                    delete_after=20
+                    delete_after=20,
                 )
+                self.log_bump(f"Bump already scheduled", ctx.author)
                 return
 
             if not self.disboard.status == discord.Status.online:
@@ -67,57 +77,85 @@ class Bumping(Cog):
                                 f"{ctx.author.mention} bump failed, {self.disboard.mention} appears to be offline. "
                                 "I'll check once a minute and let you know when it comes back online"
                             ),
-                            title="Bump Failed - Offline"
+                            title="Bump Failed - Offline",
+                        ).set_thumbnail(
+                            url="https://cdn.discordapp.com/emojis/651959497698574338.png?v=1"
                         )
-                        .set_thumbnail(url="https://cdn.discordapp.com/emojis/651959497698574338.png?v=1")
                     )
                 )
+                self.log_bump("Bot is not online", ctx.author)
                 await self.bump_recovery()
                 return
 
             async with ctx.channel.typing():
+                self.log_bump("Waiting for bump reminder", ctx.author)
                 await ctx.send("Watching for the bump confirmation...", delete_after=30)
 
                 next_bump_timer = await self.get_next_bump_timer()
 
-                next_bump = timedelta(seconds=next_bump_timer)
-                if next_bump_timer >= 0:
-                    schedule("disboard-bump-reminder", next_bump, self.bump_reminder)
+                next_bump = (
+                    timedelta(seconds=next_bump_timer)
+                    if next_bump_timer > 0
+                    else timedelta(hours=2)
+                )
+                self.log_bump(
+                    f"Reminder set to go off in {':'.join(divmod(next_bump.total_seconds(), 60))} (m:s)",
+                    ctx.author,
+                )
+                schedule("disboard-bump-reminder", next_bump, self.bump_reminder)
                 await self.clear_channel()
 
                 message = f"Successfully bumped!"
-                thumbnail = "https://cdn.discordapp.com/emojis/711749954837807135.png?v=1"
+                thumbnail = (
+                    "https://cdn.discordapp.com/emojis/711749954837807135.png?v=1"
+                )
                 if next_bump.total_seconds() <= 7000:
+                    self.log_bump(
+                        f"Server already bumped {next_bump.total_seconds()} <= 7000",
+                        ctx.author,
+                    )
                     message = f"Server was already bumped. {ctx.author.mention} try again at the next bump reminder."
-                title = f"Thanks {ctx.author.display_name}!" if next_bump.total_seconds() > 7000 else "Already Bumped"
+                title = (
+                    f"Thanks {ctx.author.display_name}!"
+                    if next_bump.total_seconds() > 7000
+                    else "Already Bumped"
+                )
                 color = BLUE if next_bump.total_seconds() > 7000 else YELLOW
 
                 if next_bump_timer == -1:
+                    self.log_bump("Bump didn't go through", ctx.author)
                     message = f"Bump did not go through. Try again in a little while."
                     title = f"Bump Did Not Go Through"
                     color = YELLOW
-                    thumbnail = "https://cdn.discordapp.com/emojis/651959497698574338.png?v=1"
+                    thumbnail = (
+                        "https://cdn.discordapp.com/emojis/651959497698574338.png?v=1"
+                    )
 
                 next_bump_message = []
-                next_bump_hour = int(next_bump.total_seconds()//3600)
+                next_bump_hour = int(next_bump.total_seconds() // 3600)
                 next_bump_minutes = int(next_bump.total_seconds() // 60 % 60)
                 if next_bump_hour > 0:
-                    next_bump_message.append(f"{next_bump_hour} hour{'s' if next_bump_hour > 1 else ''}")
+                    next_bump_message.append(
+                        f"{next_bump_hour} hour{'s' if next_bump_hour > 1 else ''}"
+                    )
                 if next_bump_minutes > 0:
-                    next_bump_message.append(f"{next_bump_minutes} minute{'s' if next_bump_minutes > 1 else ''}")
+                    next_bump_message.append(
+                        f"{next_bump_minutes} minute{'s' if next_bump_minutes > 1 else ''}"
+                    )
 
                 await ctx.send(
                     embed=(
                         discord.Embed(
                             color=color,
                             description=f"{message} Next bump in {' & '.join(next_bump_message)}",
-                            title=title
-                        )
-                        .set_thumbnail(url=thumbnail)
+                            title=title,
+                        ).set_thumbnail(url=thumbnail)
                     )
                 )
+                self.log_bump(f"Next bump in {':'.join(next_bump_message)}", ctx.author)
 
                 if next_bump.total_seconds() > 7000:
+                    self.log_bump("Gave bump points", ctx.author)
                     await self.award_points(ctx.message)
 
     @Cog.listener()
@@ -129,11 +167,13 @@ class Bumping(Cog):
             return
 
         if message.author == self.disboard:
+            self.log_bump("Queued message", message.author)
             await self._message_queue.put(message)
 
         if message.author.bot:
             return
 
+        self.log_bump("Deleted message", message.author)
         await message.delete()
 
     async def award_points(self, message: discord.Message):
@@ -142,6 +182,7 @@ class Bumping(Cog):
 
         new_king_id = self.get_bump_king_id()
         if new_king_id != king_id:
+            self.log_bump("New king", message.author)
             role = self.get_role("bump king")
 
             if king_id:
@@ -150,7 +191,9 @@ class Bumping(Cog):
             new_king = self.server.get_member(new_king_id)
             await new_king.add_roles(role)
 
-            channel = self.get_channel(os.environ.get("BUMP_KING_ANNOUNCE_CHANNEL", "general"))
+            channel = self.get_channel(
+                os.environ.get("BUMP_KING_ANNOUNCE_CHANNEL", "general")
+            )
             await channel.send(
                 embed=discord.Embed(
                     description=f"All hail {new_king.mention} our new {role.mention}!!!"
@@ -159,10 +202,7 @@ class Bumping(Cog):
 
     def award_bump_points(self, author_id):
         bump = Points(
-            awarded=datetime.utcnow(),
-            user_id=author_id,
-            points=1,
-            point_type="BUMP"
+            awarded=datetime.utcnow(), user_id=author_id, points=1, point_type="BUMP"
         )
         bump.save()
 
@@ -173,7 +213,8 @@ class Bumping(Cog):
             .group_by(Points.user_id)
             .filter(
                 Points.point_type == "BUMP",
-                Points.awarded > datetime.utcnow() - timedelta(days=self._bump_score_days)
+                Points.awarded
+                > datetime.utcnow() - timedelta(days=self._bump_score_days),
             )
             .limit(1)
         )
@@ -183,24 +224,25 @@ class Bumping(Cog):
     async def bump_leaderboard(self, ctx):
         scores = list(
             Points.select(Points.user_id, peewee.fn.sum(Points.points))
-                .order_by(peewee.fn.sum(Points.points).desc())
-                .group_by(Points.user_id)
-                .filter(
-                    Points.point_type == "BUMP",
-                    Points.awarded > datetime.utcnow() - timedelta(days=self._bump_score_days)
-                )
-                .limit(5)
+            .order_by(peewee.fn.sum(Points.points).desc())
+            .group_by(Points.user_id)
+            .filter(
+                Points.point_type == "BUMP",
+                Points.awarded
+                > datetime.utcnow() - timedelta(days=self._bump_score_days),
+            )
+            .limit(5)
         )
         if scores:
             king = scores.pop(0)
             embed = discord.Embed(
                 title="Bump Leaders",
                 description=f"Here are the people who have bumped the most in the last {self._bump_score_days} days!",
-                color=YELLOW
+                color=YELLOW,
             ).add_field(
                 name="👑 Bump King 👑",
                 value=f"{ctx.guild.get_member(king.user_id).mention} is our Bump King with {king.sum} bumps!",
-                inline=False
+                inline=False,
             )
             if scores:
                 embed.add_field(
@@ -209,7 +251,7 @@ class Bumping(Cog):
                         f"- {ctx.guild.get_member(bumper.user_id).mention} has bumped {bumper.sum} times"
                         for bumper in scores
                     ),
-                    inline=False
+                    inline=False,
                 )
             await ctx.send(embed=embed)
         else:
@@ -220,18 +262,20 @@ class Bumping(Cog):
         self.logger.debug(f"SENDING BUMP REMINDER: {self.role.name}")
         await self.clear_channel()
         if self.disboard.status == discord.Status.online:
+            self.log_bump("Sending bump reminder", self.server.me)
             await self.channel.send(
                 f"{self.role.mention} It's been 2hrs since the last bump!\n"
                 f"*Use the command `!d bump` now!*"
             )
         else:
+            self.log_bump("Bot appears to be offline", self.server.me)
             await self.channel.send(
                 embed=discord.Embed(
                     color=RED,
                     description=(
                         f"Whoa {self.disboard.mention} appears to be offline right now! "
                         "I'll check once a minute and let you know when it comes back online"
-                    )
+                    ),
                 )
             )
             await self.bump_recovery()
@@ -239,18 +283,29 @@ class Bumping(Cog):
     @tag("schedule", "disboard-bump-recovery")
     async def bump_recovery(self):
         if self.disboard.status == discord.Status.online:
+            self.log_bump("Bot is back online", self.server.me)
             await self.bump_reminder()
             return
 
-        schedule("disboard-recovery", timedelta(minutes=1), self.bump_recovery, no_duplication=True)
+        self.log_bump("Scheduling bump recovery", self.server.me)
+        schedule(
+            "disboard-recovery",
+            timedelta(minutes=1),
+            self.bump_recovery,
+            no_duplication=True,
+        )
 
     async def clear_channel(self):
+        self.log_bump("Clearing bump channel", self.server.me)
         explanation = await self.get_explanation_message()
         await self.channel.purge(check=lambda m: not m.id == explanation.id)
 
     async def get_next_bump_timer(self):
-        while not self._message_queue.empty():
+        checked = False
+        while not self._message_queue.empty() or not checked:
+            checked = True
             try:
+                self.log_bump("Looking for bump confirmation", self.server.me)
                 message = await asyncio.wait_for(self._message_queue.get(), 60)
             except asyncio.TimeoutError:
                 break
@@ -259,21 +314,41 @@ class Bumping(Cog):
             created = message.created_at
             time_since_created = now - created if now > created else timedelta()
             if time_since_created >= timedelta(hours=2):
+                self.log_bump(
+                    f"Message is too old {time_since_created}", self.server.me
+                )
                 continue
 
             content = message.embeds[0].description
             if ":thumbsup:" in content:
-                return int((timedelta(hours=2) - time_since_created).total_seconds())
+                next_reminder = int(
+                    (timedelta(hours=2) - time_since_created).total_seconds()
+                )
+                self.log_bump(f"Next reinder in {next_reminder}", self.server.me)
+                return next_reminder
             else:
                 end_index = content.find(" minutes")
                 start_index = content[:end_index].rfind(" ") + 1
                 try:
                     minutes = int(content[start_index:end_index])
                 except ValueError:
-                    pass
+                    self.log_bump(
+                        f"Failed to find duration in message\n\n> {content}",
+                        self.server.me,
+                    )
                 else:
-                    return int((timedelta(minutes=minutes) - time_since_created).total_seconds())
+                    next_reminder = int(
+                        (
+                            timedelta(minutes=minutes) - time_since_created
+                        ).total_seconds()
+                    )
+                    self.log_bump(
+                        f"Next reminder in {next_reminder} seconds\n\n> {content}",
+                        self.server.me,
+                    )
+                    return next_reminder
 
+        self.log_bump("Seems no confirmation was found", self.server.me)
         return -1
 
     @Cog.listener()
