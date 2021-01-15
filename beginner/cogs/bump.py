@@ -9,9 +9,6 @@ import discord
 import discord.ext.commands
 import os
 import peewee
-import requests
-import re
-import bs4
 
 
 class Bumping(Cog):
