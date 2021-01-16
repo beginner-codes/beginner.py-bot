@@ -99,7 +99,7 @@ class Bumping(Cog):
                     else timedelta(hours=2)
                 )
                 self.log_bump(
-                    f"Reminder set to go off in {':'.join(map(str(divmod(next_bump.total_seconds(), 60)))} (m:s)",
+                    f"Reminder set to go off in {':'.join(map(str, divmod(next_bump.total_seconds(), 60)))} (m:s)",
                     ctx.author,
                 )
                 schedule("disboard-bump-reminder", next_bump, self.bump_reminder)
