@@ -3,6 +3,7 @@ from beginner.colors import *
 from beginner.scheduler import schedule
 from beginner.tags import tag
 from datetime import timedelta, datetime
+import asyncio
 import discord
 import random
 
@@ -10,6 +11,7 @@ import random
 class OnBoarding(Cog):
     async def ready(self):
         self.schedule_onboarding()
+        await self.scan_for_unwelcomed_members()
 
     def schedule_onboarding(self):
         now_utc = datetime.utcnow()
@@ -63,6 +65,30 @@ class OnBoarding(Cog):
         if updated_member.pending or not old_member.pending:
             return
 
+        await self.welcome_member(updated_member)
+
+    async def scan_for_unwelcomed_members(self):
+        self.logger.debug("Scanning for unwelcomed members")
+        members = [
+            member
+            for member in self.server.members
+            if not member.pending and len(member.roles) == 1
+        ]
+        if not members:
+            self.logger.debug("All members have been welcomed")
+            return
+
+        self.logger.debug(f"{len(members)} have not been welcomed")
+        await self.get_channel("staff").send(
+            f"I just restarted and found {len(members)} who accepted the rules while I was away. I'll welcome them now."
+        )
+
+        for member in members:
+            await self.welcome_member(member)
+            await asyncio.sleep(1)
+
+    async def welcome_member(self, member: discord.Member):
+        self.logger.debug(f"Welcoming {member.display_name}")
         welcome_messages = [
             "Everybody say hi to {}!!!",
             "Say hello to our newest member {}!!!",
@@ -70,12 +96,10 @@ class OnBoarding(Cog):
             "Hey hey hey!!! {} has joined the party!!!",
         ]
         await self.get_channel("🙋hello-world").send(
-            random.choice(welcome_messages).format(updated_member.mention)
+            random.choice(welcome_messages).format(member.mention)
         )
 
-        await updated_member.add_roles(
-            self.get_role("coders"), self.get_role("new member")
-        )
+        await member.add_roles(self.get_role("coders"), self.get_role("new member"))
 
 
 def setup(client):
