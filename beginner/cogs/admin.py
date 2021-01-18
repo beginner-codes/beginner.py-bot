@@ -21,7 +21,7 @@ class Admin(Cog):
             embed=discord.Embed(
                 description="The server has been silenced. Use `!silence stop` to end the silence.",
                 color=RED,
-                title="Silence Activated"
+                title="Silence Activated",
             )
         )
 
@@ -29,7 +29,7 @@ class Admin(Cog):
             embed=discord.Embed(
                 description=f"The server has been silenced by {ctx.author.mention}.",
                 color=RED,
-                title="Silence Activated"
+                title="Silence Activated",
             )
         )
 
@@ -45,7 +45,7 @@ class Admin(Cog):
             embed=discord.Embed(
                 description="The server silence has been stopped.",
                 color=GREEN,
-                title="Silence Deactivated"
+                title="Silence Deactivated",
             )
         )
 
@@ -53,7 +53,7 @@ class Admin(Cog):
             embed=discord.Embed(
                 description=f"The server silence has been stopped by {ctx.author.mention}.",
                 color=GREEN,
-                title="Silence Deactivated"
+                title="Silence Deactivated",
             )
         )
 
@@ -64,7 +64,9 @@ class Admin(Cog):
 
     @channel.command()
     @commands.has_guild_permissions(manage_channels=True)
-    async def details(self, ctx: discord.ext.commands.Context, channel: discord.TextChannel):
+    async def details(
+        self, ctx: discord.ext.commands.Context, channel: discord.TextChannel
+    ):
         await ctx.send(
             f"**#{channel.name}**\n"
             f"Position: {channel.position}\n"
@@ -77,11 +79,11 @@ class Admin(Cog):
     @channel.command()
     @commands.has_guild_permissions(manage_channels=True)
     async def delete(
-            self,
-            ctx: discord.ext.commands.Context,
-            channel: discord.TextChannel,
-            *,
-            reason: str = "Delete channel"
+        self,
+        ctx: discord.ext.commands.Context,
+        channel: discord.TextChannel,
+        *,
+        reason: str = "Delete channel",
     ):
         await channel.delete(reason=reason)
         await ctx.send(f"{ctx.author.mention} #{channel.name} has been deleted")
@@ -89,25 +91,27 @@ class Admin(Cog):
     @channel.command()
     @commands.has_guild_permissions(manage_channels=True)
     async def clone(
-            self,
-            ctx: discord.ext.commands.Context,
-            channel: discord.TextChannel,
-            name: str,
-            *,
-            reason: str = "Delete channel"
+        self,
+        ctx: discord.ext.commands.Context,
+        channel: discord.TextChannel,
+        name: str,
+        *,
+        reason: str = "Delete channel",
     ):
         new_channel: discord.TextChannel = await channel.clone(name=name, reason=reason)
         await new_channel.edit(position=channel.position + 1)
-        await channel.send(f"{ctx.author.mention} channel cloned to {new_channel.mention}")
+        await channel.send(
+            f"{ctx.author.mention} channel cloned to {new_channel.mention}"
+        )
 
     @channel.command()
     @commands.has_guild_permissions(manage_channels=True)
     async def edit(
-            self,
-            ctx: discord.ext.commands.Context,
-            channel: discord.TextChannel,
-            *,
-            raw_settings: str
+        self,
+        ctx: discord.ext.commands.Context,
+        channel: discord.TextChannel,
+        *,
+        raw_settings: str,
     ):
         settings = ast.literal_eval(raw_settings)
         await channel.edit(**settings)
@@ -116,12 +120,12 @@ class Admin(Cog):
     @channel.command()
     @commands.has_guild_permissions(manage_channels=True)
     async def permissions(
-            self,
-            ctx: discord.ext.commands.Context,
-            channel: discord.TextChannel,
-            raw_role: str,
-            *,
-            raw_permissions: str
+        self,
+        ctx: discord.ext.commands.Context,
+        channel: discord.TextChannel,
+        raw_role: str,
+        *,
+        raw_permissions: str,
     ):
         role = self.get_role(raw_role.casefold())
         permissions = channel.overwrites_for(role)
@@ -130,7 +134,7 @@ class Admin(Cog):
         await ctx.send(
             embed=discord.Embed(
                 description=f"{ctx.author.mention} {channel.mention} permissions for {role.mention} have been updated",
-                color=BLUE
+                color=BLUE,
             )
         )
 
