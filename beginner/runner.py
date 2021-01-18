@@ -10,6 +10,7 @@ import sys
 import random
 import unicodedata
 import numpy
+import statistics
 
 
 class CPUTimeExceeded(Exception):
@@ -98,12 +99,18 @@ class Executer:
             except SyntaxError as excp:
                 msg, (file, line_no, column, line) = excp.args
                 spaces = " " * (column - 1)
-                exceptions.append(f"Line {line_no}\n{line.rstrip()}\n{spaces}^\nSyntaxError: {msg}")
+                exceptions.append(
+                    f"Line {line_no}\n{line.rstrip()}\n{spaces}^\nSyntaxError: {msg}"
+                )
             else:
                 dunder_attributes = self.dunder_attributes(code_tree)
                 if dunder_attributes - self.dunder_whitelist:
-                    prohibited_attributes = ", ".join(sorted(dunder_attributes - self.dunder_whitelist))
-                    exceptions.append(f"NameError: These attributes are not whitelisted: {prohibited_attributes}")
+                    prohibited_attributes = ", ".join(
+                        sorted(dunder_attributes - self.dunder_whitelist)
+                    )
+                    exceptions.append(
+                        f"NameError: These attributes are not whitelisted: {prohibited_attributes}"
+                    )
 
                 if not exceptions:
                     code_object = compile(code_tree, "<string>", runner.__name__)
@@ -119,7 +126,8 @@ class Executer:
                             if docs:
                                 self.stdout.write(
                                     result.__doc__
-                                    if hasattr(result, "__doc__") and result.__doc__.strip()
+                                    if hasattr(result, "__doc__")
+                                    and result.__doc__.strip()
                                     else "NO DOCS"
                                 )
                             else:
@@ -127,9 +135,13 @@ class Executer:
                     except MemoryError:
                         exceptions.append("MemoryError: Exceeded process memory limits")
                     except CPUTimeExceeded:
-                        exceptions.append("Beginnerpy.CPUTimeError: Exceeded process CPU time limits")
+                        exceptions.append(
+                            "Beginnerpy.CPUTimeError: Exceeded process CPU time limits"
+                        )
                     except ScriptTimedOut:
-                        exceptions.append("Beginnerpy.ScriptTimedOut: Script took too long to complete")
+                        exceptions.append(
+                            "Beginnerpy.ScriptTimedOut: Script took too long to complete"
+                        )
                     except ImportError as ex:
                         exceptions.append(f"ImportError: {ex.args[0]}")
                     except Exception as ex:
@@ -138,7 +150,9 @@ class Executer:
                         exceptions.append(err.getvalue())
                         err.close()
                     except SystemExit as se:
-                        exceptions.append(f"EXIT WITH CODE {0 if se.code is None else se.code}")
+                        exceptions.append(
+                            f"EXIT WITH CODE {0 if se.code is None else se.code}"
+                        )
 
         out = self.stdout.getvalue()
         self.stdout.close()
@@ -156,35 +170,156 @@ if __name__ == "__main__":
     code = base64.b64decode(input().encode()).strip()
     executer = Executer(
         {
-            "__import__", "__build_class__",
-            "ArithmeticError", "AssertionError", "AttributeError", "BlockingIOError", "BrokenPipeError", "BufferError",
-            "BytesWarning", "ChildProcessError", "ConnectionAbortedError", "ConnectionError", "ConnectionRefusedError",
-            "ConnectionResetError", "DeprecationWarning", "EOFError", "BaseException", "Exception", "Ellipsis", "False",
-            "GeneratorExit", "KeyboardInterrupt", "None", "NotImplemented", "SystemExit", "True", "abs", "all", "any",
-            "ascii", "bin", "bool", "bytearray", "bytes", "callable", "chr", "classmethod", "complex", "copyright",
-            "credits", "delattr", "dict", "dir", "divmod", "enumerate", "exit", "filter", "float", "format",
-            "frozenset", "getattr", "globals", "hasattr", "hash", "hex", "id", "int", "isinstance",
-            "issubclass", "iter", "len", "license", "list", "locals", "map", "max", "min", "next", "object", "oct",
-            "ord", "pow", "print", "property", "quit", "range", "repr", "reversed", "round", "set", "setattr", "slice",
-            "sorted", "staticmethod", "str", "sum", "super", "tuple", "type", "vars", "zip",
+            "__import__",
+            "__build_class__",
+            "ArithmeticError",
+            "AssertionError",
+            "AttributeError",
+            "BlockingIOError",
+            "BrokenPipeError",
+            "BufferError",
+            "BytesWarning",
+            "ChildProcessError",
+            "ConnectionAbortedError",
+            "ConnectionError",
+            "ConnectionRefusedError",
+            "ConnectionResetError",
+            "DeprecationWarning",
+            "EOFError",
+            "BaseException",
+            "Exception",
+            "Ellipsis",
+            "False",
+            "GeneratorExit",
+            "KeyboardInterrupt",
+            "None",
+            "NotImplemented",
+            "SystemExit",
+            "True",
+            "abs",
+            "all",
+            "any",
+            "ascii",
+            "bin",
+            "bool",
+            "bytearray",
+            "bytes",
+            "callable",
+            "chr",
+            "classmethod",
+            "complex",
+            "copyright",
+            "credits",
+            "delattr",
+            "dict",
+            "dir",
+            "divmod",
+            "enumerate",
+            "exit",
+            "filter",
+            "float",
+            "format",
+            "frozenset",
+            "getattr",
+            "globals",
+            "hasattr",
+            "hash",
+            "hex",
+            "id",
+            "int",
+            "isinstance",
+            "issubclass",
+            "iter",
+            "len",
+            "license",
+            "list",
+            "locals",
+            "map",
+            "max",
+            "min",
+            "next",
+            "object",
+            "oct",
+            "ord",
+            "pow",
+            "print",
+            "property",
+            "quit",
+            "range",
+            "repr",
+            "reversed",
+            "round",
+            "set",
+            "setattr",
+            "slice",
+            "sorted",
+            "staticmethod",
+            "str",
+            "sum",
+            "super",
+            "tuple",
+            "type",
+            "vars",
+            "zip",
         },
         {
-            "__name__", "__doc__", "__next__", "__init__", "__new__", "__call__", "__iter__", "__slots__"
+            "__name__",
+            "__doc__",
+            "__next__",
+            "__init__",
+            "__new__",
+            "__call__",
+            "__iter__",
+            "__slots__",
         },
         {
-            "datetime", "itertools", "functools", "re", "math", "random", "decimal", "string", "textwrap",
-            "unicodedata", "stringprep", "struct", "calendar", "collections", "heapq", "bisect", "array", "weakref",
-            "types", "copy", "pprint", "reprlib", "enum", "numbers", "cmath", "fractions", "statistics", "operator",
-            "pickle", "copyreg", "hashlib", "hmac", "secrets", "time", "json", "base64", "binascii", "typing",
-            "dectest", "unittest", "dataclasses", "contextlib", "abc", "numpy"
-
-        }
+            "datetime",
+            "itertools",
+            "functools",
+            "re",
+            "math",
+            "random",
+            "decimal",
+            "string",
+            "textwrap",
+            "unicodedata",
+            "stringprep",
+            "struct",
+            "calendar",
+            "collections",
+            "heapq",
+            "bisect",
+            "array",
+            "weakref",
+            "types",
+            "copy",
+            "pprint",
+            "reprlib",
+            "enum",
+            "numbers",
+            "cmath",
+            "fractions",
+            "statistics",
+            "operator",
+            "pickle",
+            "copyreg",
+            "hashlib",
+            "hmac",
+            "secrets",
+            "time",
+            "json",
+            "base64",
+            "binascii",
+            "typing",
+            "dectest",
+            "unittest",
+            "dataclasses",
+            "contextlib",
+            "abc",
+            "numpy",
+        },
     )
-    runners = {
-        "eval": eval,
-        "exec": exec,
-        "docs": eval
-    }
+    runners = {"eval": eval, "exec": exec, "docs": eval}
     arg = len(sys.argv) < 2 or sys.argv[1]
     runner = runners.get(arg, exec)
     out, exceptions = executer.run(code, runner, arg == "docs")
