@@ -302,7 +302,7 @@ class Bumping(Cog):
 
     async def get_next_bump_timer(self):
         started_watching = datetime.utcnow()
-        while started_watching - datetime.utcnow() <= timedelta(minutes=1):
+        while datetime.utcnow() - started_watching <= timedelta(minutes=1):
             try:
                 self.log_bump("Looking for bump confirmation", self.server.me)
                 message = await asyncio.wait_for(self._message_queue.get(), 60)
