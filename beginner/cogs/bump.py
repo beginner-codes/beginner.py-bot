@@ -301,10 +301,8 @@ class Bumping(Cog):
         await self.channel.purge(check=lambda m: not m.id == explanation.id)
 
     async def get_next_bump_timer(self):
-        checked = False
         started_watching = datetime.utcnow()
-        while not self._message_queue.empty() or not checked:
-            checked = True
+        while started_watching - datetime.utcnow() <= timedelta(minutes=1):
             try:
                 self.log_bump("Looking for bump confirmation", self.server.me)
                 message = await asyncio.wait_for(self._message_queue.get(), 60)
