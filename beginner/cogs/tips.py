@@ -22,7 +22,7 @@ class TipsCog(Cog):
     @Cog.command(name="delete-tip")
     async def delete_tip(self, ctx, *, unsanitized_label=None):
         label = self.sanitize_label(unsanitized_label)
-        tip = self.get_tip(label)
+        tip = self.get_tips(label)
         if not tip:
             await ctx.send(f"No tip matches `{label}`")
         else:
