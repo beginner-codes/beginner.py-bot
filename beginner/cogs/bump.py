@@ -74,8 +74,8 @@ class Bumping(Cog):
                         discord.Embed(
                             color=RED,
                             description=(
-                                f"{ctx.author.mention} bump failed, {self.disboard.mention} appears to be offline. "
-                                "I'll check once a minute and let you know when it comes back online"
+                                f"Whoa {self.disboard.mention} appears to be offline right now! "
+                                "I'll monitor the bump bot's status and notify everyone when it comes back online."
                             ),
                             title="Bump Failed - Offline",
                         ).set_thumbnail(
@@ -84,7 +84,6 @@ class Bumping(Cog):
                     )
                 )
                 self.log_bump("Bot is not online", ctx.author)
-                await self.bump_recovery()
                 return
 
             async with ctx.channel.typing():
@@ -157,6 +156,20 @@ class Bumping(Cog):
                 if next_bump.total_seconds() > 7000:
                     self.log_bump("Gave bump points", ctx.author)
                     await self.award_points(ctx.message)
+
+    @Cog.listener()
+    async def on_member_update(self, before: discord.Member, after: discord.Member):
+        if before != self.disboard:
+            return
+
+        if before.status == after.status:
+            return
+
+        if task_scheduled("disboard-bump-reminder"):
+            return
+
+        if after.status.online == discord.Status.online:
+            await self.bump_reminder()
 
     @Cog.listener()
     async def on_message(self, message: discord.Message):
@@ -274,26 +287,10 @@ class Bumping(Cog):
                     color=RED,
                     description=(
                         f"Whoa {self.disboard.mention} appears to be offline right now! "
-                        "I'll check once a minute and let you know when it comes back online"
+                        "I'll monitor the bump bot's status and notify everyone when it comes back online."
                     ),
                 )
             )
-            await self.bump_recovery()
-
-    @tag("schedule", "disboard-bump-recovery")
-    async def bump_recovery(self):
-        if self.disboard.status == discord.Status.online:
-            self.log_bump("Bot is back online", self.server.me)
-            await self.bump_reminder()
-            return
-
-        self.log_bump("Scheduling bump recovery", self.server.me)
-        schedule(
-            "disboard-recovery",
-            timedelta(minutes=1),
-            self.bump_recovery,
-            no_duplication=True,
-        )
 
     async def clear_channel(self):
         self.log_bump("Clearing bump channel", self.server.me)
