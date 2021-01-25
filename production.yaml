@@ -53,6 +53,15 @@ resources:
       Codebasics: https://www.youtube.com/playlist?list=PLeo1K3hjS3us_ELKYSj_Fth2tIEkdKXvV
       Ken Jee: https://www.youtube.com/playlist?list=PL2zq7klxX5ATPC8RuqCuTDdki3b4NqKQv
 
+  pentesting:
+    name: Pentesting & Ethical Hacking
+    YouTube:
+      HackerSploit: https://www.youtube.com/watch?v=tHd8k54kVs8&list=PLBf0hzazHTGOEuhPQSnq-Ej8jRyXxfYvl
+      Joseph Delgadillo: https://www.youtube.com/watch?v=ElWo5fd4rIU&list=PLYmlEoSHldN7HJapyiQ8kFLUsk_a7EjCw&index=1
+    Courses:
+      Alison.com (login required): https://alison.com/topic/learn/100096/synopsis
+      Offensive Security (Metasploit course): https://www.offensive-security.com/metasploit-unleashed/
+
 lang_aliases:
   python: py
   python3: py
@@ -60,3 +69,4 @@ lang_aliases:
   datascience: ds
   data science: ds
   data: ds
+  hacking: pentesting
