@@ -1,6 +1,7 @@
 from beginner.cog import Cog
 from beginner.models.messages import Message, MessageTypes
 from discord import Embed
+from peewee import CursorWrapper
 
 
 class TipsCog(Cog):
@@ -22,11 +23,12 @@ class TipsCog(Cog):
     @Cog.command(name="delete-tip")
     async def delete_tip(self, ctx, *, unsanitized_label=None):
         label = self.sanitize_label(unsanitized_label)
-        tip = self.get_tips(label)
-        if not tip:
+        tips = self.get_tips(label)
+        if not tips:
             await ctx.send(f"No tip matches `{label}`")
         else:
-            tip.delete_instance()
+            for tip in tips:
+                tip.delete_instance()
             await ctx.send(f"Deleting tip `{tip.title} - {tip.label}`")
 
     @Cog.command(name="create-tip")
