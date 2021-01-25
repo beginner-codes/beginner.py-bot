@@ -38,11 +38,11 @@ logging:
 resources:
   py:
     name: Python
-    youtube:
+    YouTube:
       Corey Schafer: https://www.youtube.com/c/Coreyms/playlists
       Mosh: https://www.youtube.com/playlist?list=PLTjRvDozrdlxj5wgH4qkvwSOdHLOCx10f
       FreeCodeCamp: https://www.youtube.com/playlist?list=PLWKjhJtqVAbnqBxcdjVGgT3uVR10bzTEB
-    books:
+    Books:
       Automate the Boring Stuff with Python: https://automatetheboringstuff.com/2e/chapter0/
 
   ds:
