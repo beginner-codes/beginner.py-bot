@@ -24,7 +24,7 @@ class TipsCog(Cog):
         label = self.sanitize_label(unsanitized_label)
         tip = self.get_tip(label)
         if not tip:
-            ctx.send(f"No tip matches `{label}`")
+            await ctx.send(f"No tip matches `{label}`")
         else:
             tip.delete_instance()
             await ctx.send(f"Deleting tip `{tip.title} - {tip.label}`")
