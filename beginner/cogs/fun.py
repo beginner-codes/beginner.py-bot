@@ -1,5 +1,6 @@
 from beginner.cog import Cog
 import discord
+import discord.ext.commands
 import ast
 import os
 import math
@@ -9,7 +10,7 @@ import socket
 
 class Fun(Cog):
     @Cog.command()
-    async def stack(self, ctx, v: str = "",  *, instructions):
+    async def stack(self, ctx, v: str = "", *, instructions):
         class InvalidInstruction(Exception):
             ...
 
@@ -39,7 +40,9 @@ class Fun(Cog):
                     output.append(f"Pop {a}, Pop {b}, Divide, Push {stack[-1]}")
                 elif operation == "DUP":
                     stack.append(stack[-1])
-                    output.append(f"Pop {stack[-1]}, Push {stack[-1]}, Push {stack[-1]}")
+                    output.append(
+                        f"Pop {stack[-1]}, Push {stack[-1]}, Push {stack[-1]}"
+                    )
                 elif operation == "POP":
                     output.append(f"Pop {stack.pop()}")
                 else:
@@ -65,7 +68,11 @@ class Fun(Cog):
             await ctx.send("You must provide a sequence of literals")
             return
 
-        result = [item for index, item in enumerate(literals) if literals[:index].count(item) < count]
+        result = [
+            item
+            for index, item in enumerate(literals)
+            if literals[:index].count(item) < count
+        ]
         await ctx.send(f"Result: {result}")
 
     @Cog.command()
@@ -77,14 +84,24 @@ class Fun(Cog):
             return
 
         walked = len(directions)
-        shortest = abs(directions.count("N") - directions.count("S")) + abs(directions.count("E") - directions.count("W"))
+        shortest = abs(directions.count("N") - directions.count("S")) + abs(
+            directions.count("E") - directions.count("W")
+        )
         await ctx.send(
             f"Your path had a length of `{walked}`\n"
             f"The shortest path had a length of `{shortest}`\n"
             f"The answer was that they have a difference of `{walked - shortest}`"
         )
 
-    @Cog.command(aliases=["mystery_func", "mystery_fun", "mysteryfunction", "mysteryfunc", "mysteryfun"])
+    @Cog.command(
+        aliases=[
+            "mystery_func",
+            "mystery_fun",
+            "mysteryfunction",
+            "mysteryfunc",
+            "mysteryfun",
+        ]
+    )
     async def mystery_function(self, ctx, *, number: str):
         if not number.isdigit():
             await ctx.send("You must provide a positive integer")
@@ -100,11 +117,17 @@ class Fun(Cog):
         except (SyntaxError, ValueError):
             numbers = None
 
-        if not hasattr(numbers, "__iter__") or any(not isinstance(item, (int, float)) for item in numbers):
+        if not hasattr(numbers, "__iter__") or any(
+            not isinstance(item, (int, float)) for item in numbers
+        ):
             await ctx.send("You must provide a sequence of integers")
             return
 
-        result = [y for x, y, z in zip(numbers[:-2], numbers[1:-1], numbers[2:]) if y > x and y > z]
+        result = [
+            y
+            for x, y, z in zip(numbers[:-2], numbers[1:-1], numbers[2:])
+            if y > x and y > z
+        ]
         await ctx.send(f"```py\n>>> mini_peaks({raw_numbers})\n{result}```")
 
     @Cog.command(aliases=["compass", "directions", "compassdirections"])
@@ -113,9 +136,13 @@ class Fun(Cog):
             facing = ast.literal_eval(raw_facing)
             assert isinstance(facing, str)
             directions = ast.literal_eval(raw_directions)
-            assert hasattr(directions, "__iter__") and list(filter(lambda item: isinstance(item, str), directions))
+            assert hasattr(directions, "__iter__") and list(
+                filter(lambda item: isinstance(item, str), directions)
+            )
         except (AssertionError, SyntaxError, ValueError):
-            await ctx.send("Facing must be a string, directions must be a sequence of strings")
+            await ctx.send(
+                "Facing must be a string, directions must be a sequence of strings"
+            )
             return
 
         cardinals = {"N": 0, "E": 1, "S": 2, "W": 3}
@@ -123,7 +150,9 @@ class Fun(Cog):
         direction -= directions.count("L")
         direction += directions.count("R")
         result = {item: key for key, item in cardinals.items()}[direction % 4]
-        await ctx.send(f"```py\n>>> final_direction({raw_facing}, {raw_directions})\n{result}```")
+        await ctx.send(
+            f"```py\n>>> final_direction({raw_facing}, {raw_directions})\n{result}```"
+        )
 
     @Cog.command(aliases=["intersection", "union", "intersectionunion"])
     async def intersection_union(self, ctx, *, code: str):
@@ -143,7 +172,9 @@ class Fun(Cog):
             await ctx.send(f"There was an exception: {e.__name__}")
         else:
             result = intersection_union(list_a, list_b)
-            await ctx.send(f"```py\n>>> intersection_union({str(list_a)}, {str(list_b)})\n{result}```")
+            await ctx.send(
+                f"```py\n>>> intersection_union({str(list_a)}, {str(list_b)})\n{result}```"
+            )
 
     @Cog.command(aliases=["countoverlapping", "overlapping"])
     async def count_overlapping(self, ctx, *, code: str):
@@ -158,14 +189,28 @@ class Fun(Cog):
             await ctx.send(f"There was an exception: {e.__name__}")
         else:
             result = count_overlapping(intervals, point)
-            await ctx.send(f"```py\n>>> count_overlapping({intervals}, {point})\n{result}```")
+            await ctx.send(
+                f"```py\n>>> count_overlapping({intervals}, {point})\n{result}```"
+            )
 
     @Cog.command(aliases=["rearranged"])
     async def rearranged_difference(self, ctx, number: int):
-        result = int("".join(reversed(sorted(str(number))))) - int("".join(sorted(str(number))))
-        await ctx.send(f"```py\n>>> rearranged_difference({number})\n{result}```")\
+        result = int("".join(reversed(sorted(str(number))))) - int(
+            "".join(sorted(str(number)))
+        )
+        await ctx.send(f"```py\n>>> rearranged_difference({number})\n{result}```")
 
-    @Cog.command(aliases=["left", "leftdigit", "leftmost", "left_most", "leftmost_digit", "left_most_digit", "leftmostdigit"])
+    @Cog.command(
+        aliases=[
+            "left",
+            "leftdigit",
+            "leftmost",
+            "left_most",
+            "leftmost_digit",
+            "left_most_digit",
+            "leftmostdigit",
+        ]
+    )
     async def left_digit(self, ctx, input_string: str):
         def left_digit(string: str):
             for c in string:
@@ -174,7 +219,7 @@ class Fun(Cog):
             return None
 
         result = left_digit(input_string)
-        await ctx.send(f"```py\n>>> left_digit(\"{input_string}\")\n{result}```")
+        await ctx.send(f'```py\n>>> left_digit("{input_string}")\n{result}```')
 
     @Cog.command(aliases=["correctinequality", "inequality"])
     async def correct_inequality(self, ctx, *, expression: str):
@@ -188,7 +233,7 @@ class Fun(Cog):
 
             valid = True
             for index in range(0, len(tokens) - 2, 2):
-                a, op, b = tokens[index:index + 3]
+                a, op, b = tokens[index : index + 3]
                 steps.append(f"{a} {op} {b}")
                 if op not in {">", "<"} or not a.isdigit() or not b.isdigit():
                     steps[-1] += " - INVALID"
@@ -211,7 +256,6 @@ class Fun(Cog):
         result = "\n".join(correct_inequality(expression))
         await ctx.send(f"`{expression}`\n```py\n{result}\n```")
 
-
     @Cog.command()
     async def dgo(self, ctx):
         await ctx.send(
@@ -229,6 +273,16 @@ class Fun(Cog):
         else:
             message = f"The IP address for {domain_name} is {ip}"
         await ctx.send(message)
+
+    @Cog.command()
+    async def raw(self, ctx: discord.ext.commands.Context):
+        message: discord.Message = ctx.message
+        await ctx.send(
+            f"```\n{message.content}\n```",
+            allowed_mentions=discord.AllowedMentions(
+                everyone=False, users=False, roles=False
+            ),
+        )
 
 
 def setup(client):
