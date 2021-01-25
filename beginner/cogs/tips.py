@@ -19,22 +19,41 @@ class TipsCog(Cog):
             else:
                 await self.list_tips(ctx.message.channel, tips, label)
 
+    @Cog.command(name="delete-tip")
+    async def delete_tip(self, ctx, *, unsanitized_label=None):
+        label = self.sanitize_label(unsanitized_label)
+        tip = self.get_tip(label)
+        if not tip:
+            ctx.send(f"No tip matches `{label}`")
+        else:
+            tip.delete_instance()
+            await ctx.send(f"Deleting tip `{tip.title} - {tip.label}`")
+
     @Cog.command(name="create-tip")
     async def create_tip(self, ctx, *, unsanitized_label):
         label = self.sanitize_label(unsanitized_label)
-        if not ctx.author.guild_permissions.manage_messages and self.get_role("helpers") not in ctx.author.roles:
+        if (
+            not ctx.author.guild_permissions.manage_messages
+            and self.get_role("helpers") not in ctx.author.roles
+        ):
             return
 
         if not ctx.message.reference:
-            await ctx.send("You must reply to the message that you would like to make into a tip.")
+            await ctx.send(
+                "You must reply to the message that you would like to make into a tip."
+            )
             return
 
         if not label:
-            await ctx.send("You must provide a label that can be used to lookup the tip.")
+            await ctx.send(
+                "You must provide a label that can be used to lookup the tip."
+            )
             return
 
         tip = self.get_tip(label)
-        message = await ctx.message.channel.fetch_message(ctx.message.reference.message_id)
+        message = await ctx.message.channel.fetch_message(
+            ctx.message.reference.message_id
+        )
         await ctx.send(
             'What would you like the title to be? Say "empty" if you\'d like to not have a title or "keep" if you\'re '
             "editing an existing tip and don't want to change the title."
