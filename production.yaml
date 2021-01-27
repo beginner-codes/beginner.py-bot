@@ -4,6 +4,10 @@ bot:
 
 cogs:
   admin: true
+  advent_of_code: true
+  beginner_cog:
+    enabled: true
+    from: beginner.beginner
   bump: true
   candidates: true
   challenges: true
@@ -18,17 +22,13 @@ cogs:
   python: true
   repeater: true
   resources: true
+  role_assignment: true
   rules: true
   settings: true
   spam: true
   statistics: true
   tips: true
   user_roles: true
-  role_assignment: true
-  advent_of_code: true
-  beginner_cog:
-    enabled: true
-    from: beginner.beginner
 
 logging:
   format: "%(asctime)s: %(levelname)-9s %(name)-16s :: %(message)s"
