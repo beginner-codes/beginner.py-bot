@@ -20,8 +20,8 @@ class RoleAssignmentCog(Cog):
         embed = (
             Embed(
                 description=(
-                    "React to this message to be assign yourself the roles you're interested in. React again if you "
-                    "ever want to remove the role."
+                    "React to this message to assign yourself the roles you're interested in. React again if you ever "
+                    "want to remove the role."
                 ),
                 title="Role Assignment",
                 color=YELLOW,
