@@ -3,7 +3,7 @@ from beginner.cog import Cog, commands
 from discord import Embed, Message, RawReactionActionEvent, PermissionOverwrite
 
 
-class OffTopicCog(Cog):
+class RoleAssignmentCog(Cog):
     def __init__(self, client):
         super().__init__(client)
         self.assignment_message: Optional[Message] = None
@@ -20,7 +20,7 @@ class OffTopicCog(Cog):
                     "- Name calling and insults are **strictly** prohibited.\n"
                     "- **Safe for work** only."
                 ),
-                title="Off Topic"
+                title="Off Topic",
             )
         )
         await message.add_reaction("✅")
@@ -35,22 +35,24 @@ class OffTopicCog(Cog):
             return
 
         if not self.assignment_message:
-            self.assignment_message: Message = (await channel.history(limit=2, oldest_first=True).flatten())[1]
+            self.assignment_message: Message = (
+                await channel.history(limit=2, oldest_first=True).flatten()
+            )[1]
 
         if reaction.message_id != self.assignment_message.id:
             return
 
         off_topic = self.get_channel("🤠wild-west-off-topic")
         await off_topic.set_permissions(
-            reaction.member,
-            overwrite=PermissionOverwrite(
-                read_messages=True
-            )
+            reaction.member, overwrite=PermissionOverwrite(read_messages=True)
         )
 
         await self.assignment_message.remove_reaction(reaction.emoji, reaction.member)
-        await channel.send(f"{reaction.member.mention} you've been given access to {off_topic.mention}", delete_after=10)
+        await channel.send(
+            f"{reaction.member.mention} you've been given access to {off_topic.mention}",
+            delete_after=10,
+        )
 
 
 def setup(client):
-    client.add_cog(OffTopicCog(client))
+    client.add_cog(RoleAssignmentCog(client))
