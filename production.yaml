@@ -46,12 +46,15 @@ resources:
       Automate the Boring Stuff with Python: https://automatetheboringstuff.com/2e/chapter0/
 
   ds:
-    name: Data Science
+    name: Data Science & Machine Learning
     YouTube:
       Mazen Ahmed: https://www.youtube.com/channel/UCiFF3AvbzLWdRyRnQMEttqw/videos?view=0&sort=da&flow=grid
       Python Programmer: https://www.youtube.com/c/FlickThrough/featured
       Codebasics: https://www.youtube.com/playlist?list=PLeo1K3hjS3us_ELKYSj_Fth2tIEkdKXvV
       Ken Jee: https://www.youtube.com/playlist?list=PL2zq7klxX5ATPC8RuqCuTDdki3b4NqKQv
+    Courses:
+      Kaggle Learn: https://www.kaggle.com/learn/overview
+      Google ML Course (Prior knowledge of Python, Pandas, Numpy highly recommended): https://developers.google.com/machine-learning/crash-course
 
   pentesting:
     name: Pentesting & Ethical Hacking
