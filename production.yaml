@@ -20,6 +20,7 @@ cogs:
   moderation: true
   onboarding: true
   python: true
+  pip: true
   repeater: true
   resources: true
   role_assignment: true
