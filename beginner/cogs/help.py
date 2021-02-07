@@ -3,35 +3,65 @@ from beginner.cog import Cog
 
 
 class Help(Cog):
-    @Cog.command()
+    @Cog.command(aliases=["commands"])
     async def help(self, ctx, *, cmd=None):
         if not cmd:
             embedded = discord.Embed(
-                title="beginner.py help",
-                description="Commands:\ngoogle\npython\nrule",
+                title="Beginner.py Commands",
+                description=(
+                    "**Commands:**\n- exec/eval\n- free\n- google\n- kudos\n- pip\n- resources\n- tip"
+                ),
                 color=0xFFE873,
             )
-            embedded.set_thumbnail(
-                url="https://cdn.discordapp.com/icons/644299523686006834/e69f6d4231a6e58eed5884625c4b4931.png"
-            )
+            embedded.set_thumbnail(url=self.server.icon_url)
             embedded.add_field(
-                name="!python <keyword>",
-                value="Returns a short information and example code of the Python keyword or function.",
+                name="!exec <code block>",
+                value=(
+                    "Runs a block of python code. The code must be inside of a python markdown code block.\n\n"
+                    '!exec \\```py\nfor i in range(5):\n    print("Hello world!!!")\n\\```'
+                ),
                 inline=False,
             )
             embedded.add_field(
-                name="!google <search_phrase>",
-                value="Returns 3 links matching the search criteria from Google.",
+                name="!eval <python statement>",
+                value='Runs the python statement.\n```\n!eval print("Hello world!!!")\n```',
                 inline=False,
             )
             embedded.add_field(
-                name="!rule <alias>",
-                value="Returns the rule matching the alias.",
+                name="!free",
+                value="Gets a currently free Python help channel.\n```\n!free\n```",
                 inline=False,
             )
             embedded.add_field(
-                name="!rule <number>",
-                value="Returns the rule matching the number.",
+                name="!google <search terms>",
+                value="Gets retrieves the top 5 results from Google for the search term.\n```\n!google foobar\n```",
+                inline=False,
+            )
+            embedded.add_field(
+                name="!kudos [leaderboard|help]",
+                value=(
+                    "Gets your kudos score\n```\n!kudos\n```\n"
+                    "Gets the kudos leaderboard\n```\n!kudos leaderboard\n```\n"
+                    "Explains how kudos works\n```\n!kudos help\n```"
+                ),
+                inline=False,
+            )
+            embedded.add_field(
+                name="!pip <package name>",
+                value="Looks up a python package on the Python Package Index\n```\n!pip requests\n```",
+                inline=False,
+            )
+            embedded.add_field(
+                name="!resources <topic>",
+                value="Retrieves our recommended resources for a given topic.\n```\n!resources python\n```",
+                inline=False,
+            )
+            embedded.add_field(
+                name="!tip <topic>",
+                value=(
+                    "Retrieves a tip message.\n```\n!tip cli\n```"
+                    "Lists all available tips.\n```\n!tip\n```"
+                ),
                 inline=False,
             )
             await ctx.send(embed=embedded)
