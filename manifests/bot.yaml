@@ -36,10 +36,10 @@ spec:
                   name: google-custom-search
                   key: cse
             - name: "GIST_USER"
-                valueFrom:
-                  secretKeyRef:
-                    name: gist.auth
-                    key: user
+              valueFrom:
+                secretKeyRef:
+                  name: gist.auth
+                  key: user
             - name: "GIST_TOKEN"
               valueFrom:
                 secretKeyRef:
