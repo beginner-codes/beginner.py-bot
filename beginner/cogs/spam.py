@@ -17,6 +17,7 @@ class SpamCog(Cog):
         ".c",
         ".h",
         ".cpp",
+        ".hpp",
         ".cs",
         ".sh",
         ".css",
