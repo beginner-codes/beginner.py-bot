@@ -38,6 +38,7 @@ class SpamCog(Cog):
         ".yaml",
         ".yml",
         ".txt",
+        ".dockerfile",
     }
 
     @cached_property
@@ -135,7 +136,10 @@ class SpamCog(Cog):
         disallowed = []
         for attachment in message.attachments:
             _, extension = os.path.splitext(attachment.filename.lower())
-            if extension in self.file_types:
+            if (
+                extension in self.file_types
+                or attachment.filename.lower() == "dockerfile"
+            ):
                 allowed.append(attachment)
             elif extension not in {".gif", ".png", ".jpeg", ".jpg"}:
                 disallowed.append(attachment)
