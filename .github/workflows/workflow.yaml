@@ -26,7 +26,7 @@ jobs:
       run: docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
 
     - name: Push image to Docker Hub
-      run: docker push zzmmrmn/beginner-py-bot
+      run: docker push zzmmrmn/beginner-py-bot:$(echo $GITHUB_SHA | head -c7)
     - name: Update deployment file
       run: TAG=$(echo $GITHUB_SHA | head -c7) && sed -i 's|<IMAGE_VERSION>|'${TAG}'|' $GITHUB_WORKSPACE/manifests/bot.yaml
 
