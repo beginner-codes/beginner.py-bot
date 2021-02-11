@@ -1,24 +1,53 @@
 from beginner.cog import Cog
 from beginner.colors import *
-from beginner.scheduler import schedule
-from beginner.tags import tag
-from datetime import timedelta
-from discord import Embed, utils
+from discord import Embed
 from functools import cached_property
 from typing import Set
 import asyncio
+import beginner.config
 import discord
 import os.path
+import requests
+import requests.auth
 
 
 class SpamCog(Cog):
+    file_types = {
+        ".py",
+        ".c",
+        ".h",
+        ".cpp",
+        ".cs",
+        ".sh",
+        ".css",
+        ".go",
+        ".html",
+        ".htm",
+        ".java",
+        ".js",
+        ".json",
+        ".jl",
+        ".kt",
+        ".sql",
+        ".php",
+        ".rb",
+        ".rs",
+        ".swift",
+        ".xml",
+        ".yaml",
+        ".yml",
+        ".txt",
+    }
+
     @cached_property
     def admin_channels(self) -> Set:
         return set(channel.name for channel in self.get_category("Staff").text_channels)
 
     @Cog.listener()
     async def on_message(self, message):
-        await asyncio.gather(self.attachment_filter(message), self.mention_filter(message))
+        await asyncio.gather(
+            self.attachment_filter(message), self.mention_filter(message)
+        )
 
     async def mention_filter(self, message: discord.Message):
         if "@everyone" not in message.content and "@here" not in message.content:
@@ -31,12 +60,12 @@ class SpamCog(Cog):
             message.channel.send(
                 f"{message.author.mention} please don't mention everyone, your message has been deleted."
             ),
-            message.delete()
+            message.delete(),
         )
 
     async def attachment_filter(self, message):
-        """ When a message is sent by normal users ensure it doesn't have any non-image attachments. Delete it and send
-            a mod message if it does."""
+        """When a message is sent by normal users ensure it doesn't have any non-image attachments. Delete it and send
+        a mod message if it does."""
         if message.author.bot:
             return
 
@@ -49,38 +78,37 @@ class SpamCog(Cog):
         if message.channel.permissions_for(message.author).manage_messages:
             return
 
-        if self.has_disallowed_attachments(message):
-            mod_action_channel = utils.get(self.server.channels, name="mod-action-log")
-            info_message = await message.channel.send(embed=self.build_embed(message))
-            try:
-                await message.delete()
-            except discord.errors.NotFound:
-                pass
-            await mod_action_channel.send(
-                embed=Embed(
-                    color=RED,
-                    description=(
-                        f"Deleted message in {message.channel.mention} [Jump To]({info_message.jump_url})"
-                    ),
-                    title=f"Deleted Message w/ File Attachments: @{message.author.display_name}"
-                ).add_field(
-                    name="Attachments",
-                    value="\n".join(f"[{attachment.filename}]({attachment.url})" for attachment in message.attachments)
-                )
+        allowed, disallowed = self.categorize_attachments(message)
+
+        if not allowed and not disallowed:
+            return
+
+        embed = Embed(
+            title="File Attachments Not Allowed",
+            description="For safety reasons we do not allow file and video attachments.",
+            color=YELLOW,
+        )
+
+        if allowed:
+            files = {}
+            for attachment in allowed:
+                files[attachment.filename] = (await attachment.read()).decode()
+
+            gist = self.upload_files(files)
+            embed.add_field(
+                name="Uploaded the file to a Gist", value=f"[View file here]({gist})"
             )
 
-    def build_embed(self, message):
-        """ Construct the embed for the moderation message. """
-        embed = Embed(
-            description=f"{message.author.mention} you can only attach images.",
-            color=0xFF0000,
-        )
+        if disallowed:
+            embed.add_field(
+                name="Ignored these files",
+                value="\n".join(
+                    f"- {attachment.filename}" for attachment in disallowed
+                ),
+            )
+
         embed.set_thumbnail(
             url="https://cdn.discordapp.com/emojis/651959497698574338.png?v=1"
-        )
-        embed.set_author(
-            name="Message Deleted: File Attachments Not Allowed",
-            icon_url=self.server.icon_url,
         )
         embed.add_field(
             name="Code Formatting",
@@ -93,23 +121,52 @@ class SpamCog(Cog):
             f"[GitHub Gists](https://gist.github.com/) and share the link here",
             inline=False,
         )
-        embed.add_field(
-            name="Videos",
-            value=(
-                f"Discord has terrible video support. If you *must* share a video "
-                f"please use anything but Discord to host it."
-            ),
-            inline=False,
-        )
-        return embed
 
-    def has_disallowed_attachments(self, message):
-        """ Check if a message has an attachment that is not an allowed image type. """
+        try:
+            await message.delete()
+        except discord.errors.NotFound:
+            pass
+
+        await message.channel.send(message.author.mention, embed=embed)
+
+    def categorize_attachments(self, message):
+        allowed = []
+        disallowed = []
         for attachment in message.attachments:
-            _, extension = os.path.splitext(attachment.filename)
-            if extension[1:].lower() not in {"gif", "png", "jpeg", "jpg"}:
-                return True
-        return False
+            _, extension = os.path.splitext(attachment.filename.lower())
+            if extension in self.file_types:
+                allowed.append(attachment)
+            elif extension not in {".gif", ".png", ".jpeg", ".jpg"}:
+                disallowed.append(attachment)
+
+        return allowed, disallowed
+
+    def upload_files(self, files):
+        data = {
+            "files": {
+                filename: {"content": content} for filename, content in files.items()
+            },
+            "public": "false",
+        }
+        resp = requests.post(
+            "https://api.github.com/gists",
+            json=data,
+            auth=requests.auth.HTTPBasicAuth(*self.get_gist_auth()),
+            headers={
+                "accept": "application/vnd.github.v3+json",
+            },
+        )
+        ret = resp.json()
+        return ret.get("html_url")
+
+    def get_gist_auth(self):
+        user = beginner.config.get_setting(
+            "gist_user", scope="bot", env_name="GIST_USER", default=""
+        )
+        token = beginner.config.get_setting(
+            "gist_token", scope="bot", env_name="GIST_TOKEN", default=""
+        )
+        return user.strip(), token.strip()
 
 
 def setup(client):

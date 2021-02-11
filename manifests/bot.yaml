@@ -35,6 +35,16 @@ spec:
                 secretKeyRef:
                   name: google-custom-search
                   key: cse
+            - name: "GIST_USER"
+                valueFrom:
+                  secretKeyRef:
+                    name: gist.auth
+                    key: user
+            - name: "GIST_TOKEN"
+              valueFrom:
+                secretKeyRef:
+                  name: gist.auth
+                  key: token
             - name: "DB_HOST"
               value: "private-personal-postgres-cluster-1-apr-26-backup-do-user-87772.a.db.ondigitalocean.com"
             - name: "DB_PORT"
