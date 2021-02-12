@@ -18,7 +18,7 @@ class CodeRunner(Cog):
 
         if (
             not len(content.strip())
-            or content.find("```py") < 0
+            or content.find("```") < 0
             or content.rfind("```") <= 0
         ):
             await ctx.send(
