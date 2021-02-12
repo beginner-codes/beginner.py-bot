@@ -89,7 +89,7 @@ class Executer:
     def input(self, prompt, **kwargs):
         print(prompt, end="")
         line = self.stdin.readline()
-        print(line)
+        print(line.rstrip("\n"))
         return line
 
     def run(self, code, user_input, runner=exec, docs=False):
