@@ -118,16 +118,16 @@ class RulesCog(Cog):
             ]
             await ctx.send(
                 embed=Embed(
+                    title=(
+                        f"Didn't find a rule for '{label}'"
+                        if label
+                        else "Beginner.py Rules"
+                    ),
                     description=f"Here are some rules you might try:\n{', '.join(rule_primary_labels)}"
                     if label
                     else f"Here are all the rules: \n{', '.join(sorted(rule_primary_labels))}",
                     color=0x306998,
-                ).set_author(
-                    name=f"Didn't find a rule for '{label}'"
-                    if label
-                    else "Beginner.py Rules",
-                    icon_url=self.server.icon_url,
-                )
+                ).set_thumbnail(url=ctx.guild.icon_url)
             )
 
     @Cog.command(name="formatting", aliases=("format", "code"))
@@ -156,8 +156,10 @@ class RulesCog(Cog):
 
     def build_rule_embed(self, rule):
         return Embed(
-            description=self.message_fields[rule]["description"], color=0x306998
-        ).set_author(name=rule, icon_url=self.server.icon_url)
+            title=rule,
+            description=self.message_fields[rule]["description"],
+            color=0x306998,
+        ).set_thumbnail(url=self.server.icon_url)
 
     def get_rule(self, label, fuzzy=False):
         for rule_name, rule_info in self.message_fields.items():
