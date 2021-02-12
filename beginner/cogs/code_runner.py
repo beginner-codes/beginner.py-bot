@@ -54,6 +54,8 @@ class CodeRunner(Cog):
             output = ["*No output or exceptions*"]
 
         out = "\n\n".join(output)
+        if len(out) > 1000:
+            out = out[:497] + "\n.\n.\n.\n" + out[-504:]
         await ctx.send(
             embed=discord.Embed(
                 title=title, description=f"```py\n{out}\n```", color=color
@@ -77,10 +79,12 @@ class CodeRunner(Cog):
                 "input": user_input,
             }
         ).encode()
+        self.logger.debug(f"Running code:\n{code}")
         start = time.time_ns()
         stdout, stderr = await proc.communicate(data)
         duration = (time.time_ns() - start) / 1_000_000_000
 
+        self.logger.debug(f"Done {duration}\n{stdout}\n{stderr}")
         return stdout.decode(), stderr.decode(), duration
 
     @Cog.command()
