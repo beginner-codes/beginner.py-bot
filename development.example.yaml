@@ -36,6 +36,7 @@ database:
   host: "DB HOSTNAME HERE"
   port: "DB PORT HERE"
   pass: "DB PASSWORD HERE"
+  driver: "sqlite"
 
 logging:
   format: "DEV %(asctime)s: %(levelname)-9s %(name)-16s :: %(message)s"
