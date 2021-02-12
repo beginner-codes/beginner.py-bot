@@ -39,7 +39,7 @@ class CodeRunner(Cog):
         color = BLUE
 
         code, user_input = re.match(
-            r"^```(?:py|python)?\n((?:.|\n)+?)\n```\n?(.+)?$", content
+            r"^```(?:py|python)?\n((?:.|\n)+?)\n```\n?((?:.|\n))+?$", content
         ).groups()
 
         out, err, duration = await self.code_runner("exec", code, user_input)
