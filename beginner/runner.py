@@ -88,6 +88,9 @@ class Executer:
 
     def input(self, prompt="", **kwargs):
         print(prompt, end="")
+        if len(self.stdin.getvalue()) == self.stdin.tell():
+            raise EOFError("Nothing left to read from stdin")
+
         line = self.stdin.readline()
         print(line.rstrip("\n"))
         return line
