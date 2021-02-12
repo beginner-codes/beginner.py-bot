@@ -22,7 +22,7 @@ class RulesCog(Cog):
             "No solicitation": {
                 "description": (
                     "This is a beginner server not a job board. We're here to learn not find unnecessary products/tools/"
-                    "services. *If you share an affiliate link be up front about that."
+                    "services. *If you share an affiliate link be up front about that.*"
                 ),
                 "labels": ("solicitation", "advert", "advertising")
             },
