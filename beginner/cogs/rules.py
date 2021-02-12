@@ -12,38 +12,53 @@ class RulesCog(Cog):
     def __init__(self, client: discord.Client):
         super().__init__(client)
         self.message_fields = {
-            "No DMing others or asking others DM you": (
-                "A lot of scammers use DMs as a way to propagate dangerous code. So to ensure the safety of our "
-                "members and to ensure the highest quality of help we do not permit anyone to ask members to DM."
-            ),
-            "No solicitation": (
-                "This is a beginner server not a job board. We're here to learn not find unnecessary products/tools/"
-                "services. *If you share an affiliate link be up front about that.*"
-            ),
-            "No discussion of anything that violates laws or any ToS": (
-                "We cannot judge your intent. As such we do not allow discussion of anything that could be in "
-                "violation of laws or the terms of service/use for any product or service. If there isn't official "
-                "documentation on how to do something you're not likely going to find much help here."
-            ),
-            "No unreadable display names or inappropriate names/avatars": (
-                "Your display name should be readable (not invisible or illegible), reasonably inoffensive, and should "
-                "not contain any words or phrases that could be consider rude or that may look/sound like something "
-                "that is.\n\n"
-                "Your avatar image/PFP should be reasonably inoffensive."
-            ),
-            "No Harassment, NSFW content, flaming/trolling, or bigotry": (
-                "It should go without saying: flaming, trolling, spamming, and harassing, along with racism and "
-                "bigotry of any kind towards any group or individual is strictly prohibited and will be dealt with "
-                "appropriately."
-            ),
-            "Finally": (
-                "To ensure everyone can participate and that the server staff can foster an environment amenable to "
-                "growth and learning, please only use __English__. Be kind, courteous, and understanding."
-            ),
+            "No DMing others or asking others DM you": {
+                "description": (
+                    "A lot of scammers use DMs as a way to propagate dangerous code. So to ensure the safety of our "
+                    "members and to ensure the highest quality of help we do not permit anyone to ask members to DM."
+                ),
+                "labels": ("dm", "dming", "pm")
+            },
+            "No solicitation": {
+                "description": (
+                    "This is a beginner server not a job board. We're here to learn not find unnecessary products/tools/"
+                    "services. *If you share an affiliate link be up front about that."
+                ),
+                "labels": ("solicitation", "advert", "advertising")
+            },
+            "No discussion of anything that violates laws or any ToS": {
+                "description": (
+                    "We cannot judge your intent. As such we do not allow discussion of anything that could be in "
+                    "violation of laws or the terms of service/use for any product or service. If there isn't official "
+                    "documentation on how to do something you're not likely going to find much help here."
+                ),
+                "labels": ("tos", "hacker", "illegal")
+            },
+            "No unreadable display names or inappropriate names/avatars": {
+                "description": (
+                    "Your display name should be readable (not invisible or illegible), reasonably inoffensive, and should "
+                    "not contain any words or phrases that could be consider rude or that may look/sound like something "
+                    "that is.\n\n"
+                    "Your avatar image/PFP should be reasonably inoffensive."
+                ),
+                "labels": ("nickname", "avatar", "name", "pfp", "username")
+            },
+            "No Harassment, NSFW content, flaming/trolling, or bigotry": {
+                "description": (
+                    "It should go without saying: flaming, trolling, spamming, and harassing, along with racism and "
+                    "bigotry of any kind towards any group or individual is strictly prohibited and will be dealt with "
+                    "appropriately."
+                ),
+                "labels": ("nsfw", "trolling", "harassment", "bigotry", "harassing", "racism")
+            },
+            "Finally": {
+                "description": (
+                    "To ensure everyone can participate and that the server staff can foster an environment amenable to "
+                    "growth and learning, please only use __English__. Be kind, courteous, and understanding."
+                ),
+                "labels": ("finally",)
+            },
         }
-
-    def clean_rule(self, rule_content: str):
-        return "\n".join(re.findall(r"<p.*?>(.+?)</p>", rule_content))
 
     @Cog.command(name="update-rules")
     @commands.has_guild_permissions(manage_channels=True)
@@ -79,19 +94,19 @@ class RulesCog(Cog):
         embed.set_footer(text=admin.name, icon_url=admin.avatar_url)
 
         for field_title, field_content in self.message_fields.items():
-            embed.add_field(name=field_title, value=field_content, inline=False)
+            embed.add_field(name=field_title, value=field_content["description"], inline=False)
 
         return embed
 
     @Cog.command(name="rule")
     async def show_rule(self, ctx, label=None, *_):
-        rule = RulesCog.get_rule(label, fuzzy=True)
+        rule = self.get_rule(label, fuzzy=True)
         if rule:
             await ctx.send(embed=self.build_rule_embed(rule))
         else:
-            rules = RulesCog.get_rules(label, force=True)
+            rules = self.get_rules(label, force=True)
             rule_primary_labels = [
-                "**" + rule.label.split(" ")[1] + "**" for rule in rules
+                "**" + self.message_fields[rule]["labels"][0] + "**" for rule in rules
             ]
             await ctx.send(
                 embed=Embed(
@@ -114,7 +129,7 @@ class RulesCog(Cog):
             embed=(
                 Embed(
                     title="Code Formatting",
-                    description=f"When sharing code with the community, please use the correct formatting for ease of readability.",
+                    description="When sharing code with the community, please use the correct formatting for ease of readability.",
                     color=BLUE,
                 )
                 .add_field(
@@ -133,29 +148,28 @@ class RulesCog(Cog):
 
     def build_rule_embed(self, rule):
         return Embed(
-            description=self.clean_rule(rule.message), color=0x306998
-        ).set_author(name=rule.title, icon_url=self.server.icon_url)
+            description=self.message_fields[rule]["description"], color=0x306998
+        ).set_author(name=rule, icon_url=self.server.icon_url)
 
-    @staticmethod
-    def get_rule(label, fuzzy=False):
-        rule = Message.get_or_none(
-            (Message.message_type == MessageTypes.RULE.name)
-            & (Message.label.startswith(label))
-        )
+    def get_rule(self, label, fuzzy=False):
+        for rule_name, rule_info in self.message_fields.items():
+            if label.casefold() in rule_info["labels"]:
+                rule = rule_name
+                break
+        else:
+            rule = None
         if not rule and fuzzy:
-            rules = RulesCog.get_rules(label)
+            rules = self.get_rules(label)
             if len(rules) == 1:
                 rule = rules[0]
         return rule
 
-    @staticmethod
-    def get_rules(label=None, force=True, order_by=Message.label.asc()):
-        where = Message.message_type == MessageTypes.RULE.name
+    def get_rules(self, label=None, force=True):
         if label:
-            where &= Message.label.contains(f"%{label}%")
-        query = Message.select().where(where)
-        rules = query.order_by(order_by).execute()
-        return rules if rules or not force else RulesCog.get_rules(force=False)
+            rules = [rule_name for rule_name in self.message_fields if label in ''.join(rule_name)]
+        else:
+            rules = self.message_fields
+        return rules if rules or not force else self.get_rules(force=False)
 
 
 def setup(client):
