@@ -2,7 +2,7 @@ import beginner.config as config
 import beginner.logging
 import discord.ext.commands
 import logging
-from beginner.models import set_database, PostgresqlDatabase
+from beginner.models import set_database, PostgresqlDatabase, SqliteDatabase
 
 
 def connect_db(logger):
@@ -14,6 +14,7 @@ def connect_db(logger):
     user = db_settings("user", env_name="DB_USER")
     host = db_settings("host", env_name="DB_HOST")
     port = db_settings("port", env_name="DB_PORT")
+    driver = db_settings("driver", env_name="DB_DRIVER", default="postgres")
     mode = "require" if db_settings("PRODUCTION_BOT", default=False) else None
     password = db_settings("pass", env_name="DB_PASSWORD")
 
@@ -24,17 +25,21 @@ def connect_db(logger):
         f"- Host {host}\n"
         f"- Port {port}\n"
         f"- Mode {mode}\n"
-        f"- Pass ******"
+        f"- Pass ******\n"
+        f"- Driver {driver}"
     )
 
-    db = PostgresqlDatabase(
-        name,
-        user=user,
-        host=host,
-        port=port,
-        password=password,
-        sslmode=mode,
-    )
+    if driver == "postgres":
+        db = PostgresqlDatabase(
+            name,
+            user=user,
+            host=host,
+            port=port,
+            password=password,
+            sslmode=mode,
+        )
+    else:
+        db = SqliteDatabase(f"{name}.sqlite.db")
     set_database(db)
 
 
