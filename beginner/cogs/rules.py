@@ -21,8 +21,8 @@ class RulesCog(Cog):
             },
             "No solicitation": {
                 "description": (
-                    "This is a beginner server not a job board. We're here to learn not find unnecessary products/tools/"
-                    "services. *If you share an affiliate link be up front about that.*"
+                    "This is a beginner server not a job board. We're here to learn not find unnecessary products/tools"
+                    "/services. *If you share an affiliate link be up front about that.*"
                 ),
                 "labels": (
                     "solicitation",
@@ -44,10 +44,9 @@ class RulesCog(Cog):
             },
             "No unreadable display names or inappropriate names/avatars": {
                 "description": (
-                    "Your display name should be readable (not invisible or illegible), reasonably inoffensive, and should "
-                    "not contain any words or phrases that could be consider rude or that may look/sound like something "
-                    "that is.\n\n"
-                    "Your avatar image/PFP should be reasonably inoffensive."
+                    "Your display name should be readable (not invisible or illegible), reasonably inoffensive, and "
+                    "should not contain any words or phrases that could be consider rude or that may look/sound like "
+                    "something that is.\n\nYour avatar image/PFP should be reasonably inoffensive."
                 ),
                 "labels": ("nickname", "avatar", "name", "pfp", "username"),
             },
@@ -68,8 +67,8 @@ class RulesCog(Cog):
             },
             "Finally": {
                 "description": (
-                    "To ensure everyone can participate and that the server staff can foster an environment amenable to "
-                    "growth and learning, please only use __English__. Be kind, courteous, and understanding."
+                    "To ensure everyone can participate and that the server staff can foster an environment amenable "
+                    "to growth and learning, please only use __English__. Be kind, courteous, and understanding."
                 ),
                 "labels": ("finally",),
             },
@@ -146,7 +145,10 @@ class RulesCog(Cog):
             embed=(
                 Embed(
                     title="Code Formatting",
-                    description="When sharing code with the community, please use the correct formatting for ease of readability.",
+                    description=(
+                        "When sharing code with the community, please use the correct formatting for ease of "
+                        "readability."
+                    ),
                     color=BLUE,
                 )
                 .add_field(
