@@ -40,7 +40,7 @@ class RulesCog(Cog):
                     "violation of laws or the terms of service/use for any product or service. If there isn't official "
                     "documentation on how to do something you're not likely going to find much help here."
                 ),
-                "labels": ("tos", "hacker", "illegal")
+                "labels": ("tos", "hacker", "illegal", "hack", "hacking"),
             },
             "No unreadable display names or inappropriate names/avatars": {
                 "description": (
