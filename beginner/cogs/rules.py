@@ -24,7 +24,15 @@ class RulesCog(Cog):
                     "This is a beginner server not a job board. We're here to learn not find unnecessary products/tools/"
                     "services. *If you share an affiliate link be up front about that.*"
                 ),
-                "labels": ("solicitation", "advert", "advertising")
+                "labels": (
+                    "solicitation",
+                    "advert",
+                    "advertising",
+                    "ads",
+                    "ad",
+                    "jobs",
+                    "job",
+                ),
             },
             "No discussion of anything that violates laws or any ToS": {
                 "description": (
