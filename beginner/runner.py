@@ -86,7 +86,7 @@ class Executer:
             raise ImportError(f"Module is not whitelisted: {name}")
         return __import__(name, *args, **kwargs)
 
-    def input(self, prompt, **kwargs):
+    def input(self, prompt="", **kwargs):
         print(prompt, end="")
         line = self.stdin.readline()
         print(line.rstrip("\n"))
