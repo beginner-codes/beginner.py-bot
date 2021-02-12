@@ -97,7 +97,7 @@ class Executer:
 
     def run(self, code, user_input, runner=exec, docs=False):
         self.stdin = io.StringIO(user_input)
-        exceptions = []
+        exceptions = False
 
         with self.set_recursion_depth(50):
             try:
@@ -105,18 +105,20 @@ class Executer:
             except SyntaxError as excp:
                 msg, (file, line_no, column, line) = excp.args
                 spaces = " " * (column - 1)
-                exceptions.append(
+                sys.stderr.write(
                     f"Line {line_no}\n{line.rstrip()}\n{spaces}^\nSyntaxError: {msg}"
                 )
+                exceptions = True
             else:
                 dunder_attributes = self.dunder_attributes(code_tree)
                 if dunder_attributes - self.dunder_whitelist:
                     prohibited_attributes = ", ".join(
                         sorted(dunder_attributes - self.dunder_whitelist)
                     )
-                    exceptions.append(
+                    sys.stderr.write(
                         f"NameError: These attributes are not whitelisted: {prohibited_attributes}"
                     )
+                    exceptions = True
 
                 if not exceptions:
                     code_object = compile(code_tree, "<string>", runner.__name__)
