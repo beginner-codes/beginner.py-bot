@@ -17,7 +17,7 @@ class RulesCog(Cog):
                     "A lot of scammers use DMs as a way to propagate dangerous code. So to ensure the safety of our "
                     "members and to ensure the highest quality of help we do not permit anyone to ask members to DM."
                 ),
-                "labels": ("dm", "dming", "pm")
+                "labels": ("dm", "dming", "pm"),
             },
             "No solicitation": {
                 "description": (
@@ -49,7 +49,7 @@ class RulesCog(Cog):
                     "that is.\n\n"
                     "Your avatar image/PFP should be reasonably inoffensive."
                 ),
-                "labels": ("nickname", "avatar", "name", "pfp", "username")
+                "labels": ("nickname", "avatar", "name", "pfp", "username"),
             },
             "No Harassment, NSFW content, flaming/trolling, or bigotry": {
                 "description": (
@@ -57,14 +57,21 @@ class RulesCog(Cog):
                     "bigotry of any kind towards any group or individual is strictly prohibited and will be dealt with "
                     "appropriately."
                 ),
-                "labels": ("nsfw", "trolling", "harassment", "bigotry", "harassing", "racism")
+                "labels": (
+                    "nsfw",
+                    "trolling",
+                    "harassment",
+                    "bigotry",
+                    "harassing",
+                    "racism",
+                ),
             },
             "Finally": {
                 "description": (
                     "To ensure everyone can participate and that the server staff can foster an environment amenable to "
                     "growth and learning, please only use __English__. Be kind, courteous, and understanding."
                 ),
-                "labels": ("finally",)
+                "labels": ("finally",),
             },
         }
 
@@ -102,7 +109,9 @@ class RulesCog(Cog):
         embed.set_footer(text=admin.name, icon_url=admin.avatar_url)
 
         for field_title, field_content in self.message_fields.items():
-            embed.add_field(name=field_title, value=field_content["description"], inline=False)
+            embed.add_field(
+                name=field_title, value=field_content["description"], inline=False
+            )
 
         return embed
 
@@ -176,7 +185,11 @@ class RulesCog(Cog):
 
     def get_rules(self, label=None, force=True):
         if label:
-            rules = [rule_name for rule_name in self.message_fields if label in ''.join(rule_name)]
+            rules = [
+                rule_name
+                for rule_name in self.message_fields
+                if label in "".join(rule_name)
+            ]
         else:
             rules = self.message_fields
         return rules if rules or not force else self.get_rules(force=False)
