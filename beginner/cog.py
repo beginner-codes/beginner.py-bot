@@ -1,4 +1,5 @@
 from __future__ import annotations
+from beginner.config import get_setting
 from beginner.logging import get_logger
 from beginner.settings import Settings
 from beginner.tags import TaggableMeta
@@ -25,7 +26,7 @@ class Cog(commands.Cog, metaclass=TaggableMeta):
 
     @property
     def server(self) -> Guild:
-        return self.client.get_guild(644299523686006834)
+        return self.client.get_guild(get_setting("guild_id", scope="bot"))
 
     def get_emoji(self, name: AnyStr, default: Optional[Any] = None) -> Emoji:
         return self.get(self.server.emojis, name, default)

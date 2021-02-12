@@ -1,6 +1,7 @@
 bot:
   prefix: "!"
   status: "for '!help' to show you all commands"
+  guild_id: 644299523686006834
 
 cogs:
   admin: true

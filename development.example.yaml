@@ -1,6 +1,7 @@
 bot:
   prefix: "d!"
   token: "PUT YOUR TOKEN HERE"
+  guild_id: 0 # Guild ID here
 
 cogs:
   admin: false
