@@ -1,12 +1,13 @@
 from io import StringIO
 import ast
-import base64
 import contextlib
 import inspect
 import traceback
 import resource
 import signal
 import sys
+import json
+import io
 import random
 import unicodedata
 import numpy
@@ -29,7 +30,7 @@ class Executer:
 
         self.globals = {"__name__": "__main__"}
         self.locals = {}
-        self.stdout = StringIO()
+        self.stdin = io.StringIO()
 
         self.exception = False
 
@@ -55,8 +56,8 @@ class Executer:
             for name in dir(__builtins__)
             if name in self.name_whitelist
         }
-        if "print" in builtins:
-            builtins["print"] = self.print
+        if "input" in builtins:
+            builtins["input"] = self.input
         if "getattr" in builtins:
             builtins["getattr"] = self.getattr
         if "__import__" in builtins:
@@ -85,12 +86,14 @@ class Executer:
             raise ImportError(f"Module is not whitelisted: {name}")
         return __import__(name, *args, **kwargs)
 
-    def print(self, *args, **kwargs):
-        if "file" not in kwargs:
-            kwargs["file"] = self.stdout
-        print(*args, **kwargs)
+    def input(self, prompt, **kwargs):
+        print(prompt, end="")
+        line = self.stdin.readline()
+        print(line)
+        return line
 
-    def run(self, code, runner=exec, docs=False):
+    def run(self, code, user_input, runner=exec, docs=False):
+        self.stdin = io.StringIO(user_input)
         exceptions = []
 
         with self.set_recursion_depth(50):
@@ -117,46 +120,39 @@ class Executer:
                     try:
                         ns_globals = self.generate_globals()
                         _, hard = resource.getrlimit(resource.RLIMIT_CPU)
-                        resource.setrlimit(resource.RLIMIT_AS, (1000, 1000))
-                        resource.setrlimit(resource.RLIMIT_CPU, (1, hard))
+                        resource.setrlimit(resource.RLIMIT_AS, (10000, 10000))
+                        resource.setrlimit(resource.RLIMIT_CPU, (2, hard))
                         signal.alarm(2)
                         result = runner(code_object, ns_globals, ns_globals)
                         signal.alarm(0)
                         if runner == eval:
                             if docs:
-                                self.stdout.write(
+                                print(
                                     result.__doc__
                                     if hasattr(result, "__doc__")
                                     and result.__doc__.strip()
                                     else "NO DOCS"
                                 )
                             else:
-                                self.stdout.write(repr(result))
+                                print(repr(result))
                     except MemoryError:
-                        exceptions.append("MemoryError: Exceeded process memory limits")
+                        sys.stderr.write("MemoryError: Exceeded process memory limits")
                     except CPUTimeExceeded:
-                        exceptions.append(
+                        sys.stderr.write(
                             "Beginnerpy.CPUTimeError: Exceeded process CPU time limits"
                         )
                     except ScriptTimedOut:
-                        exceptions.append(
+                        sys.stderr.write(
                             "Beginnerpy.ScriptTimedOut: Script took too long to complete"
                         )
                     except ImportError as ex:
-                        exceptions.append(f"ImportError: {ex.args[0]}")
+                        sys.stderr.write(f"ImportError: {ex.args[0]}")
                     except Exception as ex:
-                        err = StringIO()
-                        traceback.print_exc(limit=-1, file=err)
-                        exceptions.append(err.getvalue())
-                        err.close()
+                        traceback.print_exc(limit=-1)
                     except SystemExit as se:
-                        exceptions.append(
-                            f"EXIT WITH CODE {0 if se.code is None else se.code}"
+                        sys.stderr.write(
+                            f"EXIT WITH CODE {0 if se.code is None else se.code}\n"
                         )
-
-        out = self.stdout.getvalue()
-        self.stdout.close()
-        return out, exceptions
 
     @contextlib.contextmanager
     def set_recursion_depth(self, depth):
@@ -167,7 +163,6 @@ class Executer:
 
 
 if __name__ == "__main__":
-    code = base64.b64decode(input().encode()).strip()
     executer = Executer(
         {
             "__import__",
@@ -226,6 +221,7 @@ if __name__ == "__main__":
             "hash",
             "hex",
             "id",
+            "input",
             "int",
             "isinstance",
             "issubclass",
@@ -319,10 +315,8 @@ if __name__ == "__main__":
             "numpy",
         },
     )
+    data = json.loads(sys.stdin.read(-1))
     runners = {"eval": eval, "exec": exec, "docs": eval}
     arg = len(sys.argv) < 2 or sys.argv[1]
     runner = runners.get(arg, exec)
-    out, exceptions = executer.run(code, runner, arg == "docs")
-    print(base64.b64encode(out.encode()).decode())
-    for exception in exceptions:
-        print(base64.b64encode(exception.encode()).decode())
+    executer.run(data["code"], data["input"], runner, arg == "docs")

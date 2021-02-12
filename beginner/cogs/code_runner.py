@@ -1,12 +1,12 @@
 from beginner.cog import Cog
-from io import StringIO
+from beginner.colors import *
 import discord
-import sys
-import ast
 import re
 import asyncio
 import base64
-from typing import List, Tuple
+from typing import Tuple
+import time
+import json
 
 
 class CodeRunner(Cog):
@@ -28,86 +28,60 @@ class CodeRunner(Cog):
                         "\n**NO PYTHON CODE BLOCK FOUND**\n\nThe command format is as follows:\n\n"
                         "\n!exec \\`\\`\\`py\nYOUR CODE HERE\n\\`\\`\\`\n"
                     ),
-                    color=0xEA4335,
+                    color=RED,
                 ),
                 reference=ctx.message,
                 mention_author=True,
             )
+            return
 
-        else:
-            title = "Exec - Success"
-            color = 0x4285F4
+        title = "✅ Exec - Success"
+        color = BLUE
 
-            start = content.find("```python")
-            if start >= 0:
-                start += 9
-            else:
-                start = content.find("```py") + 5
-            code = content[start:-3]
+        code, user_input = re.match(
+            r"^```(?:py|python)?\n((?:.|\n)+?)\n```\n?(.+)?$", content
+        ).groups()
 
-            message, exceptions = await self.code_runner("exec", code)
+        out, err, duration = await self.code_runner("exec", code, user_input)
 
-            if exceptions:
-                title = "Exec - Exception Raised"
-                color = 0xEA4335
+        output = [out]
+        if err:
+            title = "❌ Exec - Exception Raised"
+            color = YELLOW
+            output.append(err)
 
-            output = "\n".join(message)
-            if not message:
-                output = "*No output or exceptions*"
-            else:
-                output = f"```\n{output}\n```"
+        elif not out:
+            output = ["*No output or exceptions*"]
 
-            await ctx.send(
-                embed=discord.Embed(title=title, description=output, color=color),
-                reference=ctx.message,
-                mention_author=True,
-            )
+        out = "\n\n".join(output)
+        await ctx.send(
+            embed=discord.Embed(
+                title=title, description=f"```py\n{out}\n```", color=color
+            ).set_footer(text=f"Completed in {duration:0.4f} seconds"),
+            reference=ctx.message,
+            mention_author=True,
+        )
 
-    async def code_runner(self, mode: str, code: str) -> Tuple[List[str], bool]:
-        message = []
-
+    async def code_runner(
+        self, mode: str, code: str, user_input: str = ""
+    ) -> Tuple[str, str, float]:
         proc = await asyncio.create_subprocess_shell(
             f"python -m beginner.runner {mode}",
             stdin=asyncio.subprocess.PIPE,
             stdout=asyncio.subprocess.PIPE,
+            stderr=asyncio.subprocess.PIPE,
         )
-        try:
-            stdout, stderr = await asyncio.wait_for(
-                proc.communicate(base64.b64encode(code.encode())), timeout=5
-            )
-        except asyncio.exceptions.TimeoutError:
-            proc.kill()
-            stdout = ""
-            stderr = "TimeoutError"
+        data = json.dumps(
+            {
+                "code": code,
+                "input": user_input,
+            }
+        ).encode()
+        start = time.time_ns()
+        stdout, stderr = await proc.communicate(data)
+        duration = (time.time_ns() - start) / 1_000_000_000
 
-        if stdout:
-            out, *exceptions = map(
-                lambda line: base64.b64decode(line).decode(), stdout.split(b"\n")
-            )
-            exceptions = list(filter(bool, exceptions))
-            if out:
-                out = out.strip()
-            else:
-                out = ""
-        else:
-            out = ""
-            exceptions = [stderr]
-
-        if out or exceptions:
-            if out:
-                message.append(f"{out[:1000]}{'...' if len(out) > 1000 else ''}")
-
-            if exceptions:
-                if out:
-                    message.append("")
-
-                for exception in exceptions:
-                    if exception:
-                        message.append(
-                            f"{'...' if len(exception) > 500 else ''}{exception[-500:]}"
-                        )
-
-        return message, len(exceptions) > 0
+        return stdout.decode(), stderr.decode(), duration
 
     @Cog.command()
     async def eval(self, ctx, *, content):
@@ -129,24 +103,25 @@ class CodeRunner(Cog):
             return
 
         code = re.sub(r"^\s*(```(python|py)|`?)\s*|\s*(```|`)\s*$", "", content)
-        title = "Eval - Success"
-        color = 0x4285F4
+        title = "✅ Eval - Success"
+        color = BLUE
 
         code_message = f"\n```py\n>>> {code}"
 
-        message, exceptions = await self.code_runner("eval", code)
+        out, err, duration = await self.code_runner("eval", code)
 
-        if exceptions:
-            title = "Eval - Exception Raised"
-            color = 0xEA4335
+        output = out
+        if err:
+            title = "❌ Eval - Exception Raised"
+            color = YELLOW
+            output = err
 
-        output = "\n".join(message)
         await ctx.send(
             embed=discord.Embed(
                 title=title,
-                description=f"{code_message.strip()}\n\n{output}\n```",
+                description=f"{code_message.strip()}\n{output}\n```",
                 color=color,
-            ),
+            ).set_footer(text=f"Completed in {duration:0.4f} seconds"),
             reference=ctx.message,
             mention_author=True,
         )
