@@ -70,7 +70,7 @@ class CodeRunner(Cog):
         color = BLUE
 
         code, user_input = re.match(
-            r"^```(?:py|python)?\s+(.+?)\s+```\s*(.+)?$", content, re.DOTALL
+            r"^.*?```(?:py|python)?\s+(.+?)\s+```\s*(.+)?$", content, re.DOTALL
         ).groups()
 
         out, err, duration = await self.code_runner("exec", code, user_input)
