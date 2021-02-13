@@ -18,7 +18,6 @@ class CodeRunner(Cog):
             r"^(?:```(?:py|python)\n)?\n?((?:.|\n)+?)(?:\n```)?$", content
         ).groups()[0]
         buffer = io.StringIO()
-        print(source)
         try:
             code = compile(source, "<discord>", "exec")
         except SyntaxError as excp:
