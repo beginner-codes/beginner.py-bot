@@ -49,13 +49,32 @@ class CodeRunner(Cog):
 
         await self._exec(ctx.message, content)
 
-    async def _exec(self, message: discord.Message, content: str):
+    @Cog.listener()
+    async def on_raw_reaction_add(self, reaction: discord.RawReactionActionEvent):
+        if reaction.emoji.name not in "▶️⏯":
+            return
+
+        if not self.settings.get("EXEC_ENABLED", False):
+            return
+
+        member = self.server.get_member(reaction.user_id)
+        if member.bot:
+            return
+
+        channel: discord.TextChannel = self.client.get_channel(reaction.channel_id)
+        message = await channel.fetch_message(reaction.message_id)
+        await self._exec(message, message.content, reaction.member)
+
+    async def _exec(
+        self, message: discord.Message, content: str, member: discord.Member = None
+    ):
         if (
             not len(content.strip())
             or content.find("```") < 0
             or content.rfind("```") <= 0
         ):
             await message.channel.send(
+                content="" if member is None else member.mention,
                 embed=discord.Embed(
                     title="Exec - No Code",
                     description=(
@@ -65,7 +84,9 @@ class CodeRunner(Cog):
                     color=RED,
                 ),
                 reference=message,
-                mention_author=True,
+                allowed_mentions=discord.AllowedMentions(
+                    replied_user=member is None, users=[member] if member else False
+                ),
             )
             return
 
@@ -91,12 +112,16 @@ class CodeRunner(Cog):
         if len(out) > 1000:
             out = out[:497] + "\n.\n.\n.\n" + out[-504:]
         await message.channel.send(
+            content="" if member is None else member.mention,
             embed=discord.Embed(
                 title=title, description=f"```py\n{out}\n```", color=color
             ).set_footer(text=f"Completed in {duration:0.4f} seconds"),
             reference=message,
-            mention_author=True,
+            allowed_mentions=discord.AllowedMentions(
+                replied_user=member is None, users=[member] if member else False
+            ),
         )
+        discord.TextChannel.send
 
     async def code_runner(
         self, mode: str, code: str, user_input: str = ""
