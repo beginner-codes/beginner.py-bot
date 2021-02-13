@@ -114,7 +114,7 @@ class CodeRunner(Cog):
         await message.channel.send(
             content="" if member is None else member.mention,
             embed=discord.Embed(
-                title=title, description=f"```py\n{out}\n```", color=color
+                title=title, description=f"```\n{out}\n```", color=color
             ).set_footer(text=f"Completed in {duration:0.4f} seconds"),
             reference=message,
             allowed_mentions=discord.AllowedMentions(
