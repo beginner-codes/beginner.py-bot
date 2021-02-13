@@ -312,6 +312,7 @@ if __name__ == "__main__":
             "stringprep",
             "struct",
             "textwrap",
+            "this",
             "time",
             "types",
             "typing",
