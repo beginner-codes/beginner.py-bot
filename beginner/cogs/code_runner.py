@@ -32,7 +32,6 @@ class CodeRunner(Cog):
             )
             return
 
-        print(source)
         dis.dis(code, file=buffer)
         await ctx.send(
             embed=discord.Embed(
