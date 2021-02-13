@@ -1,14 +1,48 @@
 from beginner.cog import Cog
 from beginner.colors import *
-import discord
-import re
-import asyncio
 from typing import Tuple
-import time
+import asyncio
+import dis
+import discord
+import io
 import json
+import re
+import time
+import traceback
 
 
 class CodeRunner(Cog):
+    @Cog.command()
+    async def dis(self, ctx, *, content=""):
+        source = re.match(
+            r"^(?:```(?:py|python)\n)?\n?((?:.|\n)+?)(?:\n```)?$", content
+        ).groups()[0]
+        buffer = io.StringIO()
+        print(source)
+        try:
+            code = compile(source, "<discord>", "exec")
+        except SyntaxError as excp:
+            msg, (file, line_no, column, line) = excp.args
+            spaces = " " * (column - 1)
+            await ctx.send(
+                embed=discord.Embed(
+                    title="Disassemble - Exception",
+                    description=f"```py\nLine {line_no}\n{line.rstrip()}\n{spaces}^\nSyntaxError: {msg}\n```",
+                    color=YELLOW,
+                )
+            )
+            return
+
+        print(source)
+        dis.dis(code, file=buffer)
+        await ctx.send(
+            embed=discord.Embed(
+                title="Disassemble - Byte Code Instructions",
+                description=f"```asm\n{buffer.getvalue()}\n```",
+                color=BLUE,
+            )
+        )
+
     @Cog.command()
     async def exec(self, ctx, *, content=""):
         if not self.settings.get("EXEC_ENABLED", False):
