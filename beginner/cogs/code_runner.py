@@ -15,7 +15,7 @@ class CodeRunner(Cog):
     @Cog.command()
     async def dis(self, ctx, *, content=""):
         source = re.match(
-            r"^(?:```(?:py|python)\n)?\n?((?:.|\n)+?)(?:\n```)?$", content
+            r"^(?:```(?:py|python)\n)?\n?(.+?)(?:\n```)?$", content, re.DOTALL
         ).groups()[0]
         buffer = io.StringIO()
         try:
@@ -70,7 +70,7 @@ class CodeRunner(Cog):
         color = BLUE
 
         code, user_input = re.match(
-            r"^```(?:py|python)?\n((?:.|\n)+?)\n```\n?((?:.|\n)+)?$", content
+            r"^```(?:py|python)?\s+(.+?)\s+```\s*(.+)?$", content, re.DOTALL
         ).groups()
 
         out, err, duration = await self.code_runner("exec", code, user_input)
