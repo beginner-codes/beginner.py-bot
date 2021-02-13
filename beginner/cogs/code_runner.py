@@ -44,15 +44,18 @@ class CodeRunner(Cog):
     @Cog.command()
     async def exec(self, ctx, *, content=""):
         if not self.settings.get("EXEC_ENABLED", False):
-            await ctx.send("The exec command has been disabled.")
+            await ctx.channel.send("The exec command has been disabled.")
             return
 
+        await self._exec(ctx.message, content)
+
+    async def _exec(self, message: discord.Message, content: str):
         if (
             not len(content.strip())
             or content.find("```") < 0
             or content.rfind("```") <= 0
         ):
-            await ctx.send(
+            await message.channel.send(
                 embed=discord.Embed(
                     title="Exec - No Code",
                     description=(
@@ -61,7 +64,7 @@ class CodeRunner(Cog):
                     ),
                     color=RED,
                 ),
-                reference=ctx.message,
+                reference=message,
                 mention_author=True,
             )
             return
@@ -87,11 +90,11 @@ class CodeRunner(Cog):
         out = "\n\n".join(output)
         if len(out) > 1000:
             out = out[:497] + "\n.\n.\n.\n" + out[-504:]
-        await ctx.send(
+        await message.channel.send(
             embed=discord.Embed(
                 title=title, description=f"```py\n{out}\n```", color=color
             ).set_footer(text=f"Completed in {duration:0.4f} seconds"),
-            reference=ctx.message,
+            reference=message,
             mention_author=True,
         )
 
