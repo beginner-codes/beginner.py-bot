@@ -3,7 +3,6 @@ from beginner.colors import *
 import discord
 import re
 import asyncio
-import base64
 from typing import Tuple
 import time
 import json
