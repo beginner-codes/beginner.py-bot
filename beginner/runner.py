@@ -1,17 +1,19 @@
 from io import StringIO
 import ast
 import contextlib
+import friendly_traceback
+import friendly_traceback.core
 import inspect
-import traceback
+import io
+import json
+import numpy
+import random
 import resource
 import signal
-import sys
-import json
-import io
-import random
-import unicodedata
-import numpy
 import statistics
+import sys
+import traceback
+import unicodedata
 
 
 class CPUTimeExceeded(Exception):
@@ -154,6 +156,15 @@ class Executer:
                         sys.stderr.write(f"ImportError: {ex.args[0]}")
                     except Exception as ex:
                         traceback.print_exc(limit=-1)
+                        tb = friendly_traceback.core.FriendlyTraceback(*sys.exc_info())
+                        tb.compile_info()
+                        hint = (
+                            tb.info.get("generic", "")
+                            .replace("\n", " ")
+                            .replace("  ", "\n")
+                        )
+                        if hint:
+                            sys.stderr.write(f"\n{hint}")
                     except SystemExit as se:
                         sys.stderr.write(
                             f"EXIT WITH CODE {0 if se.code is None else se.code}\n"

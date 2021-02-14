@@ -132,13 +132,12 @@ class CodeRunner(Cog):
                 replied_user=member is None, users=[member] if member else False
             ),
         )
-        discord.TextChannel.send
 
     async def code_runner(
         self, mode: str, code: str, user_input: str = ""
     ) -> Tuple[str, str, float]:
         proc = await asyncio.create_subprocess_shell(
-            f"python -m beginner.runner {mode}",
+            f"python -m friendly_traceback beginner/runner.py {mode}",
             stdin=asyncio.subprocess.PIPE,
             stdout=asyncio.subprocess.PIPE,
             stderr=asyncio.subprocess.PIPE,
