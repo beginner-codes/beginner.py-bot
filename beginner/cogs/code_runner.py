@@ -1,5 +1,6 @@
 from beginner.cog import Cog
 from beginner.colors import *
+from datetime import datetime, timedelta
 from typing import Tuple
 import asyncio
 import dis
@@ -8,10 +9,13 @@ import io
 import json
 import re
 import time
-import traceback
 
 
 class CodeRunner(Cog):
+    def __init__(self, client):
+        super().__init__(client)
+        self._exec_rate_limit = {}
+
     @Cog.command()
     async def dis(self, ctx, *, content=""):
         source = re.match(
@@ -54,6 +58,14 @@ class CodeRunner(Cog):
         if reaction.emoji.name not in "▶️⏯":
             return
 
+        now = datetime.utcnow()
+        delta = now - self._exec_rate_limit.get(reaction.message_id, now)
+        channel: discord.TextChannel = self.client.get_channel(reaction.channel_id)
+        message = await channel.fetch_message(reaction.message_id)
+        if timedelta(seconds=0) < delta < timedelta(minutes=2):
+            await message.remove_reaction(reaction.emoji, reaction.member)
+            return
+
         if not self.settings.get("EXEC_ENABLED", False):
             return
 
@@ -61,8 +73,7 @@ class CodeRunner(Cog):
         if member.bot:
             return
 
-        channel: discord.TextChannel = self.client.get_channel(reaction.channel_id)
-        message = await channel.fetch_message(reaction.message_id)
+        self._exec_rate_limit[reaction.message_id] = now
         await self._exec(message, message.content, reaction.member)
 
     async def _exec(
