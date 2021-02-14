@@ -51,10 +51,18 @@ class Executer:
         return attributes
 
     def generate_builtins(self):
+<<<<<<< HEAD
         b = __builtins__
         if not isinstance(b, dict):
             b = {name: getattr(b, name) for name in dir(b)}
         builtins = {name: b[name] for name in b if name in self.name_whitelist}
+=======
+        builtins = {
+            name: __builtins__[name]
+            for name in __builtins__
+            if name in self.name_whitelist
+        }
+>>>>>>> Fix builtins not being loaded correctly
         if "input" in builtins:
             builtins["input"] = self.input
         if "getattr" in builtins:
