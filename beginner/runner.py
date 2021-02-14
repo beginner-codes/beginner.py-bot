@@ -54,8 +54,8 @@ class Executer:
 
     def generate_builtins(self):
         builtins = {
-            name: getattr(__builtins__, name)
-            for name in dir(__builtins__)
+            name: __builtins__[name]
+            for name in __builtins__
             if name in self.name_whitelist
         }
         if "input" in builtins:
