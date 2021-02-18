@@ -56,9 +56,7 @@ class Executer:
         b = __builtins__
         if not isinstance(b, dict):
             b = {name: getattr(b, name) for name in dir(b)}
-        builtins = {
-            name: __builtins__[name] for name in b if name in self.name_whitelist
-        }
+        builtins = {name: b[name] for name in b if name in self.name_whitelist}
         if "input" in builtins:
             builtins["input"] = self.input
         if "getattr" in builtins:
