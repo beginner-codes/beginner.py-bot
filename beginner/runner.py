@@ -259,6 +259,7 @@ if __name__ == "__main__":
             "super",
             "tuple",
             "type",
+            "ValueError",
             "vars",
             "zip",
         },
