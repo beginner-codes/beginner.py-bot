@@ -8,7 +8,6 @@ import discord
 import io
 import json
 import re
-import time
 
 
 class CodeRunner(Cog):
@@ -149,7 +148,6 @@ class CodeRunner(Cog):
             }
         ).encode()
         self.logger.debug(f"Running code:\n{code}")
-        start = time.time_ns()
         stdout, stderr = await proc.communicate(data)
         out, duration = self._split_run_time(stdout.decode())
 
