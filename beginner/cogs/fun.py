@@ -300,7 +300,10 @@ class Fun(Cog):
                 exited = True
                 break
 
-        sequences = "\n".join(repr(sequence) for sequence in h)
+        sequences = "\n".join(
+            f"{str(index) + '.':4} {sequence!r}"
+            for index, sequence in enumerate(h, start=1)
+        )
         message = f"```py\n{sequences}\n```\n{'Finished in' if not exited else 'Exited after'} {len(h)} steps"
         await ctx.send(message)
 
