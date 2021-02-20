@@ -284,6 +284,26 @@ class Fun(Cog):
             ),
         )
 
+    @Cog.command(aliases=["ducci"])
+    async def ducci_sequence(self, ctx, *, content):
+        try:
+            sequence = ast.literal_eval(content)
+        except Exception:
+            await ctx.send("There was an error")
+
+        h = [sequence]
+        exited = False
+        while h.count(h[-1]) == 1 and not all(i == 0 for i in h[-1]):
+            h.append(tuple(abs(a - b) for a, b in zip(h[-1], [*h[-1][1:], h[-1][0]])))
+
+            if len(h) == 100:
+                exited = True
+                break
+
+        sequences = "\n".join(repr(sequence) for sequence in h)
+        message = f"```py\n{sequences}\n```\n{'Finished in' if not exited else 'Exited after'} {len(h)} steps"
+        await ctx.send(message)
+
 
 def setup(client):
     client.add_cog(Fun(client))
