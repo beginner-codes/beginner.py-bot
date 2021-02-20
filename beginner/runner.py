@@ -10,6 +10,7 @@ import resource
 import signal
 import statistics
 import sys
+import time
 import traceback
 import unicodedata
 
@@ -127,6 +128,7 @@ class Executer:
                         resource.setrlimit(resource.RLIMIT_AS, (10000, 10000))
                         resource.setrlimit(resource.RLIMIT_CPU, (2, hard))
                         signal.alarm(2)
+                        start = time.time_ns()
                         result = runner(code_object, ns_globals, ns_globals)
                         signal.alarm(0)
                         if runner == eval:
@@ -157,6 +159,8 @@ class Executer:
                         sys.stderr.write(
                             f"EXIT WITH CODE {0 if se.code is None else se.code}\n"
                         )
+                    finally:
+                        print(f"\n^^^^{time.time_ns() - start}^^^^")
 
     @contextlib.contextmanager
     def set_recursion_depth(self, depth):

@@ -151,10 +151,10 @@ class CodeRunner(Cog):
         self.logger.debug(f"Running code:\n{code}")
         start = time.time_ns()
         stdout, stderr = await proc.communicate(data)
-        duration = (time.time_ns() - start) / 1_000_000_000
+        out, duration = self._split_run_time(stdout.decode())
 
-        self.logger.debug(f"Done {duration}\n{stdout}\n{stderr}")
-        return stdout.decode(), stderr.decode(), duration
+        self.logger.debug(f"Done {duration}\n{out}\n{stderr}\n{duration}")
+        return out, stderr.decode(), duration
 
     @Cog.command()
     async def eval(self, ctx, *, content):
@@ -226,6 +226,12 @@ class CodeRunner(Cog):
             reference=ctx.message,
             mention_author=True,
         )
+
+    def _split_run_time(self, content: str):
+        parts = re.match(r"^(.+?)?\n\^{4}(\d+)\^{4}$", content, re.DOTALL).groups()
+        if len(parts) == 2 and parts[-1].isdigit():
+            return parts[0] if parts[0] else "", int(parts[1]) / 1000000000
+        return content, -1
 
 
 def setup(client):
