@@ -290,6 +290,7 @@ class Fun(Cog):
             sequence = ast.literal_eval(content)
         except Exception:
             await ctx.send("There was an error")
+            return
 
         h = [sequence]
         exited = False
