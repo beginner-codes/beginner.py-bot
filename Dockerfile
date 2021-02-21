@@ -17,4 +17,4 @@ ENV TMPDIR /usr/src/app/tmp
 
 COPY ./extensions ./extensions
 
-CMD ["poetry", "run", "python", "-u", "-m", "dippy", "--token", "$DISCORD_TOKEN"]
+CMD ["poetry", "run", "python", "-u", "-m", "dippy"]
