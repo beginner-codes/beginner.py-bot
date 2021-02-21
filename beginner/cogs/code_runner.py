@@ -125,7 +125,7 @@ class CodeRunner(Cog):
             content="" if member is None else member.mention,
             embed=discord.Embed(
                 title=title, description=f"```\n{out}\n```", color=color
-            ).set_footer(text=f"Completed in {duration:0.4f} seconds"),
+            ).set_footer(text=f"Completed in {duration:0.4f} milliseconds"),
             reference=message,
             allowed_mentions=discord.AllowedMentions(
                 replied_user=member is None, users=[member] if member else False
@@ -192,7 +192,7 @@ class CodeRunner(Cog):
                 title=title,
                 description=f"{code_message.strip()}\n{output}\n```",
                 color=color,
-            ).set_footer(text=f"Completed in {duration:0.4f} seconds"),
+            ).set_footer(text=f"Completed in {duration:0.4f} milliseconds"),
             reference=ctx.message,
             mention_author=True,
         )
@@ -228,7 +228,7 @@ class CodeRunner(Cog):
     def _split_run_time(self, content: str):
         parts = re.match(r"^(.+?)?\n\^{4}(\d+)\^{4}$", content, re.DOTALL).groups()
         if len(parts) == 2 and parts[-1].isdigit():
-            return parts[0] if parts[0] else "", int(parts[1]) / 1000000000
+            return parts[0] if parts[0] else "", int(parts[1]) / 1000000
         return content, -1
 
 
