@@ -6,7 +6,7 @@ authors = ["Zech Zimmerman <hi@zech.codes>"]
 
 [tool.poetry.dependencies]
 python = "^3.8.0"
-"dippy.bot" = "^0.1.1-alpha.3"
+"dippy.bot" = "^0.1.1-alpha.11"
 
 [tool.poetry.dev-dependencies]
 
