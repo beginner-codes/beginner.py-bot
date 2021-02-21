@@ -226,10 +226,12 @@ class CodeRunner(Cog):
         )
 
     def _split_run_time(self, content: str):
-        parts = re.match(r"^(.+?)?\n\^{4}(\d+)\^{4}$", content, re.DOTALL).groups()
-        if len(parts) == 2 and parts[-1].isdigit():
-            return parts[0] if parts[0] else "", int(parts[1]) / 1000000
-        return content, -1
+        parts = re.match(r"^(.+?)?\n\^{4}(\d+)\^{4}$", content, re.DOTALL)
+        if parts:
+            parts = parts.groups()
+            if len(parts) == 2 and parts[-1].isdigit():
+                return parts[0] if parts[0] else "", int(parts[1]) / 1000000
+        return content, 0
 
 
 def setup(client):
