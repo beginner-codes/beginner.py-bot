@@ -1,2 +1,0 @@
-class BeginnerException(Exception):
-    pass

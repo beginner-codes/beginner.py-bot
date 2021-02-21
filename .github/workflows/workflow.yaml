@@ -1,23 +1,22 @@
 on:
   push:
     branches:
-      - master
+      - dippy-rewrite
 
 jobs:
 
   build:
-    name: Build, push, and deploy
+    name: Building & Deploying Beginner.py Bot (Dippy)
     runs-on: ubuntu-latest
     steps:
-
-    - name: Checkout master
+    - name: Checkout dippy-rewrite
       uses: actions/checkout@master
 
     - name: Update SHA
       run: echo $GITHUB_SHA > $GITHUB_WORKSPACE/_meta
 
     - name: Build container image
-      run: docker build -t zzmmrmn/beginner-py-bot:$(echo $GITHUB_SHA | head -c7) .
+      run: docker build -t zzmmrmn/bpy-dippy-bot:$(echo $GITHUB_SHA | head -c7) .
 
     - name: Docker Login
       env:
@@ -26,7 +25,7 @@ jobs:
       run: docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
 
     - name: Push image to Docker Hub
-      run: docker push zzmmrmn/beginner-py-bot:$(echo $GITHUB_SHA | head -c7)
+      run: docker push zzmmrmn/bpy-dippy-bot:$(echo $GITHUB_SHA | head -c7)
     - name: Update deployment file
       run: TAG=$(echo $GITHUB_SHA | head -c7) && sed -i 's|<IMAGE_VERSION>|'${TAG}'|' $GITHUB_WORKSPACE/manifests/bot.yaml
 

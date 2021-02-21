@@ -1,9 +1,9 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: beginner-py-bot
+  name: bpy-dippy-bot
   labels:
-    app: beginner-py-bot
+    app: bpy-dippy-bot
 spec:
   replicas: 1
   selector:
@@ -15,8 +15,8 @@ spec:
         app: beginner-py-bot
     spec:
       containers:
-        - name: beginner-py-bot
-          image: zzmmrmn/beginner-py-bot:<IMAGE_VERSION>
+        - name: bpy-dippy-bot
+          image: zzmmrmn/bpy-dippy-bot:<IMAGE_VERSION>
           env:
             - name: PRODUCTION_BOT
               value: "PRODUCTION"
@@ -25,40 +25,5 @@ spec:
                 secretKeyRef:
                   name: discord.token
                   key: token
-            - name: "GOOGLE_CUSTOM_SEARCH_KEY"
-              valueFrom:
-                secretKeyRef:
-                  name: google-custom-search
-                  key: api-key
-            - name: "GOOGLE_CUSTOM_SEARCH_ENGINE"
-              valueFrom:
-                secretKeyRef:
-                  name: google-custom-search
-                  key: cse
-            - name: "GIST_USER"
-              valueFrom:
-                secretKeyRef:
-                  name: gist.auth
-                  key: user
-            - name: "GIST_TOKEN"
-              valueFrom:
-                secretKeyRef:
-                  name: gist.auth
-                  key: token
-            - name: "DB_HOST"
-              value: "private-personal-postgres-cluster-1-apr-26-backup-do-user-87772.a.db.ondigitalocean.com"
-            - name: "DB_PORT"
-              value: "25061"
-            - name: "DB_USER"
-              value: "beginnerpy"
-            - name: "DB_NAME"
-              value: "bpydb-pool"
             - name: "BOT_IMAGE_VERSION"
               value: "<IMAGE_VERSION>"
-            - name: "beginner.cogs.bumping"
-              value: "0"
-            - name: "DB_PASSWORD"
-              valueFrom:
-                secretKeyRef:
-                  name: postgres-password
-                  key: password
