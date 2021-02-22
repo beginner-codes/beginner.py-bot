@@ -28,6 +28,9 @@ class BumpReminderExtension(dippy.Extension):
         self.client.loop.create_task(self.schedule_next())
 
     def get_next_bump(self) -> int:
-        bump = datetime.utcnow().replace(minute=0, second=0, microsecond=0)
+        now = datetime.utcnow()
+        bump = now.replace(minute=0, second=0, microsecond=0)
         bump += timedelta(hours=6 - bump.hour % 6 - 1, minutes=58)
+        if bump < now + timedelta(minutes=5):
+            bump += timedelta(hours=6)
         return int((bump - datetime.utcnow()).total_seconds())
