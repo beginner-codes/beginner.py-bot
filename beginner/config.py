@@ -7,7 +7,9 @@ from typing import Any, Dict, Optional, Sequence, Protocol
 
 
 class ScopedGetter:
-    def __call__(self, name: str, *, env_name: Optional[str] = None, default: Any = None) -> Any:
+    def __call__(
+        self, name: str, *, env_name: Optional[str] = None, default: Any = None
+    ) -> Any:
         ...
 
 
@@ -27,7 +29,9 @@ def get_config(filename: str) -> Dict[str, Any]:
 
 
 def scope_getter(scope: str, filenames: Optional[Sequence[str]] = None) -> ScopedGetter:
-    def scoped(name: str, *, env_name: Optional[str] = None, default: Any = None) -> Any:
+    def scoped(
+        name: str, *, env_name: Optional[str] = None, default: Any = None
+    ) -> Any:
         kwargs = {}
         if filenames:
             kwargs["filenames"] = filenames
@@ -59,9 +63,7 @@ def get_setting(
 
 
 def get_scope(
-    scope: str,
-    *,
-    filenames: Sequence[str] = ("production", "development")
+    scope: str, *, filenames: Sequence[str] = ("production", "development")
 ) -> Any:
     keys = set()
     for file in (get_config(filename) for filename in filenames):

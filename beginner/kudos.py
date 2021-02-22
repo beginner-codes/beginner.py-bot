@@ -11,7 +11,7 @@ def give_user_kudos(kudos: int, user_id: int, giver_id: int, message_id: int):
         giver_id=giver_id,
         message_id=message_id,
         points=kudos,
-        point_type="KUDOS"
+        point_type="KUDOS",
     )
     kudos.save()
 
@@ -38,14 +38,20 @@ def get_highest_kudos(num_users: int) -> List[Tuple[int, int]]:
 
 def remove_kudos(message_id: int, giver_id: int):
     Points.delete().where(
-        Points.message_id == message_id, Points.giver_id == giver_id, Points.point_type == "KUDOS"
+        Points.message_id == message_id,
+        Points.giver_id == giver_id,
+        Points.point_type == "KUDOS",
     ).execute()
 
 
 def get_kudos_given_since(giver_id: int, since: datetime):
     points = (
         Points.select(Points.awarded, Points.points)
-        .where(Points.giver_id == giver_id, Points.point_type == "KUDOS", Points.awarded >= since)
+        .where(
+            Points.giver_id == giver_id,
+            Points.point_type == "KUDOS",
+            Points.awarded >= since,
+        )
         .order_by(Points.awarded.desc())
         .tuples()
     )

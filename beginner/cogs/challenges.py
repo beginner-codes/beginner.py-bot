@@ -22,7 +22,7 @@ class Challenges(Cog):
 
     async def challenge_alerts(self, message):
         if message.channel != self.get_channel(
-                os.environ.get("DAILY_CHALLENGE_CHANNEL", "weekday-challenges")
+            os.environ.get("DAILY_CHALLENGE_CHANNEL", "weekday-challenges")
         ):
             return
 
@@ -35,7 +35,10 @@ class Challenges(Cog):
         if message.author.bot:
             return
 
-        if not message.channel.topic or "challenge submissions" not in message.channel.topic.casefold():
+        if (
+            not message.channel.topic
+            or "challenge submissions" not in message.channel.topic.casefold()
+        ):
             return
 
         content = message.content
@@ -91,7 +94,8 @@ class Challenges(Cog):
             await self.add_challenges_role(member, channel)
         else:
             await channel.send(
-                f"{member.mention} you're already signed up for new challenge notifications", delete_after=5
+                f"{member.mention} you're already signed up for new challenge notifications",
+                delete_after=5,
             )
 
     async def add_challenges_role(self, member, channel):
@@ -140,7 +144,8 @@ class Challenges(Cog):
                 ),
                 color=0x306998,
             ).set_author(
-                name="Recommended Code File Hosts", icon_url=self.server.icon_url,
+                name="Recommended Code File Hosts",
+                icon_url=self.server.icon_url,
             )
         )
 

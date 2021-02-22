@@ -19,9 +19,15 @@ class RunnerBuiltinWrappers(bevy.Bevy):
         return print(*args, **kwargs)
 
     def safe_getattr(self, obj: Any, name: str) -> Any:
-        if name.startswith("__") and name not in self.config.get("enabled_special_attributes"):
-            obj_name = obj.__name__ if hasattr(obj, "__name__") else obj.__class__.__name__
-            raise RunnerAttributeError(f"The attribute or method '{obj_name}.{name}' is disabled for security reasons")
+        if name.startswith("__") and name not in self.config.get(
+            "enabled_special_attributes"
+        ):
+            obj_name = (
+                obj.__name__ if hasattr(obj, "__name__") else obj.__class__.__name__
+            )
+            raise RunnerAttributeError(
+                f"The attribute or method '{obj_name}.{name}' is disabled for security reasons"
+            )
 
     def safe_import(
         self,

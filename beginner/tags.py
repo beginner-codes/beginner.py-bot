@@ -10,11 +10,11 @@ __registered_tags__ = defaultdict(set)
 
 
 def fetch_tags(*tags, operation: AnyStr = "and") -> Set:
-    """ Fetches all objects that match the provided tags.
+    """Fetches all objects that match the provided tags.
 
     By default only objects that have all requested tags will be selected. Setting
     the operation to "or" will cause the fetch to select all objects that match
-    any of the requested tags. """
+    any of the requested tags."""
     operator_ = operator.and_ if operation == "and" else operator.or_
     tag_set = build_tag_set(*tags)
     if tag_set:
@@ -55,8 +55,8 @@ def tag(*tags) -> Callable:
 
 
 class TaggableMeta(commands.CogMeta):
-    """ Metaclass that allows for tags to be applied to instance attributes at instantiation.
-    This is in contrast to the tags being applied to the unbound attributes. """
+    """Metaclass that allows for tags to be applied to instance attributes at instantiation.
+    This is in contrast to the tags being applied to the unbound attributes."""
 
     def __call__(cls, *args, **kwargs):
         # Create the instance

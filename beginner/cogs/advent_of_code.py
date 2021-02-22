@@ -19,7 +19,9 @@ class AdventOfCode(Cog):
 
     @property
     def christmas(self):
-        return datetime(2020, 12, 25, 0, 0, 0, tzinfo=dateutil.tz.gettz("America/New_York"))
+        return datetime(
+            2020, 12, 25, 0, 0, 0, tzinfo=dateutil.tz.gettz("America/New_York")
+        )
 
     @property
     def days_till_christmas(self):
@@ -37,7 +39,7 @@ class AdventOfCode(Cog):
                 "beginnerpy-advent-of-code-2020",
                 self.now + timedelta(days=1, minutes=1) - self.raw_now,
                 self.send_daily_link,
-                no_duplication=True
+                no_duplication=True,
             )
 
     @tag("schedule", "advent-of-code-announcement")
@@ -58,8 +60,8 @@ class AdventOfCode(Cog):
                 ),
                 title=(
                     f"🎄 {self.days_till_christmas} Days Until Christmas 🎄"
-                    if self.days_till_christmas else
-                    "🎄🎅☃️  MERRY CHRISTMAS ☃️ 🎅🎄"
+                    if self.days_till_christmas
+                    else "🎄🎅☃️  MERRY CHRISTMAS ☃️ 🎅🎄"
                 ),
                 color=BLUE,
             ).add_field(
@@ -68,7 +70,7 @@ class AdventOfCode(Cog):
                     "To join our server's leaderboard go [here](https://adventofcode.com/2020/leaderboard/private), "
                     "enter our code in the text box, and then click join.\n\n"
                     "**Beginner.py Leaderboard Code:** `990847-0adb2be3`"
-                )
+                ),
             )
         )
 

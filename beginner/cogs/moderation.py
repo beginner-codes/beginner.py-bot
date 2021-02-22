@@ -45,21 +45,24 @@ class ModerationCog(Cog):
                 members.append(member)
 
         message = (
-                f"Found {len(members)} members with names that contain '{username_part}'\n"
-                + "\n".join(
-                    (
-                        f"-  **{member.name}#{member.discriminator}**  ({member.nick if member.nick else '*No Nick Name*'})\n"
-                        f"   Joined {member.joined_at: %b %-d %Y}\n"
-                        f"   Top Role `@{member.top_role.name.strip('@')}`\n"
-                        f"   {member.id}"
-                    )
-                    for member in members[:15]
+            f"Found {len(members)} members with names that contain '{username_part}'\n"
+            + "\n".join(
+                (
+                    f"-  **{member.name}#{member.discriminator}**  ({member.nick if member.nick else '*No Nick Name*'})\n"
+                    f"   Joined {member.joined_at: %b %-d %Y}\n"
+                    f"   Top Role `@{member.top_role.name.strip('@')}`\n"
+                    f"   {member.id}"
                 )
-                + (f"\n\n*There are {len(members) - 15} more members who matched*" if len(members) - 15 > 0 else "")
+                for member in members[:15]
+            )
+            + (
+                f"\n\n*There are {len(members) - 15} more members who matched*"
+                if len(members) - 15 > 0
+                else ""
+            )
         )
 
         await ctx.send(message)
-
 
     @Cog.command(name="ban")
     @commands.has_guild_permissions(manage_messages=True)
@@ -83,9 +86,7 @@ class ModerationCog(Cog):
             return
 
         if member.guild_permissions.manage_messages:
-            await ctx.send(
-                "You cannot ban this user", delete_after=15
-            )
+            await ctx.send("You cannot ban this user", delete_after=15)
             return
 
         embed = self.build_mod_action_embed(ctx, member, reason, f"You've Been Banned")
@@ -127,9 +128,7 @@ class ModerationCog(Cog):
             return
 
         if member.guild_permissions.manage_messages:
-            await ctx.send(
-                "You cannot kick this user", delete_after=15
-            )
+            await ctx.send("You cannot kick this user", delete_after=15)
             return
 
         embed = self.build_mod_action_embed(ctx, member, reason, f"You've Been Kicked")
@@ -196,7 +195,8 @@ class ModerationCog(Cog):
     @Cog.command(name="mute")
     async def mute(self, ctx, user, duration, *, reason: str):
         if not (
-            set(ctx.author.roles) & {self.get_role("jedi council"), self.get_role("mods")}
+            set(ctx.author.roles)
+            & {self.get_role("jedi council"), self.get_role("mods")}
         ):
             return
 
@@ -238,7 +238,8 @@ class ModerationCog(Cog):
     @Cog.command(name="unmute")
     async def unmute(self, ctx, user):
         if not (
-            set(ctx.author.roles) & {self.get_role("jedi council"), self.get_role("mods")}
+            set(ctx.author.roles)
+            & {self.get_role("jedi council"), self.get_role("mods")}
         ):
             return
 
@@ -251,7 +252,8 @@ class ModerationCog(Cog):
     @Cog.command(name="warn")
     async def warn(self, ctx, user, *, reason: str):
         if not (
-            set(ctx.author.roles) & {self.get_role("jedi council"), self.get_role("mods")}
+            set(ctx.author.roles)
+            & {self.get_role("jedi council"), self.get_role("mods")}
         ):
             return
 

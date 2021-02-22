@@ -13,7 +13,11 @@ class Scanner:
                 modules.add(node.names[0].name)
             elif isinstance(node, ast.ImportFrom):
                 modules.add(node.module)
-            elif isinstance(node, ast.Call) and hasattr(node.func, "id") and node.func.id == "__import__":
+            elif (
+                isinstance(node, ast.Call)
+                and hasattr(node.func, "id")
+                and node.func.id == "__import__"
+            ):
                 modules.add(node.args[0].n)
         return modules
 

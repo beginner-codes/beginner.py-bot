@@ -18,7 +18,7 @@ class Kudos(Cog):
         return {
             "good": self.settings.get("kudos.score.good", 2),
             "great": self.settings.get("kudos.score.great", 4),
-            "excellent": self.settings.get("kudos.score.excellent", 8)
+            "excellent": self.settings.get("kudos.score.excellent", 8),
         }
 
     @property
@@ -58,7 +58,7 @@ class Kudos(Cog):
                         description=(
                             "Users can give kudos to anyone that they feel deserves recognition. It might be for help "
                             "they gave or a cool project they shared or a useful resource they linked."
-                        )
+                        ),
                     )
                     .add_field(
                         name="Levels of Kudos",
@@ -67,7 +67,7 @@ class Kudos(Cog):
                             f"{self.reactions['good']} *Good* gives {self.point_values['good']} points\n"
                             f"{self.reactions['great']} *Great* gives {self.point_values['great']} points\n"
                             f"{self.reactions['excellent']} *Excellent* gives {self.point_values['excellent']} points"
-                        )
+                        ),
                     )
                     .add_field(
                         name="Giving Kudos",
@@ -77,15 +77,17 @@ class Kudos(Cog):
                             f"corresponding amount of kudos. You only have {self.pool_size} kudos to give, and it will "
                             f"regenerate 1 point every {self.pool_regeneration} minute"
                             f"{'s' if self.pool_regeneration else ''}."
-                        )
+                        ),
                     )
                     .add_field(
                         name="Leaderboard",
                         inline=False,
-                        value="You can see a kudos leader board by using `!kudos leaderboard`."
+                        value="You can see a kudos leader board by using `!kudos leaderboard`.",
                     )
                     .set_author(name="Kudos - Help", icon_url=self.server.icon_url)
-                    .set_thumbnail(url="https://cdn.discordapp.com/emojis/669941420454576131.png?v=1")
+                    .set_thumbnail(
+                        url="https://cdn.discordapp.com/emojis/669941420454576131.png?v=1"
+                    )
                 )
             )
             return
@@ -95,22 +97,32 @@ class Kudos(Cog):
             f"{ctx.author.mention} you have {author_kudos if author_kudos > 0 else 'no'} kudos"
         ]
         if author_kudos == 0:
-            message.append("\nKeep helping and contributing and you're bound to get some kudos!")
+            message.append(
+                "\nKeep helping and contributing and you're bound to get some kudos!"
+            )
 
         embed = (
-            discord.Embed(
-                color=BLUE,
-                description="\n".join(message)
-            )
+            discord.Embed(color=BLUE, description="\n".join(message))
             .set_author(name="Kudos", icon_url=self.server.icon_url)
-            .set_thumbnail(url="https://cdn.discordapp.com/emojis/669941420454576131.png?v=1")
+            .set_thumbnail(
+                url="https://cdn.discordapp.com/emojis/669941420454576131.png?v=1"
+            )
         )
 
         footer = "'!kudos help' or '!kudos leaderboard'"
 
-        if option.casefold() in {"leaderboard", "lb", "l", "leaders", "highscores", "hs"}:
+        if option.casefold() in {
+            "leaderboard",
+            "lb",
+            "l",
+            "leaders",
+            "highscores",
+            "hs",
+        }:
             leader_board = []
-            for index, (member_id, member_kudos) in enumerate(kudos.get_highest_kudos(5)):
+            for index, (member_id, member_kudos) in enumerate(
+                kudos.get_highest_kudos(5)
+            ):
                 member = self.server.get_member(member_id)
                 name = member.display_name if member else "*Old Member*"
                 entry = f"{index + 1}. {name} has {member_kudos} kudos"
@@ -118,7 +130,9 @@ class Kudos(Cog):
                     entry = f"**{entry}**"
                 leader_board.append(entry)
 
-            embed.add_field(name="Leader Board", value="\n".join(leader_board), inline=False)
+            embed.add_field(
+                name="Leader Board", value="\n".join(leader_board), inline=False
+            )
         else:
             points_left = self.points_left_to_give(ctx.author.id)
             kudos_to_give = f"{points_left} of {self.pool_size}"
@@ -156,8 +170,8 @@ class Kudos(Cog):
                 delete_after=5,
                 embed=discord.Embed(
                     color=RED,
-                    description=f"{reacter.mention} you don't have enough kudos right now"
-                )
+                    description=f"{reacter.mention} you don't have enough kudos right now",
+                ),
             )
             for r in message.reactions:
                 if isinstance(r.emoji, str):
@@ -177,7 +191,9 @@ class Kudos(Cog):
         )
 
         multiplier = self.get_pool_multiplier(reaction.member)
-        kudos_message = f"{max(0, kudos_left - kudos_points)} of {self.pool_size * multiplier}"
+        kudos_message = (
+            f"{max(0, kudos_left - kudos_points)} of {self.pool_size * multiplier}"
+        )
         if multiplier == 0:
             kudos_message = "∞"
 
@@ -187,8 +203,10 @@ class Kudos(Cog):
                 description=(
                     f"{reacter.mention} gave {message.author.mention} {kudos_points} kudos! "
                     f"[Jump To Message]({message.jump_url})"
-                )
-            ).set_footer(text=f"'!kudos help' or '!kudos leaderboard' | {kudos_message} kudos to give")
+                ),
+            ).set_footer(
+                text=f"'!kudos help' or '!kudos leaderboard' | {kudos_message} kudos to give"
+            )
         )
 
     @Cog.listener()
@@ -231,7 +249,9 @@ class Kudos(Cog):
 
         pool_size = self.pool_size * multiplier
 
-        since = datetime.utcnow() - timedelta(minutes=self.pool_regeneration * pool_size)
+        since = datetime.utcnow() - timedelta(
+            minutes=self.pool_regeneration * pool_size
+        )
         kudos_given = kudos.get_kudos_given_since(user_id, since)
 
         if not kudos_given:
@@ -243,7 +263,8 @@ class Kudos(Cog):
             # Regenerate points since the last time they were given
             total_points = min(
                 pool_size,
-                total_points + (given - last_given).seconds // 60 // self.pool_regeneration
+                total_points
+                + (given - last_given).seconds // 60 // self.pool_regeneration,
             )
             last_given = given
             # Remove the points given from the pool
@@ -252,7 +273,8 @@ class Kudos(Cog):
         # Regenerate all points
         total_points = min(
             pool_size,
-            total_points + (datetime.utcnow() - last_given).seconds // 60 // self.pool_regeneration
+            total_points
+            + (datetime.utcnow() - last_given).seconds // 60 // self.pool_regeneration,
         )
 
         return total_points

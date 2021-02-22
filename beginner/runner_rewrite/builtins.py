@@ -15,8 +15,5 @@ class RunnerBuiltins(bevy.Bevy, dict):
         builtins = {}
         for name, value in __builtins__.items():
             if name in self.__enabled_builtins:
-                builtins[name] = self.wrappers.get(
-                    self.__enabled_builtins[name],
-                    value
-                )
+                builtins[name] = self.wrappers.get(self.__enabled_builtins[name], value)
         return builtins

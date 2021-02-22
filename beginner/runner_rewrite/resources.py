@@ -22,7 +22,9 @@ class RunnerResourceLimits:
         resource.setrlimit(resource.RLIMIT_AS, (self.max_memory, self._old_as_limit[1]))
 
         self._old_cpu_limit = resource.getrlimit(resource.RLIMIT_CPU)
-        resource.setrlimit(resource.RLIMIT_CPU, (self.max_cpu_time, self._old_cpu_limit[1]))
+        resource.setrlimit(
+            resource.RLIMIT_CPU, (self.max_cpu_time, self._old_cpu_limit[1])
+        )
 
         signal.alarm(self.max_runtime)
 
@@ -41,10 +43,14 @@ class RunnerResourceLimits:
         return False
 
     def cpu_time_exceeded(self, signo, frame):
-        raise CPUTimeExceeded(f"Your script exceeded the limits on CPU usage time ({self.max_cpu_time} seconds)")
+        raise CPUTimeExceeded(
+            f"Your script exceeded the limits on CPU usage time ({self.max_cpu_time} seconds)"
+        )
 
     def script_timed_out(self, signo, frame):
-        raise ScriptTimedOut(f"Your script exceeded the maximum allowed run time ({self.max_runtime} seconds)")
+        raise ScriptTimedOut(
+            f"Your script exceeded the maximum allowed run time ({self.max_runtime} seconds)"
+        )
 
 
 class CPUTimeExceeded(Exception):

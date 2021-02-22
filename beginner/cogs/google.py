@@ -28,14 +28,18 @@ class Google(Cog):
             query_obj = google(
                 "customsearch",
                 "v1",
-                developerKey=google_settings("custom_search_key", env_name="GOOGLE_CUSTOM_SEARCH_KEY"),
+                developerKey=google_settings(
+                    "custom_search_key", env_name="GOOGLE_CUSTOM_SEARCH_KEY"
+                ),
             )
             query_result = (
                 query_obj.cse()
                 .list(
                     q=query,
-                    cx=google_settings("custom_search_engine", env_name="GOOGLE_CUSTOM_SEARCH_ENGINE"),
-                    num=5
+                    cx=google_settings(
+                        "custom_search_engine", env_name="GOOGLE_CUSTOM_SEARCH_ENGINE"
+                    ),
+                    num=5,
                 )
                 .execute()
             )

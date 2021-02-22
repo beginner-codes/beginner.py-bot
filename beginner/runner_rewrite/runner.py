@@ -32,7 +32,7 @@ class Runner(bevy.Bevy):
         except SyntaxError as exc:
             msg, (file, line_no, column, line) = exc.args
             spaces = " " * (column - 2)
-            self.exception = f"File \"{file}\", line {line_no}\n{line.rstrip()}\n{spaces}^\nSyntaxError: {msg}"
+            self.exception = f'File "{file}", line {line_no}\n{line.rstrip()}\n{spaces}^\nSyntaxError: {msg}'
             return
 
         scanner = Scanner(tree)
@@ -51,11 +51,7 @@ class Runner(bevy.Bevy):
                 if self._mode == "exec":
                     exec(code, global_ns, global_ns)
                 elif self._mode == "eval":
-                    self.buffer.writelines(
-                        repr(
-                            eval(code, global_ns, global_ns)
-                        )
-                    )
+                    self.buffer.writelines(repr(eval(code, global_ns, global_ns)))
         except RunnerAttributeError as exc:
             self.exception = f"AttributeError: {exc.args[0]}"
         except RunnerImportError as exc:
@@ -75,10 +71,7 @@ class Runner(bevy.Bevy):
         self.buffer.close()
 
     def build_globals(self) -> Dict[str, Any]:
-        return {
-            "__name__": "__main__",
-            "__builtins__": self.builtins.get_builtins()
-        }
+        return {"__name__": "__main__", "__builtins__": self.builtins.get_builtins()}
 
     def disabled_dunder_attributes(self, scanner: Scanner) -> Set[str]:
         attrs = scanner.get_dunder_attributes()
@@ -96,11 +89,9 @@ class Runner(bevy.Bevy):
 
 if __name__ == "__main__":
     code = """1"""
-    run = (
-        Runner
-            .context(RunnerConfig(pathlib.Path(__file__).parent.parent / "config"))
-            .build(code, "eval")
-    )
+    run = Runner.context(
+        RunnerConfig(pathlib.Path(__file__).parent.parent / "config")
+    ).build(code, "eval")
     run.run()
     if run.output:
         out = run.output.rstrip().replace("\n", "\n>>> ")
@@ -112,11 +103,9 @@ if __name__ == "__main__":
 import types
 os.__getattr__ = types.MethodType(lambda self, name: super().__getattribute__(name), os)
 print(os.__str__())"""
-    run = (
-        Runner
-            .context(RunnerConfig(pathlib.Path(__file__).parent.parent / "config"))
-            .build(code, "exec")
-    )
+    run = Runner.context(
+        RunnerConfig(pathlib.Path(__file__).parent.parent / "config")
+    ).build(code, "exec")
     run.run()
     if run.output:
         out = run.output.rstrip().replace("\n", "\n>>> ")

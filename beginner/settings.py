@@ -12,15 +12,23 @@ class Settings:
     NOT_SET = NOT_SET()
 
     def _get(self, name: AnyStr) -> Any:
-        result = SettingsModel.select(SettingsModel.value).where(SettingsModel.name == name)
-        return pickle.loads(result.scalar().encode()) if result.count() else Settings.NOT_SET
+        result = SettingsModel.select(SettingsModel.value).where(
+            SettingsModel.name == name
+        )
+        return (
+            pickle.loads(result.scalar().encode())
+            if result.count()
+            else Settings.NOT_SET
+        )
 
     def _set(self, name: AnyStr, value: Any):
         pickled = pickle.dumps(value, 0)
         if self._get(name) is Settings.NOT_SET:
             SettingsModel(name=name, value=pickled).save()
         else:
-            SettingsModel.update(value=pickled).where(SettingsModel.name == name).execute()
+            SettingsModel.update(value=pickled).where(
+                SettingsModel.name == name
+            ).execute()
 
     def all(self):
         return {

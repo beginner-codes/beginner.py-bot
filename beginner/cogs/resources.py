@@ -9,7 +9,9 @@ import discord
 class ResourcesCog(Cog):
     @Cog.command(aliases=("r", "resource"))
     async def resources(self, ctx: Context, *, lang_name: str = "py"):
-        lang_code = get_setting(lang_name.casefold(), scope="lang_aliases", default=lang_name.casefold())
+        lang_code = get_setting(
+            lang_name.casefold(), scope="lang_aliases", default=lang_name.casefold()
+        )
         lang = get_setting(lang_code, scope="resources")
 
         if not lang:
@@ -19,15 +21,15 @@ class ResourcesCog(Cog):
         embed = discord.Embed(
             title=f"Helpful {lang['name']} Resources",
             description="Here are some resources you may find helpful.",
-            color=YELLOW
+            color=YELLOW,
         )
 
-        for title, resources in (section for section in lang.items() if section[0] != "name"):
+        for title, resources in (
+            section for section in lang.items() if section[0] != "name"
+        ):
             embed.add_field(
                 name=title,
-                value="\n".join(
-                    f"[{name}]({url})" for name, url in resources.items()
-                ),
+                value="\n".join(f"[{name}]({url})" for name, url in resources.items()),
                 inline=False,
             )
 

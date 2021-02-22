@@ -27,7 +27,9 @@ class Settings(Cog):
     async def listvalues(self, ctx):
         await ctx.send(
             "\n".join(
-                f"`{name} = {repr(value)}`" for name, value in self.settings.all().items() if not name.startswith("_")
+                f"`{name} = {repr(value)}`"
+                for name, value in self.settings.all().items()
+                if not name.startswith("_")
             )
         )
 
