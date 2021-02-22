@@ -115,8 +115,7 @@ class TipsCog(Cog):
         if not len(formatted):
             message = "*No Tips Found*"
 
-        embed = Embed(description=message, color=0x306998)
-        embed.set_author(name=title, icon_url=self.server.icon_url)
+        embed = Embed(description=message, color=0x306998, title=title)
         while formatted:
             index = min(len(formatted), 5)
             embed.add_field(name="- - - -", value="\n".join(formatted[:index]))
@@ -125,11 +124,10 @@ class TipsCog(Cog):
         await channel.send(embed=embed)
 
     async def show_tip(self, tip, channel):
-        embed = Embed(description=tip.message, color=0x306998).set_footer(
+        title = tip.title if tip.title else Embed.Empty
+        embed = Embed(description=tip.message, title=title, color=0x306998).set_footer(
             text=f"Contributed graciously by {tip.author}"
         )
-        if tip.title:
-            embed.set_author(name=tip.title, icon_url=self.server.icon_url)
         await channel.send(embed=embed)
 
     @staticmethod
