@@ -2,7 +2,7 @@
 This is the discord bot for the beginner.py discord server. A bit of a hodge podge of coding style and experience levels as it is a collaboration between various people, all of whom had no experience with Discord.py before this.
 
 ## Wanna Join Us?
-If you'd like to join us, we're a welcoming community with over 1,000 members. [We will happily have you!!!](https://discord.gg/qh5r9w3)
+If you'd like to join us, we're a welcoming community with over 1,000 members. [We will happily have you!!!](https://discord.gg/RGPs5TmqD5)
 
 ## Requirements
 The bot uses [Poetry](https://python-poetry.org/) for packaging and dependency management. You will need to follow the [installation instructions](https://python-poetry.org/docs/#installation) before you can get started with the bot.
