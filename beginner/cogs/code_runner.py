@@ -3,6 +3,7 @@ from beginner.colors import *
 from datetime import datetime, timedelta
 from typing import Tuple
 import asyncio
+import black
 import dis
 import discord
 import io
@@ -54,7 +55,7 @@ class CodeRunner(Cog):
 
     @Cog.listener()
     async def on_raw_reaction_add(self, reaction: discord.RawReactionActionEvent):
-        if reaction.emoji.name not in "▶️⏯":
+        if reaction.emoji.name not in "▶️⏯✏️":
             return
 
         now = datetime.utcnow()
@@ -73,7 +74,11 @@ class CodeRunner(Cog):
             return
 
         self._exec_rate_limit[reaction.message_id] = now
-        await self._exec(message, message.content, reaction.member)
+
+        if reaction.emoji.name in "▶️⏯":
+            await self._exec(message, message.content, reaction.member)
+        elif reaction.emoji.name == "✏️":
+            await self._black_format(message, message.content, reaction.member)
 
     async def _exec(
         self, message: discord.Message, content: str, member: discord.Member = None
@@ -126,6 +131,53 @@ class CodeRunner(Cog):
             embed=discord.Embed(
                 title=title, description=f"```\n{out}\n```", color=color
             ).set_footer(text=f"Completed in {duration:0.4f} milliseconds"),
+            reference=message,
+            allowed_mentions=discord.AllowedMentions(
+                replied_user=member is None, users=[member] if member else False
+            ),
+        )
+
+    async def _black_format(
+        self, message: discord.Message, content: str, member: discord.Member = None
+    ):
+        if (
+            not len(content.strip())
+            or content.find("```") < 0
+            or content.rfind("```") <= 0
+        ):
+            await message.channel.send(
+                content="" if member is None else member.mention,
+                embed=discord.Embed(
+                    title="Exec - No Code",
+                    description=(
+                        "\n**NO PYTHON CODE BLOCK FOUND**\n\nThe command format is as follows:\n\n"
+                        "\n!exec \\`\\`\\`py\nYOUR CODE HERE\n\\`\\`\\`\n"
+                    ),
+                    color=RED,
+                ),
+                reference=message,
+                allowed_mentions=discord.AllowedMentions(
+                    replied_user=member is None, users=[member] if member else False
+                ),
+            )
+            return
+
+        title = "✅ Exec - Success"
+        color = BLUE
+
+        code, user_input = re.match(
+            r"^.*?```(?:py|python)?\s+(.+?)\s+```\s*(.+)?$", content, re.DOTALL
+        ).groups()
+
+        formatted_str = black.format_file_contents(
+            code, mode=black.FileMode(), fast=True
+        )
+
+        await message.channel.send(
+            content="" if member is None else member.mention,
+            embed=discord.Embed(
+                title=title, description=f"```py\n{formatted_str}\n```", color=color
+            ),
             reference=message,
             allowed_mentions=discord.AllowedMentions(
                 replied_user=member is None, users=[member] if member else False
