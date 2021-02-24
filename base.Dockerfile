@@ -8,4 +8,5 @@ RUN poetry config virtualenvs.in-project true
 
 COPY pyproject.toml .
 COPY poetry.lock .
+RUN poetry run pip install --upgrade pip
 RUN poetry install
