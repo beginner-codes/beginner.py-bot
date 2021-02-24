@@ -3,6 +3,7 @@ from beginner.colors import *
 from datetime import datetime, timedelta
 from typing import Tuple
 import asyncio
+import black
 import dis
 import discord
 import io
@@ -14,6 +15,8 @@ class CodeRunner(Cog):
     def __init__(self, client):
         super().__init__(client)
         self._exec_rate_limit = {}
+        self._code_runner_emojis = "▶️⏯"
+        self._formatting_emojis = "✏️📝"
 
     @Cog.command()
     async def dis(self, ctx, *, content=""):
@@ -54,7 +57,10 @@ class CodeRunner(Cog):
 
     @Cog.listener()
     async def on_raw_reaction_add(self, reaction: discord.RawReactionActionEvent):
-        if reaction.emoji.name not in "▶️⏯":
+        if (
+            reaction.emoji.name
+            not in self._code_runner_emojis + self._formatting_emojis
+        ):
             return
 
         now = datetime.utcnow()
@@ -65,15 +71,19 @@ class CodeRunner(Cog):
             await message.remove_reaction(reaction.emoji, reaction.member)
             return
 
-        if not self.settings.get("EXEC_ENABLED", False):
-            return
-
         member = self.server.get_member(reaction.user_id)
         if member.bot:
             return
 
         self._exec_rate_limit[reaction.message_id] = now
-        await self._exec(message, message.content, reaction.member)
+
+        if reaction.emoji.name in self._code_runner_emojis and self.settings.get(
+            "EXEC_ENABLED", False
+        ):
+            await self._exec(message, message.content, reaction.member)
+
+        elif reaction.emoji.name in self._formatting_emojis:
+            await self._black_formatting(message, message.content, reaction.member)
 
     async def _exec(
         self, message: discord.Message, content: str, member: discord.Member = None
@@ -126,6 +136,45 @@ class CodeRunner(Cog):
             embed=discord.Embed(
                 title=title, description=f"```\n{out}\n```", color=color
             ).set_footer(text=f"Completed in {duration:0.4f} milliseconds"),
+            reference=message,
+            allowed_mentions=discord.AllowedMentions(
+                replied_user=member is None, users=[member] if member else False
+            ),
+        )
+
+    async def _black_formatting(
+        self, message: discord.Message, content: str, member: discord.Member = None
+    ):
+        if (
+            not len(content.strip())
+            or content.find("```") < 0
+            or content.rfind("```") <= 0
+        ):
+            code = content
+        else:
+            code = re.match(
+                r"^.*?```(?:py|python)?\s+(.+?)\s+```\s*$", content, re.DOTALL
+            ).group(1)
+
+        title = "✅ Formatting - Success"
+        color = BLUE
+
+        try:
+            formatted_code = f"py\n{black.format_file_contents(code, mode=black.FileMode(), fast=True)}\n"
+        except black.NothingChanged:
+            title = "✅ Formatting - Nothing Changed"
+            color = BLUE
+            formatted_code = "Code already formatted correctly."
+        except black.InvalidInput as e:
+            title = "❌ Formatting - Invalid Input"
+            color = YELLOW
+            formatted_code = f"\n{e}\n"
+
+        await message.channel.send(
+            content="" if member is None else member.mention,
+            embed=discord.Embed(
+                title=title, description=f"```{formatted_code}```", color=color
+            ),
             reference=message,
             allowed_mentions=discord.AllowedMentions(
                 replied_user=member is None, users=[member] if member else False
