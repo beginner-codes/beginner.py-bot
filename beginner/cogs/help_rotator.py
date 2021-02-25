@@ -154,9 +154,10 @@ class HelpRotatorCog(Cog):
         expert = self.get_emoji("expert")
 
         await channel.send(
-            f"{author.mention} You've claimed this channel! Make sure to fully ask your question and provide as much "
-            f"detail as you can, someone will try to help you when they get a chance.\n\nDon't forget to give some "
-            f"kudos to show your appreciation by reacting with {beginner}, {intermediate}, or {expert}!"
+            f"{author.mention} You've claimed this channel! Make sure to clearly ask your question and provide as many "
+            f"details as you can *(code, errors, etc.)*, someone will try to help you when they get a chance.\n\nDon't "
+            f"forget to give some kudos to show your appreciation by reacting with {beginner}, {intermediate}, or "
+            f"{expert}!"
         )
 
     @tag("schedule", "remove-help-role")
