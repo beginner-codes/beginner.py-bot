@@ -81,7 +81,7 @@ class Challenges(Cog):
             return
 
         channel = self.get_channel(
-            os.environ.get("DAILY_CHALLENGE_CHANNEL", "daily-challenges")
+            os.environ.get("DAILY_CHALLENGE_CHANNEL", "weekday-challenges")
         )
         if reaction.channel_id != channel.id:
             return
@@ -117,7 +117,7 @@ class Challenges(Cog):
             return
 
         channel = self.get_channel(
-            os.environ.get("DAILY_CHALLENGE_CHANNEL", "daily-challenges")
+            os.environ.get("DAILY_CHALLENGE_CHANNEL", "weekday-challenges")
         )
         if reaction.channel_id != channel.id:
             return
@@ -144,8 +144,7 @@ class Challenges(Cog):
                 ),
                 color=0x306998,
             ).set_author(
-                name="Recommended Code File Hosts",
-                icon_url=self.server.icon_url,
+                name="Recommended Code File Hosts", icon_url=self.server.icon_url,
             )
         )
 
