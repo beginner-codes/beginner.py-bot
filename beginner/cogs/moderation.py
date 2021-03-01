@@ -361,7 +361,6 @@ class ModerationCog(Cog):
         self, ctx, user: Member, reason: str, title: str
     ) -> Embed:
         embed = Embed(description=reason, color=0xCC2222)
-        self.get_rule_for_reason(reason, embed)
         embed.set_author(name=title, icon_url=self.server.icon_url)
         embed.set_footer(text=ctx.author.display_name, icon_url=ctx.author.avatar_url)
         return embed
@@ -382,13 +381,6 @@ class ModerationCog(Cog):
             result.append(f"{minutes} minute{'s' if minutes > 1 else ''}")
 
         return " ".join(result)
-
-    def get_rule_for_reason(self, reason: str, embed: Embed):
-        if reason.find(" ") == -1:
-            rule = RulesCog.get_rule(reason, fuzzy=True)
-            if rule:
-                embed.description = f"**{rule.title}**\n{rule.message}"
-                embed.set_author(name=f"Mod Warning", icon_url=self.server.icon_url)
 
     def parse_duration(self, duration: str):
         if duration.endswith("d"):
