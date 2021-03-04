@@ -92,8 +92,9 @@ class OnBoarding(Cog):
 
     async def monitor_for_mass_join(self):
         if self.under_mass_attack():
+            mods = self.get_role("mods")
             await self.get_channel("staff").send(
-                "We may be experiencing a mass join attack. Disabling welcome messages for 5 minutes."
+                f"{mods.mention} We may be experiencing a mass join attack. Disabling welcome messages for 5 minutes."
             )
             self._disabled_welcome_messages = datetime.utcnow()
 
