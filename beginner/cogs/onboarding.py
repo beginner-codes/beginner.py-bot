@@ -1,5 +1,6 @@
 from beginner.cog import Cog
 from beginner.colors import *
+from beginner.history_queue import HistoryQueue
 from beginner.scheduler import schedule
 from beginner.tags import tag
 from datetime import timedelta, datetime
@@ -9,6 +10,11 @@ import random
 
 
 class OnBoarding(Cog):
+    def __init__(self, client):
+        super().__init__(client)
+        self._disabled_welcome_messages = None
+        self._join_history = HistoryQueue(timedelta(minutes=10))
+
     async def ready(self):
         self.schedule_onboarding()
         await self.scan_for_unwelcomed_members()
@@ -65,7 +71,31 @@ class OnBoarding(Cog):
         if updated_member.pending or not old_member.pending:
             return
 
-        await self.welcome_member(updated_member)
+        self._join_history.add(updated_member)
+        await self.monitor_for_mass_join()
+
+        five_minutes_ago = datetime.utcnow() - timedelta(minutes=5)
+        if (
+            not self._disabled_welcome_messages
+            or self._disabled_welcome_messages < five_minutes_ago
+        ):
+            await self.welcome_member(updated_member)
+
+    def under_mass_attack(self):
+        minute_ago = datetime.utcnow() - timedelta(minutes=1)
+        total_joins = 0
+        for joined, member in self._join_history:
+            if joined >= minute_ago:
+                total_joins += 1
+
+        return total_joins >= 4
+
+    async def monitor_for_mass_join(self):
+        if self.under_mass_attack():
+            await self.get_channel("staff").send(
+                "We may be experiencing a mass join attack. Disabling welcome messages for 5 minutes."
+            )
+            self._disabled_welcome_messages = datetime.utcnow()
 
     async def scan_for_unwelcomed_members(self):
         self.logger.debug("Scanning for unwelcomed members")
