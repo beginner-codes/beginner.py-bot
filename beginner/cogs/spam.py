@@ -21,6 +21,7 @@ class SpamCog(Cog):
         ".cs",
         ".sh",
         ".css",
+        ".csv",
         ".go",
         ".html",
         ".htm",
