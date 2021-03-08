@@ -141,7 +141,7 @@ class SpamCog(Cog):
                 or attachment.filename.lower() == "dockerfile"
             ):
                 allowed.append(attachment)
-            elif extension not in {".gif", ".png", ".jpeg", ".jpg"}:
+            elif extension not in {".gif", ".png", ".jpeg", ".jpg", ".bmp"}:
                 disallowed.append(attachment)
 
         return allowed, disallowed
