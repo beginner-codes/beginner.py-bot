@@ -32,6 +32,8 @@ cogs:
   tips: true
   user_roles: true
 
+  prompt_weather: true
+
 logging:
   format: "%(asctime)s: %(levelname)-9s %(name)-16s :: %(message)s"
   date_format: "%m/%d/%Y %I:%M:%S %p"

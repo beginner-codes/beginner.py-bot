@@ -25,6 +25,16 @@ spec:
                 secretKeyRef:
                   name: discord.token
                   key: token
+            - name: "GOOGLE_MAPS_API_KEY"
+              valueFrom:
+                secretKeyRef:
+                  name: prompt
+                  key: google-maps-api-key
+            - name: "WEATHER_API_KEY"
+              valueFrom:
+                secretKeyRef:
+                  name: prompt
+                  key: weather-api-key
             - name: "GOOGLE_CUSTOM_SEARCH_KEY"
               valueFrom:
                 secretKeyRef:
