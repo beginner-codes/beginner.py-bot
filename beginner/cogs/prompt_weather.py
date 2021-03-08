@@ -40,6 +40,9 @@ class WeatherPromptCog(Cog):
             f"key={self.maps_api_key()}"
         ).json()
 
+        if not data.get("results"):
+            return "", (None, None)
+
         address = self.build_address(
             data.get("results", [{}])[0].get("address_components", [])
         )
