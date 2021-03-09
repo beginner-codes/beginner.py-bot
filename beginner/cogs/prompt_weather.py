@@ -76,7 +76,7 @@ class WeatherPromptCog(Cog):
                 address.append(part["short_name"])
                 break
             elif "country" in part["types"]:
-                address.append(part["short_name"])
+                address.append(part["long_name"])
                 break
         return " ".join(address)
 
