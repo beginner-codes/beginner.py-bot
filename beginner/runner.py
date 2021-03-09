@@ -297,6 +297,7 @@ if __name__ == "__main__":
             "enum",
             "fractions",
             "functools",
+            "getpass",
             "hashlib",
             "heapq",
             "hmac",
