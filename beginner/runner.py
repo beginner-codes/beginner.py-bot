@@ -92,8 +92,8 @@ class Executer:
         if len(self.stdin.getvalue()) == self.stdin.tell():
             raise EOFError("Nothing left to read from stdin")
 
-        line = self.stdin.readline()
-        print(line.rstrip("\n"))
+        line = self.stdin.readline().rstrip("\n")
+        print(line)
         return line
 
     def run(self, code, user_input, runner=exec, docs=False):
