@@ -22,7 +22,7 @@ class WeatherPromptCog(Cog):
 
         current, feels = self.get_weather(lat, lng)
         await ctx.send(
-            f"In {address} it's currently {current}° Fahrenheit, it feels like {feels}°."
+            f"In {address} it's currently {current}° Celsius, it feels like {feels}°."
         )
 
     @weather.error
@@ -59,7 +59,7 @@ class WeatherPromptCog(Cog):
             f"lat={lat}&"
             f"lon={lng}&"
             f"appid={self.weather_api_key()}&"
-            f"units=imperial"
+            f"units=metric"
         ).json()
         current = data.get("main", {})
         return current.get("temp", None), current.get("feels_like", None)
