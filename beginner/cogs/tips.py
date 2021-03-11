@@ -146,7 +146,9 @@ class TipsCog(Cog):
     @staticmethod
     def sanitize_label(label: str):
         return (
-            label.lower().translate({ord("-"): " ", ord("_"): " "}) if label else label
+            label.casefold().translate({ord("-"): " ", ord("_"): " "})
+            if label
+            else label
         )
 
 
