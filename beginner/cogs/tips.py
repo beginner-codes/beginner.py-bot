@@ -23,11 +23,12 @@ class TipsCog(Cog):
     @Cog.command()
     async def tip_details(self, ctx, *, unsanitized_label):
         label = self.sanitize_label(unsanitized_label)
-        tip = self.get_tip(label)
-        if not tip:
+        tips = self.get_tips(label)
+        if not len(tips):
             await ctx.send(f"No tip matched {label!r}")
             return
 
+        tip = tips[0]
         content = "\n".join(f"> {section}" for section in tip.message.split("\n"))
         await ctx.send(
             f"Title: {tip.title!r}\n"
