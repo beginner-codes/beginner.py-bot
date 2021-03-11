@@ -14,6 +14,7 @@ class TipsCog(Cog):
             await self.show_tip(tip, ctx.message.channel)
         else:
             tips = self.get_tips(label)
+            print(label, len(tips), tips[0])
             if len(tips) == 1:
                 await self.show_tip(tips[0], ctx.message.channel)
             else:
@@ -150,7 +151,8 @@ class TipsCog(Cog):
     def get_tips(label=None):
         where = Message.message_type == MessageTypes.TIP.name
         if label:
-            where = where & (Message.label.contains(f"%{label}%"))
+            where = where & (Message.label.contains(label))
+
         return Message.select().where(where).order_by(Message.label.asc()).execute()
 
     @staticmethod
