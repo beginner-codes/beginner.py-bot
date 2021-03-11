@@ -20,7 +20,7 @@ class TipsCog(Cog):
                 await self.list_tips(ctx.message.channel, tips, label)
 
     @Cog.command()
-    async def tip_details(self, ctx, unsanitized_label):
+    async def tip_details(self, ctx, *, unsanitized_label):
         label = self.sanitize_label(unsanitized_label)
         tip = self.get_tip(label)
         if not tip:
