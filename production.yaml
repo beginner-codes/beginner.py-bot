@@ -48,6 +48,8 @@ resources:
       FreeCodeCamp: https://www.youtube.com/playlist?list=PLWKjhJtqVAbnqBxcdjVGgT3uVR10bzTEB
     Books:
       Automate the Boring Stuff with Python: https://automatetheboringstuff.com/2e/chapter0/
+    Websites:
+      Real Python (Basics Tutorials): https://realpython.com/tutorials/basics/
 
   ds:
     name: Data Science & Machine Learning
