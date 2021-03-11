@@ -73,7 +73,8 @@ class TipsCog(Cog):
         response = f'Created tip labeled "{label}"'
         if tip:
             await ctx.send(
-                'Found an existing tip with that label, what would you like the label to be changed to? Say "keep" if you don\'t want it changed.'
+                'Found an existing tip with that label, what would you like the label to be changed to? Say "keep" if '
+                "you don't want it changed."
             )
             label_message = await self.client.wait_for(
                 "message",
