@@ -29,7 +29,7 @@ class TipsCog(Cog):
         else:
             for tip in tips:
                 tip.delete_instance()
-            await ctx.send(f"Deleting tip `{tip.title} - {tip.label}`")
+                await ctx.send(f"Deleting tip `{tip.title} - {tip.label}`")
 
     @Cog.command(name="create-tip")
     async def create_tip(self, ctx, *, unsanitized_label):
