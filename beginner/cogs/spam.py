@@ -75,11 +75,12 @@ class SpamCog(Cog):
         if not message.attachments:
             return
 
-        if message.channel.name.lower() in self.admin_channels:
-            return
+        if os.environ.get("PRODUCTION_BOT", False):
+            if message.channel.name.lower() in self.admin_channels:
+                return
 
-        if message.channel.permissions_for(message.author).manage_messages:
-            return
+            if message.channel.permissions_for(message.author).manage_messages:
+                return
 
         allowed, disallowed = self.categorize_attachments(message)
 
