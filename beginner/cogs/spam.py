@@ -87,20 +87,67 @@ class SpamCog(Cog):
         if not allowed and not disallowed:
             return
 
+        user_message = (
+            "\n".join(f"> {section}" for section in message.content.split("\n"))
+            if message.content.strip()
+            else ""
+        )
         embed = Embed(
             title="File Attachments Not Allowed",
-            description="For safety reasons we do not allow file and video attachments.",
+            description=f"For safety reasons we do not allow file and video attachments.",
             color=YELLOW,
         )
 
         if allowed:
+            embed.title = f"{message.author.display_name} Uploaded Some Code"
+            embed.description = user_message
             files = {}
+            name = None
             for attachment in allowed:
-                files[attachment.filename] = (await attachment.read()).decode()
+                content = (await attachment.read()).decode()
+                if len(content) < 1000:
+                    file_type = os.path.splitext(attachment.filename)[1].casefold()
+                    embed.add_field(
+                        name=f"Attachment: {attachment.filename}",
+                        value=f"```{self.file_types.get(file_type, '')}\n{content}\n```",
+                    )
+                else:
+                    if not name:
+                        name = attachment.filename
+                    files[attachment.filename] = content
 
-            gist = self.upload_files(files)
+            if files:
+                gist = self.upload_files(files)
+                embed.add_field(
+                    name="Uploaded the file to a Gist",
+                    value=f"[{name}]({gist})",
+                )
+
+            embed.set_thumbnail(
+                url="https://cdn.discordapp.com/emojis/711749954837807135.png?v=1"
+            )
+
+            embed.set_footer(
+                text="For safety reasons we do not allow file attachments."
+            )
+
+        else:
+            embed.set_thumbnail(
+                url="https://cdn.discordapp.com/emojis/651959497698574338.png?v=1"
+            )
             embed.add_field(
-                name="Uploaded the file to a Gist", value=f"[View file here]({gist})"
+                name=f"{message.author.display_name} Said", value=user_message
+            )
+            embed.add_field(
+                name="Code Formatting",
+                value=f"You can share your code using triple backticks like this:\n\\```\nYOUR CODE\n\\```",
+                inline=False,
+            )
+            embed.add_field(
+                name="Large Portions of Code",
+                value=f"For longer scripts use [Hastebin](https://hastebin.com/) or "
+                f"[GitHub Gists](https://gist.github.com/) and share the link here",
+                inline=False,
             )
 
         if disallowed:
@@ -110,21 +157,6 @@ class SpamCog(Cog):
                     f"- {attachment.filename}" for attachment in disallowed
                 ),
             )
-
-        embed.set_thumbnail(
-            url="https://cdn.discordapp.com/emojis/651959497698574338.png?v=1"
-        )
-        embed.add_field(
-            name="Code Formatting",
-            value=f"You can share your code using triple backticks like this:\n\\```\nYOUR CODE\n\\```",
-            inline=False,
-        )
-        embed.add_field(
-            name="Large Portions of Code",
-            value=f"For longer scripts use [Hastebin](https://hastebin.com/) or "
-            f"[GitHub Gists](https://gist.github.com/) and share the link here",
-            inline=False,
-        )
 
         try:
             await message.delete()
