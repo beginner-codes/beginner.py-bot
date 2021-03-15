@@ -33,6 +33,7 @@ cogs:
   user_roles: true
 
   prompt_weather: true
+  prompt_luck: true
 
 logging:
   format: "%(asctime)s: %(levelname)-9s %(name)-16s :: %(message)s"
