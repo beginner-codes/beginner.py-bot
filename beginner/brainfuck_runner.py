@@ -1,6 +1,5 @@
 from queue import LifoQueue
 from typing import Optional, Tuple
-from string import printable
 
 
 class BrainfuckInterpreter:
@@ -11,9 +10,8 @@ class BrainfuckInterpreter:
         self._instruction_pointer = 0
         self._out = ""
         self._register_pointer = 0
-        self._registers = [0]
+        self._registers = [0] * 30000
         self._stack = LifoQueue()
-        self._table = "\n" + printable.replace("\n", "")
         self._generation = 0
 
     @property
@@ -36,7 +34,7 @@ class BrainfuckInterpreter:
             ",": self._read,
         }
         while self._instruction_pointer < len(self._code) and not self._exception:
-            if self._generation >= 10000:
+            if self._generation >= 1000000:
                 self._exception = "Code took too long to run"
                 break
 
@@ -58,12 +56,8 @@ class BrainfuckInterpreter:
         return self._instruction_pointer + 1
 
     def _jump_back(self) -> int:
-        if self.register == 0:
+        if self._stack.empty():
             return self._instruction_pointer + 1
-
-        elif self._stack.empty():
-            self._exception = f"No forward jump found before the instruction {self._instruction_pointer}"
-            return -1
 
         return self._stack.get()
 
@@ -75,29 +69,25 @@ class BrainfuckInterpreter:
         return self._instruction_pointer + 1
 
     def _decrement_register_pointer(self) -> int:
-        if self._register_pointer == 0:
-            self._exception = (
-                f"Register out of bounds -1 at instruction {self._instruction_pointer}"
-            )
-            return -1
-
         self._register_pointer -= 1
         return self._instruction_pointer + 1
 
     def _increment_register(self) -> int:
         self.register += 1
+        self.register %= 256
         return self._instruction_pointer + 1
 
     def _decrement_register(self) -> int:
         self.register -= 1
+        self.register %= 256
         return self._instruction_pointer + 1
 
     def _print(self) -> int:
-        if self.register >= len(self._table):
+        if 0 > self.register or self.register > 255:
             self._exception = f"Cannot decode character {self.register} at instruction {self._instruction_pointer}"
             return -1
 
-        self._out += self._table[self.register]
+        self._out += chr(self.register)
         return self._instruction_pointer + 1
 
     def _read(self) -> int:
@@ -108,12 +98,12 @@ class BrainfuckInterpreter:
             return -1
 
         char = self._in[0]
-        if char not in self._table:
+        if char > 255:
             self._exception = f"Cannot encode character '{char}' at instruction {self._instruction_pointer}"
             return -1
 
         self._in = self._in[1:]
-        self.register = self._table.find(char)
+        self.register = ord(char)
         return self._instruction_pointer + 1
 
     def _find_next_back_jump(self) -> int:
