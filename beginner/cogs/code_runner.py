@@ -157,7 +157,9 @@ class CodeRunner(Cog):
             r"^.*?```(?:bf|brainfuck)?\s*(.+?)\s*```\s*(.+)?$", content, re.DOTALL
         ).groups()
 
-        interpreter = BrainfuckInterpreter(code, user_input + "\n")
+        interpreter = BrainfuckInterpreter(
+            code, user_input + "\n" if user_input else ""
+        )
         out, err = interpreter.run()
 
         output = [out]
