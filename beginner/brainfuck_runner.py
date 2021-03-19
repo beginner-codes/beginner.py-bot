@@ -14,6 +14,7 @@ class BrainfuckInterpreter:
         self._registers = [0]
         self._stack = LifoQueue()
         self._table = "\n" + printable.replace("\n", "")
+        self._generation = 0
 
     @property
     def register(self):
@@ -35,11 +36,17 @@ class BrainfuckInterpreter:
             ",": self._read,
         }
         while self._instruction_pointer < len(self._code) and not self._exception:
+            if self._generation >= 10000:
+                self._exception = "Code took too long to run"
+                break
+
             instruction = self._code[self._instruction_pointer]
             if instruction in instructions:
                 self._instruction_pointer = instructions[instruction]()
             else:
                 self._instruction_pointer += 1
+
+            self._generation += 1
 
         return self._out, self._exception
 
