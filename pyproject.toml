@@ -6,7 +6,9 @@ authors = ["Zech Zimmerman <hi@zech.codes>"]
 
 [tool.poetry.dependencies]
 python = "^3.9"
-"dippy.bot" = "^0.1.1-alpha.11"
+"dippy.bot" = {git = "https://github.com/ZechCodes/Dippy.git", rev = "development"}
+PyYAML = "^5.4.1"
+SQLAlchemy = "^1.4.1"
 
 [tool.poetry.dev-dependencies]
 

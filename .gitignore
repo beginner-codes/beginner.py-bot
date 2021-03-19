@@ -112,3 +112,4 @@ postgres-data
 /bot/env
 /development.yaml
 *.sqlite.db
+*.sqlite
