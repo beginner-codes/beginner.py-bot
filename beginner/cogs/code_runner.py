@@ -1,5 +1,6 @@
 from beginner.cog import Cog
 from beginner.colors import *
+from beginner.brainfuck_runner import BrainfuckInterpreter
 from datetime import datetime, timedelta
 from typing import Tuple
 import asyncio
@@ -51,6 +52,12 @@ class CodeRunner(Cog):
     async def exec(self, ctx, *, content=""):
         if not self.settings.get("EXEC_ENABLED", False):
             await ctx.channel.send("The exec command has been disabled.")
+            return
+
+        if content.strip().startswith("```bf") or content.strip().startswith(
+            "```brainfuck"
+        ):
+            await self._exec_brainfuck(ctx.message, content)
             return
 
         await self._exec(ctx.message, content)
@@ -140,6 +147,37 @@ class CodeRunner(Cog):
             allowed_mentions=discord.AllowedMentions(
                 replied_user=member is None, users=[member] if member else False
             ),
+        )
+
+    async def _exec_brainfuck(self, message: discord.Message, content: str):
+        title = "✅ Exec Brainfuck - Success"
+        color = BLUE
+
+        code, user_input = re.match(
+            r"^.*?```(?:bf|brainfuck)?\s*(.+?)\s*```\s*(.+)?$", content, re.DOTALL
+        ).groups()
+
+        interpreter = BrainfuckInterpreter(code, user_input + "\n")
+        out, err = interpreter.run()
+
+        output = [out]
+        if err:
+            title = "❌ Exec - Exception Raised"
+            color = YELLOW
+            output.append(err)
+
+        elif not out:
+            output = ["*No output or exceptions*"]
+
+        out = "\n\n".join(output)
+        if len(out) > 1000:
+            out = out[:497] + "\n.\n.\n.\n" + out[-504:]
+        await message.channel.send(
+            embed=discord.Embed(
+                title=title, description=f"```\n{out}\n```", color=color
+            ),
+            reference=message,
+            allowed_mentions=discord.AllowedMentions(replied_user=True),
         )
 
     async def _black_formatting(
