@@ -57,7 +57,7 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
 
 [[package]]
 name = "dippy.bot"
-version = "0.1.1-alpha.14"
+version = "0.1.1-alpha.16"
 description = "A Discord bot framework built to simplify the complicated parts of bot development."
 category = "main"
 optional = false
@@ -78,7 +78,7 @@ yaml = ["pyyaml (>=5.3.1,<6.0.0)"]
 type = "git"
 url = "https://github.com/ZechCodes/Dippy.git"
 reference = "development"
-resolved_reference = "1810e6f6e968a69b9b47ed67f20cbf1768d556d5"
+resolved_reference = "4ff704650a5b5e261891ee490543a71dff99f194"
 
 [[package]]
 name = "discord.py"
