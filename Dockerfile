@@ -15,6 +15,7 @@ WORKDIR /usr/src/app
 RUN mkdir -p /usr/src/app/tmp
 ENV TMPDIR /usr/src/app/tmp
 
+COPY bot.yaml .
 COPY ./extensions ./extensions
 
-CMD ["poetry", "run", "python", "-u", "-m", "dippy"]
+CMD ["poetry", "run", "python", "-u", "-m", "dippy", "-c", "bot.yaml"]
