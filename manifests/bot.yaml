@@ -27,3 +27,16 @@ spec:
                   key: token
             - name: "BOT_IMAGE_VERSION"
               value: "<IMAGE_VERSION>"
+            - name: "DIPPY_DB_HOST"
+                value: "private-personal-postgres-cluster-1-apr-26-backup-do-user-87772.a.db.ondigitalocean.com:25061"
+            - name: "DIPPY_DB_USERNAME"
+              value: "beginnerpy"
+            - name: "DIPPY_DB_DATABASE"
+              value: "bpydb-pool"
+            - name: "DIPPY_DB_ENGINE"
+              value: "postgresql+psycopg2"
+            - name: "DIPPY_DB_PASSWORD"
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-password
+                  key: password
