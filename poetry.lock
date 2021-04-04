@@ -57,32 +57,25 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
 
 [[package]]
 name = "dippy.bot"
-version = "0.1.1-alpha.16"
+version = "0.1.1a16"
 description = "A Discord bot framework built to simplify the complicated parts of bot development."
 category = "main"
 optional = false
-python-versions = "^3.9"
-develop = false
+python-versions = ">=3.9,<4.0"
 
 [package.dependencies]
-bevy = "^0.4.5"
-"discord.py" = "^1.6.0"
-pydantic = "^1.8.1"
+bevy = ">=0.4.5,<0.5.0"
+"discord.py" = ">=1.6.0,<2.0.0"
+pydantic = ">=1.8.1,<2.0.0"
 
 [package.extras]
+yaml = ["pyyaml (>=5.3.1,<6.0.0)"]
 sqlalchemy = ["SQLAlchemy (>=1.3.23,<2.0.0)"]
 postgres = ["psycopg2-binary (>=2.8.6,<3.0.0)"]
-yaml = ["pyyaml (>=5.3.1,<6.0.0)"]
-
-[package.source]
-type = "git"
-url = "https://github.com/ZechCodes/Dippy.git"
-reference = "development"
-resolved_reference = "4ff704650a5b5e261891ee490543a71dff99f194"
 
 [[package]]
 name = "discord.py"
-version = "1.6.0"
+version = "1.7.0"
 description = "A Python wrapper for the Discord API"
 category = "main"
 optional = false
@@ -205,7 +198,7 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "d574622f7166381ab2135a04196b7858909604b759820a41f62f9245833ebe39"
+content-hash = "50e7450275ea878f22b502e631843d701f792516cdca95955a97437515b4aba7"
 
 [metadata.files]
 aiohttp = [
@@ -263,10 +256,13 @@ chardet = [
     {file = "chardet-4.0.0-py2.py3-none-any.whl", hash = "sha256:f864054d66fd9118f2e67044ac8981a54775ec5b67aed0441892edb553d21da5"},
     {file = "chardet-4.0.0.tar.gz", hash = "sha256:0d6f53a15db4120f2b08c94f11e7d93d2c911ee118b6b30a04ec3ee8310179fa"},
 ]
-"dippy.bot" = []
+"dippy.bot" = [
+    {file = "Dippy.bot-0.1.1a16-py3-none-any.whl", hash = "sha256:95c3215da50f90a23b80b27e80af4fb6b2381668ac1a40c9915f385e23c74035"},
+    {file = "Dippy.bot-0.1.1a16.tar.gz", hash = "sha256:f28e347bd8a335979267734f190666b2c7143c5b0e066457a399384ded3d7d31"},
+]
 "discord.py" = [
-    {file = "discord.py-1.6.0-py3-none-any.whl", hash = "sha256:3df148daf6fbcc7ab5b11042368a3cd5f7b730b62f09fb5d3cbceff59bcfbb12"},
-    {file = "discord.py-1.6.0.tar.gz", hash = "sha256:ba8be99ff1b8c616f7b6dcb700460d0222b29d4c11048e74366954c465fdd05f"},
+    {file = "discord.py-1.7.0-py3-none-any.whl", hash = "sha256:330edfa11e59c1d1eae31e68f02f8cfcea2702813439dfe58dd587018979e1c9"},
+    {file = "discord.py-1.7.0.tar.gz", hash = "sha256:1b05150e767c4a18941d863d819844ecef8395b0ca3784055d78770b8fa70b68"},
 ]
 greenlet = [
     {file = "greenlet-1.0.0-cp27-cp27m-macosx_10_14_x86_64.whl", hash = "sha256:1d1d4473ecb1c1d31ce8fd8d91e4da1b1f64d425c1dc965edc4ed2a63cfa67b2"},
