@@ -171,6 +171,12 @@ class ChannelManager(Injectable):
         help_category: CategoryChannel = self.client.get_channel(categories["get-help"])
 
         await asyncio.gather(
+            self.labels.set(
+                "user",
+                owner.id,
+                "last-claimed-channel",
+                (datetime.utcnow().isoformat(), channel.id),
+            ),
             self.labels.set("text_channel", channel.id, "owner", owner.id),
             self.labels.set(
                 "text_channel", channel.id, "last-active", datetime.utcnow().isoformat()
