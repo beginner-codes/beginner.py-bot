@@ -164,7 +164,9 @@ class ChannelManager(Injectable):
         self, channel: TextChannel, owner: Member, topic: Optional[str] = None
     ):
         categories = await self.get_categories(channel.guild)
-        name = self._generate_channel_title(owner.display_name, topic)
+        name = self._generate_channel_title(
+            owner.display_name, topic, self._topics.get(topic, "🙋")
+        )
         helping_category = self.client.get_channel(categories["getting-help"])
         help_category: CategoryChannel = self.client.get_channel(categories["get-help"])
 
