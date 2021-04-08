@@ -28,9 +28,8 @@ class HelpRotatorExtension(dippy.Extension):
         actions = {
             "help-archive": self.manager.update_archived_channel,
             "getting-help": self.manager.update_help_channel,
-            "get-help": self.manager.update_get_help_channel,
         }
         for help_type, category_id in categories.items():
-            if category.id == category_id:
+            if category.id == category_id and help_type in actions:
                 await actions[help_type](message.channel, message.author)
                 break
