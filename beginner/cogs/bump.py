@@ -205,7 +205,7 @@ class Bumping(Cog):
             await new_king.add_roles(role)
 
             channel = self.get_channel(
-                os.environ.get("BUMP_KING_ANNOUNCE_CHANNEL", "general")
+                os.environ.get("BUMP_KING_ANNOUNCE_CHANNEL", "🦄off-topic")
             )
             await channel.send(
                 embed=discord.Embed(
