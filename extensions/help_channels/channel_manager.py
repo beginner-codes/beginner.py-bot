@@ -9,7 +9,7 @@ from discord import (
     TextChannel,
     utils,
 )
-from typing import Any, Optional
+from typing import Any, Optional, Union
 import dippy.labels
 import dippy.client
 import re
@@ -91,10 +91,13 @@ class ChannelManager(Injectable):
 
         return self._categories[guild]
 
-    async def get_owner(self, channel: TextChannel) -> Member:
-        return await channel.guild.fetch_member(
-            await self.labels.get("text_channel", channel.id, "owner")
-        )
+    async def get_owner(
+        self, channel: TextChannel, just_id: bool = False
+    ) -> Union[Member, int]:
+        owner_id = await self.labels.get("text_channel", channel.id, "owner")
+        if just_id:
+            return owner_id
+        return await channel.guild.fetch_member(owner_id)
 
     async def set_categories(self, guild: Guild, categories: dict[str, int]):
         await self._set_guild_label(guild, "help-categories", categories)
