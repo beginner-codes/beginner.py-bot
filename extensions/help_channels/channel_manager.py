@@ -10,6 +10,7 @@ from discord import (
     utils,
 )
 from typing import Any, Optional, Union
+import asyncio
 import dippy.labels
 import dippy.client
 import re
@@ -72,17 +73,23 @@ class ChannelManager(Injectable):
         channel = await category.create_text_channel(
             name=f"🙋get-help{'-hidden' if hidden else ''}", overwrites=overwrites
         )
-        await channel.send(
+        message = await channel.send(
             embed=Embed(
                 title="Get Help Here",
                 description=(
                     "To get help just ask your question (provide plenty of details) here. That will claim this channel "
                     "just for you. __When someone has a chance they will come by to help you.__\n\n*Once the channel "
-                    "is claimed it will be moved so others won't ask questions in it.*"
+                    "is claimed it will be moved so others won't ask questions in it.*\n\nReact with:\n🙋 General help"
+                    "\n💾 OS/Docker\n🌎 Web/JavaScript/HTML\n🐍 Python/Discord.py\n🌵 C/C++/C#"
                 ),
                 color=0x00FF66,
             )
         )
+
+        emojis = set(self._topics.values())
+        emojis.remove("☕️")
+        emojis.remove("🚨")
+        await asyncio.gather(*(message.add_reaction(emoji=emoji) for emoji in emojis))
 
     async def get_categories(self, guild: Guild):
         if not self._categories.get(guild):
