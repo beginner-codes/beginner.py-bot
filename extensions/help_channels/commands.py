@@ -32,3 +32,13 @@ class HelpRotatorCommandsExtension(dippy.Extension):
             return
 
         await self.manager.archive_channel(message.channel)
+
+    @dippy.Extension.command("!topic")
+    async def topic(self, message: Message):
+        *_, topic = message.content.partion(" ")
+        topic = self.manager.sluggify(topic)
+        if not topic:
+            await message.channel.send("You must provide a topic")
+            return
+
+        await self.manager.set_channel_topic(message.channel, topic)

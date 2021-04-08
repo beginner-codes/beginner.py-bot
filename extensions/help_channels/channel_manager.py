@@ -21,12 +21,30 @@ class ChannelManager(Injectable):
 
     def __init__(self):
         self._categories = {}
+        self._topics = {
+            "c": "🌵",
+            "cs": "🌵",
+            "cpp": "🌵",
+            "java": "☕️",
+            "kotlin": "☕️",
+            "python": "🐍",
+            "py": "🐍",
+            "discord": "🐍",
+            "html": "🌎",
+            "javascript": "🌎",
+            "js": "🌎",
+            "php": "🌎",
+            "web-dev": "🌎",
+            "hacking": "🚨",
+            "os": "💾",
+            "docker": "💾",
+            "kubernetes": "💾",
+            "k8s": "💾",
+        }
 
     async def archive_channel(self, channel: TextChannel):
         categories = await self.get_categories(channel.guild)
-        owner = await channel.guild.fetch_member(
-            await self.labels.get("text_channel", channel.id, "owner")
-        )
+        owner = self.get_owner(channel)
 
         await channel.edit(
             category=channel.guild.get_channel(categories["help-archive"]),
@@ -73,9 +91,22 @@ class ChannelManager(Injectable):
 
         return self._categories[guild]
 
+    async def get_owner(self, channel: TextChannel) -> Member:
+        return await channel.guild.fetch_member(
+            await self.labels.get("text_channel", channel.id, "owner")
+        )
+
     async def set_categories(self, guild: Guild, categories: dict[str, int]):
         await self._set_guild_label(guild, "help-categories", categories)
         self._categories[guild] = categories
+
+    async def set_channel_topic(self, channel: TextChannel, topic: str):
+        owner = await self.get_owner(channel)
+        await self.labels.set("text_channel", channel.id, "topic", topic)
+        icon = self._topics.get(topic, "🙋")
+        await channel.edit(
+            name=self._generate_channel_title(owner.display_name, topic, icon)
+        )
 
     async def update_archived_channel(self, channel: TextChannel, author: Member):
         owner = await self.labels.get("text_channel", channel.id, "owner")
@@ -123,12 +154,7 @@ class ChannelManager(Injectable):
         )
 
         categories = await self._get_guild_label(channel.guild, "help-categories")
-
-        name = f"helping-{owner.display_name}"
-        slug = self._sluggify(topic)
-        if slug:
-            name = f"{name}-{slug}"
-
+        name = self._generate_channel_title(owner.display_name, topic)
         helping_category = self.client.get_channel(categories["getting-help"])
         await channel.edit(
             reason=f"Claimed by {owner.display_name} for a question",
@@ -145,13 +171,18 @@ class ChannelManager(Injectable):
 
         await self.create_help_channel(help_category, hidden=True)
 
+    def _generate_channel_title(self, name: str, topic: str, icon: str = "🙋") -> str:
+        name = self.sluggify(name)
+        topic = self.sluggify(topic)
+        return f"{icon}helping-{name}" + f"-with-{topic}" * bool(topic)
+
     async def _get_guild_label(self, guild: Guild, label: str) -> Any:
         return await self.labels.get("guild", guild.id, label)
 
     async def _set_guild_label(self, guild: Guild, label: str, value: Any):
         await self.labels.set("guild", guild.id, label, value)
 
-    def _sluggify(self, text: str) -> str:
+    def sluggify(self, text: str) -> str:
         if not text:
             return ""
 
