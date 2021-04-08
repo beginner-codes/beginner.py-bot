@@ -42,7 +42,7 @@ class HelpRotatorCommandsExtension(dippy.Extension):
     async def topic(self, message: Message):
         if time.time() - self._topic_limit < 120:
             await message.channel.send(
-                f"Please wait {int(time.time() - self._topic_limit)} seconds to set the topic."
+                f"Please wait {120 - int(time.time() - self._topic_limit)} seconds to set the topic."
             )
             return
 
