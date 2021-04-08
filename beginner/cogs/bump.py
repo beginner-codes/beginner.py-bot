@@ -1,4 +1,4 @@
-from beginner.cog import Cog
+from beginner.cog import Cog, commands
 from beginner.colors import *
 from beginner.models.points import Points
 from beginner.scheduler import schedule, task_scheduled
@@ -203,15 +203,27 @@ class Bumping(Cog):
 
             new_king = self.server.get_member(new_king_id)
             await new_king.add_roles(role)
+            await self.announce_king()
 
-            channel = self.get_channel(
-                os.environ.get("BUMP_KING_ANNOUNCE_CHANNEL", "🦄off-topic")
-            )
-            await channel.send(
-                embed=discord.Embed(
-                    description=f"All hail {new_king.mention} our new {role.mention}!!!"
-                ).set_author(name="New Bump King", icon_url=self.server.icon_url)
-            )
+    @Cog.command(
+        name="announce_king",
+    )
+    @commands.has_guild_permissions(manage_channels=True)
+    async def command_announce_king(self, _):
+        await self.announce_king()
+
+    async def announce_king(self):
+        king_id = self.get_bump_king_id()
+        king = self.server.get_member(king_id)
+        role = self.get_role("bump king")
+        channel = self.get_channel(
+            os.environ.get("BUMP_KING_ANNOUNCE_CHANNEL", "🦄off-topic")
+        )
+        await channel.send(
+            embed=discord.Embed(
+                description=f"All hail {king.mention} our new {role.mention}!!!"
+            ).set_author(name="New Bump King", icon_url=self.server.icon_url)
+        )
 
     def award_bump_points(self, author_id):
         bump = Points(
