@@ -175,6 +175,16 @@ class ChannelManager(Injectable):
         helping_category = self.client.get_channel(categories["getting-help"])
         help_category: CategoryChannel = self.client.get_channel(categories["get-help"])
 
+        args = {
+            "reason": f"Claimed by {owner.display_name} for a question",
+            "name": name,
+            "topic": f"Helping {owner.display_name} with their question!",
+            "category": helping_category,
+            "sync_permissions": True,
+        }
+        if helping_category.channels:
+            args["position"] = helping_category.channels[0].position
+
         await asyncio.gather(
             self.labels.set(
                 "user",
@@ -186,14 +196,7 @@ class ChannelManager(Injectable):
             self.labels.set(
                 "text_channel", channel.id, "last-active", datetime.utcnow().isoformat()
             ),
-            channel.edit(
-                reason=f"Claimed by {owner.display_name} for a question",
-                name=name,
-                topic=f"Helping {owner.display_name} with their question!",
-                category=helping_category,
-                position=helping_category.channels[0].position,
-                sync_permissions=True,
-            ),
+            channel.edit(**args),
             help_category.channels[-2].edit(
                 sync_permissions=True,
                 name=help_category.channels[-2].name.removesuffix("-hidden"),
