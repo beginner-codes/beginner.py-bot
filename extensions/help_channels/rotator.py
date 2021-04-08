@@ -51,5 +51,5 @@ class HelpRotatorExtension(dippy.Extension):
             return
 
         await self.manager.update_get_help_channel(
-            channel, member, self.manager.reaction_topics[emoji]
+            channel, member, self.manager.reaction_topics.get(emoji, "")
         )
