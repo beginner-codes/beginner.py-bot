@@ -35,10 +35,14 @@ class HelpRotatorCommandsExtension(dippy.Extension):
 
     @dippy.Extension.command("!topic")
     async def topic(self, message: Message):
+        categories = await self.manager.get_categories(message.guild)
+        if message.channel.category.id not in categories.values():
+            return
+
         helpers = utils.get(message.guild.roles, name="helpers")
         if (
             helpers not in message.author.roles
-            or await self.manager.get_owner(message.channel) != message.author
+            or await self.manager.get_owner(message.channel, True) != message.author.id
         ):
             return
 
