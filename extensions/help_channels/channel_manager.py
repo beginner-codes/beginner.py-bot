@@ -42,6 +42,7 @@ class ChannelManager(Injectable):
             "kubernetes": "💾",
             "k8s": "💾",
         }
+        self._reaction_topics = {"🐍": "python", "🌵": "c", "🌎": "web-dev", "💾": "os"}
 
     async def archive_channel(self, channel: TextChannel):
         categories = await self.get_categories(channel.guild)
@@ -77,18 +78,16 @@ class ChannelManager(Injectable):
             embed=Embed(
                 title="Get Help Here",
                 description=(
-                    "To get help just ask your question (provide plenty of details) here. That will claim this channel "
-                    "just for you. __When someone has a chance they will come by to help you.__\n\n*Once the channel "
-                    "is claimed it will be moved so others won't ask questions in it.*\n\nReact with:\n🙋 General help"
-                    "\n💾 OS/Docker\n🌎 Web/JavaScript/HTML\n🐍 Python/Discord.py\n🌵 C/C++/C#"
+                    "React with the topic that most closely fits what you need help with. This will claim the channel "
+                    "and move it to the help area.\n\n**Categories**🐍 Python/Discord.py\n🌵 C/C++/C#\n🌎 Web Dev/"
+                    "JavaScript/HTML\n💾 OS/Docker\n🙋 General Help"
                 ),
                 color=0x00FF66,
             )
         )
 
-        emojis = set(self._topics.values())
-        emojis.remove("☕️")
-        emojis.remove("🚨")
+        emojis = list(self._reaction_topics)
+        emojis.append("🙋")
         await asyncio.gather(*(message.add_reaction(emoji=emoji) for emoji in emojis))
 
     async def get_categories(self, guild: Guild):
