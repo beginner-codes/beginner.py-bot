@@ -57,7 +57,7 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
 
 [[package]]
 name = "dippy.bot"
-version = "0.1.1a19"
+version = "0.1.1a20"
 description = "A Discord bot framework built to simplify the complicated parts of bot development."
 category = "main"
 optional = false
@@ -198,7 +198,7 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "50e7450275ea878f22b502e631843d701f792516cdca95955a97437515b4aba7"
+content-hash = "c8d78283403f6cf3a33372521e50d93cc81ebf144a2f4f98ba6c43f59a7d239c"
 
 [metadata.files]
 aiohttp = [
@@ -257,8 +257,8 @@ chardet = [
     {file = "chardet-4.0.0.tar.gz", hash = "sha256:0d6f53a15db4120f2b08c94f11e7d93d2c911ee118b6b30a04ec3ee8310179fa"},
 ]
 "dippy.bot" = [
-    {file = "Dippy.bot-0.1.1a19-py3-none-any.whl", hash = "sha256:2c79d40fc6a8282811a16a27b1b806b45ecf671024d924f972383a90b827bf1c"},
-    {file = "Dippy.bot-0.1.1a19.tar.gz", hash = "sha256:0f32f0b5d1f8bd69a424f3b709ff8c0a5df08ec269e50ea759402e8f33d09961"},
+    {file = "Dippy.bot-0.1.1a20-py3-none-any.whl", hash = "sha256:62ca896aa431b7d03064dd2903b374a7e030e8c9b6d482addb868311cb7c4821"},
+    {file = "Dippy.bot-0.1.1a20.tar.gz", hash = "sha256:d670c63b8cfd810ef7bab941958b4e274bf994c1fff6367aa80eea9c5df043d9"},
 ]
 "discord.py" = [
     {file = "discord.py-1.7.0-py3-none-any.whl", hash = "sha256:330edfa11e59c1d1eae31e68f02f8cfcea2702813439dfe58dd587018979e1c9"},
