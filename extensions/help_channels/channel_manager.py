@@ -23,6 +23,7 @@ class ChannelManager(Injectable):
     def __init__(self):
         self._categories = {}
         self._topics = {
+            "c-langs": "🌵",
             "c": "🌵",
             "cs": "🌵",
             "cpp": "🌵",
@@ -42,7 +43,12 @@ class ChannelManager(Injectable):
             "kubernetes": "💾",
             "k8s": "💾",
         }
-        self._reaction_topics = {"🐍": "python", "🌵": "c", "🌎": "web-dev", "💾": "os"}
+        self._reaction_topics = {
+            "🐍": "python",
+            "🌵": "c-langs",
+            "🌎": "web-dev",
+            "💾": "os",
+        }
 
     async def archive_channel(self, channel: TextChannel):
         categories = await self.get_categories(channel.guild)
