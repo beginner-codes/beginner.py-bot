@@ -178,6 +178,7 @@ class ChannelManager(Injectable):
             channel.edit(
                 reason=f"Claimed by {owner.display_name} for a question",
                 name=name,
+                topic=f"Helping {owner.display_name} with their question!",
                 category=helping_category,
                 position=helping_category.channels[0].position,
                 sync_permissions=True,
