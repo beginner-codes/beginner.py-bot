@@ -200,7 +200,7 @@ class ChannelManager(Injectable):
     def _generate_channel_title(self, name: str, topic: str, icon: str = "🙋") -> str:
         name = self.sluggify(name)
         topic = self.sluggify(topic)
-        return f"{icon}helping-{name}" + f"-with-{topic}" * bool(topic)
+        return f"{icon}{name}" + f"-with-{topic}" * bool(topic)
 
     async def _get_guild_label(self, guild: Guild, label: str) -> Any:
         return await self.labels.get("guild", guild.id, label)
