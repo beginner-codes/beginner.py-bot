@@ -79,8 +79,8 @@ class ChannelManager(Injectable):
                 title="Get Help Here",
                 description=(
                     "React with the topic that most closely fits what you need help with. This will claim the channel "
-                    "and move it to the help area.\n\n**Categories**🐍 Python/Discord.py\n🌵 C/C++/C#\n🌎 Web Dev/"
-                    "JavaScript/HTML\n💾 OS/Docker\n🙋 General Help"
+                    "and move it to the help area where you can ask your question.\n\n**Categories**\n🐍 Python/"
+                    "Discord.py\n🌵 C/C++/C#\n🌎 Web Dev/JavaScript/HTML\n💾 OS/Docker/Kubernetes\n🙋 General Help"
                 ),
                 color=0x00FF66,
             )
