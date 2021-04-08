@@ -43,7 +43,7 @@ class ChannelManager(Injectable):
             "kubernetes": "💾",
             "k8s": "💾",
         }
-        self._reaction_topics = {
+        self.reaction_topics = {
             "🐍": "python",
             "🌵": "c-langs",
             "🌎": "web-dev",
@@ -92,11 +92,11 @@ class ChannelManager(Injectable):
             )
         )
 
-        emojis = list(self._reaction_topics)
+        emojis = list(self.reaction_topics)
         emojis.append("🙋")
         await asyncio.gather(*(message.add_reaction(emoji=emoji) for emoji in emojis))
 
-    async def get_categories(self, guild: Guild):
+    async def get_categories(self, guild: Guild) -> dict[str, int]:
         if not self._categories.get(guild):
             categories = await self._get_guild_label(guild, "help-categories")
             self._categories[guild] = categories

@@ -1,4 +1,4 @@
-from discord import Message
+from discord import Message, RawReactionActionEvent, TextChannel
 from extensions.help_channels.channel_manager import ChannelManager
 import dippy.labels
 
@@ -33,3 +33,22 @@ class HelpRotatorExtension(dippy.Extension):
             if category.id == category_id and help_type in actions:
                 await actions[help_type](message.channel, message.author)
                 break
+
+    @dippy.Extension.listener("raw_reaction_add")
+    async def on_reaction_add(self, reaction: RawReactionActionEvent):
+        if reaction.emoji.name not in self.manager.reaction_topics:
+            return
+
+        channel: TextChannel = self.client.get_channel(reaction.channel_id)
+        categories = await self.manager.get_categories(channel.guild)
+
+        if channel.category.id != categories["get-help"] or "hidden" in channel.name:
+            return
+
+        member = await channel.guild.fetch_member(reaction.user_id)
+        if member.bot:
+            return
+
+        await self.manager.update_get_help_channel(
+            channel, member, self.manager.reaction_topics[reaction.emoji.name]
+        )
