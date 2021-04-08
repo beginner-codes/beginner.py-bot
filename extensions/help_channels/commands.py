@@ -46,7 +46,7 @@ class HelpRotatorCommandsExtension(dippy.Extension):
         ):
             return
 
-        *_, topic = message.content.partion(" ")
+        *_, topic = message.content.partition(" ")
         topic = self.manager.sluggify(topic)
         if not topic:
             await message.channel.send("You must provide a topic")
