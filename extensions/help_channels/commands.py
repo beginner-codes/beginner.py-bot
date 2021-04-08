@@ -53,7 +53,7 @@ class HelpRotatorCommandsExtension(dippy.Extension):
         helpers = utils.get(message.guild.roles, name="helpers")
         if (
             helpers not in message.author.roles
-            or await self.manager.get_owner(message.channel, True) != message.author.id
+            and await self.manager.get_owner(message.channel, True) != message.author.id
         ):
             return
 
