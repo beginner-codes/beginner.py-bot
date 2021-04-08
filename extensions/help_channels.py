@@ -174,8 +174,9 @@ class HelpRotatorExtension(dippy.Extension):
     ):
         overwrites = {}
         if hidden:
-            coders = utils.get(category.guild.roles, name="coders")
-            overwrites[coders] = PermissionOverwrite(read_messages=False)
+            overwrites[category.guild.default_role] = PermissionOverwrite(
+                read_messages=False
+            )
 
         channel = await category.create_text_channel(
             name=f"🙋get-help{'-hidden' if hidden else ''}", overwrites=overwrites
