@@ -163,28 +163,36 @@ class ChannelManager(Injectable):
     async def update_get_help_channel(
         self, channel: TextChannel, owner: Member, topic: Optional[str] = None
     ):
-        await self.labels.set("text_channel", channel.id, "owner", owner.id)
-        await self.labels.set(
-            "text_channel", channel.id, "last-active", datetime.utcnow().isoformat()
-        )
-
-        categories = await self._get_guild_label(channel.guild, "help-categories")
+        categories = await self.get_categories(channel.guild)
         name = self._generate_channel_title(owner.display_name, topic)
         helping_category = self.client.get_channel(categories["getting-help"])
-        await channel.edit(
-            reason=f"Claimed by {owner.display_name} for a question",
-            name=name,
-            category=helping_category,
-            position=helping_category.channels[0].position,
-        )
-
         help_category: CategoryChannel = self.client.get_channel(categories["get-help"])
-        await help_category.channels[-2].edit(
-            sync_permissions=True,
-            name=help_category.channels[-2].name.removesuffix("-hidden"),
+
+        await asyncio.gather(
+            self.labels.set("text_channel", channel.id, "owner", owner.id),
+            self.labels.set(
+                "text_channel", channel.id, "last-active", datetime.utcnow().isoformat()
+            ),
+            await channel.edit(
+                reason=f"Claimed by {owner.display_name} for a question",
+                name=name,
+                category=helping_category,
+                position=helping_category.channels[0].position,
+                sync_permissions=True,
+            ),
+            help_category.channels[-2].edit(
+                sync_permissions=True,
+                name=help_category.channels[-2].name.removesuffix("-hidden"),
+            ),
+            channel.purge(),
         )
 
-        await self.create_help_channel(help_category, hidden=True)
+        await channel.send(
+            f"{owner.mention} ask your question here. Make sure to be as clear as possible and provide as "
+            f"many details as you can (code, errors, etc.), someone will try to help you when they get a "
+            f"chance."
+        )
+        await self.create_help_channel(help_category, hidden=True),
 
     def _generate_channel_title(self, name: str, topic: str, icon: str = "🙋") -> str:
         name = self.sluggify(name)
