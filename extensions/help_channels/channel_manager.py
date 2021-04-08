@@ -45,7 +45,7 @@ class ChannelManager(Injectable):
 
     async def archive_channel(self, channel: TextChannel):
         categories = await self.get_categories(channel.guild)
-        owner = self.get_owner(channel)
+        owner = await self.get_owner(channel)
 
         await channel.edit(
             category=channel.guild.get_channel(categories["help-archive"]),
