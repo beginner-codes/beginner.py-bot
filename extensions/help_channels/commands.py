@@ -2,6 +2,7 @@ from discord import Message, utils
 from extensions.help_channels.channel_manager import ChannelManager
 import dippy.labels
 import dippy.logging
+import time
 
 
 class HelpRotatorCommandsExtension(dippy.Extension):
@@ -9,6 +10,10 @@ class HelpRotatorCommandsExtension(dippy.Extension):
     log: dippy.logging.Logging
     labels: dippy.labels.storage.StorageInterface
     manager: ChannelManager
+
+    def __init__(self, *args):
+        super().__init__(*args)
+        self._topic_limit = 0
 
     @dippy.Extension.command("!done")
     async def done(self, message: Message):
@@ -35,6 +40,12 @@ class HelpRotatorCommandsExtension(dippy.Extension):
 
     @dippy.Extension.command("!topic")
     async def topic(self, message: Message):
+        if time.time() - self._topic_limit < 120:
+            await message.channel.send(
+                f"Please wait {int(time.time() - self._topic_limit)} seconds to set the topic."
+            )
+            return
+
         categories = await self.manager.get_categories(message.guild)
         if message.channel.category.id not in categories.values():
             return
@@ -52,4 +63,5 @@ class HelpRotatorCommandsExtension(dippy.Extension):
             await message.channel.send("You must provide a topic")
             return
 
+        self._topic_limit = time.time()
         await self.manager.set_channel_topic(message.channel, topic)
