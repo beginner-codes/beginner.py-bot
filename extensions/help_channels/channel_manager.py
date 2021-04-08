@@ -173,7 +173,7 @@ class ChannelManager(Injectable):
             self.labels.set(
                 "text_channel", channel.id, "last-active", datetime.utcnow().isoformat()
             ),
-            await channel.edit(
+            channel.edit(
                 reason=f"Claimed by {owner.display_name} for a question",
                 name=name,
                 category=helping_category,
