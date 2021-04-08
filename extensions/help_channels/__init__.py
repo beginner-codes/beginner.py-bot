@@ -1,1 +1,3 @@
 import extensions.help_channels.admin
+import extensions.help_channels.commands
+import extensions.help_channels.rotator
