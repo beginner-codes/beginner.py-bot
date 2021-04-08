@@ -52,8 +52,8 @@ class HelpRotatorExtension(dippy.Extension):
         if member.bot:
             return
 
-        last_claimed, channel_id = self.labels.get(
-            "user", member.id, "last-claimed-channel"
+        last_claimed, channel_id = await self.labels.get(
+            "user", member.id, "last-claimed-channel", (None, None)
         )
         if last_claimed:
             last_claimed = datetime.fromisoformat(last_claimed)
