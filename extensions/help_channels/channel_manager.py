@@ -189,5 +189,5 @@ class ChannelManager(Injectable):
         if not text:
             return ""
 
-        parts = re.findall(r"[\w\d]", text)
+        parts = re.findall(r"[\w\d]+", text)
         return "-".join(parts)
