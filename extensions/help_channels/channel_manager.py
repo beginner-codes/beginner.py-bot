@@ -184,14 +184,14 @@ class ChannelManager(Injectable):
                 sync_permissions=True,
                 name=help_category.channels[-2].name.removesuffix("-hidden"),
             ),
-            channel.purge(),
+            channel.purge(limit=1, oldest_first=True),
+            channel.send(
+                f"{owner.mention} ask your question here. Make sure to be as clear as possible and provide as "
+                f"many details as you can (code, errors, etc.), someone will try to help you when they get a "
+                f"chance."
+            ),
         )
 
-        await channel.send(
-            f"{owner.mention} ask your question here. Make sure to be as clear as possible and provide as "
-            f"many details as you can (code, errors, etc.), someone will try to help you when they get a "
-            f"chance."
-        )
         await self.create_help_channel(help_category, hidden=True),
 
     def _generate_channel_title(self, name: str, topic: str, icon: str = "🙋") -> str:
