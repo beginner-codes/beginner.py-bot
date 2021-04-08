@@ -189,9 +189,9 @@ class ChannelManager(Injectable):
             ),
             channel.purge(limit=1, oldest_first=True),
             channel.send(
-                f"{owner.mention} ask your question here. Make sure to be as clear as possible and provide as "
-                f"many details as you can (code, errors, etc.), someone will try to help you when they get a "
-                f"chance."
+                f"{owner.mention} ask your question here.\n\nMake sure to be as clear as possible and provide as many "
+                f"details as you can:\n• Code\n• Errors\n• Etc.\n\n*Someone will try to help you when they get a "
+                f"chance.*"
             ),
         )
 
