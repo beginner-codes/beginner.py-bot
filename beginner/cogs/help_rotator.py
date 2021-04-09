@@ -99,12 +99,6 @@ class HelpRotatorCog(Cog):
             ),
         )
 
-    @Cog.command("free-channel", aliases=["free"])
-    async def free_channel(self, ctx: discord.ext.commands.Context):
-        await ctx.send(
-            f"Please use this free channel which is currently not in use:\n{self.available_category.channels[1].mention}"
-        )
-
     async def rotate_available_channels(self, message: discord.Message):
         channel: discord.TextChannel = message.channel
         if channel.id not in self.available_channel_ids:
