@@ -38,6 +38,16 @@ class HelpRotatorCommandsExtension(dippy.Extension):
 
         await self.manager.archive_channel(message.channel)
 
+    @dippy.Extension.listener("message")
+    async def on_message(self, message: Message):
+        if "!free" in message.content:
+            categories = await self.manager.get_categories(message.guild)
+            category = message.guild.get_channel(categories["get-help"])
+            channel = category.channels[-3]
+            await message.channel.send(
+                f"You can claim {channel.mention} to ask your question."
+            )
+
     @dippy.Extension.command("!topic")
     async def topic(self, message: Message):
         if time.time() - self._topic_limit < 120:
