@@ -52,7 +52,7 @@ class Bumping(Cog):
         if not action.casefold() == "bump":
             return
 
-        await ctx.send(f"{ctx.author.display_name} bumped", delete_after=10)
+        await ctx.send(f"🟢 {ctx.author.display_name} bumped", delete_after=10)
         self.log_bump(f"Bumped", ctx.author)
 
         async with self._bump_lock:
