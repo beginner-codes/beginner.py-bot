@@ -66,8 +66,9 @@ class ChannelManager(Injectable):
         intermediate = utils.get(self.client.emojis, name="intermediate")
         expert = utils.get(self.client.emojis, name="expert")
         await channel.send(
-            f"{owner.mention} This channel has been moved to the archive.\n\nDon't forget to give some kudos to show "
-            f"your appreciation by reacting with {beginner}, {intermediate}, or {expert}!"
+            f"{owner.mention} This channel has been moved to the archive. You can reclaim it just by sending a message."
+            f"\n\nDon't forget to give some kudos to show your appreciation by reacting with {beginner}, {intermediate}"
+            f", or {expert}!"
         )
 
     async def create_help_channel(self, category: CategoryChannel, hidden: bool = True):
