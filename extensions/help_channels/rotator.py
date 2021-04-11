@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-from discord import Message, RawReactionActionEvent, TextChannel
+from discord import Guild, Message, RawReactionActionEvent, TextChannel
 from extensions.help_channels.channel_manager import ChannelManager
 import asyncio
 import dippy.labels
@@ -10,6 +10,15 @@ class HelpRotatorExtension(dippy.Extension):
     log: dippy.logging.Logging
     labels: dippy.labels.storage.StorageInterface
     manager: ChannelManager
+
+    @dippy.Extension.listener("guild_join")
+    async def on_guild_added_setup_cleanup(self, guild: Guild):
+        self._setup_cleanup(guild)
+
+    @dippy.Extension.listener("ready")
+    async def on_ready_setup_cleanup(self):
+        for guild in self.client.guilds:
+            self._setup_cleanup(guild)
 
     @dippy.Extension.listener("message")
     async def on_message(self, message: Message):
@@ -70,3 +79,22 @@ class HelpRotatorExtension(dippy.Extension):
         await self.manager.update_get_help_channel(
             channel, member, self.manager.reaction_topics.get(emoji, "")
         )
+
+    async def guild_cleanup_task(self, guild: Guild):
+        now = datetime.utcnow()
+        next_cleanup = (
+            now.replace(second=0, microsecond=0)
+            + timedelta(minutes=15 - now.minute % 15 if now.minute % 15 else 15)
+            - now
+        )
+        self.log.info(
+            f"Next cleanup for {guild.name} at {(now + next_cleanup).isoformat()}"
+        )
+        await asyncio.sleep(next_cleanup.total_seconds())
+        self.log.info(f"Cleaning up channels for {guild.name}")
+        self.client.loop.create_task(self.guild_cleanup_task(guild))
+        await self.manager.cleanup_help_channels(guild)
+
+    def _setup_cleanup(self, guild: Guild):
+        self.log.info(f"Starting channel cleanup for {guild.name}")
+        self.client.loop.create_task(self.guild_cleanup_task(guild))

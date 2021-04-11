@@ -1,5 +1,5 @@
 from bevy import Injectable
-from datetime import datetime
+from datetime import datetime, timedelta
 from discord import (
     CategoryChannel,
     Embed,
@@ -69,6 +69,24 @@ class ChannelManager(Injectable):
             f"\n\nDon't forget to give some kudos to show your appreciation by reacting with {beginner}, {intermediate}"
             f", or {expert}!"
         )
+
+    async def cleanup_help_channels(self, guild: Guild):
+        categories = await self.get_categories(guild)
+        channels = []
+        for channel in guild.get_channel(categories["getting-help"]).channels:
+            last_active = datetime.fromisoformat(
+                str(await self.labels.get("text_channel", channel.id, "last-active"))
+            )
+            channels.append((channel, last_active))
+
+        now = datetime.utcnow()
+        channels = sorted(channels, key=lambda item: item[1])
+        while len(channels) > 5:
+            channel, last_active = channels.pop()
+            age = (now - last_active) / timedelta(hours=1)
+            num = len(channels)
+            if age > 24 or (age > 12 and num > 15) or (age > 6 and num > 20):
+                await self.archive_channel(channel)
 
     async def create_help_channel(self, category: CategoryChannel, hidden: bool = True):
         overwrites = {}
