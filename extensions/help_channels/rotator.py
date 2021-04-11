@@ -90,7 +90,7 @@ class HelpRotatorExtension(dippy.Extension):
         self.log.info(
             f"Next cleanup for {guild.name} at {(now + next_cleanup).isoformat()}"
         )
-        await asyncio.sleep(next_cleanup.total_seconds())
+        await asyncio.sleep(60)  # next_cleanup.total_seconds())
         self.log.info(f"Cleaning up channels for {guild.name}")
         self.client.loop.create_task(self.guild_cleanup_task(guild))
         await self.manager.cleanup_help_channels(guild)
