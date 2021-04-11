@@ -135,12 +135,11 @@ class ChannelManager(Injectable):
 
         categories = await self._get_guild_label(channel.guild, "help-categories")
         helping_category = self.client.get_channel(categories["getting-help"])
-        options = {
-            "category": helping_category,
-        }
+        options = {"category": helping_category, "sync_permissions": True}
         if helping_category.channels:
             options["position"] = helping_category.channels[0].position
         await channel.edit(**options)
+        await channel.send("🗂 Channel has been removed from the archive")
         await self.update_help_channel(channel, author)
 
     async def update_help_channel(self, channel: TextChannel, author: Member):
