@@ -147,18 +147,21 @@ class ChannelManager(Injectable):
             "text_channel", channel.id, "owner", default=author.id
         )
         if owner == author.id:
-            if channel.category.channels[0] != channel:
+            for chan in channel.category.channels:
+                if chan == channel:
+                    break
                 last_active = datetime.fromisoformat(
                     str(
                         await self.labels.get(
                             "text_channel",
-                            channel.category.channels[0].id,
+                            chan.id,
                             "last-active",
                         )
                     )
                 )
                 if (datetime.utcnow() - last_active).total_seconds() > 15:
-                    await channel.edit(position=channel.category.channels[0].position)
+                    await channel.edit(position=chan.position)
+                    break
 
             await self.labels.set(
                 "text_channel", channel.id, "last-active", datetime.utcnow().isoformat()
