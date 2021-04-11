@@ -52,14 +52,13 @@ class ChannelManager(Injectable):
 
     async def archive_channel(self, channel: TextChannel):
         categories = await self.get_categories(channel.guild)
+        category = channel.guild.get_channel(categories["help-archive"])
         owner = await self.get_owner(channel)
-
+        overwrites = category.overwrites.copy()
+        overwrites[owner] = PermissionOverwrite(view_channel=True)
         await channel.edit(
-            category=channel.guild.get_channel(categories["help-archive"]),
-            sync_permissions=True,
-            overwrites={
-                owner: PermissionOverwrite(view_channel=True),
-            },
+            category=category,
+            overwrites=overwrites,
         )
 
         beginner = utils.get(self.client.emojis, name="beginner")
