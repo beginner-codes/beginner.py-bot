@@ -80,12 +80,11 @@ class ChannelManager(Injectable):
             channels.append((channel, last_active))
 
         now = datetime.utcnow()
-        channels = sorted(channels, key=lambda item: item[1])
+        channels = sorted(channels, key=lambda item: item[1], reverse=True)
         while len(channels) > 5:
             channel, last_active = channels.pop()
             age = (now - last_active) / timedelta(hours=1)
             num = len(channels)
-            print(channel.name, age, num)
             if age > 24 or (age > 12 and num > 15) or (age > 6 and num > 20):
                 await self.archive_channel(channel)
             else:
