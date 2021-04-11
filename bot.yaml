@@ -1,2 +1,5 @@
 labels:
   storage: sqlalchemy
+
+intents:
+  use_defaults: True
