@@ -56,9 +56,9 @@ class ChannelManager(Injectable):
 
         await channel.edit(
             category=channel.guild.get_channel(categories["help-archive"]),
+            sync_permissions=True,
             overwrites={
-                owner: PermissionOverwrite(send_messages=True),
-                channel.guild.default_role: PermissionOverwrite(send_messages=False),
+                owner: PermissionOverwrite(view_channel=True),
             },
         )
 
