@@ -61,10 +61,7 @@ class HelpRotatorCommandsExtension(dippy.Extension):
             return
 
         helpers = utils.get(message.guild.roles, name="helpers")
-        if (
-            helpers not in message.author.roles
-            and await self.manager.get_owner(message.channel, True) != message.author.id
-        ):
+        if helpers not in message.author.roles:
             return
 
         *_, topic = message.content.partition(" ")
