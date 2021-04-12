@@ -201,12 +201,13 @@ class Kudos(Cog):
             embed=discord.Embed(
                 color=BLUE,
                 description=(
-                    f"{reacter.mention} gave {message.author.mention} {kudos_points} kudos! "
-                    f"[Jump To Message]({message.jump_url})"
+                    f"{reacter.mention} gave {message.author.mention} {kudos_points} kudos!"
                 ),
             ).set_footer(
                 text=f"'!kudos help' or '!kudos leaderboard' | {kudos_message} kudos to give"
-            )
+            ),
+            reference=message,
+            allowed_mentions=discord.AllowedMentions(replied_user=False),
         )
 
     @Cog.listener()
