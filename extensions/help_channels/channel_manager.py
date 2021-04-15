@@ -55,7 +55,7 @@ class ChannelManager(Injectable):
         category = channel.guild.get_channel(categories["help-archive"])
         owner = await self.get_owner(channel)
         overwrites = category.overwrites.copy()
-        overwrites[owner] = PermissionOverwrite(view_channel=True)
+        overwrites[owner] = PermissionOverwrite(send_messages=True)
         await channel.edit(
             category=category,
             overwrites=overwrites,
