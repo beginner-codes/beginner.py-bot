@@ -117,7 +117,11 @@ class ChannelManager(Injectable):
             channel.id,
             "last-active",
         )
-        return datetime.fromisoformat(last_active) if last_active else datetime.utcfromtimestamp(0)
+        return (
+            datetime.fromisoformat(last_active)
+            if last_active
+            else datetime.utcfromtimestamp(0)
+        )
 
     async def set_last_active(self, channel: TextChannel):
         await self.labels.set(
@@ -147,7 +151,7 @@ class ChannelManager(Injectable):
     async def setup_help_channel(self, category: CategoryChannel):
         channels = await self._get_archive_channels(category.guild)
         channel = channels[0]
-        await channel.edit(name=f"🙋get-help", category=category, sync_permissions=True`)
+        await channel.edit(name=f"🙋get-help", category=category, sync_permissions=True)
         message = await channel.send(
             embed=Embed(
                 title="Get Help Here",
