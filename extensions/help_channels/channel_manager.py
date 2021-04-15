@@ -148,7 +148,7 @@ class ChannelManager(Injectable):
     async def setup_help_channel(self, category: CategoryChannel):
         channels = await self._get_archive_channels(category.guild)
         channel = channels[0]
-        await channel.edit(name=f"🙋get-help", category=category)
+        await channel.edit(name=f"🙋get-help", category=category, sync_permissions=True)
         message = await channel.send(
             embed=Embed(
                 title="Get Help Here",
