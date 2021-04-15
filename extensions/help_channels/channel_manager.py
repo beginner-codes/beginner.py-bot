@@ -285,7 +285,7 @@ class ChannelManager(Injectable):
         return [channel for channel, _ in sorted(channels, key=lambda item: item[1])]
 
     def _generate_channel_title(self, name: str, topic: str, icon: str = "🙋") -> str:
-        name = self.sluggify(name)
+        name = self.sluggify(name, sep="")[:3]
         topic = self.sluggify(topic)
         return "-".join((f"{icon}{name}", topic))
 
@@ -295,9 +295,9 @@ class ChannelManager(Injectable):
     async def _set_guild_label(self, guild: Guild, label: str, value: Any):
         await self.labels.set("guild", guild.id, label, value)
 
-    def sluggify(self, text: str) -> str:
+    def sluggify(self, text: str, *, sep: str = "-") -> str:
         if not text:
             return ""
 
         parts = re.findall(r"[\w\d]+", text)
-        return "-".join(parts)
+        return sep.join(parts)
