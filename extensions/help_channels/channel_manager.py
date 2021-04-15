@@ -148,7 +148,7 @@ class ChannelManager(Injectable):
     async def setup_help_channel(self, category: CategoryChannel):
         channels = await self._get_archive_channels(category.guild)
         channel = channels[0]
-        await channel.edit(name=f"🙋get-help", category=category, sync_permissions=True)
+        await channel.edit(name=f"🙋get-help", category=category, sync_permissions=True`)
         message = await channel.send(
             embed=Embed(
                 title="Get Help Here",
@@ -235,6 +235,10 @@ class ChannelManager(Injectable):
             args["position"] = helping_category.channels[0].position
 
         message, *_ = await channel.history(limit=1).flatten()
+
+        help_channels = await self._get_help_channels(channel.guild)
+        if len(help_channels) == 50:
+            await self.archive_channel(help_channels[0])
 
         await asyncio.gather(
             message.delete(),
