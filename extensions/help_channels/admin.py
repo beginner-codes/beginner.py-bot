@@ -78,8 +78,12 @@ class HelpRotatorAdminExtension(dippy.Extension):
 
     async def _create_help_channels(self, guild: Guild):
         help_categories: dict[str, int] = await self.manager.get_categories(guild)
-        get_help_category: CategoryChannel = self.client.get_channel(
-            help_categories["get-help"]
+        archive: CategoryChannel = self.client.get_channel(
+            help_categories["help-archive"]
         )
-        for i in range(4):
-            await self.manager.create_help_channel(get_help_category, i > 1)
+        get_help: CategoryChannel = self.client.get_channel(help_categories["get-help"])
+        for _ in range(4):
+            await self.manager.create_new_channel(archive)
+
+        for _ in range(2):
+            await self.manager.setup_help_channel(get_help)

@@ -72,6 +72,9 @@ class ChannelManager(Injectable):
 
     async def cleanup_help_channels(self, guild: Guild):
         categories = await self.get_categories(guild)
+        if not categories:
+            return
+
         channels = []
         for channel in guild.get_channel(categories["getting-help"]).channels:
             last_active = datetime.fromisoformat(
@@ -81,7 +84,7 @@ class ChannelManager(Injectable):
 
         now = datetime.utcnow()
         channels = sorted(channels, key=lambda item: item[1], reverse=True)
-        while len(channels) > 5:
+        while len(channels) > 10:
             channel, last_active = channels.pop()
             age = (now - last_active) / timedelta(hours=1)
             num = len(channels)
@@ -90,16 +93,55 @@ class ChannelManager(Injectable):
             else:
                 break
 
-    async def create_help_channel(self, category: CategoryChannel, hidden: bool = True):
-        overwrites = {}
-        if hidden:
-            overwrites[category.guild.default_role] = PermissionOverwrite(
-                read_messages=False
-            )
+    async def create_new_channel(self, category: CategoryChannel):
+        channel = await category.create_text_channel(name="🙋get-help")
+        await self.set_last_active(channel)
 
-        channel = await category.create_text_channel(
-            name=f"🙋get-help{'-hidden' if hidden else ''}", overwrites=overwrites
+    async def get_categories(self, guild: Guild) -> dict[str, int]:
+        if not self._categories.get(guild):
+            categories = await self._get_guild_label(guild, "help-categories")
+            self._categories[guild] = categories
+
+        return self._categories[guild]
+
+    async def get_last_active(self, channel: TextChannel) -> datetime:
+        return datetime.fromisoformat(
+            await self.labels.get(
+                "text_channel",
+                channel.id,
+                "last-active",
+            )
         )
+
+    async def set_last_active(self, channel: TextChannel):
+        await self.labels.set(
+            "text_channel", channel.id, "last-active", datetime.utcnow().isoformat()
+        )
+
+    async def get_owner(
+        self, channel: TextChannel, just_id: bool = False
+    ) -> Union[Member, int]:
+        owner_id = await self.labels.get("text_channel", channel.id, "owner")
+        if just_id:
+            return owner_id
+        return await channel.guild.fetch_member(owner_id)
+
+    async def set_categories(self, guild: Guild, categories: dict[str, int]):
+        await self._set_guild_label(guild, "help-categories", categories)
+        self._categories[guild] = categories
+
+    async def set_channel_topic(self, channel: TextChannel, topic: str):
+        owner = await self.get_owner(channel)
+        await self.labels.set("text_channel", channel.id, "topic", topic)
+        icon = self._topics.get(topic, "🙋")
+        await channel.edit(
+            name=self._generate_channel_title(owner.display_name, topic, icon)
+        )
+
+    async def setup_help_channel(self, category: CategoryChannel):
+        channels = await self._get_archive_channels(category.guild)
+        channel = channels[0]
+        await channel.edit(name=f"🙋get-help", category=category)
         message = await channel.send(
             embed=Embed(
                 title="Get Help Here",
@@ -121,32 +163,10 @@ class ChannelManager(Injectable):
         emojis.append("🙋")
         await asyncio.gather(*(message.add_reaction(emoji=emoji) for emoji in emojis))
 
-    async def get_categories(self, guild: Guild) -> dict[str, int]:
-        if not self._categories.get(guild):
-            categories = await self._get_guild_label(guild, "help-categories")
-            self._categories[guild] = categories
-
-        return self._categories[guild]
-
-    async def get_owner(
-        self, channel: TextChannel, just_id: bool = False
-    ) -> Union[Member, int]:
-        owner_id = await self.labels.get("text_channel", channel.id, "owner")
-        if just_id:
-            return owner_id
-        return await channel.guild.fetch_member(owner_id)
-
-    async def set_categories(self, guild: Guild, categories: dict[str, int]):
-        await self._set_guild_label(guild, "help-categories", categories)
-        self._categories[guild] = categories
-
-    async def set_channel_topic(self, channel: TextChannel, topic: str):
-        owner = await self.get_owner(channel)
-        await self.labels.set("text_channel", channel.id, "topic", topic)
-        icon = self._topics.get(topic, "🙋")
-        await channel.edit(
-            name=self._generate_channel_title(owner.display_name, topic, icon)
-        )
+        if len(channels) == 1:
+            await self.archive_channel(
+                (await self._get_help_channels(category.guild))[0]
+            )
 
     async def update_archived_channel(self, channel: TextChannel, author: Member):
         owner = await self.labels.get("text_channel", channel.id, "owner")
@@ -207,7 +227,10 @@ class ChannelManager(Injectable):
         if helping_category.channels:
             args["position"] = helping_category.channels[0].position
 
+        message, *_ = await channel.history(limit=1).flatten()
+
         await asyncio.gather(
+            message.delete(),
             self.labels.set(
                 "user",
                 owner.id,
@@ -219,19 +242,31 @@ class ChannelManager(Injectable):
                 "text_channel", channel.id, "last-active", datetime.utcnow().isoformat()
             ),
             channel.edit(**args),
-            help_category.channels[-2].edit(
-                sync_permissions=True,
-                name=help_category.channels[-2].name.removesuffix("-hidden"),
-            ),
-            channel.purge(limit=1, oldest_first=True),
             channel.send(
                 f"{owner.mention} ask your question here.\nMake sure to be as clear as possible and provide as many "
                 f"details as you can:\n• Code 💻\n• Errors ⚠️\n• Etc.\n*Someone will try to help you when they get a "
                 f"chance.*"
             ),
+            self.setup_help_channel(help_category),
         )
 
-        await self.create_help_channel(help_category, hidden=True),
+    async def _get_archive_channels(self, guild: Guild) -> list[TextChannel]:
+        archive = guild.get_channel((await self.get_categories(guild))["help-archive"])
+        channels = []
+        for channel in archive.channels:
+            last_active = await self.get_last_active(channel)
+            channels.append((channel, last_active))
+
+        return [channel for channel, _ in sorted(channels, key=lambda item: item[1])]
+
+    async def _get_help_channels(self, guild: Guild) -> list[TextChannel]:
+        archive = guild.get_channel((await self.get_categories(guild))["getting-help"])
+        channels = []
+        for channel in archive.channels:
+            last_active = await self.get_last_active(channel)
+            channels.append((channel, last_active))
+
+        return [channel for channel, _ in sorted(channels, key=lambda item: item[1])]
 
     def _generate_channel_title(self, name: str, topic: str, icon: str = "🙋") -> str:
         name = self.sluggify(name)

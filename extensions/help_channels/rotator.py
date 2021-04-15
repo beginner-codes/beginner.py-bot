@@ -54,7 +54,7 @@ class HelpRotatorExtension(dippy.Extension):
         channel: TextChannel = self.client.get_channel(reaction.channel_id)
         categories = await self.manager.get_categories(channel.guild)
 
-        if channel.category.id != categories["get-help"] or "hidden" in channel.name:
+        if channel.category.id != categories["get-help"]:
             return
 
         member = await channel.guild.fetch_member(reaction.user_id)
