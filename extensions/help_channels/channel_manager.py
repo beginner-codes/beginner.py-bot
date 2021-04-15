@@ -57,6 +57,7 @@ class ChannelManager(Injectable):
         category = channel.guild.get_channel(categories["help-archive"])
         owner = await self.get_owner(channel)
         overwrites = category.overwrites.copy()
+        dict
         overwrites[owner] = PermissionOverwrite(send_messages=True)
         await channel.edit(
             category=category,
@@ -207,7 +208,7 @@ class ChannelManager(Injectable):
                         )
                     )
                 )
-                if (datetime.utcnow() - last_active).total_seconds() > 15:
+                if (datetime.utcnow() - last_active).total_seconds() > 60:
                     await channel.edit(position=chan.position)
                     break
 
