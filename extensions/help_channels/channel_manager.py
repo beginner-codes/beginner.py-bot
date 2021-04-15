@@ -185,6 +185,11 @@ class ChannelManager(Injectable):
         options = {"category": helping_category, "sync_permissions": True}
         if helping_category.channels:
             options["position"] = helping_category.channels[0].position
+
+        help_channels = await self._get_help_channels(channel.guild)
+        if len(help_channels) == 50:
+            await self.archive_channel(help_channels[0])
+
         await channel.edit(**options)
         await channel.send("🗂 Channel has been removed from the archive")
         await self.update_help_channel(channel, author)
