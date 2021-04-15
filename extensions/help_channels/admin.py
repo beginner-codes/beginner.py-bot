@@ -10,6 +10,13 @@ class HelpRotatorAdminExtension(dippy.Extension):
     labels: dippy.labels.storage.StorageInterface
     manager: ChannelManager
 
+    @dippy.Extension.command("!cleanup help section")
+    async def cleanup_help_section(self, message: Message):
+        if not message.author.guild_permissions.administrator:
+            return
+
+        await self.manager.cleanup_help_channels(message.guild)
+
     @dippy.Extension.command("!setup help")
     async def setup_help(self, message: Message):
         if not message.author.guild_permissions.administrator:
