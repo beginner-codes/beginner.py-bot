@@ -134,7 +134,7 @@ class ChannelManager(Injectable):
         owner_id = await self.labels.get("text_channel", channel.id, "owner")
         if just_id:
             return owner_id
-        return await channel.guild.fetch_member(owner_id)
+        return channel.guild.get_member(owner_id)
 
     async def set_categories(self, guild: Guild, categories: dict[str, int]):
         await self._set_guild_label(guild, "help-categories", categories)
