@@ -95,7 +95,7 @@ class ChannelManager(Injectable):
             channel, last_active = channels.pop()
             age = (now - last_active) / timedelta(hours=1)
             num = len(channels)
-            if age > 24 or (age > 12 and num > 15) or (age > 6 and num > 20):
+            if age >= 24 or (age >= 12 and num > 15) or (age >= 6 and num > 20):
                 await self.archive_channel(channel)
             else:
                 break
