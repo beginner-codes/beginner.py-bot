@@ -77,16 +77,7 @@ class ChannelManager(Injectable):
 
         channels = []
         for channel in guild.get_channel(categories["getting-help"]).channels:
-            last_active = datetime.fromisoformat(
-                str(
-                    await self.labels.get(
-                        "text_channel",
-                        channel.id,
-                        "last-active",
-                        datetime.utcfromtimestamp(0),
-                    )
-                )
-            )
+            last_active = await self.get_last_active(channel)
             channels.append((channel, last_active))
 
         now = datetime.utcnow()
