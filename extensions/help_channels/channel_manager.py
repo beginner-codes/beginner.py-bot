@@ -83,7 +83,7 @@ class ChannelManager(Injectable):
                         "text_channel",
                         channel.id,
                         "last-active",
-                        (datetime.utcnow() - timedelta(days=1)).isoformat(),
+                        datetime.utcfromtimestamp(0),
                     )
                 )
             )
