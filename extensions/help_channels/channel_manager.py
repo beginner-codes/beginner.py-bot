@@ -112,13 +112,12 @@ class ChannelManager(Injectable):
         return self._categories[guild]
 
     async def get_last_active(self, channel: TextChannel) -> datetime:
-        return datetime.fromisoformat(
-            await self.labels.get(
-                "text_channel",
-                channel.id,
-                "last-active",
-            )
+        last_active = await self.labels.get(
+            "text_channel",
+            channel.id,
+            "last-active",
         )
+        return datetime.fromisoformat(last_active) if last_active else datetime.utcfromtimestamp(0)
 
     async def set_last_active(self, channel: TextChannel):
         await self.labels.set(
