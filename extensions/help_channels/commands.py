@@ -43,7 +43,7 @@ class HelpRotatorCommandsExtension(dippy.Extension):
         if "!free" in message.content:
             categories = await self.manager.get_categories(message.guild)
             category = message.guild.get_channel(categories["get-help"])
-            channel = category.channels[-3]
+            channel = category.channels[-1]
             await message.channel.send(
                 f"You can claim {channel.mention} to ask your question."
             )
