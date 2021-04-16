@@ -68,9 +68,9 @@ class ChannelManager(Injectable):
         intermediate = utils.get(self.client.emojis, name="intermediate")
         expert = utils.get(self.client.emojis, name="expert")
         await channel.send(
-            f"{owner.mention} This channel has been moved to the archive. You can reclaim it just by sending a message."
-            f"\n\nDon't forget to give some kudos to show your appreciation by reacting with {beginner}, {intermediate}"
-            f", or {expert}!"
+            f"{owner.mention if owner else ''} This channel has been moved to the archive. You can reclaim it just by "
+            f"sending a message.\n\nDon't forget to give some kudos to show your appreciation by reacting with "
+            f"{beginner}, {intermediate}, or {expert}!"
         )
 
     async def cleanup_help_channels(self, guild: Guild):
