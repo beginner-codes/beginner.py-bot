@@ -62,6 +62,7 @@ class ChannelManager(Injectable):
         await channel.edit(
             category=category,
             overwrites=overwrites,
+            position=category.channels[0].position,
         )
 
         beginner = utils.get(self.client.emojis, name="beginner")
