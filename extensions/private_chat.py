@@ -10,6 +10,21 @@ class PrivateChatExtension(dippy.Extension):
     log: dippy.logging.Logging
     labels: dippy.labels.storage.StorageInterface
 
+    @dippy.Extension.command("!archive")
+    async def archive_mod_chat_command(self, message: discord.Message):
+        if not message.author.guild_permissions.kick_members:
+            return
+
+        category = await self.get_mod_chat_category(message.guild)
+        if not category or message.channel.category != category:
+            return
+
+        message.channel: discord.TextChannel = message.channel
+        await message.channel.edit(
+            name=f"{message.channel.name}-archive", sync_permissions=True
+        )
+        await message.channel.send("🗂 This channel has been archived")
+
     @dippy.Extension.command("!close")
     async def close_mod_chat_command(self, message: discord.Message):
         if not message.author.guild_permissions.kick_members:
