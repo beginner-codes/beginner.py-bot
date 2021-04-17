@@ -257,9 +257,15 @@ class ChannelManager(Injectable):
             ),
             channel.edit(**args),
             channel.send(
-                f"{owner.mention} ask your question here.\nMake sure to be as clear as possible and provide as many "
-                f"details as you can:\n• Code 💻\n• Errors ⚠️\n• Etc.\n*Someone will try to help you when they get a "
-                f"chance.*"
+                f"{owner.mention}",
+                embed=Embed(
+                    title="Ask Your Question Here",
+                    description=(
+                        "Make sure to be as clear as possible and provide as many details as you can:\n• Code 💻\n• "
+                        "Errors ⚠️\n• Etc.\n*Someone will try to help you when they get a chance.*"
+                    ),
+                    color=0x00FF66,
+                ),
             ),
             self.setup_help_channel(help_category),
         )
