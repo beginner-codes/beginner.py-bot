@@ -57,7 +57,17 @@ class HelpRotatorAdminExtension(dippy.Extension):
                 if help_type in names:
                     content.append(f"{names[help_type]}: {category.mention}")
 
-            await message.channel.send("**Help Categories**\n" + "\n".join(content))
+            num_help_channels = len(
+                self.client.get_channel(categories["getting-help"]).channels
+            )
+            num_archive_channels = len(
+                self.client.get_channel(categories["help-archive"]).channels
+            )
+            await message.channel.send(
+                "**Help Categories**\n"
+                + "\n".join(content)
+                + f"\n{num_help_channels} help channels\n{num_archive_channels} archive channels"
+            )
         except Exception:
             await message.channel.send("Ooops something went wrong")
             raise
