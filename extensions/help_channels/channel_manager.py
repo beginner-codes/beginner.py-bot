@@ -74,7 +74,8 @@ class ChannelManager(Injectable):
                 f"appreciation by reacting with {beginner}, {intermediate}, or {expert}!"
             )
         message = await channel.send(" ".join(content))
-        await message.add_reaction("✅")
+        if owner:
+            await message.add_reaction("✅")
 
     async def cleanup_help_channels(self, guild: Guild):
         categories = await self.get_categories(guild)
