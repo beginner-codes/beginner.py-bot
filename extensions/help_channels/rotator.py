@@ -33,20 +33,13 @@ class HelpRotatorExtension(dippy.Extension):
             return
 
         categories = await self.manager.get_categories(category.guild)
-        if not categories:
+        if not categories or categories["getting-help"] != category.id:
             return
 
-        actions = {
-            "help-archive": self.manager.update_archived_channel,
-            "getting-help": self.manager.update_help_channel,
-        }
-        for help_type, category_id in categories.items():
-            if category.id == category_id and help_type in actions:
-                await actions[help_type](message.channel, message.author)
-                break
+        await self.manager.update_help_channel(message.channel, message.author)
 
     @dippy.Extension.listener("raw_reaction_add")
-    async def on_reaction_add(self, reaction: RawReactionActionEvent):
+    async def on_reaction_add_get_help(self, reaction: RawReactionActionEvent):
         emoji = reaction.emoji.name
         if emoji not in self.manager.reaction_topics and emoji != "🙋":
             return
@@ -79,6 +72,28 @@ class HelpRotatorExtension(dippy.Extension):
         await self.manager.update_get_help_channel(
             channel, member, self.manager.reaction_topics.get(emoji, "")
         )
+
+    @dippy.Extension.listener("raw_reaction_add")
+    async def on_reaction_add_archive(self, reaction: RawReactionActionEvent):
+        emoji = reaction.emoji.name
+        if emoji != "✅":
+            return
+
+        channel: TextChannel = self.client.get_channel(reaction.channel_id)
+        categories = await self.manager.get_categories(channel.guild)
+        if channel.category.id != categories["help-archive"]:
+            return
+
+        member = channel.guild.get_member(reaction.user_id)
+        if member.bot:
+            return
+
+        owner = await self.manager.get_owner(channel)
+        if member != owner:
+            return
+
+        await self.manager.update_archived_channel(channel, member)
+        await (await channel.fetch_message(reaction.message_id)).delete()
 
     async def guild_cleanup_task(self, guild: Guild):
         now = datetime.utcnow()

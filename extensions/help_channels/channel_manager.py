@@ -56,23 +56,25 @@ class ChannelManager(Injectable):
         categories = await self.get_categories(channel.guild)
         category = channel.guild.get_channel(categories["help-archive"])
         owner = await self.get_owner(channel)
-        overwrites = category.overwrites.copy()
-        if owner:
-            overwrites[owner] = PermissionOverwrite(send_messages=True)
         await channel.edit(
             category=category,
-            overwrites=overwrites,
             position=category.channels[0].position,
+            sync_permissions=True,
         )
 
-        beginner = utils.get(self.client.emojis, name="beginner")
-        intermediate = utils.get(self.client.emojis, name="intermediate")
-        expert = utils.get(self.client.emojis, name="expert")
-        await channel.send(
-            f"{owner.mention if owner else ''} This channel has been moved to the archive. You can reclaim it just by "
-            f"sending a message.\n\nDon't forget to give some kudos to show your appreciation by reacting with "
-            f"{beginner}, {intermediate}, or {expert}!"
-        )
+        content = ["📜 This channel has been moved to the archive."]
+        if owner:
+            beginner = utils.get(self.client.emojis, name="beginner")
+            intermediate = utils.get(self.client.emojis, name="intermediate")
+            expert = utils.get(self.client.emojis, name="expert")
+
+            content.insert(0, owner.mention)
+            content.append(
+                f"You can reclaim it by reacting with a ✅.\n\nDon't forget to give some kudos to show your "
+                f"appreciation by reacting with {beginner}, {intermediate}, or {expert}!"
+            )
+        message = await channel.send(" ".join(content))
+        await message.add_reaction("✅")
 
     async def cleanup_help_channels(self, guild: Guild):
         categories = await self.get_categories(guild)
