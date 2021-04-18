@@ -31,12 +31,17 @@ class HelpRotatorCommandsExtension(dippy.Extension):
         if category.id != categories["getting-help"]:
             return
 
+        lock = (
+            message.author.guild_permissions.kick_members
+            and "lock" in message.content.casefold()
+        )
+
         helper = utils.get(message.guild.roles, name="helpers")
         owner = await self.labels.get("text_channel", message.channel.id, "owner")
         if helper not in message.author.roles and message.author.id != owner:
             return
 
-        await self.manager.archive_channel(message.channel)
+        await self.manager.archive_channel(message.channel, remove_owner=lock)
 
     @dippy.Extension.listener("message")
     async def on_message(self, message: Message):

@@ -52,10 +52,15 @@ class ChannelManager(Injectable):
             "💾": "os",
         }
 
-    async def archive_channel(self, channel: TextChannel):
+    async def archive_channel(self, channel: TextChannel, remove_owner: bool = False):
         categories = await self.get_categories(channel.guild)
         category = channel.guild.get_channel(categories["help-archive"])
-        owner = await self.get_owner(channel)
+        owner = None
+        if remove_owner:
+            await self.set_owner(channel, None)
+        else:
+            owner = await self.get_owner(channel)
+
         await channel.edit(
             category=category,
             position=category.channels[0].position,
@@ -133,6 +138,10 @@ class ChannelManager(Injectable):
         if just_id:
             return owner_id
         return channel.guild.get_member(owner_id)
+
+    async def set_owner(self, channel: TextChannel, owner: Optional[Member]):
+        owner_id = owner.id if owner else -1
+        await self.labels.set("text_channel", channel.id, "owner", owner_id)
 
     async def set_categories(self, guild: Guild, categories: dict[str, int]):
         await self._set_guild_label(guild, "help-categories", categories)
