@@ -65,7 +65,7 @@ class CodeRunner(Cog):
             ref_message = await ctx.channel.fetch_message(message.reference.message_id)
             await self._exec(
                 ctx.message,
-                ref_message.content[ref_message.content.find(" ") :].strip(),
+                ref_message.content[ref_message.content.find("`") :].strip(),
                 user_input=content,
             )
             return
