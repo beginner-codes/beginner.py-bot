@@ -66,7 +66,7 @@ class CodeRunner(Cog):
             await self._exec(
                 ctx.message,
                 ref_message.content[ref_message.content.find("`") :].strip(),
-                user_input=content,
+                user_input=message.clean_content[message.clean_content.find(" ") + 1 :],
             )
             return
 
