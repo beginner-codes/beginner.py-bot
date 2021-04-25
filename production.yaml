@@ -16,7 +16,7 @@ cogs:
   fun: true
   google: true
   help: true
-  help_rotator: true
+  help_rotator: false
   kudos: true
   moderation: true
   onboarding: true
