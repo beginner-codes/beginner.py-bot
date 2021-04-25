@@ -60,6 +60,16 @@ class CodeRunner(Cog):
             await self._exec_brainfuck(ctx.message, content)
             return
 
+        message: discord.Message = ctx.message
+        if message.reference:
+            ref_message = await ctx.channel.fetch_message(message.reference.message_id)
+            await self._exec(
+                ctx.message,
+                ref_message.content[ref_message.content.find(" ") :].strip(),
+                user_input=content,
+            )
+            return
+
         await self._exec(ctx.message, content)
 
     @Cog.listener()
@@ -93,7 +103,11 @@ class CodeRunner(Cog):
             await self._black_formatting(message, message.content, reaction.member)
 
     async def _exec(
-        self, message: discord.Message, content: str, member: discord.Member = None
+        self,
+        message: discord.Message,
+        content: str,
+        member: discord.Member = None,
+        user_input: str = "",
     ):
         if (
             not len(content.strip())
@@ -120,9 +134,14 @@ class CodeRunner(Cog):
         title = "✅ Exec - Success"
         color = BLUE
 
-        code, user_input = re.match(
-            r"^.*?```(?:py|python)?\s*(.+?)\s*```\s*(.+)?$", content, re.DOTALL
-        ).groups()
+        if user_input:
+            code, *_ = re.match(
+                r"^.*?```(?:py|python)?\s*(.+?)\s*```.*$", content, re.DOTALL
+            ).groups()
+        else:
+            code, user_input = re.match(
+                r"^.*?```(?:py|python)?\s*(.+?)\s*```\s*(.+)?$", content, re.DOTALL
+            ).groups()
 
         out, err, duration = await self.code_runner("exec", code, user_input)
 
