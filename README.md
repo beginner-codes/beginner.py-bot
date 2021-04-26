@@ -1,4 +1,8 @@
 # Beginner.py Discord Bot
+.. image:: https://discord.com/api/guilds/644299523686006834/embed.png
+   :target: https://discord.gg/sfHykntuGy
+   :alt: Discord server invite
+
 This is the discord bot for the beginner.py discord server. A bit of a hodge podge of coding style and experience levels as it is a collaboration between various people, all of whom had no experience with Discord.py before this.
 
 ## Wanna Join Us?
