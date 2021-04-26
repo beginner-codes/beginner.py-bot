@@ -278,7 +278,7 @@ class Fun(Cog):
     async def raw(self, ctx: discord.ext.commands.Context):
         message: discord.Message = ctx.message
         await ctx.send(
-            f"```\n{message.content}\n```",
+            f"```\n{message.content!r}\n```",
             allowed_mentions=discord.AllowedMentions(
                 everyone=False, users=False, roles=False
             ),
