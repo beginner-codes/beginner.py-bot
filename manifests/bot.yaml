@@ -1,74 +1,30 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: beginner-py-bot
+  name: beginner-py-bot-dev
   labels:
-    app: beginner-py-bot
+    app: beginner-py-bot-dev
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: beginner-py-bot
+      app: beginner-py-bot-dev
   template:
     metadata:
       labels:
-        app: beginner-py-bot
+        app: beginner-py-bot-dev
     spec:
       containers:
         - name: beginner-py-bot
-          image: zzmmrmn/beginner-py-bot:<IMAGE_VERSION>
+          image: zzmmrmn/beginner-py-bot-dev:<IMAGE_VERSION>
           env:
             - name: PRODUCTION_BOT
               value: "PRODUCTION"
             - name: "DISCORD_TOKEN"
               valueFrom:
                 secretKeyRef:
-                  name: discord.token
+                  name: discord.dev.token
                   key: token
-            - name: "GOOGLE_MAPS_API_KEY"
-              valueFrom:
-                secretKeyRef:
-                  name: prompt
-                  key: google-maps-api-key
-            - name: "WEATHER_API_KEY"
-              valueFrom:
-                secretKeyRef:
-                  name: prompt
-                  key: weather-api-key
-            - name: "GOOGLE_CUSTOM_SEARCH_KEY"
-              valueFrom:
-                secretKeyRef:
-                  name: google-custom-search
-                  key: api-key
-            - name: "GOOGLE_CUSTOM_SEARCH_ENGINE"
-              valueFrom:
-                secretKeyRef:
-                  name: google-custom-search
-                  key: cse
-            - name: "GIST_USER"
-              valueFrom:
-                secretKeyRef:
-                  name: gist.auth
-                  key: user
-            - name: "GIST_TOKEN"
-              valueFrom:
-                secretKeyRef:
-                  name: gist.auth
-                  key: token
-            - name: "DB_HOST"
-              value: "private-personal-postgres-cluster-1-apr-26-backup-do-user-87772.a.db.ondigitalocean.com"
-            - name: "DB_PORT"
-              value: "25061"
-            - name: "DB_USER"
-              value: "beginnerpy"
-            - name: "DB_NAME"
-              value: "bpydb-pool"
+
             - name: "BOT_IMAGE_VERSION"
               value: "<IMAGE_VERSION>"
-            - name: "beginner.cogs.bumping"
-              value: "0"
-            - name: "DB_PASSWORD"
-              valueFrom:
-                secretKeyRef:
-                  name: postgres-password
-                  key: password
