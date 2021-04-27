@@ -1,7 +1,7 @@
 on:
   push:
     branches:
-      - master
+      - community.feature.monthlyshowoff
 
 jobs:
 
