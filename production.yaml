@@ -19,6 +19,7 @@ cogs:
   help_rotator: false
   kudos: true
   moderation: true
+  monthly_showing_off: true
   onboarding: true
   python: true
   pip: true
