@@ -150,7 +150,10 @@ class Kudos(Cog):
         channel: discord.TextChannel = self.server.get_channel(reaction.channel_id)
         message: discord.Message = await channel.fetch_message(reaction.message_id)
 
-        if not channel.permissions_for(reacter).send_messages:
+        # Don't allow kudos in channels the user can't message in unless it's the archive
+        if not channel.permissions_for(reacter).send_messages and (
+            not channel.category or channel.category.id != 829826306890924083
+        ):
             return
 
         if reacter.bot or message.author.bot:
