@@ -22,6 +22,17 @@ class OnlineSampleType(Enum):
 class StatisticsCog(Cog):
     @Cog.listener()
     async def on_ready(self):
+        import random
+
+        for i in range(7, 31):
+            a, b = 200 + random.randint(0, 300), 200 + random.randint(0, 300)
+            sample = OnlineSample(
+                taken=datetime.utcnow() - timedelta(days=i),
+                sample_type=OnlineSampleType.DAY,
+                max_seen=max(a, b),
+                min_seen=min(a, b),
+            )
+            sample.save()
         self.logger.debug("Cog ready")
         self.logger.debug(
             f"{self._get_online_count()} coders are online and {self._get_coders_count()} total coders!!!"
@@ -45,10 +56,10 @@ class StatisticsCog(Cog):
         return count
 
     @Cog.command()
-    async def statslastweek(self, ctx):
+    async def statslastmonth(self, ctx):
         last_week = datetime.utcnow().replace(
             hour=0, minute=0, second=0, microsecond=0
-        ) - timedelta(days=7)
+        ) - timedelta(days=30)
         records: list[OnlineSample] = (
             OnlineSample.select()
             .where(
@@ -61,7 +72,7 @@ class StatisticsCog(Cog):
         upper, lower, labels = [], [], []
         for record in records:
             taken: datetime = record.taken
-            labels.append(taken.strftime("%A"))
+            labels.append(taken.day)
             upper.append(record.max_seen)
             lower.append(record.min_seen)
 
@@ -72,7 +83,7 @@ class StatisticsCog(Cog):
         ax.bar(labels, lower, width, label="Min")
 
         ax.set_ylabel("Online")
-        ax.set_title("Weekly Online Members")
+        ax.set_title("Monthly Online Members")
         ax.legend()
 
         image = BytesIO()
