@@ -1,3 +1,4 @@
+import discord as discord
 from bevy import Injectable
 from datetime import datetime, timedelta
 from discord import (
@@ -61,18 +62,34 @@ class ChannelManager(Injectable):
         else:
             owner = await self.get_owner(channel)
 
-        await channel.edit(
-            category=category,
-            position=category.channels[0].position,
-            sync_permissions=True,
-        )
+        beginner = utils.get(self.client.emojis, name="beginner")
+        intermediate = utils.get(self.client.emojis, name="intermediate")
+        expert = utils.get(self.client.emojis, name="expert")
+
+        try:
+            await channel.edit(
+                category=category,
+                position=category.channels[0].position,
+                sync_permissions=True,
+            )
+        except discord.errors.HTTPException:
+            await channel.send(
+                embed=Embed(
+                    title="Could Not Archive",
+                    description=(
+                        f"The archive is completely full, this channel will be archived when possible.\n\nDon't forget "
+                        f"to give some kudos to show your appreciation by reacting to the most helpful people with "
+                        f"{beginner}, {intermediate}, or {expert}!"
+                    ),
+                    color=0x990000,
+                ).set_thumbnail(
+                    url="https://cdn.discordapp.com/emojis/651959497698574338.png?v=1"
+                )
+            )
+            return
 
         content = ["📜 This channel has been moved to the archive."]
         if owner:
-            beginner = utils.get(self.client.emojis, name="beginner")
-            intermediate = utils.get(self.client.emojis, name="intermediate")
-            expert = utils.get(self.client.emojis, name="expert")
-
             content.insert(0, owner.mention)
             content.append(
                 f"You can reclaim it by reacting with a ✅.\n\nDon't forget to give some kudos to show your "
