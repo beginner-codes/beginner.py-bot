@@ -83,7 +83,9 @@ class StatisticsCog(Cog):
         ax.bar(labels, lower, width, label="Min")
 
         ax.set_ylabel("Online")
-        ax.set_title("Monthly Online Members")
+        ax.set_title(
+            f"Monthly Online Members ({datetime.utcnow().strftime('%B %d, %Y')})"
+        )
         ax.legend()
 
         image = BytesIO()
