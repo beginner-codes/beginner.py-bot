@@ -72,7 +72,7 @@ class StatisticsCog(Cog):
         upper, lower, labels = [], [], []
         for record in records:
             taken: datetime = record.taken
-            labels.append(taken.day)
+            labels.append(str(taken.day))
             upper.append(record.max_seen)
             lower.append(record.min_seen)
 
