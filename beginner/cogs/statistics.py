@@ -73,6 +73,7 @@ class StatisticsCog(Cog):
 
         ax.set_ylabel("Online")
         ax.set_title("Weekly Online Members")
+        ax.legend()
 
         image = BytesIO()
         plt.savefig(image, format="png")
