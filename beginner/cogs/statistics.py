@@ -1,12 +1,14 @@
+from beginner.beginner import BeginnerCog
 from beginner.cog import Cog
 from beginner.models.online import OnlineSample
 from beginner.scheduler import schedule
 from beginner.tags import tag
 from datetime import datetime, timedelta
-from discord import Embed, Status
+from discord import Embed, Status, File
 from enum import Enum
+from io import BytesIO
 from peewee import DoesNotExist
-from beginner.beginner import BeginnerCog
+import matplotlib.pyplot as plt
 
 
 class OnlineSampleType(Enum):
@@ -41,6 +43,42 @@ class StatisticsCog(Cog):
                 count += 1
 
         return count
+
+    @Cog.command()
+    async def statslastweek(self, ctx):
+        last_week = datetime.utcnow().replace(
+            hour=0, minute=0, second=0, microsecond=0
+        ) - timedelta(days=7)
+        records: list[OnlineSample] = (
+            OnlineSample.select()
+            .where(
+                OnlineSample.sample_type == OnlineSampleType.DAY,
+                OnlineSample.taken >= last_week,
+            )
+            .order_by(OnlineSample.taken.asc())
+            .execute()
+        )
+        upper, lower, labels = [], [], []
+        for record in records:
+            taken: datetime = datetime.fromisoformat(record.taken)
+            labels.append(taken.strftime("%A"))
+            upper.append(record.max_seen)
+            lower.append(record.min_seen)
+
+        width = 0.35  # the width of the bars: can also be len(x) sequence
+        fig, ax = plt.subplots()
+
+        ax.bar(labels, upper, width, label="Max")
+        ax.bar(labels, lower, width, label="Min")
+
+        ax.set_ylabel("Online")
+        ax.set_title("Weekly Online Members")
+
+        image = BytesIO()
+        plt.savefig(image, format="png")
+        image.seek(0)
+
+        await ctx.send(file=File(fp=image, filename="weekly-stats.png"))
 
     @Cog.command()
     async def stats(self, ctx):
