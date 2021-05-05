@@ -326,6 +326,7 @@ if __name__ == "__main__":
             "unicodedata",
             "unittest",
             "weakref",
+            "urllib.parse",
         },
     )
     data = json.loads(sys.stdin.read(-1))
