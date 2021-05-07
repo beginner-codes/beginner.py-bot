@@ -288,7 +288,7 @@ class ChannelManager(Injectable):
             channel.send(
                 f"{owner.mention}",
                 embed=Embed(
-                    title="Ask Your Question Here",
+                    title=f"{owner.display_name}#{owner.discriminator} Ask Your Question Here",
                     description=(
                         "Make sure to be as clear as possible and provide as many details as you can:\n• Code 💻\n• "
                         "Errors ⚠️\n• Etc.\n*Someone will try to help you when they get a chance.*"
