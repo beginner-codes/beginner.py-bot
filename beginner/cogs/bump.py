@@ -47,6 +47,33 @@ class Bumping(Cog):
             self._role = self.get_role("bumpers")
         return self._role
 
+    @Cog.command()
+    async def bumpers(self, ctx):
+        scores = (
+            Points.select(Points.user_id, peewee.fn.sum(Points.points))
+            .order_by(peewee.fn.sum(Points.points).desc())
+            .group_by(Points.user_id)
+            .filter(
+                Points.point_type == "BUMP",
+                Points.awarded
+                > datetime.utcnow() - timedelta(days=self._bump_score_days),
+            )
+            .limit(5)
+            .tuples()
+        )
+        message = []
+        for emoji, (user_id, points) in zip(["🥇", "🥈", "🥉", "-", "-"], scores):
+            member: discord.Member = self.server.get_member(user_id)
+            message.append(
+                f"{emoji} {member.display_name.ljust(30)} {str(points).rjust(2)}"
+            )
+
+        await ctx.send(
+            embed=discord.Embed(
+                title="🏆 Bumping Leaderboard 🏆", description="\n".join(message)
+            )
+        )
+
     @Cog.command(name="d", aliases=["D"])
     async def bump_handler(self, ctx: discord.ext.commands.Context, action: str):
         if not action.casefold() == "bump":
