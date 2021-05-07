@@ -217,19 +217,18 @@ class Bumping(Cog):
         await message.delete()
 
     async def award_points(self, message: discord.Message):
-        king_id = self.get_bump_king_id()
         self.award_bump_points(message.author.id)
 
-        new_king_id = self.get_bump_king_id()
-        if new_king_id != king_id:
-            self.log_bump("New king", message.author)
-            role = self.get_role("bump king")
+        king_id = self.get_bump_king_id()
+        king = self.server.get_member(king_id)
+        role: discord.Role = self.get_role("bump king")
+        if role not in king.roles:
+            self.log_bump("New king", king)
 
-            if king_id:
-                await self.server.get_member(king_id).remove_roles(role)
+            for member in role.members:
+                await member.remove_roles(role)
 
-            new_king = self.server.get_member(new_king_id)
-            await new_king.add_roles(role)
+            await king.add_roles(role)
             await self.announce_king()
 
     @Cog.command(
