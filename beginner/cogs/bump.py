@@ -62,7 +62,7 @@ class Bumping(Cog):
             .tuples()
         )
         message = []
-        for emoji, (user_id, points) in zip(["🥇", "🥈", "🥉", "-", "-"], scores):
+        for emoji, (user_id, points) in zip(["🥇", "🥈", "🥉", "✨", "✨"], scores):
             member: discord.Member = self.server.get_member(user_id)
             message.append(f"{emoji} {member.mention} **{str(points)}**")
 
