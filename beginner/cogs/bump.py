@@ -68,7 +68,9 @@ class Bumping(Cog):
 
         await ctx.send(
             embed=discord.Embed(
-                title="🏆 Bumping Leaderboard 🏆", description="\n".join(message)
+                title="🏆 Bumping Leaderboard 🏆",
+                description="\n".join(message),
+                color=YELLOW,
             )
         )
 
