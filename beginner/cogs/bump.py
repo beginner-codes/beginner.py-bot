@@ -66,7 +66,9 @@ class Bumping(Cog):
             ["🥇", "🥈", "🥉"] + ["✨"] * max(len(scores) - 3, 0), scores
         ):
             member: discord.Member = self.server.get_member(user_id)
-            message.append(f"{emoji} {member.mention} **{str(points)}**")
+            message.append(
+                f"{emoji} {member.mention if member else '*Unknown*'} **{str(points)}**"
+            )
 
         await ctx.send(
             embed=discord.Embed(
