@@ -58,11 +58,13 @@ class Bumping(Cog):
                 Points.awarded
                 > datetime.utcnow() - timedelta(days=self._bump_score_days),
             )
-            .limit(5)
+            .limit(15)
             .tuples()
         )
         message = []
-        for emoji, (user_id, points) in zip(["🥇", "🥈", "🥉", "✨", "✨"], scores):
+        for emoji, (user_id, points) in zip(
+            ["🥇", "🥈", "🥉"] + ["✨"] * max(len(scores) - 3, 0), scores
+        ):
             member: discord.Member = self.server.get_member(user_id)
             message.append(f"{emoji} {member.mention} **{str(points)}**")
 
