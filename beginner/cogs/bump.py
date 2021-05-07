@@ -58,7 +58,7 @@ class Bumping(Cog):
                 Points.awarded
                 > datetime.utcnow() - timedelta(days=self._bump_score_days),
             )
-            .limit(15)
+            .limit(30)
             .tuples()
         )
         message = []
