@@ -266,12 +266,24 @@ class ChannelManager(Injectable):
         if helping_category.channels:
             args["position"] = helping_category.channels[0].position
 
-        message, *_ = await channel.history(limit=1).flatten()
-
         help_channels = await self._get_help_channels(channel.guild)
         if len(help_channels) == 50:
             await self.archive_channel(help_channels[0])
 
+        await channel.edit(**args)
+        new_message = await channel.send(
+            f"{owner.mention}",
+            embed=Embed(
+                title=f"{owner.display_name}#{owner.discriminator} Ask Your Question Here",
+                description=(
+                    "Make sure to be as clear as possible and provide as many details as you can:\n• Code 💻\n• "
+                    "Errors ⚠️\n• Etc.\n*Someone will try to help you when they get a chance.*"
+                ),
+                color=0x00FF66,
+            ),
+        )
+
+        message, *_ = await channel.history(limit=1, before=new_message).flatten()
         await asyncio.gather(
             message.delete(),
             self.labels.set(
@@ -283,18 +295,6 @@ class ChannelManager(Injectable):
             self.labels.set("text_channel", channel.id, "owner", owner.id),
             self.labels.set(
                 "text_channel", channel.id, "last-active", datetime.utcnow().isoformat()
-            ),
-            channel.edit(**args),
-            channel.send(
-                f"{owner.mention}",
-                embed=Embed(
-                    title=f"{owner.display_name}#{owner.discriminator} Ask Your Question Here",
-                    description=(
-                        "Make sure to be as clear as possible and provide as many details as you can:\n• Code 💻\n• "
-                        "Errors ⚠️\n• Etc.\n*Someone will try to help you when they get a chance.*"
-                    ),
-                    color=0x00FF66,
-                ),
             ),
             self.setup_help_channel(help_category),
         )
