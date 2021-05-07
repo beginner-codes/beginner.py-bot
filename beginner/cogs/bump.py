@@ -64,9 +64,7 @@ class Bumping(Cog):
         message = []
         for emoji, (user_id, points) in zip(["🥇", "🥈", "🥉", "-", "-"], scores):
             member: discord.Member = self.server.get_member(user_id)
-            message.append(
-                f"{emoji} {member.display_name.ljust(30)} {str(points).rjust(2)}"
-            )
+            message.append(f"{emoji} {member.mention} **{str(points)}**")
 
         await ctx.send(
             embed=discord.Embed(
