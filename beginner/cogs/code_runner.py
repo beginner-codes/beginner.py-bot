@@ -251,7 +251,7 @@ class CodeRunner(Cog):
         )
         data = json.dumps(
             {
-                "code": code,
+                "code": code.replace(" ", " "),
                 "input": user_input,
             }
         ).encode()
