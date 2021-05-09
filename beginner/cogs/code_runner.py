@@ -66,11 +66,12 @@ class CodeRunner(Cog):
             await self._exec(
                 ctx.message,
                 ref_message.content[ref_message.content.find("`") :].strip(),
+                ctx.author,
                 user_input=message.clean_content[message.clean_content.find(" ") + 1 :],
             )
             return
 
-        await self._exec(ctx.message, content)
+        await self._exec(ctx.message, content, ctx.author)
 
     @Cog.listener()
     async def on_raw_reaction_add(self, reaction: discord.RawReactionActionEvent):
@@ -134,6 +135,10 @@ class CodeRunner(Cog):
         title = "✅ Exec - Success"
         color = BLUE
 
+        restricted = not member.guild_permissions.manage_messages
+        if not restricted:
+            title += " (Super User 🦸)"
+
         if user_input:
             code, *_ = re.match(
                 r"^.*?```(?:py|python)?\s*(.+?)\s*```.*$", content, re.DOTALL
@@ -143,7 +148,12 @@ class CodeRunner(Cog):
                 r"^.*?```(?:py|python)?\s*(.+?)\s*```\s*(.+)?$", content, re.DOTALL
             ).groups()
 
-        out, err, duration = await self.code_runner("exec", code, user_input)
+        out, err, duration = await self.code_runner(
+            "exec",
+            code,
+            user_input,
+            restricted=restricted,
+        )
 
         output = [out]
         if err:
@@ -241,7 +251,7 @@ class CodeRunner(Cog):
         )
 
     async def code_runner(
-        self, mode: str, code: str, user_input: str = ""
+        self, mode: str, code: str, user_input: str = "", restricted=True
     ) -> Tuple[str, str, float]:
         proc = await asyncio.create_subprocess_shell(
             f"python -m beginner.runner {mode}",
@@ -253,6 +263,7 @@ class CodeRunner(Cog):
             {
                 "code": code.replace(" ", " "),
                 "input": user_input,
+                "restricted": restricted,
             }
         ).encode()
         self.logger.debug(f"Running code:\n{code}")

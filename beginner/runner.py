@@ -52,23 +52,26 @@ class Executer:
                 attributes.add(node.attr)
         return attributes
 
-    def generate_builtins(self):
+    def generate_builtins(self, restricted=True):
         b = __builtins__
         if not isinstance(b, dict):
             b = {name: getattr(b, name) for name in dir(b)}
-        builtins = {name: b[name] for name in b if name in self.name_whitelist}
+        builtins = {
+            name: b[name] for name in b if name in self.name_whitelist or not restricted
+        }
         if "input" in builtins:
             builtins["input"] = self.input
-        if "getattr" in builtins:
-            builtins["getattr"] = self.getattr
-        if "__import__" in builtins:
-            builtins["__import__"] = self.importer
+        if restricted:
+            if "getattr" in builtins:
+                builtins["getattr"] = self.getattr
+            if "__import__" in builtins:
+                builtins["__import__"] = self.importer
         builtins["getsizeof"] = sys.getsizeof
         return builtins
 
-    def generate_globals(self):
+    def generate_globals(self, restricted=True):
         runtime_globals = self.globals.copy()
-        runtime_globals["__builtins__"] = self.generate_builtins()
+        runtime_globals["__builtins__"] = self.generate_builtins(restricted)
         return runtime_globals
 
     def generate_locals(self):
@@ -96,7 +99,7 @@ class Executer:
         print(line)
         return line
 
-    def run(self, code, user_input, runner=exec, docs=False):
+    def run(self, code, user_input, runner=exec, docs=False, restricted=True):
         self.stdin = io.StringIO(user_input)
         exceptions = False
 
@@ -112,7 +115,7 @@ class Executer:
                 exceptions = True
             else:
                 dunder_attributes = self.dunder_attributes(code_tree)
-                if dunder_attributes - self.dunder_whitelist:
+                if restricted and dunder_attributes - self.dunder_whitelist:
                     prohibited_attributes = ", ".join(
                         sorted(dunder_attributes - self.dunder_whitelist)
                     )
@@ -124,7 +127,7 @@ class Executer:
                 if not exceptions:
                     code_object = compile(code_tree, "<string>", runner.__name__)
                     try:
-                        ns_globals = self.generate_globals()
+                        ns_globals = self.generate_globals(restricted)
                         _, hard = resource.getrlimit(resource.RLIMIT_CPU)
                         resource.setrlimit(resource.RLIMIT_AS, (10000, 10000))
                         resource.setrlimit(resource.RLIMIT_CPU, (2, hard))
@@ -333,4 +336,6 @@ if __name__ == "__main__":
     runners = {"eval": eval, "exec": exec, "docs": eval}
     arg = len(sys.argv) < 2 or sys.argv[1]
     runner = runners.get(arg, exec)
-    executer.run(data["code"], data["input"], runner, arg == "docs")
+    executer.run(
+        data["code"], data["input"], runner, arg == "docs", data.get("restricted", True)
+    )
