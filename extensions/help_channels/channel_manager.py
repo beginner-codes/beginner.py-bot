@@ -175,6 +175,7 @@ class ChannelManager(Injectable):
         await channel.edit(
             name=self._generate_channel_title(owner.display_name, topic, icon)
         )
+        await channel.send(f"Topic changed to {icon}{topic}", delete_after=10)
 
     async def setup_help_channel(self, category: CategoryChannel):
         channels = await self._get_archive_channels(category.guild)
