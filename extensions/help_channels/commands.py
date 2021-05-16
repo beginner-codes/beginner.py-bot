@@ -55,10 +55,13 @@ class HelpRotatorCommandsExtension(dippy.Extension):
 
     @dippy.Extension.command("!topic")
     async def topic(self, message: Message):
+        await message.delete()
+
         rate_limit = 30
         if time.time() - self._topic_limit < rate_limit:
             await message.channel.send(
-                f"Please wait {rate_limit - int(time.time() - self._topic_limit)} seconds to set the topic."
+                f"Please wait {rate_limit - int(time.time() - self._topic_limit)} seconds to set the topic.",
+                delete_after=10,
             )
             return
 
