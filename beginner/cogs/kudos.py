@@ -48,7 +48,7 @@ class Kudos(Cog):
         scores = kudos.get_highest_kudos(100000)
         file = BytesIO()
         file.writelines(
-            f"{member_id},{points}".encode() for member_id, points in scores
+            f"{member_id},{points}\n".encode() for member_id, points in scores
         )
         file.seek(0)
         await ctx.send(
