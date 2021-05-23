@@ -86,7 +86,8 @@ class HelpRotatorCommandsExtension(dippy.Extension):
         if not is_a_helper and not self.manager.allowed_topic(topic):
             await message.channel.send(
                 "That is not an allowed topic.\nAllowed Topics:\n"
-                + (", ".join(self.manager.allowed_topics()))
+                + (", ".join(self.manager.allowed_topics())),
+                delete_after=10,
             )
             return
 
