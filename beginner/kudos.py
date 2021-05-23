@@ -25,15 +25,17 @@ def get_user_kudos(user_id) -> int:
     return 0 if kudos is None else kudos
 
 
-def get_highest_kudos(num_users: int) -> List[Tuple[int, int]]:
-    return (
+def get_highest_kudos(num_users: int = -1) -> List[Tuple[int, int]]:
+    query = (
         Points.select(Points.user_id, peewee.fn.SUM(Points.points))
-        .limit(max(num_users, 1))
         .group_by(Points.user_id)
         .order_by(peewee.fn.SUM(Points.points).desc())
         .where(Points.point_type == "KUDOS")
-        .tuples()
     )
+    if num_users > 0:
+        query.limit(num_users)
+
+    return query.tuples()
 
 
 def remove_kudos(message_id: int, giver_id: int):
