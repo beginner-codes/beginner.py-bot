@@ -310,7 +310,7 @@ class ChannelManager(Injectable):
             ),
         )
         count = len(help_category.channels) - 1
-        while count < 3:
+        while count < 2:
             await self.setup_help_channel(help_category)
             count += 1
 
