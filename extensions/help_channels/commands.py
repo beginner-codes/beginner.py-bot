@@ -69,14 +69,25 @@ class HelpRotatorCommandsExtension(dippy.Extension):
         if message.channel.category.id not in categories.values():
             return
 
+        owner_id = self.manager.get_owner(message.channel, just_id=True)
+
         helpers = utils.get(message.guild.roles, name="helpers")
-        if helpers not in message.author.roles:
+        is_a_helper = helpers in message.author.roles
+        if not is_a_helper or owner_id != message.author.id:
             return
 
         *_, topic = message.content.partition(" ")
         topic = self.manager.sluggify(topic)
+
         if not topic:
-            await message.channel.send("You must provide a topic")
+            await message.channel.send("You must provide a topic", delete_after=10)
+            return
+
+        if not is_a_helper and not self.manager.allowed_topic(topic):
+            await message.channel.send(
+                "That is not an allowed topic.\nAllowed Topics:\n"
+                + (", ".join(self.manager.allowed_topics()))
+            )
             return
 
         self._topic_limit = time.time()
