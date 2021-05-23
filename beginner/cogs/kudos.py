@@ -54,7 +54,7 @@ class Kudos(Cog):
             f"User kudos totals as of {datetime.utcnow().date().isoformat()}",
             file=discord.File(
                 file,
-                filename=f"member-kudos-{datetime.utcnow().date().isoformat().replace('-', '')}",
+                filename=f"member-kudos-{datetime.utcnow().date().isoformat().replace('-', '')}.csv",
             ),
         )
 
