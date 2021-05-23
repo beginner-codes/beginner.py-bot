@@ -57,6 +57,12 @@ class ChannelManager(Injectable):
             "💾": "os",
         }
 
+    def allowed_topic(self, topic: str) -> bool:
+        return topic.casefold() in self._topics
+
+    def allowed_topics(self) -> list[str]:
+        return sorted(self._topics)
+
     async def archive_channel(self, channel: TextChannel, remove_owner: bool = False):
         categories = await self.get_categories(channel.guild)
         category = channel.guild.get_channel(categories["help-archive"])
