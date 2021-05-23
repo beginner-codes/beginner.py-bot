@@ -157,6 +157,9 @@ class Kudos(Cog):
 
     @Cog.listener()
     async def on_raw_reaction_add(self, reaction):
+        if not self.settings.get("KUDOS_ENABLED", True):
+            return
+
         if reaction.emoji.id not in self.reactions:
             return
 
