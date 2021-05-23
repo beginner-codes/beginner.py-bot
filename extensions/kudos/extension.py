@@ -18,27 +18,6 @@ class KudosExtension(dippy.Extension):
     manager: KudosManager
     help_channels: ChannelManager
 
-    @dippy.Extension.listener("ready")
-    async def ready_(self):
-        channel = self.client.get_channel(846164230058672209)
-        emoji = await self.manager.get_kudos_emoji(channel.guild)
-        await channel.send(
-            embed=Embed(
-                title="Kudos",
-                description=(
-                    "You can give people kudos by reacting to their message with these emoji:\n"
-                    + (
-                        "\n".join(
-                            f"{self.manager.get_emoji(channel.guild, emoji)} {points} kudos"
-                            for emoji, points in emoji.items()
-                        )
-                    )
-                    + "\nYou can also earn kudos by sending one message every day (UTC) and maintaining that streak."
-                ),
-                color=0x4285F4,
-            ).set_thumbnail(url=self.manager.get_emoji(channel.guild, "expert").url)
-        )
-
     @dippy.Extension.command("!kudos leaderboard")
     async def get_kudos_leaderboard(self, message: Message):
         leaders = await self.manager.get_leaderboard(message.guild)
