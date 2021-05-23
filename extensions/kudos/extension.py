@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 from discord import Embed, Guild, Message, RawReactionActionEvent, TextChannel, errors
 from extensions.kudos.manager import KudosManager
 from extensions.help_channels.channel_manager import ChannelManager
+from itertools import islice
 import dippy
 
 
@@ -17,6 +18,27 @@ class KudosExtension(dippy.Extension):
     manager: KudosManager
     help_channels: ChannelManager
 
+    @dippy.Extension.listener("ready")
+    async def ready_(self):
+        channel = self.client.get_channel(846164230058672209)
+        emoji = await self.manager.get_kudos_emoji(channel.guild)
+        await channel.send(
+            embed=Embed(
+                title="Kudos",
+                description=(
+                    "You can give people kudos by reacting to their message with these emoji:\n"
+                    + (
+                        "\n".join(
+                            f"{self.manager.get_emoji(channel.guild, emoji)} {points} kudos"
+                            for emoji, points in emoji.items()
+                        )
+                    )
+                    + "\nYou can also earn kudos by sending one message every day (UTC) and maintaining that streak."
+                ),
+                color=0x4285F4,
+            ).set_thumbnail(url=self.manager.get_emoji(channel.guild, "expert").url)
+        )
+
     @dippy.Extension.command("!kudos leaderboard")
     async def get_kudos_leaderboard(self, message: Message):
         leaders = await self.manager.get_leaderboard(message.guild)
@@ -25,7 +47,9 @@ class KudosExtension(dippy.Extension):
             user = await self.manager.get_kudos(message.author)
 
         leaderboard = []
-        for index, (member, member_kudos) in enumerate(leaders.items(), start=1):
+        for index, (member, member_kudos) in islice(
+            enumerate(leaders.items(), start=1), 0, 5
+        ):
             name = member.display_name if member else "*Old Member*"
             entry = f"{index}. {name} has {member_kudos} kudos"
             if member == message.author:
