@@ -47,7 +47,9 @@ class Kudos(Cog):
     async def exportkudos(self, ctx: commands.Context):
         scores = kudos.get_highest_kudos(100000)
         file = BytesIO()
-        file.writelines(f"{member_id},{points}" for member_id, points in scores)
+        file.writelines(
+            f"{member_id},{points}".encode() for member_id, points in scores
+        )
         await ctx.send(
             f"User kudos totals as of {datetime.utcnow().date().isoformat()}",
             file=discord.File(
