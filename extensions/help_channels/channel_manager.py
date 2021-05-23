@@ -302,8 +302,11 @@ class ChannelManager(Injectable):
             self.labels.set(
                 "text_channel", channel.id, "last-active", datetime.utcnow().isoformat()
             ),
-            self.setup_help_channel(help_category),
         )
+        count = len(help_category.channels) - 1
+        while count < 3:
+            await self.setup_help_channel(help_category)
+            count += 1
 
     async def _get_archive_channels(self, guild: Guild) -> list[TextChannel]:
         archive = guild.get_channel((await self.get_categories(guild))["help-archive"])
