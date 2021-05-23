@@ -50,6 +50,7 @@ class Kudos(Cog):
         file.writelines(
             f"{member_id},{points}".encode() for member_id, points in scores
         )
+        file.seek(0)
         await ctx.send(
             f"User kudos totals as of {datetime.utcnow().date().isoformat()}",
             file=discord.File(
