@@ -61,6 +61,9 @@ class Kudos(Cog):
 
     @Cog.command(aliases=["k"])
     async def kudos(self, ctx: commands.Context, option: str = ""):
+        if not self.settings.get("KUDOS_ENABLED", True):
+            return
+
         if self.dev_author and ctx.author.id != self.dev_author:
             return
 
