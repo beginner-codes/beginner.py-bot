@@ -5,6 +5,7 @@ from beginner.cog import Cog, commands
 from beginner.colors import *
 from datetime import datetime, timedelta
 from typing import Dict
+from io import BytesIO
 
 
 class Kudos(Cog):
@@ -41,6 +42,19 @@ class Kudos(Cog):
                 {emoji.id: name for name, emoji in self.reactions.items()}
             )
         return self._reactions
+
+    @Cog.command()
+    async def exportkudos(self, ctx: commands.Context):
+        scores = kudos.get_highest_kudos(100000)
+        file = BytesIO()
+        file.writelines(f"{member_id},{points}" for member_id, points in scores)
+        await ctx.send(
+            f"User kudos totals as of {datetime.utcnow().date().isoformat()}",
+            file=discord.File(
+                file,
+                filename=f"member-kudos-{datetime.utcnow().date().isoformat().replace('-', '')}",
+            ),
+        )
 
     @Cog.command(aliases=["k"])
     async def kudos(self, ctx: commands.Context, option: str = ""):
