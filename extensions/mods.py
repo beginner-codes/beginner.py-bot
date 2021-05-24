@@ -4,6 +4,12 @@ import dippy
 
 
 class ModeratorsExtension(dippy.Extension):
+    client: dippy.Client
+
+    @dippy.Extension.listener("ready")
+    async def on_ready(self):
+        self.client.remove_command("help")
+
     @dippy.Extension.command("!count bans")
     async def cleanup_help_section(self, message: Message):
         if not message.author.guild_permissions.kick_members:
