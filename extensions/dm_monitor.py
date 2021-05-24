@@ -25,7 +25,10 @@ class DMMonitoringExtension(dippy.Extension):
 
     @dippy.Extension.listener("message")
     async def on_message(self, message: discord.Message):
-        if not isinstance(message.channel, discord.DMChannel):
+        if (
+            not isinstance(message.channel, discord.DMChannel)
+            or message.author == self.client.user
+        ):
             return
 
         channel = await self.get_logging_channel()
@@ -36,6 +39,27 @@ class DMMonitoringExtension(dippy.Extension):
                 color=0xFFE873,
             )
         )
+
+        warned = await self.labels.get(
+            "user", message.author.id, "dm-logging-channel-warning", default=False
+        )
+        if not warned:
+            await message.channel.send(
+                message.author.mention,
+                embed=discord.Embed(
+                    title="Hi!",
+                    description=(
+                        "Feel free to use my commands here in my DMs, I just want you to be aware that all messages are"
+                        " monitored."
+                    ),
+                    color=0xFFE873,
+                ).set_thumbnail(
+                    url="https://cdn.discordapp.com/emojis/711749954837807135.png?v=1"
+                ),
+            )
+            await self.labels.set(
+                "user", message.author.id, "dm-logging-channel-warning", True
+            )
 
     async def get_logging_channel(self) -> discord.TextChannel:
         if not self.log_channel:
