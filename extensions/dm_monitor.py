@@ -31,7 +31,7 @@ class DMMonitoringExtension(dippy.Extension):
         channel = await self.get_logging_channel()
         await channel.send(
             embed=discord.Embed(
-                title=f"New DM From @{message.author}",
+                title=f"New DM From @{message.author} ({message.author.id})",
                 description=message.clean_content,
                 color=0xFFE873,
             )
