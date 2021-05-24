@@ -33,7 +33,7 @@ class DMMonitoringExtension(dippy.Extension):
             embed=discord.Embed(
                 title=f"New DM From @{message.author}",
                 description=message.clean_content,
-                color=0x4285F4,
+                color=0xFFE873,
             )
         )
 
