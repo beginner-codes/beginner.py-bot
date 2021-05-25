@@ -285,6 +285,7 @@ if __name__ == "__main__":
             "__call__",
             "__iter__",
             "__slots__",
+            "__class__",
         },
         {
             "abc",
