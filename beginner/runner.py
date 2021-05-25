@@ -297,6 +297,7 @@ if __name__ == "__main__":
             "calendar",
             "cmath",
             "collections",
+            "collections.abc",
             "contextlib",
             "copy",
             "copyreg",
