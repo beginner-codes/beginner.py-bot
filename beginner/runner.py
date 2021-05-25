@@ -64,8 +64,12 @@ class Executer:
         if restricted:
             if "getattr" in builtins:
                 builtins["getattr"] = self.getattr
-            if "__import__" in builtins:
-                builtins["__import__"] = self.importer
+        if "__import__" in builtins:
+            builtins["__import__"] = (
+                self.importer
+                if restricted
+                else lambda *args, **kwargs: __import__(*args, **kwargs)
+            )
         builtins["getsizeof"] = sys.getsizeof
         return builtins
 
