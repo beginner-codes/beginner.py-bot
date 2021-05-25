@@ -286,6 +286,7 @@ if __name__ == "__main__":
             "__iter__",
             "__slots__",
             "__class__",
+            "__dict__",
         },
         {
             "abc",
