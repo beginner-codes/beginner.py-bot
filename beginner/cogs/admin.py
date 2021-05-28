@@ -10,10 +10,13 @@ import discord.ext.commands
 
 class Admin(Cog):
     @Cog.command()
-    @commands.has_guild_permissions(manage_messages=True)
     async def sus(self, ctx: discord.ext.commands.Context):
+        members = [ctx.author]
+        if ctx.author.guild_permissions.manage_messages:
+            members = ctx.message.mentions
+
         role = discord.utils.get(ctx.guild.roles, name="🚨sus🚨")
-        for user in ctx.message.mentions:
+        for user in members:
             if isinstance(user, discord.Member):
                 await user.add_roles(role)
                 schedule(
