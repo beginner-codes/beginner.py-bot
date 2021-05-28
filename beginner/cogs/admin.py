@@ -1,11 +1,38 @@
 from beginner.cog import Cog, commands
 from beginner.colors import *
+from beginner.scheduler import schedule
+from beginner.tags import tag
+from datetime import timedelta
 import ast
 import discord
 import discord.ext.commands
 
 
 class Admin(Cog):
+    @Cog.command()
+    @commands.has_guild_permissions(manage_messages=True)
+    async def sus(self, ctx: discord.ext.commands.Context):
+        role = discord.utils.get(ctx.guild.roles, name="🚨sus🚨")
+        for user in ctx.message.mentions:
+            if isinstance(user, discord.Member):
+                await user.add_roles(role)
+                schedule(
+                    "remove-sus",
+                    timedelta(days=1),
+                    self.remove_sus,
+                    user.id,
+                    ctx.guild.id,
+                )
+                await ctx.send(f"🚨 {user.mention} is sus 🚨")
+
+    @tag("schedule", "remove-sus")
+    async def remove_sus(self, user_id, guild_id):
+        guild = self.client.get_guild(guild_id)
+        member = guild.get_member(user_id)
+        if member:
+            role = discord.utils.get(guild.roles, name="🚨sus🚨")
+            await member.remove_roles(role)
+
     @Cog.group()
     @commands.has_guild_permissions(manage_messages=True)
     async def silence(self, ctx: discord.ext.commands.Context):
