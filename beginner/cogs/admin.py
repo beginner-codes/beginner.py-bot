@@ -18,14 +18,15 @@ class Admin(Cog):
         role = discord.utils.get(ctx.guild.roles, name="🚨sus🚨")
         for user in members:
             if isinstance(user, discord.Member):
-                await user.add_roles(role)
-                schedule(
-                    "remove-sus",
-                    timedelta(days=1),
-                    self.remove_sus,
-                    user.id,
-                    ctx.guild.id,
-                )
+                if not role in user.roles:
+                    await user.add_roles(role)
+                    schedule(
+                        "remove-sus",
+                        timedelta(days=1),
+                        self.remove_sus,
+                        user.id,
+                        ctx.guild.id,
+                    )
                 await ctx.send(f"🚨 {user.mention} is sus 🚨")
 
     @tag("schedule", "remove-sus")
