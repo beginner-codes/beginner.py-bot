@@ -35,7 +35,11 @@ def schedule(
     # We don't want the "schedule" tag which is required for all tasks
     if "schedule" in tags:
         tags.remove("schedule")
-    when = datetime.now() + when if isinstance(when, timedelta) else when
+    when = (
+        datetime.utcnow() + when
+        if isinstance(when, timedelta)
+        else when.replace(tzinfo=datetime.utcnow().tzinfo)
+    )
     time = _seconds_until_run(when)
     payload = {"args": args, "kwargs": kwargs}
     if time <= 0:
