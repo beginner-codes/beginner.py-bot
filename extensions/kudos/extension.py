@@ -1,6 +1,14 @@
 import re
 from datetime import datetime, timedelta
-from discord import Embed, Guild, Message, RawReactionActionEvent, TextChannel, errors
+from discord import (
+    Embed,
+    Guild,
+    Message,
+    MessageType,
+    RawReactionActionEvent,
+    TextChannel,
+    errors,
+)
 from extensions.kudos.manager import KudosManager
 from extensions.help_channels.channel_manager import ChannelManager
 from itertools import islice
@@ -198,7 +206,7 @@ class KudosExtension(dippy.Extension):
         if (
             message.author.bot
             or not isinstance(message.channel, TextChannel)
-            or message.author.pending
+            or message.type == MessageType.new_member
         ):
             return
 
