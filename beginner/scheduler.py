@@ -54,7 +54,7 @@ def task_scheduled(name):
 async def _schedule(task: Scheduler, payload: Dict):
     """ Schedules a task and calls the """
     time = _seconds_until_run(task.when)
-    logger.debug(f"Scheduling {task.name} for {task.when}")
+    logger.debug(f"Scheduling {task.name} for {task.when} {task.when.tzinfo}")
     if time > 0:
         await asyncio.sleep(time)
     logger.debug(f"Triggering {task.name} running callbacks tagged {task.tag}")
