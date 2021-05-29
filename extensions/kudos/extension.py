@@ -162,7 +162,7 @@ class KudosExtension(dippy.Extension):
         )
         if (
             not channel.permissions_for(payload.member).send_messages
-            and channel.category != archive_category
+            and channel.category.id != archive_category
         ):
             return
 
