@@ -1,12 +1,16 @@
+import re
+
 from beginner.cog import Cog
 from beginner.colors import *
 from discord import Embed
+from discord.ext import commands
 from functools import cached_property
-from typing import Set
+from typing import Optional, Set
 import asyncio
 import beginner.config
 import discord
 import os.path
+import aiohttp
 import requests
 import requests.auth
 
@@ -45,6 +49,17 @@ class SpamCog(Cog):
     @cached_property
     def admin_channels(self) -> Set:
         return set(channel.name for channel in self.get_category("Staff").text_channels)
+
+    @Cog.command(name="delete-gist")
+    @commands.has_guild_permissions(manage_messages=True)
+    async def delete_gist(self, ctx, gist_url: str):
+        deleted = await self.delete_gist_by_url(gist_url)
+        message = "The Gist has been deleted"
+        if not deleted:
+            message = (
+                "There was an issue deleting the gist, make sure it's a valid gist URL"
+            )
+        await ctx.send(message, delete_after=15)
 
     @Cog.listener()
     async def on_message(self, message):
@@ -197,6 +212,36 @@ class SpamCog(Cog):
         )
         ret = resp.json()
         return ret.get("html_url")
+
+    async def delete_gist_by_url(self, gist_url: str) -> bool:
+        gist_id = self.get_gist_id_from_url(gist_url)
+        if not gist_id:
+            return False
+
+        return await self.delete_gist_by_id(gist_id)
+
+    async def delete_gist_by_id(self, gist_id: str) -> bool:
+        async with aiohttp.ClientSession() as session:
+            try:
+                await session.delete(
+                    f"https://api.github.com/gists/{gist_id}",
+                    auth=aiohttp.BasicAuth(*self.get_gist_auth()),
+                    raise_for_status=True,
+                )
+            except aiohttp.ClientResponseError:
+                return False
+            else:
+                return True
+
+    def get_gist_id_from_url(self, gist_url: str) -> Optional[str]:
+        try:
+            gist_id, *_ = re.match(
+                r"https?://gist.github.com/.+?/([a-z0-9]+)", gist_url, re.IGNORECASE
+            ).groups()
+        except AttributeError:
+            return None
+        else:
+            return gist_id
 
     def get_gist_auth(self):
         user = beginner.config.get_setting(
