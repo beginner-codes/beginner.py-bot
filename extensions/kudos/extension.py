@@ -86,7 +86,7 @@ class KudosExtension(dippy.Extension):
             Embed(
                 color=0x4285F4,
                 description=f"{message.author.mention} you have {user_kudos if user_kudos > 0 else 'no'} kudos",
-                title="Kudos Leaderboard",
+                title="Kudos Stats",
             )
             .set_thumbnail(
                 url="https://cdn.discordapp.com/emojis/669941420454576131.png?v=1"
