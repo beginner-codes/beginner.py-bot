@@ -67,8 +67,6 @@ class KudosExtension(dippy.Extension):
     async def get_kudos_leaderboard(self, message: Message):
         leaders = await self.manager.get_leaderboard(message.guild)
         user_kudos = leaders.get(message.author)
-        if user_kudos is None:
-            user = await self.manager.get_kudos(message.author)
 
         leaderboard = []
         for index, (member, member_kudos) in islice(
@@ -80,6 +78,10 @@ class KudosExtension(dippy.Extension):
                 entry = f"**{entry}**"
             leaderboard.append(entry)
 
+        current_streak, best_streak = await self.manager.get_streaks(message.author)
+
+        plural = lambda num: "s" * (num != 1)
+
         embed = (
             Embed(
                 color=0x4285F4,
@@ -88,6 +90,14 @@ class KudosExtension(dippy.Extension):
             )
             .set_thumbnail(
                 url="https://cdn.discordapp.com/emojis/669941420454576131.png?v=1"
+            )
+            .add_field(
+                name="Activity Streak",
+                value=(
+                    f"Your current activity streak is {current_streak} day{plural(current_streak)}, and your best ever "
+                    f"streak is {best_streak} day{plural(best_streak)}."
+                ),
+                inline=False,
             )
             .add_field(name="Leader Board", value="\n".join(leaderboard), inline=False)
         )
