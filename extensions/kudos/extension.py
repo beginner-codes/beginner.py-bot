@@ -234,6 +234,9 @@ class KudosExtension(dippy.Extension):
                 weeks = current_streak // 7
                 reason = f"{message.author.mention} has messaged every day for {weeks} week{'s' * (weeks > 1)}!"
 
+        else:
+            await self.manager.set_streak(message.author, 1)
+
         await self.manager.give_kudos(message.author, kudos, reason)
 
     def _build_emoji(self, guild: Guild, emoji: dict[str, int]) -> str:
