@@ -63,8 +63,8 @@ class KudosExtension(dippy.Extension):
             .set_footer(text="!kudos leaderboard | !kudos help")
         )
 
-    @dippy.Extension.command("!kudos leaderboard")
-    async def get_kudos_leaderboard(self, message: Message):
+    @dippy.Extension.command("!kudos")
+    async def get_kudos_stats(self, message: Message):
         leaders = await self.manager.get_leaderboard(message.guild)
         user_kudos = leaders.get(message.author)
 
