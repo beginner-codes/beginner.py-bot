@@ -82,6 +82,13 @@ class KudosExtension(dippy.Extension):
 
         plural = lambda num: "s" * (num != 1)
 
+        streak = (
+            f"Your current activity streak is {current_streak} day{plural(current_streak)}, and your best ever streak "
+            f"is {best_streak} day{plural(best_streak)}."
+        )
+        if current_streak == best_streak:
+            streak = f"Your current and best ever streak is {current_streak} day{plural(current_streak)}!!!"
+
         embed = (
             Embed(
                 color=0x4285F4,
@@ -93,10 +100,7 @@ class KudosExtension(dippy.Extension):
             )
             .add_field(
                 name="Activity Streak",
-                value=(
-                    f"Your current activity streak is {current_streak} day{plural(current_streak)}, and your best ever "
-                    f"streak is {best_streak} day{plural(best_streak)}."
-                ),
+                value=streak,
                 inline=False,
             )
             .add_field(name="Leader Board", value="\n".join(leaderboard), inline=False)
