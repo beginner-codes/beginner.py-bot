@@ -54,8 +54,10 @@ class KudosExtension(dippy.Extension):
             .add_field(
                 name="Daily Streaks",
                 value=(
-                    "You can also earn 4 kudos for your first message in the server each day (UTC), and 32 for "
-                    "every 7th day in your streak."
+                    "You can also earn 4 kudos for your first message in the server each day, and 32 for "
+                    "every 7th day in your streak. The next day is considered to be 23.5hrs after the previous time "
+                    "that you received a daily kudos bonus. To maintain a streak your next message must come within 48"
+                    "hours of the last daily kudos bonus."
                 ),
                 inline=False,
             )
