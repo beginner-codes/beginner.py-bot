@@ -275,9 +275,8 @@ class ModerationCog(Cog):
             "WARN", member, ctx.author, message=reason, reference=message.id
         )
 
-    @Cog.command()
-    @commands.has_guild_permissions(manage_messages=True)
-    async def history(self, ctx, member: User):
+    @Cog.command(aliases=("whois",))
+    async def history(self, ctx, member: Member):
         history = list(
             ModAction.select()
             .limit(50)
@@ -285,7 +284,12 @@ class ModerationCog(Cog):
             .where(ModAction.user_id == member.id)
         )
         message = f"{member.mention} has no mod action history."
-        if len(history):
+        if (
+            ctx.invoked_with.casefold() == "whois"
+            or not ctx.author.guild_permissions.manage_messages
+        ):
+            message = f"Here are some details about {member.mention}"
+        elif len(history):
             action_items = []
             for action in history:
                 details = pickle.loads(action.details.encode())
@@ -295,10 +299,23 @@ class ModerationCog(Cog):
                 )
             message = "\n".join(action_items)
 
+        how_long_ago = datetime.utcnow() - member.joined_at
+        how_long_ago_msg = "Just now"
+        if how_long_ago > timedelta(days=1):
+            how_long_ago_msg = f"{how_long_ago // timedelta(days=1)} days ago"
+        elif how_long_ago > timedelta(hours=1):
+            how_long_ago_msg = f"{how_long_ago // timedelta(hours=1)} hours ago"
+        elif how_long_ago > timedelta(minutes=5):
+            how_long_ago_msg = f"{how_long_ago // timedelta(minutes=1)} minutes ago"
+
         await ctx.send(
-            embed=Embed(description=message, color=0xFFE873).set_author(
-                name="Mod Action History"
+            embed=Embed(
+                title=f"Mod History for {member}",
+                description=message,
+                color=0xFFE873,
             )
+            .add_field(name="Joined", value=how_long_ago_msg)
+            .add_field(name="User ID", value=str(member.id))
         )
 
     async def send_dm(
