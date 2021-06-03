@@ -3,7 +3,7 @@ from beginner.cogs.rules import RulesCog
 from beginner.models.mod_actions import ModAction
 from beginner.scheduler import schedule
 from datetime import timedelta, datetime
-from discord import Embed, Message, Member, User
+from discord import Embed, Message, Member, User, utils
 from beginner.tags import tag
 import discord
 import pickle
@@ -193,15 +193,15 @@ class ModerationCog(Cog):
         return len(messages)
 
     @Cog.command(name="mute")
-    async def mute(self, ctx, user, duration, *, reason: str):
+    async def mute(self, ctx, member: Member, duration, *, reason: str):
         if not (
             set(ctx.author.roles)
             & {self.get_role("jedi council"), self.get_role("mods")}
         ):
             return
 
-        member: Member = self.server.get_member(self.parse_user_id(user))
-        if self.get_role("muted") in member.roles:
+        muted_role = utils.get(ctx.guild.roles, name="Muted")
+        if muted_role in member.roles:
             await ctx.send(f"*{member.mention} is already muted*")
             return
 
@@ -230,7 +230,7 @@ class ModerationCog(Cog):
             "unmute-member", timedelta(minutes=minutes), self.unmute_member, member.id
         )
 
-        await member.add_roles(self.get_role("muted"), reason="Mod Mute")
+        await member.add_roles(muted_role, reason="Mod Mute")
         self.save_action(
             "MUTE", member, ctx.author, message=reason, reference=message.id
         )
