@@ -60,7 +60,7 @@ class KudosExtension(dippy.Extension):
                 inline=False,
             )
             .set_thumbnail(url=self.manager.get_emoji(self.client, "expert").url)
-            .set_footer(text="!kudos leaderboard | !kudos help")
+            .set_footer(text="!kudos | !kudos help")
         )
 
     @dippy.Extension.command("!kudos")
@@ -104,6 +104,7 @@ class KudosExtension(dippy.Extension):
                 inline=False,
             )
             .add_field(name="Leader Board", value="\n".join(leaderboard), inline=False)
+            .set_footer(text="!kudos | !kudos help")
         )
         await message.channel.send(embed=embed)
 
