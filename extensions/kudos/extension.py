@@ -65,6 +65,9 @@ class KudosExtension(dippy.Extension):
 
     @dippy.Extension.command("!kudos")
     async def get_kudos_stats(self, message: Message):
+        if "help" in message.content.casefold():
+            return
+
         leaders = await self.manager.get_leaderboard(message.guild)
         user_kudos = leaders.get(message.author)
 
