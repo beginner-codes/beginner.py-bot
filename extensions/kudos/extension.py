@@ -225,8 +225,8 @@ class KudosExtension(dippy.Extension):
             return
 
         last_active_date = await self.manager.get_last_active_date(message.author)
-        current_date = datetime.utcnow().date()
-        if last_active_date == current_date:
+        current_date = datetime.utcnow()
+        if timedelta(hours=23, minutes=30) >= current_date - last_active_date:
             return
 
         await self.manager.set_last_active_date(message.author)
@@ -245,7 +245,7 @@ class KudosExtension(dippy.Extension):
 
             notification = f"Gave {message.author} {kudos} kudos for joining us!!!"
 
-        elif last_active_date == current_date - timedelta(days=1):
+        elif last_active_date - current_date < timedelta(days=2):
             current_streak += 1
             await self.manager.set_streak(message.author, current_streak)
 

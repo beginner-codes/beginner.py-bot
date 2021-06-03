@@ -58,18 +58,18 @@ class KudosManager(Injectable):
     async def set_kudos(self, member: Member, amount: int):
         await self.labels.set(f"member[{member.guild.id}]", member.id, "kudos", amount)
 
-    async def get_last_active_date(self, member: Member) -> Optional[date]:
+    async def get_last_active_date(self, member: Member) -> Optional[datetime]:
         date_str = await self.labels.get(
             f"member[{member.guild.id}]", member.id, "last_active_date"
         )
-        return date.fromisoformat(date_str) if date_str else None
+        return datetime.fromisoformat(date_str) if date_str else None
 
     async def set_last_active_date(self, member: Member):
         await self.labels.set(
             f"member[{member.guild.id}]",
             member.id,
             "last_active_date",
-            datetime.utcnow().date().isoformat(),
+            datetime.utcnow().isoformat(),
         )
 
     async def get_streaks(self, member: Member) -> tuple[int, int]:
