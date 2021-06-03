@@ -84,6 +84,8 @@ class KudosExtension(dippy.Extension):
             leaderboard.append(entry)
 
         current_streak, best_streak = await self.manager.get_streaks(message.author)
+        last_active = await self.manager.get_last_active_date(message.author)
+        next_day = last_active + timedelta(hours=23, minutes=30)
 
         plural = lambda num: "s" * (num != 1)
 
@@ -93,6 +95,11 @@ class KudosExtension(dippy.Extension):
         )
         if current_streak == best_streak:
             streak = f"Your current and best ever streak is {current_streak} day{plural(current_streak)}!!!"
+
+        streak = (
+            f"{streak}\n*To maintain your streak be sure to send a message sometime around "
+            f"{next_day.strftime('%b %-d @ %-I:%M')} UTC.*"
+        )
 
         embed = (
             Embed(
