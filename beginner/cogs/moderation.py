@@ -284,11 +284,13 @@ class ModerationCog(Cog):
             .where(ModAction.user_id == member.id)
         )
         message = f"{member.mention} has no mod action history."
+        title = f"Mod History for {member}"
         if (
             ctx.invoked_with.casefold() == "whois"
             or not ctx.author.guild_permissions.manage_messages
         ):
             message = f"Here are some details about {member.mention}"
+            title = f"Who is {member}"
         elif len(history):
             action_items = []
             for action in history:
@@ -310,7 +312,7 @@ class ModerationCog(Cog):
 
         await ctx.send(
             embed=Embed(
-                title=f"Mod History for {member}",
+                title=title,
                 description=message,
                 color=0xFFE873,
             )
