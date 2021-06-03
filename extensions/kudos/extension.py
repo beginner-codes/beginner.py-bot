@@ -226,7 +226,10 @@ class KudosExtension(dippy.Extension):
 
         last_active_date = await self.manager.get_last_active_date(message.author)
         current_date = datetime.utcnow()
-        if timedelta(hours=23, minutes=30) >= current_date - last_active_date:
+        if (
+            last_active_date
+            and timedelta(hours=23, minutes=30) >= current_date - last_active_date
+        ):
             return
 
         await self.manager.set_last_active_date(message.author)
