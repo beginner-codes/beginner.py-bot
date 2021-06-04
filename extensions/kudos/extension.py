@@ -96,9 +96,16 @@ class KudosExtension(dippy.Extension):
         if current_streak == best_streak:
             streak = f"Your current and best ever streak is {current_streak} day{plural(current_streak)}!!!"
 
+        thats_in = next_day - datetime.utcnow()
+        thats_in_msg = f"{thats_in.total_seconds()} seconds"
+        if thats_in > timedelta(hours=1):
+            thats_in_msg = f"{thats_in // timedelta(hours=1)} hours"
+        elif thats_in > timedelta(minutes=1):
+            thats_in_msg = f"{thats_in // timedelta(minutes=1)} minutes"
+
         streak = (
             f"{streak}\n*To maintain your streak be sure to send a message sometime around "
-            f"{next_day.strftime('%b %-d @ %-I:%M')} UTC.*"
+            f"{next_day.strftime('%b %-d @ %-I:%M')} UTC. That's in {thats_in_msg}.*"
         )
 
         embed = (
