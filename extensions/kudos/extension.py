@@ -105,7 +105,7 @@ class KudosExtension(dippy.Extension):
 
         streak = (
             f"{streak}\n*To maintain your streak be sure to send a message sometime around "
-            f"{next_day.strftime('%b %-d @ %-I:%M')} UTC. That's in {thats_in_msg}.*"
+            f"{next_day.strftime('%b %-d @ %-I:%M%p')} UTC. That's in {thats_in_msg}.*"
         )
 
         embed = (
