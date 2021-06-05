@@ -236,6 +236,22 @@ class KudosExtension(dippy.Extension):
         )
 
     @dippy.Extension.listener("message")
+    async def award_challenge_kudos(self, message: Message):
+        if message.channel.id != 711930226216796170:
+            return
+
+        if not message.content.startswith("**Challenge"):
+            return
+
+        for member in message.mentions:
+            await self.manager.give_kudos(
+                member, 4, f"{member.mention} did the weekday challenge!!!"
+            )
+        await message.channel.send(
+            f"Gave all {len(message.mentions)} people who did the challenge 4 kudos!!!"
+        )
+
+    @dippy.Extension.listener("message")
     async def on_message(self, message: Message):
         if (
             message.author.bot
