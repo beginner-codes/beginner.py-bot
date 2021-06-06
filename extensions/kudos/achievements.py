@@ -69,5 +69,9 @@ class Achievements(UserDict, Injectable):
         try:
             await member.add_roles(role)
             await member.remove_roles()
+            await self.client.get_channel(851228622832533534).send(
+                f"{member.mention} you're awesome! Thank you for contributing and being such an amazing part of this "
+                f"community! Now that you've unlocked the 😎Coders😎 achievement you have access to this channel!"
+            )
         except errors.Forbidden:
             pass
