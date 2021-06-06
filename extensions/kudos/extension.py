@@ -262,7 +262,7 @@ class KudosExtension(dippy.Extension):
             f" left to give.",
             reference=message,
             mention_author=False,
-            delete_after=15,
+            delete_after=60,
         )
 
         achievements = {
