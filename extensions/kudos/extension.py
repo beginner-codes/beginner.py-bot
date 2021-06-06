@@ -89,7 +89,7 @@ class KudosExtension(dippy.Extension):
 
         leaderboard = []
         for index, (member, member_kudos) in islice(
-            enumerate(leaders.items(), start=1), 0, 5
+            enumerate(leaders.items(), start=1), 0, 10
         ):
             name = member.display_name if member else "*Old Member*"
             entry = f"{index}. {name} has {member_kudos} kudos"
