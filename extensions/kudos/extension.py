@@ -155,7 +155,7 @@ class KudosExtension(dippy.Extension):
             .set_footer(text="!kudos | !kudos help")
         )
 
-        achievements = await self.manager.get_achievements(message.author)
+        achievements = await self.manager.get_achievements(lookup_member)
         if achievements:
             embed.add_field(
                 name="Achievements",
