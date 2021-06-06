@@ -1,15 +1,18 @@
 from bevy import Injectable
-from datetime import date, datetime
-from discord import Embed, Emoji, Guild, Member, Message, TextChannel, utils
+from datetime import datetime
+from discord import Embed, Emoji, Guild, Member, TextChannel, utils
+from extensions.kudos.achievements import Achievements, Achievement
 from typing import Optional
 import dippy.labels
 
 
 class KudosManager(Injectable):
-    labels: dippy.labels.storage.StorageInterface
+    achievements: Achievements
     client: dippy.Client
+    labels: dippy.labels.storage.StorageInterface
 
     def __init__(self):
+        self._achievements = []
         self._ledger_channels: dict[Guild, TextChannel] = {}
 
     def get_emoji(self, guild: Guild, name: str) -> Emoji:
@@ -30,13 +33,52 @@ class KudosManager(Injectable):
             )
         }
 
-    def create_embed(self, guild: Guild, content: str = "", title: str = "") -> Embed:
-        return (
-            Embed(description=content, color=0x4285F4)
-            .set_footer(text="!kudos | !kudos help")
-            .set_author(
-                icon_url=utils.get(self.client.emojis, name="expert").url, name=title
-            )
+    async def award_achievement(self, member: Member, achievement_key: str) -> bool:
+        achievement_keys = await self.get_achievement_keys(member)
+        if achievement_key in achievement_keys:
+            return False
+
+        achievement_keys.add(achievement_key)
+        await self._send_achievement_message_to_ledger(
+            member.guild, self.achievements[achievement_key], member
+        )
+        await self.set_achievements(member, achievement_keys)
+
+        await self.achievements.awarded_achievement(
+            member, self.achievements[achievement_key]
+        )
+        return True
+
+    async def _determine_achievements(self, member: Member, kudos: int):
+        achievements = await self.get_achievement_keys(member)
+        for achievement_key, achievement in self.achievements.items():
+            if achievement_key not in achievements and kudos >= achievement.kudos:
+                await self.award_achievement(member, achievement_key)
+
+    async def get_achievements(self, member: Member) -> set[Achievement]:
+        return {
+            self.achievements[achievement_key]
+            for achievement_key in await self.get_achievement_keys(member)
+            if achievement_key in self.achievements
+        }
+
+    async def get_achievement_keys(self, member: Member) -> set[str]:
+        return await self.labels.get(
+            f"member[{member.guild.id}]", member.id, "achievements", set()
+        )
+
+    async def has_achievement(self, member: Member, achievement_key: str) -> bool:
+        achievements = await self.get_achievement_keys(member)
+        return achievement_key in achievements
+
+    async def set_achievements(self, member: Member, achievement_keys: set[str]):
+        await self.labels.set(
+            f"member[{member.guild.id}]", member.id, "achievements", achievement_keys
+        )
+
+    def create_embed(self, content: str = "", title: str = "") -> Embed:
+        return Embed(title=title, description=content, color=0x4285F4).set_footer(
+            text="!kudos | !kudos help"
         )
 
     async def give_kudos(self, member: Member, amount: int, reason: str):
@@ -44,9 +86,10 @@ class KudosManager(Injectable):
         await self.set_kudos(member, kudos + amount)
         lifetime_kudos = await self.get_lifetime_kudos(member)
         await self.set_lifetime_kudos(member, lifetime_kudos + amount)
-        await self._send_message_to_ledger(
+        await self._send_kudos_message_to_ledger(
             member.guild, amount, reason, member.avatar_url
         )
+        await self._determine_achievements(member, kudos + amount)
 
     async def take_kudos(self, member: Member, amount: int):
         kudos = await self.get_kudos(member)
@@ -124,13 +167,40 @@ class KudosManager(Injectable):
         )
         self._ledger_channels[channel.guild] = channel
 
-    async def _send_message_to_ledger(
+    async def _send_kudos_message_to_ledger(
         self, guild: Guild, kudos: int, message: str, image_url: Optional[str] = None
+    ):
+        action = "Gave" if kudos > 0 else "Took"
+        await self._send_message_to_ledger(
+            guild, message, f"{action} {kudos} kudos!!!", image_url
+        )
+
+    async def _send_achievement_message_to_ledger(
+        self,
+        guild: Guild,
+        achievement: Achievement,
+        member: Member,
+        image_url: Optional[str] = None,
+    ):
+        await self._send_message_to_ledger(
+            guild,
+            f"{achievement.unlock_description}",
+            f"You unlocked **{achievement.emoji} {achievement.name} {achievement.emoji}**!!!",
+            image_url,
+            mention=member,
+        )
+
+    async def _send_message_to_ledger(
+        self,
+        guild: Guild,
+        message: str,
+        title: str,
+        image_url: Optional[str] = None,
+        mention: Optional[Member] = None,
     ):
         channel = await self.get_ledger_channel(guild)
         if channel:
-            action = "Gave" if kudos > 0 else "Took"
-            embed = self.create_embed(guild, f"{message}", f"{action} {kudos} kudos!!!")
+            embed = self.create_embed(message, title)
             if image_url:
                 embed.set_thumbnail(url=image_url)
-            await channel.send(embed=embed)
+            await channel.send(content=mention.mention if mention else "", embed=embed)

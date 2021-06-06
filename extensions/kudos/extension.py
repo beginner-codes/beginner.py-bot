@@ -52,6 +52,19 @@ class KudosExtension(dippy.Extension):
                 inline=False,
             )
             .add_field(
+                name="Kudos Achievements",
+                value=(
+                    "You can unlock achievements the more kudos you earn. Your lifetime kudos received will be used to "
+                    "unlock achievements, so giving kudos to others will not slow you down.\n\n"
+                    + "\n".join(
+                        f"**{achievement.emoji} {achievement.name} {achievement.emoji}**\n*{achievement.kudos} Kudos "
+                        f"to unlock*\n{achievement.description}\n"
+                        for achievement in self.manager.achievements.values()
+                    )
+                ),
+                inline=False,
+            )
+            .add_field(
                 name="Daily Streaks",
                 value=(
                     "You can also earn 4 kudos for your first message in the server each day, and 32 for "
@@ -126,9 +139,20 @@ class KudosExtension(dippy.Extension):
                 value=streak,
                 inline=False,
             )
-            .add_field(name="Leader Board", value="\n".join(leaderboard), inline=False)
             .set_footer(text="!kudos | !kudos help")
         )
+
+        achievements = await self.manager.get_achievements(message.author)
+        if achievements:
+            embed.add_field(
+                name="Achievements",
+                value="\n\n".join(
+                    f"**{achievement.emoji} {achievement.name} {achievement.emoji}**\n{achievement.unlock_description}"
+                    for achievement in achievements
+                ),
+            )
+
+        embed.add_field(name="Leader Board", value="\n".join(leaderboard), inline=False)
         await message.channel.send(embed=embed)
 
     @dippy.Extension.command("!import kudos")
