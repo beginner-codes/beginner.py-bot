@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 from discord import (
     Embed,
     Guild,
+    Member,
     Message,
     MessageType,
     RawReactionActionEvent,
@@ -83,9 +84,18 @@ class KudosExtension(dippy.Extension):
         if "help" in message.content.casefold():
             return
 
+        member_mentions = [
+            member for member in message.mentions if isinstance(member, Member)
+        ]
+        lookup_member = message.author
+        if member_mentions:
+            lookup_member = member_mentions[0]
+
+        self_lookup = lookup_member == message.author
+
         leaders = await self.manager.get_leaderboard(message.guild)
-        user_kudos = leaders.get(message.author)
-        lifetime_kudos = await self.manager.get_lifetime_kudos(message.author)
+        user_kudos = leaders.get(lookup_member)
+        lifetime_kudos = await self.manager.get_lifetime_kudos(lookup_member)
 
         leaderboard = []
         for index, (member, member_kudos) in islice(
@@ -93,22 +103,23 @@ class KudosExtension(dippy.Extension):
         ):
             name = member.display_name if member else "*Old Member*"
             entry = f"{index}. {name} has {member_kudos} kudos"
-            if member == message.author:
+            if member == lookup_member:
                 entry = f"**{entry}**"
             leaderboard.append(entry)
 
-        current_streak, best_streak = await self.manager.get_streaks(message.author)
-        last_active = await self.manager.get_last_active_date(message.author)
+        current_streak, best_streak = await self.manager.get_streaks(lookup_member)
+        last_active = await self.manager.get_last_active_date(lookup_member)
         next_day = last_active + timedelta(hours=23, minutes=30)
 
         plural = lambda num: "s" * (num != 1)
 
+        your = "Your" if self_lookup else "Their"
         streak = (
-            f"Your current activity streak is {current_streak} day{plural(current_streak)}, and your best ever streak "
-            f"is {best_streak} day{plural(best_streak)}."
+            f"{your} current activity streak is {current_streak} day{plural(current_streak)}, and {your.lower()} best "
+            f"ever streak is {best_streak} day{plural(best_streak)}."
         )
         if current_streak == best_streak:
-            streak = f"Your current and best ever streak is {current_streak} day{plural(current_streak)}!!!"
+            streak = f"{your} current and best ever streak is {current_streak} day{plural(current_streak)}!!!"
 
         thats_in = next_day - datetime.utcnow()
         thats_in_msg = f"{thats_in.total_seconds()} seconds"
@@ -117,17 +128,19 @@ class KudosExtension(dippy.Extension):
         elif thats_in > timedelta(minutes=1):
             thats_in_msg = f"{thats_in // timedelta(minutes=1)} minutes"
 
-        streak = (
-            f"{streak}\n*To maintain your streak be sure to send a message sometime around "
-            f"{next_day.strftime('%b %-d @ %-I:%M%p')} UTC. That's in {thats_in_msg}.*"
-        )
+        if self_lookup:
+            streak = (
+                f"{streak}\n*To maintain your streak be sure to send a message sometime around "
+                f"{next_day.strftime('%b %-d @ %-I:%M%p')} UTC. That's in {thats_in_msg}.*"
+            )
 
         embed = (
             Embed(
                 color=0x4285F4,
                 description=(
-                    f"{message.author.mention} you have {user_kudos if user_kudos > 0 else 'no'} kudos left\n"
-                    f"You have received {lifetime_kudos} total kudos"
+                    f"{lookup_member.mention if self_lookup else lookup_member.display_name} "
+                    f"{'you have' if self_lookup else 'has'} {user_kudos if user_kudos > 0 else 'no'} kudos left\n"
+                    f"{'You' if self_lookup else 'They'} have received {lifetime_kudos} total kudos"
                 ),
                 title="Kudos Stats",
             )
