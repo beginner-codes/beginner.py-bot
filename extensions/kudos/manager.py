@@ -42,6 +42,8 @@ class KudosManager(Injectable):
     async def give_kudos(self, member: Member, amount: int, reason: str):
         kudos = await self.get_kudos(member)
         await self.set_kudos(member, kudos + amount)
+        lifetime_kudos = await self.get_lifetime_kudos(member)
+        await self.set_lifetime_kudos(member, lifetime_kudos + amount)
         await self._send_message_to_ledger(
             member.guild, amount, reason, member.avatar_url
         )
@@ -50,13 +52,31 @@ class KudosManager(Injectable):
         kudos = await self.get_kudos(member)
         await self.set_kudos(member, kudos - amount)
 
+        # Preserve old total
+        lifetime_kudos = await self.get_lifetime_kudos(member, False)
+        if lifetime_kudos is None:
+            await self.set_lifetime_kudos(member, kudos)
+
     async def get_kudos(self, member: Member) -> int:
         return await self.labels.get(
             f"member[{member.guild.id}]", member.id, "kudos", default=0
         )
 
+    async def get_lifetime_kudos(self, member: Member, use_default: bool = True) -> int:
+        kudos = await self.labels.get(
+            f"member[{member.guild.id}]", member.id, "lifetime_kudos", default=None
+        )
+        if kudos is None and use_default:
+            kudos = await self.get_kudos(member)
+        return kudos
+
     async def set_kudos(self, member: Member, amount: int):
         await self.labels.set(f"member[{member.guild.id}]", member.id, "kudos", amount)
+
+    async def set_lifetime_kudos(self, member: Member, amount: int):
+        await self.labels.set(
+            f"member[{member.guild.id}]", member.id, "lifetime_kudos", amount
+        )
 
     async def get_last_active_date(self, member: Member) -> Optional[datetime]:
         date_str = await self.labels.get(

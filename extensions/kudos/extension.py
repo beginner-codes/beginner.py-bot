@@ -72,6 +72,7 @@ class KudosExtension(dippy.Extension):
 
         leaders = await self.manager.get_leaderboard(message.guild)
         user_kudos = leaders.get(message.author)
+        lifetime_kudos = await self.manager.get_lifetime_kudos(message.author)
 
         leaderboard = []
         for index, (member, member_kudos) in islice(
@@ -111,7 +112,10 @@ class KudosExtension(dippy.Extension):
         embed = (
             Embed(
                 color=0x4285F4,
-                description=f"{message.author.mention} you have {user_kudos if user_kudos > 0 else 'no'} kudos",
+                description=(
+                    f"{message.author.mention} you have {user_kudos if user_kudos > 0 else 'no'} kudos left\n"
+                    f"You have received {lifetime_kudos} total kudos"
+                ),
                 title="Kudos Stats",
             )
             .set_thumbnail(
