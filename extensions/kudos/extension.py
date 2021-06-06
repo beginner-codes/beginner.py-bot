@@ -249,6 +249,8 @@ class KudosExtension(dippy.Extension):
             )
             return
 
+        achievements = await self.manager.get_achievements(message.author)
+
         await self.manager.give_kudos(
             message.author,
             giving,
@@ -262,6 +264,21 @@ class KudosExtension(dippy.Extension):
             mention_author=False,
             delete_after=15,
         )
+
+        achievements = {
+            achievement
+            for achievement in await self.manager.get_achievements(message.author)
+            if achievement not in achievements
+        }
+        if achievements:
+            achievement_message = ", ".join(
+                f"{achievement.emoji} {achievement.name} {achievement.emoji}"
+                for achievement in achievements
+            )
+            await channel.send(
+                f"{message.author.display_name} you have unlocked {achievement_message}",
+                delete_after=60,
+            )
 
     @dippy.Extension.listener("message")
     async def award_challenge_kudos(self, message: Message):
