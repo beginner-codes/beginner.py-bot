@@ -49,7 +49,7 @@ class Achievements(UserDict, Injectable):
                     ),
                     "You're a Coder! Thanks for being 😎 AWESOME 😎!!!",
                     "😎",
-                    100,
+                    112,
                 ),
             }
         )
