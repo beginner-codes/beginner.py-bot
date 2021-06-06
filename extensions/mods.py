@@ -25,9 +25,11 @@ class ModeratorsExtension(dippy.Extension):
 
     @dippy.Extension.command("!username history")
     async def show_username_history_command(self, message: Message):
-        members: list[Member] = [
-            member for member in message.mentions if isinstance(member, Member)
-        ] or [message.author]
+        members: list[Member] = (
+            [member for member in message.mentions if isinstance(member, Member)]
+            or (await self._parse_members(message))
+            or [message.author]
+        )
         embed = Embed(
             title="Username History",
             description="Here are the username histories you requested.",
@@ -46,3 +48,21 @@ class ModeratorsExtension(dippy.Extension):
             embed.add_field(name=title, value=history_message, inline=False)
 
         await message.channel.send(embed=embed)
+
+    async def _parse_members(self, message: Message) -> list[Member]:
+        members = []
+        for section in message.content.strip().casefold().split():
+            member = None
+            if section.isdigit():
+                member = message.guild.get_member(int(section))
+
+            if not member:
+                for guild_member in message.guild.members:
+                    if guild_member.display_name.casefold() == section:
+                        member = guild_member
+                        break
+
+            if member:
+                members.append(member)
+
+        return members
