@@ -205,6 +205,8 @@ class ModerationCog(Cog):
             await ctx.send(f"*{member.mention} is already muted*")
             return
 
+        await member.add_roles(muted_role, reason="Mod Mute")
+
         minutes = self.parse_duration(duration)
         embed = self.build_mod_action_embed(
             ctx, member, reason, f"Muted for {self.format_duration(minutes)}"
@@ -230,7 +232,6 @@ class ModerationCog(Cog):
             "unmute-member", timedelta(minutes=minutes), self.unmute_member, member.id
         )
 
-        await member.add_roles(muted_role, reason="Mod Mute")
         self.save_action(
             "MUTE", member, ctx.author, message=reason, reference=message.id
         )
