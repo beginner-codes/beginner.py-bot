@@ -165,7 +165,7 @@ class KudosExtension(dippy.Extension):
                 ),
             )
 
-        embed.add_field(name="Leader Board", value="\n".join(leaderboard), inline=False)
+        embed.add_field(name="Leaderboard", value="\n".join(leaderboard), inline=False)
         await message.channel.send(embed=embed)
 
     @dippy.Extension.command("!import kudos")
