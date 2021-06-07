@@ -36,7 +36,7 @@ class VoiceChatExtension(dippy.Extension):
             return
 
         unwelcomed_members = await self.get_unwelcomed_users(message.guild)
-        if message.author in unwelcomed_members:
+        if not unwelcomed_members and message.author in unwelcomed_members:
             return
 
         await self._give_kudos_for_welcoming(
