@@ -93,7 +93,7 @@ class KudosExtension(dippy.Extension):
 
         self_lookup = lookup_member == message.author
 
-        leaders = await self.manager.get_leaderboard(message.guild)
+        leaders = await self.manager.get_lifetime_leaderboard(message.guild)
         user_kudos = leaders.get(lookup_member)
         lifetime_kudos = await self.manager.get_lifetime_kudos(lookup_member)
 
@@ -139,7 +139,7 @@ class KudosExtension(dippy.Extension):
                 color=0x4285F4,
                 description=(
                     f"{lookup_member.mention if self_lookup else lookup_member.display_name} "
-                    f"{'you have' if self_lookup else 'has'} {user_kudos if user_kudos > 0 else 'no'} kudos left\n"
+                    f"{'you have' if self_lookup else 'has'} {user_kudos if user_kudos and user_kudos > 0 else 'no'} kudos left\n"
                     f"{'You' if self_lookup else 'They'} have received {lifetime_kudos} total kudos"
                 ),
                 title="Kudos Stats",
