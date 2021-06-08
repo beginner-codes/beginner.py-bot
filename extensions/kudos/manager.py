@@ -1,5 +1,5 @@
 from bevy import Injectable
-from datetime import datetime
+from datetime import datetime, timedelta
 from discord import Embed, Emoji, Guild, Member, TextChannel, utils
 from extensions.kudos.achievements import Achievements, Achievement
 from typing import Optional
@@ -166,6 +166,36 @@ class KudosManager(Injectable):
             member.id,
             "messaging_streak",
             (days, max(best, days)),
+        )
+
+    async def get_recent_kudos(
+        self, member: Member
+    ) -> dict[Member, tuple[datetime, int]]:
+        recents = {}
+        now = datetime.utcnow()
+        kudos_given = await self.labels.get(
+            f"member[{member.guild.id}]", member.id, "recent_kudos", {}
+        )
+        for giver_id, (iso_date, kudos) in kudos_given.items():
+            giver = member.guild.get_member(giver_id)
+            date = datetime.fromisoformat(iso_date)
+            if giver and (now - date) < timedelta(minutes=kudos * 7.5):
+                recents[giver] = (date, kudos)
+
+        return recents
+
+    async def add_recent_kudos(self, member: Member, giver: Member, kudos: int):
+        recents = await self.get_recent_kudos(member)
+        recents[giver] = (datetime.utcnow(), kudos)
+
+        await self.labels.set(
+            f"member[{member.guild.id}]",
+            member.id,
+            "recent_kudos",
+            {
+                _giver.id: (_date.isoformat(), _kudos)
+                for _giver, (_date, _kudos) in recents.items()
+            },
         )
 
     async def get_ledger_channel(self, guild: Guild) -> Optional[TextChannel]:

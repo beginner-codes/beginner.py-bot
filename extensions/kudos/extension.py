@@ -262,6 +262,22 @@ class KudosExtension(dippy.Extension):
             )
             return
 
+        recent_kudos = await self.manager.get_recent_kudos(message.author)
+        if payload.member in recent_kudos:
+            next_kudos = recent_kudos[payload.member][0] + timedelta(
+                minutes=7.5 * recent_kudos[payload.member][1]
+            )
+            minutes = (
+                (next_kudos - datetime.utcnow()) + timedelta(seconds=30)
+            ) // timedelta(minutes=1)
+            await channel.send(
+                f"{payload.member.mention} you can't give {message.author.display_name} more kudos right now, try "
+                f"again in {minutes} minute{'s' * (minutes != 1)}.",
+                delete_after=15,
+            )
+            await message.remove_reaction(payload.emoji, payload.member)
+            return
+
         achievements = await self.manager.get_achievements(message.author)
 
         await self.manager.give_kudos(
@@ -270,6 +286,7 @@ class KudosExtension(dippy.Extension):
             f"{payload.member.mention} gave {message.author.mention} kudos",
         )
         await self.manager.take_kudos(payload.member, giving)
+        await self.manager.add_recent_kudos(message.author, payload.member, giving)
         await channel.send(
             f"{payload.member.mention} you gave {message.author.display_name} {giving} kudos, you have {kudos - giving}"
             f" left to give.",
