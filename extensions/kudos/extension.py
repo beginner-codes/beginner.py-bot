@@ -123,7 +123,9 @@ class KudosExtension(dippy.Extension):
 
         thats_in = next_day - datetime.utcnow()
         thats_in_msg = f"{thats_in.total_seconds()} seconds"
-        if thats_in > timedelta(hours=1):
+        if thats_in < timedelta(seconds=0):
+            thats_in_msg = "the past!"
+        elif thats_in > timedelta(hours=1):
             thats_in_msg = f"{thats_in // timedelta(hours=1)} hours"
         elif thats_in > timedelta(minutes=1):
             thats_in_msg = f"{thats_in // timedelta(minutes=1)} minutes"
