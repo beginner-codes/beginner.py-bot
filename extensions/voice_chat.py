@@ -39,7 +39,7 @@ class VoiceChatExtension(dippy.Extension):
 
         if changed:
             await self.client.get_channel(644828412405481492).send(
-                f"Video streaming has been {status} in {self.client.get_channel(channel_id).mention}"
+                f"Video streaming has been {status} in {self.client.get_channel(702221517697581086).mention}"
             )
 
     async def disable_streaming(self) -> bool:
