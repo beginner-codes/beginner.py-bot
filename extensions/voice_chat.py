@@ -36,10 +36,10 @@ class VoiceChatExtension(dippy.Extension):
         num_mods = self.get_num_mods()
         if num_mods:
             changed = await self.enable_streaming()
-            status = "enabled"
+            status = "🟢 enabled"
         else:
             changed = await self.disable_streaming()
-            status = "disabled"
+            status = "🔴 disabled"
 
         if changed:
             await self.client.get_channel(644828412405481492).send(
