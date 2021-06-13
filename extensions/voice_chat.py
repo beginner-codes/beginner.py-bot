@@ -50,11 +50,12 @@ class VoiceChatExtension(dippy.Extension):
         channel: VoiceChannel = self.client.get_channel(702221517697581086)
         everyone = utils.get(channel.guild.roles, name="@everyone")
         overwrites: PermissionOverwrite = channel.overwrites_for(everyone)
+
         if overwrites.stream:
+            updated = channel.overwrites.copy()
             overwrites.update(stream=False)
-            await channel.edit(
-                reason="Disabling streaming", overwrites={everyone: overwrites}
-            )
+            updated[everyone] = overwrites
+            await channel.edit(reason="Disabling streaming", overwrites=updated)
             return True
         return False
 
@@ -63,10 +64,10 @@ class VoiceChatExtension(dippy.Extension):
         everyone = utils.get(channel.guild.roles, name="@everyone")
         overwrites: PermissionOverwrite = channel.overwrites_for(everyone)
         if not overwrites.stream:
+            updated = channel.overwrites.copy()
             overwrites.update(stream=True)
-            await channel.edit(
-                reason="Disabling streaming", overwrites={everyone: overwrites}
-            )
+            updated[everyone] = overwrites
+            await channel.edit(reason="Enabling streaming", overwrites=updated)
             return True
         return False
 
