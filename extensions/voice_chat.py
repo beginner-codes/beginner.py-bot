@@ -1,11 +1,36 @@
-from extensions.kudos.manager import KudosManager
+from datetime import datetime, timedelta
 from discord import Member, PermissionOverwrite, VoiceChannel, VoiceState, utils
+from extensions.kudos.manager import KudosManager
+import asyncio
 import dippy
+import dippy.labels
 
 
 class VoiceChatExtension(dippy.Extension):
     client: dippy.Client
     kudos: KudosManager
+    labels: dippy.labels.storage.StorageInterface
+
+    @dippy.Extension.listener("ready")
+    async def on_ready(self):
+        permissions = self.get_voice_chat_perms()
+        if permissions.stream and not self.get_num_mods():
+            last_mod_time = await self.labels.get(
+                "guild", 644299523686006834, "last-mod-in-vc"
+            )
+            if not last_mod_time or datetime.utcnow() - datetime.fromisoformat(
+                last_mod_time
+            ) > timedelta(minutes=1):
+                await self.disable_streaming()
+            else:
+                await asyncio.sleep(
+                    (
+                        (datetime.fromisoformat(last_mod_time) + timedelta(minutes=1))
+                        - datetime.utcnow()
+                    ).total_seconds()
+                )
+                if not self.get_num_mods():
+                    await self.disable_streaming()
 
     @dippy.Extension.listener("voice_state_update")
     async def manage_dj_role(
@@ -34,8 +59,16 @@ class VoiceChatExtension(dippy.Extension):
             changed = await self.enable_streaming()
             status = "🟢 enabled"
         else:
-            changed = await self.disable_streaming()
-            status = "🔴 disabled"
+            await self.labels.set(
+                "guild",
+                644299523686006834,
+                "last-mod-in-vc",
+                datetime.utcnow().isoformat(),
+            )
+            await asyncio.sleep(60)
+            if not self.get_num_mods():
+                changed = await self.disable_streaming()
+                status = "🔴 disabled"
 
         if changed:
             await self.client.get_channel(644828412405481492).send(
@@ -75,3 +108,8 @@ class VoiceChatExtension(dippy.Extension):
         helpers_role = utils.get(member.guild.roles, name="helpers")
         mods_role = utils.get(member.guild.roles, name="mods")
         return helpers_role in member.roles or mods_role in member.roles
+
+    def get_voice_chat_perms(self) -> PermissionOverwrite:
+        channel: VoiceChannel = self.client.get_channel(702221517697581086)
+        everyone = utils.get(channel.guild.roles, name="@everyone")
+        return channel.overwrites_for(everyone)
