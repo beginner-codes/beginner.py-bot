@@ -1,7 +1,9 @@
-from discord import Message, utils
+from datetime import datetime, timedelta
+from discord import Member, Message, utils
 from extensions.help_channels.channel_manager import ChannelManager
 import dippy.labels
 import dippy.logging
+import re
 import time
 
 
@@ -52,6 +54,45 @@ class HelpRotatorCommandsExtension(dippy.Extension):
             await message.channel.send(
                 f"You can claim {channel.mention} to ask your question."
             )
+
+    @dippy.Extension.command("!claim")
+    async def claim(self, message: Message):
+        member: Member = message.author
+        helpers = utils.get(message.guild.roles, name="helpers")
+        is_a_helper = helpers in message.author.roles
+        if message.mentions and is_a_helper:
+            member = message.mentions[0]
+
+        last_claimed, channel_id = await self.labels.get(
+            "user", member.id, "last-claimed-channel", (None, None)
+        )
+        if last_claimed and datetime.utcnow() - datetime.fromisoformat(
+            last_claimed
+        ) < timedelta(minutes=15):
+            channel = self.client.get_channel(channel_id)
+            action_message = (
+                f"{member.mention} you've already claimed {channel.mention}. If you need to change the topic use the "
+                f"topic command when in the channel.\n```\n!topic [topic]\n```"
+            )
+        else:
+            topic, *_ = re.match(
+                r"!claim (\w.+?\S)?\s*(?:<|$)", message.content
+            ).groups()
+            if topic:
+                topic = self.manager.sluggify(topic)
+
+            if topic and not is_a_helper and not self.manager.allowed_topic(topic):
+                await message.channel.send(
+                    "That is not an allowed topic.\nAllowed Topics:\n"
+                    + (", ".join(self.manager.allowed_topics())),
+                    delete_after=60,
+                )
+                return
+
+            channel = (await self.manager.get_archive_channels(message.guild))[0]
+            await self.manager.update_get_help_channel(channel, member, topic)
+            action_message = f"{member.mention} {channel.mention} has been claimed for you to ask and discuss your question in."
+        await message.channel.send(action_message, delete_after=60)
 
     @dippy.Extension.command("!topic")
     async def topic(self, message: Message):
