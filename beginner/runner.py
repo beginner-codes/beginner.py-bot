@@ -287,6 +287,7 @@ if __name__ == "__main__":
             "__slots__",
             "__class__",
             "__dict__",
+            "__await__",
         },
         {
             "abc",
