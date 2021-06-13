@@ -295,9 +295,13 @@ class ChannelManager(Injectable):
             ),
         )
 
-        message, *_ = await channel.history(limit=1, before=new_message).flatten()
+        try:
+            message, *_ = await channel.history(limit=1, before=new_message).flatten()
+        except ValueError:
+            pass
+        else:
+            await message.delete()
         await asyncio.gather(
-            message.delete(),
             self.labels.set(
                 "user",
                 owner.id,
