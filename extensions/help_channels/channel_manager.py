@@ -184,7 +184,7 @@ class ChannelManager(Injectable):
         await channel.send(f"Topic changed to {icon}{topic}", delete_after=10)
 
     async def setup_help_channel(self, category: CategoryChannel):
-        channels = await self._get_archive_channels(category.guild)
+        channels = await self.get_archive_channels(category.guild)
         channel = channels[0]
         await channel.edit(name=f"🙋get-help", category=category, sync_permissions=True)
         message = await channel.send(
@@ -318,7 +318,7 @@ class ChannelManager(Injectable):
             await self.setup_help_channel(help_category)
             count += 1
 
-    async def _get_archive_channels(self, guild: Guild) -> list[TextChannel]:
+    async def get_archive_channels(self, guild: Guild) -> list[TextChannel]:
         archive = guild.get_channel((await self.get_categories(guild))["help-archive"])
         channels = []
         for channel in archive.channels:
