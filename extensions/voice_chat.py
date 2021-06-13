@@ -26,10 +26,6 @@ class VoiceChatExtension(dippy.Extension):
     async def manage_streaming_permissions(
         self, member: Member, before: VoiceState, after: VoiceState
     ):
-        channel_id = before.channel and before.channel.id or after.channel.id
-        if channel_id != 702221517697581086:
-            return
-
         if not self.is_voice_mod(member):
             return
 
