@@ -1,6 +1,7 @@
 import re
 from datetime import datetime, timedelta
 from discord import (
+    AllowedMentions,
     Embed,
     Guild,
     Member,
@@ -301,12 +302,32 @@ class KudosExtension(dippy.Extension):
         )
         await self.manager.take_kudos(payload.member, giving)
         await self.manager.add_recent_kudos(message.author, payload.member, giving)
-        await channel.send(
-            f"{payload.member.mention} you gave {message.author.display_name} {giving} kudos, you have {kudos - giving}"
-            f" left to give.",
+        (
+            kudos_given,
+            num_members,
+            kudos_reply,
+        ) = await self.manager.get_kudos_reply_details(message)
+        if kudos_reply:
+            await kudos_reply.delete()
+
+        kudos_message = f"{message.author.mention} has been given {giving} kudos from {payload.member.mention}."
+        if num_members > 0:
+            kudos_message = (
+                f"{message.author.mention} has been given {giving + kudos_given} kudos from {payload.member.mention} "
+                f"and {num_members} other member{'s' * (num_members != 1)}."
+            )
+
+        new_kudos_reply = await channel.send(
+            kudos_message,
             reference=message,
-            mention_author=False,
-            delete_after=60,
+            mention_author=kudos_reply is None,
+            allowed_mentions=AllowedMentions(
+                replied_user=kudos_reply is None, users=[payload.member]
+            ),
+        )
+
+        await self.manager.set_kudos_reply_details(
+            message, kudos_given + giving, num_members + 1, new_kudos_reply
         )
 
         achievements = {

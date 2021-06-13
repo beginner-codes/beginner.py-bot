@@ -1,6 +1,15 @@
 from bevy import Injectable
 from datetime import datetime, timedelta
-from discord import Embed, Emoji, Guild, Member, TextChannel, utils
+from discord import (
+    Embed,
+    Emoji,
+    Guild,
+    Member,
+    Message,
+    PartialMessage,
+    TextChannel,
+    utils,
+)
 from extensions.kudos.achievements import Achievements, Achievement
 from typing import Optional
 import dippy.labels
@@ -212,6 +221,29 @@ class KudosManager(Injectable):
             "guild", channel.guild.id, "kudos_ledger_channel", channel.id
         )
         self._ledger_channels[channel.guild] = channel
+
+    async def get_kudos_reply_details(
+        self, message: Message
+    ) -> tuple[int, int, Optional[PartialMessage]]:
+        kudos_given, num_members, message_id = await self.labels.get(
+            "message", message.id, "kudos-response-message-id", (0, 0, None)
+        )
+        kudos_message = message_id and message.channel.get_partial_message(message_id)
+        return kudos_given, num_members, kudos_message
+
+    async def set_kudos_reply_details(
+        self,
+        message: Message,
+        kudos_given: int,
+        num_members: int,
+        kudos_message: Message,
+    ):
+        await self.labels.set(
+            "message",
+            message.id,
+            "kudos-response-message-id",
+            (kudos_given, num_members, kudos_message.id),
+        )
 
     async def _send_kudos_message_to_ledger(
         self, guild: Guild, kudos: int, message: str, image_url: Optional[str] = None
