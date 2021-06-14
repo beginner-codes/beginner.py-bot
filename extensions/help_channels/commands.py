@@ -76,7 +76,7 @@ class HelpRotatorCommandsExtension(dippy.Extension):
             )
         else:
             topic, *_ = re.match(
-                r"!claim (\w.+?\S)?\s*(?:<|$)", message.content
+                r"!claim (\w.*?\S)?\s*(?:<|$)", message.content
             ).groups()
             if topic:
                 topic = self.manager.sluggify(topic)
