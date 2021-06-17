@@ -1,3 +1,5 @@
+import re
+
 from discord import Embed, Message, TextChannel
 from extensions.kudos.manager import KudosManager
 import dippy.labels
@@ -39,6 +41,7 @@ class ChallengesExtension(dippy.Extension):
         challenges_channel: TextChannel = self.client.get_channel(
             self.WEEKDAY_CHANNEL_ID
         )
+        title = re.sub(r"[^\w\s-]+", "", title)
         await self.client.get_channel(self.SUBMISSIONS_CHANNEL_ID).send(
             embed=Embed(
                 title=f"Challenge {title}",
