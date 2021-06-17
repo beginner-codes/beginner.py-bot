@@ -179,7 +179,10 @@ class Bumping(Cog):
                             color=color,
                             description=f"{message} Next bump in {' & '.join(next_bump_message)}",
                             title=title,
-                        ).set_thumbnail(url=thumbnail)
+                            timestamp=datetime.utcnow() + next_bump,
+                        )
+                        .set_thumbnail(url=thumbnail)
+                        .set_footer(text="Next bump")
                     )
                 )
                 self.log_bump(f"Next bump in {':'.join(next_bump_message)}", ctx.author)
