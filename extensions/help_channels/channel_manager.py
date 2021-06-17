@@ -49,8 +49,8 @@ class ChannelManager(Injectable):
             "docker": "📦",
             "kubernetes": "📦",
             "k8s": "📦",
-            "rpi": "🍓",
-            "raspberry-pi": "🍓",
+            "rpi": "🥧",
+            "raspberry-pi": "🥧",
         }
         self.reaction_topics = {
             "🐍": "python",
