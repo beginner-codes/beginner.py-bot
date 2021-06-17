@@ -46,9 +46,11 @@ class ChannelManager(Injectable):
             "react": "🌎",
             "hacking": "🚨",
             "os": "💾",
-            "docker": "💾",
-            "kubernetes": "💾",
-            "k8s": "💾",
+            "docker": "📦",
+            "kubernetes": "📦",
+            "k8s": "📦",
+            "rpi": "🍓",
+            "raspberry-pi": "🍓",
         }
         self.reaction_topics = {
             "🐍": "python",
