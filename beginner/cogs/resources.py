@@ -35,7 +35,7 @@ class ResourcesCog(Cog):
 
         await ctx.send(embed=embed)
 
-    @Cog.command(alias=["project-ideas"])
+    @Cog.command(alias=["project-ideas", "ideas"])
     async def project(self, ctx):
         project_embed = discord.Embed(
             title="Project Ideas",
