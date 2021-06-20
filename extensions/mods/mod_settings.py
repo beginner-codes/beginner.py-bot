@@ -11,12 +11,14 @@ class ModSettingsExtension(Extension):
         self._mute_role: Optional[Role] = None
         self._suspend_role: Optional[Role] = None
         self._mod_log_channel: Optional[TextChannel] = None
+        self._mod_channel: Optional[TextChannel] = None
 
     @Extension.command("!mod settings")
     async def show_mod_settings_command(self, message: Message):
         mute_role = await self.get_mute_role(message.guild)
         suspend_role = await self.get_suspend_role(message.guild)
         mod_log_channel = await self.get_mod_log_channel(message.guild)
+        mod_channel = await self.get_mod_channel(message.guild)
         await message.channel.send(
             embed=(
                 Embed(
@@ -48,10 +50,11 @@ class ModSettingsExtension(Extension):
                     inline=False,
                 )
                 .add_field(
-                    name="Mod Log Channel",
-                    value=mod_log_channel
-                    and mod_log_channel.mention
-                    or "*No Mod Log Channel Set*",
+                    name="Mod Channels",
+                    value=(
+                        f"Mod Log Channel: {mod_log_channel and mod_log_channel.mention or '*No Mod Log Channel Set*'}\n"
+                        f"Mod Channel: {mod_channel and mod_channel.mention or '*No Mod Channel Set*'}\n"
+                    ),
                     inline=False,
                 )
             )
@@ -154,22 +157,37 @@ class ModSettingsExtension(Extension):
             "Set the mod log channel" if channel_id else "Removed the mod log channel"
         )
 
-    async def get_mod_roles(self, guild: Guild) -> list[Role]:
+    @Extension.command("!set mod channel")
+    async def set_mod_channel_command(self, message: Message):
+        if not message.author.is_admin():
+            return
+
+        channel_id = None
+        if message.channel_mentions:
+            channel_id = message.channel_mentions[0].id
+
+        self._mod_channel = None
+        await message.guild.set_label("mod_channel_id", channel_id)
+        await message.channel.send(
+            "Set the mod channel" if channel_id else "Removed the mod channel"
+        )
+
+    async def get_mod_roles(self, guild: Guild) -> set[Role]:
         if self._mod_roles is None:
-            self._mod_roles = [
+            self._mod_roles = {
                 role
                 for role_id in await guild.get_label("mod_role_ids", set())
                 if (role := guild.get_role(role_id))
-            ]
+            }
         return self._mod_roles
 
-    async def get_helper_roles(self, guild: Guild) -> list[Role]:
+    async def get_helper_roles(self, guild: Guild) -> set[Role]:
         if self._helper_roles is None:
-            self._helper_roles = [
+            self._helper_roles = {
                 role
                 for role_id in await guild.get_label("helper_role_ids", set())
                 if (role := guild.get_role(role_id))
-            ]
+            }
         return self._helper_roles
 
     async def get_mute_role(self, guild: Guild) -> Optional[Role]:
@@ -192,3 +210,10 @@ class ModSettingsExtension(Extension):
             self._mod_log_channel = channel_id and guild.get_channel(channel_id)
 
         return self._mod_log_channel
+
+    async def get_mod_channel(self, guild: Guild) -> Optional[TextChannel]:
+        if self._mod_channel is None:
+            channel_id = await guild.get_label("mod_channel_id")
+            self._mod_channel = channel_id and guild.get_channel(channel_id)
+
+        return self._mod_channel
