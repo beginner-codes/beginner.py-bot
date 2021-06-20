@@ -4,6 +4,14 @@ from typing import Optional
 
 
 class ModSettingsExtension(Extension):
+    def __init__(self):
+        super().__init__()
+        self._mod_roles: Optional[Role] = None
+        self._helper_roles: Optional[Role] = None
+        self._mute_role: Optional[Role] = None
+        self._suspend_role: Optional[Role] = None
+        self._mod_log_channel: Optional[TextChannel] = None
+
     @Extension.command("!mod settings")
     async def show_mod_settings_command(self, message: Message):
         mute_role = await self.get_mute_role(message.guild)
@@ -57,6 +65,8 @@ class ModSettingsExtension(Extension):
         role_ids = await message.guild.get_label("mod_role_ids", set())
         for role in message.role_mentions:
             role_ids.add(role.id)
+
+        self._mod_roles = None
         await message.guild.set_label("mod_role_ids", role_ids)
         await message.channel.send("Added roles as moderators")
 
@@ -68,6 +78,8 @@ class ModSettingsExtension(Extension):
         role_ids = await message.guild.get_label("mod_role_ids", set())
         for role in message.role_mentions:
             role_ids.remove(role.id)
+
+        self._mod_roles = None
         await message.guild.set_label("mod_role_ids", role_ids)
         await message.channel.send("Removed roles as moderators")
 
@@ -79,6 +91,8 @@ class ModSettingsExtension(Extension):
         role_ids = await message.guild.get_label("helper_role_ids", set())
         for role in message.role_mentions:
             role_ids.add(role.id)
+
+        self._helper_roles = None
         await message.guild.set_label("helper_role_ids", role_ids)
         await message.channel.send("Added roles as helpers")
 
@@ -90,6 +104,8 @@ class ModSettingsExtension(Extension):
         role_ids = await message.guild.get_label("helper_role_ids", set())
         for role in message.role_mentions:
             role_ids.remove(role.id)
+
+        self._helper_roles = None
         await message.guild.set_label("helper_role_ids", role_ids)
         await message.channel.send("Removed roles as helpers")
 
@@ -101,6 +117,8 @@ class ModSettingsExtension(Extension):
         role_id = None
         if message.role_mentions:
             role_id = message.role_mentions[0].id
+
+        self._mute_role = None
         await message.guild.set_label("mute_role_id", role_id)
         await message.channel.send(
             "Set the mute role" if role_id else "Removed the mute role"
@@ -114,6 +132,8 @@ class ModSettingsExtension(Extension):
         role_id = None
         if message.role_mentions:
             role_id = message.role_mentions[0].id
+
+        self._suspend_role = None
         await message.guild.set_label("suspend_role_id", role_id)
         await message.channel.send(
             "Set the suspend role" if role_id else "Removed the suspend role"
@@ -127,36 +147,48 @@ class ModSettingsExtension(Extension):
         channel_id = None
         if message.channel_mentions:
             channel_id = message.channel_mentions[0].id
+
+        self._mod_log_channel = None
         await message.guild.set_label("mod_log_channel_id", channel_id)
         await message.channel.send(
             "Set the mod log channel" if channel_id else "Removed the mod log channel"
         )
 
     async def get_mod_roles(self, guild: Guild) -> list[Role]:
-        return [
-            role
-            for role_id in await guild.get_label("mod_role_ids", set())
-            if (role := guild.get_role(role_id))
-        ]
+        if self._mod_roles is None:
+            self._mod_roles = [
+                role
+                for role_id in await guild.get_label("mod_role_ids", set())
+                if (role := guild.get_role(role_id))
+            ]
+        return self._mod_roles
 
     async def get_helper_roles(self, guild: Guild) -> list[Role]:
-        return [
-            role
-            for role_id in await guild.get_label("helper_role_ids", set())
-            if (role := guild.get_role(role_id))
-        ]
+        if self._helper_roles is None:
+            self._helper_roles = [
+                role
+                for role_id in await guild.get_label("helper_role_ids", set())
+                if (role := guild.get_role(role_id))
+            ]
+        return self._helper_roles
 
     async def get_mute_role(self, guild: Guild) -> Optional[Role]:
-        return (role_id := await guild.get_label("mute_role_id")) and guild.get_role(
-            role_id
-        )
+        if self._mute_role is None:
+            role_id = await guild.get_label("mute_role_id")
+            self._mute_role = role_id and guild.get_role(role_id)
+
+        return self._mute_role
 
     async def get_suspend_role(self, guild: Guild) -> Optional[Role]:
-        return (role_id := await guild.get_label("suspend_role_id")) and guild.get_role(
-            role_id
-        )
+        if self._suspend_role is None:
+            role_id = await guild.get_label("suspend_role_id")
+            self._suspend_role = role_id and guild.get_role(role_id)
+
+        return self._suspend_role
 
     async def get_mod_log_channel(self, guild: Guild) -> Optional[TextChannel]:
-        return (
-            channel_id := await guild.get_label("mod_log_channel_id")
-        ) and guild.get_channel(channel_id)
+        if self._mod_log_channel is None:
+            channel_id = await guild.get_label("mod_log_channel_id")
+            self._mod_log_channel = channel_id and guild.get_channel(channel_id)
+
+        return self._mod_log_channel
