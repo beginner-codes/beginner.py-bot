@@ -308,6 +308,25 @@ class Fun(Cog):
         message = f"```py\n{sequences}\n```\n{'Finished in' if not exited else 'Exited after'} {len(h)} steps"
         await ctx.send(message)
 
+    @Cog.command(aliases=["isrickroll", "isrr"])
+    async def is_rick_roll(self, ctx, url):
+        import requests
+        import re
+
+        try:
+            source = str(requests.get(url).content).lower()
+        except:
+            await ctx.send("💥", reference=ctx.message)
+        else:
+            phrases = [
+                "rickroll",
+                "rick roll",
+                "rick astley",
+                "never gonna give you up",
+            ]
+            rr = bool(re.findall("|".join(phrases), source, re.MULTILINE))
+            await ctx.send("👎" if rr else "👍", reference=ctx.message)
+
 
 def setup(client):
     client.add_cog(Fun(client))
