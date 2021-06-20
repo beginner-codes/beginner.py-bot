@@ -35,6 +35,19 @@ class ResourcesCog(Cog):
 
         await ctx.send(embed=embed)
 
+    @Cog.command(alias=["project-ideas"])
+    async def project(self, ctx):
+        project_embed = discord.Embed(
+            title="Project Ideas",
+            description=(
+                f"{ctx.author.mention} Here's our official list of "
+                f"[project ideas!](https://github.com/beginnerpy-com/project-ideas)"
+            ),
+            color=BLUE,
+            url="https://github.com/beginnerpy-com/project-ideas",
+        )
+        await ctx.send(embed=project_embed)
+
 
 def setup(client):
     client.add_cog(ResourcesCog(client))
