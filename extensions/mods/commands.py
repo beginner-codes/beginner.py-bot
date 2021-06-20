@@ -1,18 +1,67 @@
 from datetime import datetime, timedelta
 from discord import AuditLogAction, Embed, Guild, Member, Message
 from extensions.user_tracking.manager import UserTracker
+from extensions.mods.mod_settings import ModSettingsExtension
+from extensions.mods.mod_manager import ModManager
 import dippy
 import dippy.labels
+import re
 
 
 class ModeratorsExtension(dippy.Extension):
     client: dippy.Client
     user_tracking: UserTracker
     labels: dippy.labels.storage.StorageInterface
+    settings: ModSettingsExtension
+    mod_manager: ModManager
 
     @dippy.Extension.listener("ready")
     async def on_ready(self):
         self.client.remove_command("help")
+
+    @dippy.Extension.command("!!mute")
+    async def mute_command(self, message: Message):
+        if not message.guild or message.author.bot:
+            return
+
+        user_id, duration, units, reason = re.match(
+            r"[^a-z]+mute <@.+?(\d+)>\s(\d+)([dhm]?)(?:ours|our|ays|ay|inutes|inute|in)?\s*(.*)",
+            message.content,
+        ).groups()
+
+        mod_roles = await self.settings.get_mod_roles(message.guild)
+        helper_roles = await self.settings.get_helper_roles(message.guild)
+        roles = set(message.author.roles)
+        if not mod_roles & roles and not helper_roles & roles:
+            return
+
+        member = message.guild.get_member(int(user_id))
+        if not member:
+            await message.channel.send("That user is no longer a member here")
+            return
+
+        if member.top_role.position >= message.author.top_role.position:
+            await message.channel.send(
+                f"{message.author.mention} you can't mute members with the {member.top_role.name} role"
+            )
+            return
+
+        duration_settings = {
+            {"d": "days", "h": "hours"}.get(units, "minutes"): int(duration)
+        }
+        time_duration = int(timedelta(**duration_settings).total_seconds())
+
+        if mod_roles & roles:
+            await self.mod_manager.mute(
+                member,
+                message.author,
+                time_duration,
+                message,
+                reason or None,
+            )
+            await message.channel.send(
+                f"Muted {member.mention} for {self.mod_manager.format_duration(time_duration)}"
+            )
 
     @dippy.Extension.command("!count bans")
     async def cleanup_help_section(self, message: Message):
