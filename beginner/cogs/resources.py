@@ -45,7 +45,7 @@ class ResourcesCog(Cog):
             ),
             color=BLUE,
             url="https://github.com/beginnerpy-com/project-ideas",
-        )
+        ).set_thumbnail(url="https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/120/twitter/282/brain_1f9e0.png")
         await ctx.send(embed=project_embed)
 
 
