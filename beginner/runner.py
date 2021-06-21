@@ -133,7 +133,7 @@ class Executer:
                     try:
                         ns_globals = self.generate_globals(restricted)
                         _, hard = resource.getrlimit(resource.RLIMIT_CPU)
-                        resource.setrlimit(resource.RLIMIT_AS, (10000, 10000))
+                        resource.setrlimit(resource.RLIMIT_AS, (1_000_000, 1_000_000))
                         resource.setrlimit(resource.RLIMIT_CPU, (2, hard))
                         signal.alarm(2)
                         start = time.time_ns()
