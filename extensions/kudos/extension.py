@@ -95,7 +95,7 @@ class KudosExtension(dippy.Extension):
         self_lookup = lookup_member == message.author
 
         leaders = await self.manager.get_lifetime_leaderboard(message.guild)
-        user_kudos = leaders.get(lookup_member)
+        user_kudos = await self.manager.get_kudos(lookup_member)
         lifetime_kudos = await self.manager.get_lifetime_kudos(lookup_member)
 
         leaderboard = []
