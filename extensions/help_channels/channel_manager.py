@@ -353,5 +353,5 @@ class ChannelManager(Injectable):
         if not text:
             return ""
 
-        parts = re.findall(r"[\w\d]+", text.replace("++", "pp"))
+        parts = re.findall(r"[\w\d]+", text.replace("++", "pp").casefold())
         return sep.join(parts)
