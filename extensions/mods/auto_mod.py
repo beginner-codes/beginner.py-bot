@@ -17,16 +17,6 @@ class AutoModExtension(dippy.Extension):
     def mute_role(self, guild: Guild) -> Role:
         return utils.get(guild.roles, name="Muted")
 
-    @dippy.Extension.command("!unmute")
-    async def unmute_command(self, message: Message):
-        if not message.channel.permissions_for(message.author).manage_messages:
-            return
-
-        for member in message.mentions:
-            if isinstance(member, Member):
-                await member.remove_roles(self.mute_role(member.guild))
-                await message.channel.send(f"{member.mention} has been unmuted")
-
     @dippy.Extension.listener("message")
     async def on_message(self, message: Message):
         if message.author.bot:
