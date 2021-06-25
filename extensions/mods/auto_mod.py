@@ -85,11 +85,12 @@ class AutoModExtension(dippy.Extension):
             self._muting.remove(member.id)
 
         m: Message = await channel.send("".join(action_description))
-        mods: Role = channel.guild.get_role(644390354157568014)
-        await self.client.get_channel(728249959098482829).send(
-            f"{mods.mention} please review {member.mention}'s behavior in {channel.mention} {m.jump_url}.\nUse "
-            f"`!unmute` to remove their mute."
-        )
+        if should_mute:
+            mods: Role = channel.guild.get_role(644390354157568014)
+            await self.client.get_channel(728249959098482829).send(
+                f"{mods.mention} please review {member.mention}'s behavior in {channel.mention} {m.jump_url}.\nUse "
+                f"`!unmute` to remove their mute."
+            )
         self._warned[member.id] = datetime.utcnow()
 
     def _metrics_on_messages_from_member(
