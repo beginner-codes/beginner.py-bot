@@ -115,7 +115,9 @@ class AutoModExtension(dippy.Extension):
             if now - timedelta(seconds=15) <= message.created_at:
                 recent_channels.add(message.channel.id)
 
-            messages_last_minute.add(message.content)
+            if message.content.length > 15:
+                messages_last_minute.add(message.content)
+
             num_messages_checked += 1
 
         return (
