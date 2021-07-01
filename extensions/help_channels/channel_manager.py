@@ -301,20 +301,15 @@ class ChannelManager(Injectable):
                 color=0x00FF66,
             ),
         )
+        await channel.send("*This channel will unlock momentarily*", delete_after=15)
 
-        help_channels = await self._get_help_channels(channel.guild)
-        if len(help_channels) == 50:
+        if len(channel.category.channels) == 50:
+            help_channels = await self._get_help_channels(channel.guild)
             await self.archive_channel(help_channels[0])
 
         await channel.edit(**args)
 
-        try:
-            message, *_ = await channel.history(limit=1, before=new_message).flatten()
-        except ValueError:
-            pass
-        else:
-            await message.delete()
-        await asyncio.gather(
+        tasks = [
             self.labels.set(
                 "user",
                 owner.id,
@@ -325,7 +320,15 @@ class ChannelManager(Injectable):
             self.labels.set(
                 "text_channel", channel.id, "last-active", datetime.utcnow().isoformat()
             ),
-        )
+        ]
+
+        try:
+            message, *_ = await channel.history(limit=1, before=new_message).flatten()
+        except ValueError:
+            pass
+        else:
+            tasks.append(message.delete())
+        await asyncio.gather(*tasks)
         count = len(help_category.channels) - 1
         while count < 2:
             await self.setup_help_channel(help_category)
