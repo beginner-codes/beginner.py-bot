@@ -214,7 +214,7 @@ class ChannelManager(Injectable):
         await asyncio.gather(
             *(
                 message.add_reaction(
-                    emoji=utils.get(category.guild.emojis, name=emoji) or emoji
+                    emoji=utils.get(self.client.emojis, name=emoji) or emoji
                 )
                 for emoji in emojis
             )
