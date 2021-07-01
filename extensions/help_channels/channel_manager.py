@@ -1,4 +1,4 @@
-import discord as discord
+import discord
 from bevy import Injectable
 from datetime import datetime, timedelta
 from discord import (
@@ -57,7 +57,7 @@ class ChannelManager(Injectable):
             "🌵": "c-langs",
             "🌎": "web-dev",
             "💾": "os",
-            "☕️": "java",
+            "coffee": "java",
         }
 
     def allowed_topic(self, topic: str) -> bool:
@@ -211,7 +211,14 @@ class ChannelManager(Injectable):
 
         emojis = list(self.reaction_topics)
         emojis.append("🙋")
-        await asyncio.gather(*(message.add_reaction(emoji=emoji) for emoji in emojis))
+        await asyncio.gather(
+            *(
+                message.add_reaction(
+                    emoji=utils.get(category.guild.emojis, name=emoji) or emoji
+                )
+                for emoji in emojis
+            )
+        )
 
         if len(channels) == 1:
             await self.archive_channel(
