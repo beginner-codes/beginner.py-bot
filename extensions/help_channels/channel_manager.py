@@ -57,6 +57,7 @@ class ChannelManager(Injectable):
             "🌵": "c-langs",
             "🌎": "web-dev",
             "💾": "os",
+            "☕️": "java",
         }
 
     def allowed_topic(self, topic: str) -> bool:
@@ -200,8 +201,10 @@ class ChannelManager(Injectable):
             ).add_field(
                 name="Categories",
                 value=(
-                    "🐍 Python/Discord.py\n🌵 C/C++/C#\n🌎 Web Dev/JavaScript/HTML\n💾 OS/Docker/Kubernetes\n🙋 General"
-                    " Help"
+                    (
+                        "🐍 Python/Discord.py\n🌵 C/C++/C#\n🌎 Web Dev/JavaScript/HTML\n💾 OS/Docker/Kubernetes\n"
+                        "☕️ Java/Kotlin\n🙋 General Help"
+                    )
                 ),
             )
         )
