@@ -289,11 +289,6 @@ class ChannelManager(Injectable):
         if helping_category.channels:
             args["position"] = helping_category.channels[0].position
 
-        help_channels = await self._get_help_channels(channel.guild)
-        if len(help_channels) == 50:
-            await self.archive_channel(help_channels[0])
-
-        await channel.edit(**args)
         new_message = await channel.send(
             f"{owner.mention}",
             embed=Embed(
@@ -306,6 +301,12 @@ class ChannelManager(Injectable):
                 color=0x00FF66,
             ),
         )
+
+        help_channels = await self._get_help_channels(channel.guild)
+        if len(help_channels) == 50:
+            await self.archive_channel(help_channels[0])
+
+        await channel.edit(**args)
 
         try:
             message, *_ = await channel.history(limit=1, before=new_message).flatten()

@@ -50,7 +50,9 @@ class HelpRotatorExtension(dippy.Extension):
         if channel.category.id != categories["get-help"]:
             return
 
-        member = await channel.guild.fetch_member(reaction.user_id)
+        member = channel.guild.get_member(
+            reaction.user_id
+        ) or await channel.guild.fetch_member(reaction.user_id)
         if member.bot:
             return
 
