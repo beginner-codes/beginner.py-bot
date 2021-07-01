@@ -117,8 +117,7 @@ class AutoModExtension(dippy.Extension):
 
             if len(message.content) > 15:
                 messages_last_minute.add(message.content)
-
-            num_messages_checked += 1
+                num_messages_checked += 1
 
         return (
             num_recent_messages,
