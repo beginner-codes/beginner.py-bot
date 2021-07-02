@@ -57,7 +57,7 @@ class ChannelManager(Injectable):
             "🌵": "c-langs",
             "🌎": "web-dev",
             "💾": "os",
-            "coffee": "java",
+            "☕": "java",
         }
 
     def allowed_topic(self, topic: str) -> bool:
