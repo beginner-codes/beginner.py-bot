@@ -171,16 +171,17 @@ class KudosExtension(dippy.Extension):
         embed.add_field(name="Leaderboard", value="\n".join(leaderboard), inline=False)
         await message.channel.send(embed=embed)
 
-    @dippy.Extension.command("!set kudos")
-    async def set_members_kudos(self, message: Message):
+    @dippy.Extension.command("!adjust kudos")
+    async def adjust_members_kudos(self, message: Message):
         if not message.author.guild_permissions.administrator:
             return
 
         *_, kudos = message.content.rpartition(" ")
-        await self.manager.set_kudos(message.mentions[0], int(kudos))
-        await self.manager.set_lifetime_kudos(message.mentions[0], int(kudos))
+        await self.manager.give_kudos(
+            message.mentions[0], int(kudos), "Admin adjustment"
+        )
         await message.channel.send(
-            f"Set {message.mentions[0].display_name}'s kudos to {int(kudos)}"
+            f"Adjusted {message.mentions[0].display_name}'s kudos by {int(kudos)}"
         )
 
     @dippy.Extension.command("!import kudos")
