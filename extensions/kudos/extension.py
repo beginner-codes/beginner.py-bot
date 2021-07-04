@@ -1,5 +1,5 @@
 import re
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from discord import (
     AllowedMentions,
     Embed,
@@ -134,7 +134,7 @@ class KudosExtension(dippy.Extension):
         if self_lookup:
             streak = (
                 f"{streak}\n*To maintain your streak be sure to send a message sometime around "
-                f"{next_day.strftime('%b %-d @ %-I:%M%p')} UTC. That's in {thats_in_msg}.*"
+                f"<t:{int(next_day.replace(tzinfo=timezone.utc).timestamp())}:t>. That's in {thats_in_msg}.*"
             )
 
         embed = (
