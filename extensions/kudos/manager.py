@@ -248,7 +248,7 @@ class KudosManager(Injectable):
     ):
         action = "Gave" if kudos > 0 else "Took"
         await self._send_message_to_ledger(
-            guild, message, f"{action} {kudos} kudos!!!", image_url
+            guild, message, f"{action} {abs(kudos)} kudos!!!", image_url
         )
 
     async def _send_achievement_message_to_ledger(
