@@ -301,7 +301,6 @@ class ChannelManager(Injectable):
                 color=0x00FF66,
             ),
         )
-        await channel.send("*This channel will unlock momentarily*", delete_after=15)
 
         if len(channel.category.channels) == 50:
             help_channels = await self._get_help_channels(channel.guild)

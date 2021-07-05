@@ -59,18 +59,18 @@ class HelpRotatorExtension(dippy.Extension):
         last_claimed, channel_id = await self.labels.get(
             "user", member.id, "last-claimed-channel", (None, None)
         )
+        message = await channel.fetch_message(reaction.message_id)
         if last_claimed:
             last_claimed = datetime.fromisoformat(last_claimed)
             if datetime.utcnow() - last_claimed < timedelta(minutes=15):
-                message, *_ = await asyncio.gather(
-                    channel.fetch_message(reaction.message_id),
-                    channel.guild.get_channel(channel_id).send(
-                        f"{member.mention} please use this channel for your question."
-                    ),
+                await channel.guild.get_channel(channel_id).send(
+                    f"{member.mention} please use this channel for your question."
                 )
                 await message.remove_reaction(emoji, member)
                 return
 
+        await message.edit(description="*Claiming channel for you, please standby*")
+        await message.clear_reactions()
         await self.manager.update_get_help_channel(
             channel, member, self.manager.reaction_topics.get(emoji, "")
         )
