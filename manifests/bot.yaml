@@ -25,6 +25,18 @@ spec:
                 secretKeyRef:
                   name: discord.dev.token
                   key: token
-
             - name: "BOT_IMAGE_VERSION"
               value: "<IMAGE_VERSION>"
+            - name: "DB_HOST"
+              value: "private-personal-postgres-cluster-1-apr-26-backup-do-user-87772.a.db.ondigitalocean.com"
+            - name: "DB_PORT"
+              value: "25061"
+            - name: "DB_USER"
+              value: "beginnerpy"
+            - name: "DB_NAME"
+              value: "bpydb-pool"
+            - name: "DB_PASSWORD"
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-password
+                  key: password
