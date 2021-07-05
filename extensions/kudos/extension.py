@@ -9,6 +9,7 @@ from discord import (
     MessageType,
     RawReactionActionEvent,
     TextChannel,
+    utils,
     errors,
 )
 from extensions.kudos.manager import KudosManager
@@ -242,6 +243,33 @@ class KudosExtension(dippy.Extension):
             await message.channel.send(self._build_emoji(message.guild, emoji))
         else:
             await message.channel.send("*No kudos emoji are set*")
+
+    @dippy.Extension.listener("raw_reaction_add")
+    async def on_reaction_survey(self, payload: RawReactionActionEvent):
+        if payload.member.bot:
+            return
+
+        emoji = utils.get(self.client.emojis, name="wolfcheer")
+        if payload.emoji != emoji or payload.channel_id != 734931003193163786:
+            return
+
+        did_survey = await self.manager.labels.get(
+            f"member[{payload.guild_id}]",
+            payload.user_id,
+            "did_survey_july_2021",
+            False,
+        )
+        if not did_survey:
+            member = self.client.get_guild(payload.guild_id).get_member(payload.user_id)
+            await self.manager.labels.set(
+                f"member[{payload.guild_id}]",
+                payload.user_id,
+                "did_survey_july_2021",
+                True,
+            )
+            await self.manager.give_kudos(
+                member, 32, f"{member.mention} did the July 2021 survey! {emoji}"
+            )
 
     @dippy.Extension.listener("raw_reaction_add")
     async def on_reaction(self, payload: RawReactionActionEvent):
