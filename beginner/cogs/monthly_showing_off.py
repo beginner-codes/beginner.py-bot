@@ -44,8 +44,6 @@ class MonthlyShowingOffCog(Cog):
 
     async def send_challenge_message(self):
         """Send the monthly message to begin the contest"""
-        channel = self.client.get_channel(836419179779063868)
-
         embed = discord.Embed(
             color=0xFFE873,
             title="Monthly Project!",
@@ -65,7 +63,7 @@ class MonthlyShowingOffCog(Cog):
             url="https://clipart.world/wp-content/uploads/2020/12/Winner-Trophy-clipart-transparent.png"
         )
         await self.get_message_history()
-        await channel.send(embed=embed)
+        await self.channel.send(embed=embed)
 
     @Cog.listener()
     async def on_message(self, message):
