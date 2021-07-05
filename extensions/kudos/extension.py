@@ -407,7 +407,7 @@ class KudosExtension(dippy.Extension):
 
             notification = f"Gave {message.author} {kudos} kudos for joining us!!!"
 
-        elif last_active_date - current_date < timedelta(days=2):
+        elif current_date - last_active_date < timedelta(days=2):
             current_streak += 1
             await self.manager.set_streak(message.author, current_streak)
 
