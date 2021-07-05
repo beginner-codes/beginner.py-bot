@@ -87,7 +87,7 @@ class MonthlyShowingOffCog(Cog):
         self.log.debug("Deleted message successfully")
 
     async def scan_link(self, message):
-        """Check what type of link it is (Github, non-Github or invalid)"""
+        """Check what type of link it is (Github, non-Github, or invalid)"""
         if message.channel != self.channel:
             return
         # Embed for normal and valid link
