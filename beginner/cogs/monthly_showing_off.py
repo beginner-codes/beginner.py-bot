@@ -280,7 +280,7 @@ class MonthlyShowingOffCog(Cog):
         return await self.channel.send(embed=default_winner_embed)
 
     def multiple_winner_embed(self, winners_string):
-        """Simple making the code neater by makign a function for making a embed with multiple winners"""
+        """Simple making the code neater by making a function for making a embed with multiple winners"""
 
         embed = discord.Embed(
             title="🥁 The winners of this month are... 🥁",
