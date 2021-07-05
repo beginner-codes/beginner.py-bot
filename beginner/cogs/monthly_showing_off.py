@@ -129,7 +129,7 @@ class MonthlyShowingOffCog(Cog):
         return
 
     async def github_get(self, message):
-        """      Manipulating the url that was sent and converting it into a appropriate url for the api     """
+        """Manipulating the url that was sent and converting it into a appropriate url for the api"""
         msg = message.content.split("/")
         try:
             modified_msg = f"https://api.github.com/repos/{msg[3]}/{msg[4]}"
