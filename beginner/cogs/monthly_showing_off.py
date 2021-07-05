@@ -249,12 +249,11 @@ class MonthlyShowingOffCog(Cog):
         we are parsing the reactions and id and sending that to get_winners()."""
         votes = []
         users = []
-        channel = self.client.get_channel(836419179779063868)
         this_month = datetime.utcnow().replace(
             hour=0, minute=0, second=0, microsecond=0
         )
         last_month = (this_month - timedelta(days=1)).replace(day=1)
-        messages = await channel.history(
+        messages = await self.channel.history(
             after=last_month, before=this_month, limit=1000
         ).flatten()
         for message in messages:
