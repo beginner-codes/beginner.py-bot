@@ -190,7 +190,7 @@ class MonthlyShowingOffCog(Cog):
 
         error_embed = discord.Embed(
             title="Error!",
-            description=f"{message.author.mention} Unsucessful Github response!",
+            description=f"{message.author.mention} Unsuccessful Github response!",
             color=discord.Colour.red(),
         )
         error_embed.add_field(name="Response:", value=error)
