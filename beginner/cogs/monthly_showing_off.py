@@ -302,8 +302,8 @@ class MonthlyShowingOffCog(Cog):
 
         try:  # Getting winner objects with a try block just in case the db doesnt have the person
             winner_details = [
-                self.channel.guild.get_member(self.get_author_id(id))
-                for id in winner_ids
+                self.channel.guild.get_member(self.get_author_id(winner_id))
+                for winner_id in winner_ids
             ]
 
         except ContestantInfo.DoesNotExist:
@@ -311,8 +311,8 @@ class MonthlyShowingOffCog(Cog):
             return
 
         # Iterating to get the url of the project and checking different types of embeds
-        for id in winner_ids:
-            embed = (await self.channel.fetch_message(id)).embeds[0]
+        for winner_id in winner_ids:
+            embed = (await self.channel.fetch_message(winner_id)).embeds[0]
             if embed.fields:
                 winner_projects.append(
                     [embed.fields[2].value, embed.fields[3].value][
