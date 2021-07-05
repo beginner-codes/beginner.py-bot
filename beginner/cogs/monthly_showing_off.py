@@ -47,7 +47,11 @@ class MonthlyShowingOffCog(Cog):
         embed = discord.Embed(
             color=0xFFE873,
             title="Monthly Project!",
-            description="Post you projects in this channel for the community to see!\n Below are few ways to submit the project **(one submssion only!)**:\n\n**<:github:837128482097332225>Github**\n Post your awesome project on Github.(make sure it is a repository)",
+            description=(
+                f"Post you projects in this channel for the community to see!\n Below are few ways to submit the "
+                f"project **(one submission only!)**:\n\n**<:github:837128482097332225>Github**\n Post your awesome "
+                f"project on Github.(make sure it is a repository)"
+            ),
         )
 
         embed.add_field(
