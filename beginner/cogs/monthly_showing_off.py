@@ -90,20 +90,7 @@ class MonthlyShowingOffCog(Cog):
         """Check what type of link it is (Github, non-Github, or invalid)"""
         if message.channel != self.channel:
             return
-        # Embed for normal and valid link
-        default_embed = discord.Embed(
-            title=f"**{message.author.name}**",
-            description=f"Project: {message.content}",
-            color=discord.Colour.green(),
-        )
 
-        error_embed = discord.Embed(
-            title=f"Error!",
-            description=f"{message.author.mention} Invalid resource, not a link!",
-            colour=discord.Colour.red(),
-        )
-
-        default_embed.set_thumbnail(url=message.author.avatar_url)
         if "https://" in message.content:
             author_id = message.author.id
             time_sent = message.created_at.strftime("%Y-%m")
@@ -111,7 +98,13 @@ class MonthlyShowingOffCog(Cog):
                 await self.github_get(message)
 
             else:
-                await message.channel.send(embed=default_embed)
+                await message.channel.send(
+                    embed=discord.Embed(
+                        title=f"**{message.author.name}**",
+                        description=f"Project: {message.content}",
+                        color=discord.Colour.green(),
+                    ).set_thumbnail(url=message.author.avatar_url)
+                )
                 await message.delete()
 
             bot_message_id = self.channel.last_message_id
@@ -123,7 +116,14 @@ class MonthlyShowingOffCog(Cog):
             contestant.save()
 
         else:
-            await message.channel.send(embed=error_embed, delete_after=8)
+            await message.channel.send(
+                embed=discord.Embed(
+                    title=f"Error!",
+                    description=f"{message.author.mention} Invalid resource, not a link!",
+                    colour=discord.Colour.red(),
+                ),
+                delete_after=8,
+            )
             await message.delete()
 
         return
