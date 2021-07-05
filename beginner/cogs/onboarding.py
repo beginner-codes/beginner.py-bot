@@ -80,9 +80,9 @@ class OnBoarding(Cog):
             "Welcome to our newest & coolest member {}!!!",
             "Hey hey hey!!! {} has joined the party!!!",
         ]
-        await self.get_channel("🙋hello-world").send(
-            random.choice(welcome_messages).format(member.mention)
-        )
+        message = random.choice(welcome_messages).format(member.mention)
+        wolf_wave_emoji = discord.utils.get(self.client.emojis, name="wolfwave")
+        await self.get_channel("🙋hello-world").send(f"{wolf_wave_emoji} {message}")
 
         await member.add_roles(self.get_role("member"))
 
