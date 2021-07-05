@@ -273,9 +273,10 @@ class MonthlyShowingOffCog(Cog):
         default_winner_embed.add_field(
             name="Check out the project:", value=author_project
         )
-        default_winner_embed.set_thumbnail(
-            url="https://cdn.discordapp.com/emojis/711749954837807135.png?v=1"
+        wolf_cheer_emoji = discord.utils.get(
+            self.channel.guild.emojis, name="wolfcheer"
         )
+        default_winner_embed.set_thumbnail(url=wolf_cheer_emoji.url)
         return await self.channel.send(embed=default_winner_embed)
 
     def multiple_winner_embed(self, winners_string):
@@ -287,9 +288,10 @@ class MonthlyShowingOffCog(Cog):
             color=discord.Color.orange(),
         )
 
-        embed.set_thumbnail(
-            url="https://cdn.discordapp.com/emojis/711749954837807135.png?v=1"
+        wolf_cheer_emoji = discord.utils.get(
+            self.channel.guild.emojis, name="wolfcheer"
         )
+        embed.set_thumbnail(url=wolf_cheer_emoji.url)
         return embed
 
     async def get_multiple_winners(self, winner_ids):
