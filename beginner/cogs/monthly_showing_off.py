@@ -100,7 +100,7 @@ class MonthlyShowingOffCog(Cog):
 
         error_embed = discord.Embed(
             title=f"Error!",
-            description=f"{message.author.mention} Invalid recources, Not a link!",
+            description=f"{message.author.mention} Invalid resources, Not a link!",
             colour=discord.Colour.red(),
         )
 
