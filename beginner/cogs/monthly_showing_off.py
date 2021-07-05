@@ -161,7 +161,7 @@ class MonthlyShowingOffCog(Cog):
         language,
         message,
     ):
-        """Making an embed for the githup response wrapped in a function"""
+        """Making an embed for the github response wrapped in a function"""
         git_embed = discord.Embed(title=project_name, color=discord.Colour.random())
 
         github_emoji = discord.utils.get(self.channel.guild.emojis, name="github")
