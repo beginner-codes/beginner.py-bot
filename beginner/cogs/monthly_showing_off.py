@@ -45,9 +45,9 @@ class MonthlyShowingOffCog(Cog):
             color=0xFFE873,
             title="Monthly Project!",
             description=(
-                f"Post you projects in this channel for the community to see!\n Below are few ways to submit the "
+                f"Post your projects in this channel for the community to see!\n Below are a few ways to submit your "
                 f"project **(one submission only!)**:\n\n**{github_emoji}Github**\n Post your awesome "
-                f"project on Github. (make sure it is a repository)"
+                f"project on Github (make sure it is a repository)."
             ),
         )
 
