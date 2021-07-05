@@ -39,9 +39,6 @@ class MonthlyShowingOffCog(Cog):
         last_date = datetime(current_year, current_month + 1, 1, 0, 0, 0)
         return (last_date - current_date).seconds
 
-    def cog_unload(self):
-        self.send_challenge_message.cancel()
-
     async def send_challenge_message(self):
         """Send the monthly message to begin the contest"""
         github_emoji = discord.utils.get(self.channel.guild.emojis, name="github")
