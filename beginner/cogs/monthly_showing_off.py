@@ -266,8 +266,8 @@ class MonthlyShowingOffCog(Cog):
     async def send_default_winner_embed(self, author_project, member):
         """A function that sends an embed if there is single winner"""
         default_winner_embed = discord.Embed(
-            title=f"🥁 The winner of this month is... 🥁",
-            description=f"One and Only: 🎉{member.mention}",
+            title=f"🥁 The winner this month is... 🥁",
+            description=f"The One & Only: 🎉{member.mention}",
             color=discord.Color.orange(),
         )
         default_winner_embed.add_field(
