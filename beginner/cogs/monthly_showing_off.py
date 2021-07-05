@@ -8,7 +8,7 @@ import os
 
 
 class MonthlyShowingOffCog(Cog):
-    """   Cog for the monthly showing off challenge!   """
+    """Cog for the monthly showing off challenge!"""
 
     def __init__(self, client):
         self.client = client
@@ -32,7 +32,7 @@ class MonthlyShowingOffCog(Cog):
         self.log.debug(f"{type(self).__name__} is ready")
 
     def calculate_time_left(self):
-        """   Calculate time left for the next challenge   """
+        """Calculate time left for the next challenge"""
         current_date = datetime.today()
         current_month = current_date.month
         current_year = current_date.year
@@ -43,7 +43,7 @@ class MonthlyShowingOffCog(Cog):
         self.send_challenge_message.cancel()
 
     async def send_challenge_message(self):
-        """   Send the monthly message to begin the contest   """
+        """Send the monthly message to begin the contest"""
         channel = self.client.get_channel(836419179779063868)
 
         embed = discord.Embed(
@@ -74,7 +74,7 @@ class MonthlyShowingOffCog(Cog):
         await self.scan_link(message)
 
     def get_author_id(self, bot_message_id):
-        """   Get the author id from the database by using the message id   """
+        """Get the author id from the database by using the message id"""
         return (
             ContestantInfo.select(ContestantInfo.original_author_id)
             .where(bot_message_id == ContestantInfo.bot_message_id)
@@ -83,12 +83,12 @@ class MonthlyShowingOffCog(Cog):
         )
 
     def delete_message(self, bot_message_id):
-        """   Delete message from the database   """
+        """Delete message from the database"""
         ContestantInfo.delete().where(bot_message_id == ContestantInfo.bot_message_id)
         print("Deleted successfully")
 
     async def scan_link(self, message):
-        """   Check what type of link it is(Github, non-Github or invalid)   """
+        """Check what type of link it is (Github, non-Github or invalid)"""
         if message.channel != self.channel:
             return
         # Embed for normal and valid link
@@ -162,7 +162,7 @@ class MonthlyShowingOffCog(Cog):
         language,
         message,
     ):
-        """        Making an embed for the githup response wrapped in a funciton         """
+        """Making an embed for the githup response wrapped in a function"""
         git_embed = discord.Embed(title=project_name, color=discord.Colour.random())
 
         git_embed.add_field(
@@ -185,7 +185,7 @@ class MonthlyShowingOffCog(Cog):
         return git_embed
 
     async def github_response(self, message, json, author_id, time_sent):
-        """      Getting the github response and sending the values in an embed, as well as saving it in the db      """
+        """Getting the github response and sending the values in an embed, as well as saving it in the db"""
         error = json.get("message", bool(""))
 
         error_embed = discord.Embed(
@@ -245,10 +245,8 @@ class MonthlyShowingOffCog(Cog):
         contestant.save()
 
     async def get_message_history(self):
-        """
-        Getting the message history and returning messages that are applicable to the month's challenge.
-        After that we are parsing the reactions and id and sending that to get_winners().
-        """
+        """Getting the message history and returning messages that are applicable to the month's challenge. After that
+        we are parsing the reactions and id and sending that to get_winners()."""
         votes = []
         users = []
         channel = self.client.get_channel(836419179779063868)
@@ -267,7 +265,7 @@ class MonthlyShowingOffCog(Cog):
         await self.get_winners(votes, users)
 
     async def send_default_winner_embed(self, author_project, member):
-        """  A function that sends an embed if there is single winner   """
+        """A function that sends an embed if there is single winner"""
         default_winner_embed = discord.Embed(
             title=f"🥁 The winner of this month is... 🥁",
             description=f"One and Only: 🎉{member.mention}",
@@ -282,7 +280,7 @@ class MonthlyShowingOffCog(Cog):
         return await self.channel.send(embed=default_winner_embed)
 
     def multiple_winner_embed(self, winners_string):
-        """     Simple making the code neater by makign a function for making a embed with multiple winners    """
+        """Simple making the code neater by makign a function for making a embed with multiple winners"""
 
         embed = discord.Embed(
             title="🥁 The winners of this month are... 🥁",
@@ -296,7 +294,7 @@ class MonthlyShowingOffCog(Cog):
         return embed
 
     async def get_multiple_winners(self, winner_ids):
-        """      A function to get multiple winners if there is an instance of it        """
+        """A function to get multiple winners if there is an instance of it"""
 
         winners_string = ""
         winner_projects = []
@@ -330,7 +328,7 @@ class MonthlyShowingOffCog(Cog):
         return self.multiple_winner_embed(winners_string)
 
     async def get_single_winner_info(self, message_id):
-        """   A function to get the winner's info and send the embed to the channel   """
+        """A function to get the winner's info and send the embed to the channel"""
         try:
             winner_id = self.get_author_id(message_id)
             member = self.channel.guild.get_member(winner_id)
@@ -351,10 +349,7 @@ class MonthlyShowingOffCog(Cog):
             print("Contestant was not found")
 
     async def get_winners(self, votes, users):
-        """
-        A function to check how many winners are there
-        and then sending embeds based on that
-        """
+        """A function to check how many winners are there and then sending embeds based on that"""
         max_vote = max(votes)
         winners_votes = votes.count(max_vote)
 
@@ -373,14 +368,12 @@ class MonthlyShowingOffCog(Cog):
 
     @Cog.listener()
     async def on_raw_reaction_add(self, payload: discord.RawReactionActionEvent):
-        """
-        The listener function that will take car of people deleting there own projects if wanted.
-        As well as will take care of people wanting to cheat.
-        """
+        """The listener function that will take car of people deleting there own projects if wanted. As well as will
+        take care of people wanting to cheat."""
         if payload.channel_id != self.channel.id:
             return
 
-        # Retriving required data
+        # Retrieving required data
         author_id = self.get_author_id(payload.message_id)
         payload_author_object = self.channel.guild.get_member(payload.user_id)
         message = await self.channel.fetch_message(payload.message_id)
