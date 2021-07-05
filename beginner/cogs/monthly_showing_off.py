@@ -44,12 +44,13 @@ class MonthlyShowingOffCog(Cog):
 
     async def send_challenge_message(self):
         """Send the monthly message to begin the contest"""
+        github_emoji = discord.utils.get(self.channel.guild.emojis, name="github")
         embed = discord.Embed(
             color=0xFFE873,
             title="Monthly Project!",
             description=(
                 f"Post you projects in this channel for the community to see!\n Below are few ways to submit the "
-                f"project **(one submission only!)**:\n\n**<:github:837128482097332225>Github**\n Post your awesome "
+                f"project **(one submission only!)**:\n\n**{github_emoji}Github**\n Post your awesome "
                 f"project on Github.(make sure it is a repository)"
             ),
         )
