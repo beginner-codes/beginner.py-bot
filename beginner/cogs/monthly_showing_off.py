@@ -186,7 +186,7 @@ class MonthlyShowingOffCog(Cog):
 
     async def github_response(self, message, json, author_id, time_sent):
         """Getting the github response and sending the values in an embed, as well as saving it in the db"""
-        error = json.get("message", bool(""))
+        error = json.get("message")
 
         error_embed = discord.Embed(
             title="Error!",
