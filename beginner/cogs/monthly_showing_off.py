@@ -13,7 +13,6 @@ class MonthlyShowingOffCog(Cog):
     def __init__(self, client):
         self.client = client
         self.log = get_logger(("beginner.py", self.__class__.__name__))
-        self.channel_id = 836419179779063868
         self.current_month = datetime.today().month
         self.current_year = datetime.today().year
         self.client.loop.call_later(
