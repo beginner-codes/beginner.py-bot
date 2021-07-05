@@ -133,7 +133,7 @@ class MonthlyShowingOffCog(Cog):
         msg = message.content.split("/")
         try:
             modified_msg = f"https://api.github.com/repos/{msg[3]}/{msg[4]}"
-        except:
+        except IndexError:
             await message.channel.send(
                 embed=discord.Embed(
                     title="Error!",
