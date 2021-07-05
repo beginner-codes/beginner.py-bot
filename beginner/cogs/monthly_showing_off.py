@@ -1,7 +1,6 @@
 from beginner.logging import get_logger
 from beginner.models.contestants import ContestantInfo
-from discord.ext import tasks, commands
-from discord.ext.commands import Cog, Context, command
+from discord.ext.commands import Cog
 import discord
 import requests
 from datetime import datetime, timedelta
