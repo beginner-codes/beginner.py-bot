@@ -1,5 +1,5 @@
 from extensions.kudos.manager import KudosManager
-from discord import Guild, Member, Message, TextChannel
+from discord import Guild, Member, Message, TextChannel, utils
 from typing import Optional
 import dippy.labels
 import dippy
@@ -73,8 +73,10 @@ class VoiceChatExtension(dippy.Extension):
             kudos,
             f"{member.mention} welcomed {num_welcomed} member{'s' * (num_welcomed > 1)} to the server!!!",
         )
+        expert_emoji = utils.get(member.guild.emojis, name="expert")
         await channel.send(
-            f"{member.mention} you got {kudos} kudos for welcoming {num_welcomed} member{'s' * (num_welcomed > 1)}!",
+            f"{expert_emoji} {member.mention} you got {kudos} kudos for welcoming {num_welcomed} "
+            f"member{'s' * (num_welcomed > 1)}!",
             delete_after=60,
         )
 
