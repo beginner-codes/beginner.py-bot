@@ -84,7 +84,7 @@ class MonthlyShowingOffCog(Cog):
     def delete_message(self, bot_message_id):
         """Delete message from the database"""
         ContestantInfo.delete().where(bot_message_id == ContestantInfo.bot_message_id)
-        print("Deleted successfully")
+        self.log.debug("Deleted message successfully")
 
     async def scan_link(self, message):
         """Check what type of link it is (Github, non-Github or invalid)"""
@@ -307,7 +307,7 @@ class MonthlyShowingOffCog(Cog):
             ]
 
         except ContestantInfo.DoesNotExist:
-            print("Unable to return users")
+            self.log.error("Unable to return users")
             return
 
         # Iterating to get the url of the project and checking different types of embeds
@@ -347,7 +347,7 @@ class MonthlyShowingOffCog(Cog):
         except IndexError:
             pass
         except ContestantInfo.DoesNotExist:
-            print("Contestant was not found")
+            self.log.error("Contestant was not found")
 
     async def get_winners(self, votes, users):
         """A function to check how many winners are there and then sending embeds based on that"""
