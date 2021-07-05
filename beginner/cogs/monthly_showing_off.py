@@ -4,6 +4,7 @@ from discord.ext.commands import Cog
 import discord
 import requests
 from datetime import datetime, timedelta
+import os
 
 
 class MonthlyShowingOffCog(Cog):
@@ -13,7 +14,6 @@ class MonthlyShowingOffCog(Cog):
         self.client = client
         self.log = get_logger(("beginner.py", self.__class__.__name__))
         self.channel_id = 836419179779063868
-        self.channel = None
         self.current_month = datetime.today().month
         self.current_year = datetime.today().year
         self.client.loop.call_later(
@@ -21,10 +21,15 @@ class MonthlyShowingOffCog(Cog):
             lambda: self.client.loop.create_task(self.send_challenge_message()),
         )
 
+    @property
+    def channel(self):
+        return self.client.get_channel(
+            os.environ.get("BPY_MONTHLY_SHOWING_OFF_CHANNEL_ID", 836419179779063868)
+        )
+
     @Cog.listener()
     async def on_ready(self):
         self.log.debug(f"{type(self).__name__} is ready")
-        self.channel = self.client.get_channel(self.channel_id)
 
     def calculate_time_left(self):
         """   Calculate time left for the next challenge   """
@@ -84,7 +89,7 @@ class MonthlyShowingOffCog(Cog):
 
     async def scan_link(self, message):
         """   Check what type of link it is(Github, non-Github or invalid)   """
-        if message.channel.id != self.channel_id:
+        if message.channel != self.channel:
             return
         # Embed for normal and valid link
         default_embed = discord.Embed(
@@ -372,7 +377,7 @@ class MonthlyShowingOffCog(Cog):
         The listener function that will take car of people deleting there own projects if wanted.
         As well as will take care of people wanting to cheat.
         """
-        if payload.channel_id != self.channel_id:
+        if payload.channel_id != self.channel.id:
             return
 
         # Retriving required data
