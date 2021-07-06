@@ -98,7 +98,11 @@ class KudosExtension(dippy.Extension):
             lookup_member = message.guild.get_member(int(content))
         elif content:
             for member in message.guild.members:
-                if content in {str(member), member.nick, member.name}:
+                if content.casefold() in {
+                    str(member).casefold(),
+                    member.nick.casefold(),
+                    member.name.casefold(),
+                }:
                     lookup_member = member
                     break
         self_lookup = lookup_member == message.author
