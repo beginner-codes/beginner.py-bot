@@ -395,7 +395,7 @@ class KudosExtension(dippy.Extension):
         current_streak, best_streak = await self.manager.get_streaks(message.author)
 
         kudos = DAILY_MESSAGE_BONUS
-        reason = f"{message.author.mention} has sent their first message of the day!"
+        reason = f"{message.author.mention} has continued their {current_streak} day activity streak!"
         notification = (
             f"Gave {message.author} their daily {kudos} kudos bonus! Their current activity streak is "
             f"{current_streak + 1} day{'s' * (current_streak > 0)}!"
@@ -420,6 +420,7 @@ class KudosExtension(dippy.Extension):
                     f"Gave {message.author} {kudos} for their 7 day activity streak!!!"
                 )
         else:
+            reason = f"{message.author.mention} has begun a new activity streak!!!"
             await self.manager.set_streak(message.author, 1)
 
         await self.manager.give_kudos(message.author, kudos, reason)
