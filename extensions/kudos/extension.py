@@ -90,9 +90,17 @@ class KudosExtension(dippy.Extension):
             member for member in message.mentions if isinstance(member, Member)
         ]
         lookup_member = message.author
+        *_, content = message.content.partition(" ")
+        content = content.strip()
         if member_mentions:
             lookup_member = member_mentions[0]
-
+        elif content.isdigit() and message.guild.get_member(int(content)):
+            lookup_member = message.guild.get_member(int(content))
+        elif content:
+            for member in message.guild.members:
+                if content in {str(member), member.nick, member.name}:
+                    lookup_member = member
+                    break
         self_lookup = lookup_member == message.author
 
         leaders = await self.manager.get_lifetime_leaderboard(message.guild)
