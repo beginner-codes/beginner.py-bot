@@ -100,7 +100,7 @@ class KudosExtension(dippy.Extension):
             for member in message.guild.members:
                 if content.casefold() in {
                     str(member).casefold(),
-                    member.nick.casefold(),
+                    member.display_name.casefold(),
                     member.name.casefold(),
                 }:
                     lookup_member = member
