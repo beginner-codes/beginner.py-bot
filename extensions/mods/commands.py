@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-from discord import AuditLogAction, Embed, Guild, Member, Message
+from discord import AuditLogAction, Embed, Guild, Member, Message, utils
 from extensions.user_tracking.manager import UserTracker
 from extensions.mods.mod_settings import ModSettingsExtension
 from extensions.mods.mod_manager import ModManager
@@ -18,6 +18,37 @@ class ModeratorsExtension(dippy.Extension):
     @dippy.Extension.listener("ready")
     async def on_ready(self):
         self.client.remove_command("help")
+
+    @dippy.Extension.command("!team")
+    async def team_command(self, message: Message):
+        helpers = utils.get(message.guild.roles, name="helpers").members
+        mods = utils.get(message.guild.roles, name="mods").members
+        wolf_wave_emoji = utils.get(message.guild.emojis, name="wolfwave")
+        owner = max(mods, key=message.guild.owner.__eq__)
+        await message.reply(
+            embed=Embed(
+                title="Beginner.py Team",
+                description=(
+                    "Hi! The Beginner.py team is dedicated to maintaining a friendly environment where everyone can "
+                    "learn."
+                ),
+                color=0x00A35A,
+            )
+            .add_field(name="🤴Server Owner", value=owner.mention, inline=False)
+            .add_field(
+                name="👮Moderators",
+                value=", ".join(mod.mention for mod in mods if mod != owner),
+                inline=False,
+            )
+            .add_field(
+                name="👷Helpers",
+                value=", ".join(
+                    helper.mention for helper in helpers if helper not in mods
+                ),
+                inline=False,
+            )
+            .set_thumbnail(url=wolf_wave_emoji.url)
+        )
 
     @dippy.Extension.command("!!mute")
     async def mute_command(self, message: Message):
