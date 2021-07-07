@@ -125,7 +125,7 @@ class KudosExtension(dippy.Extension):
         if not found:
             index = list(leaders).index(lookup_member)
             leaderboard.append(
-                f"...\n{index + 1}. {lookup_member.name} has {leaders[lookup_member]} kudos"
+                f"...\n{index + 1}. {lookup_member.display_name} has {leaders[lookup_member]} kudos"
             )
 
         current_streak, best_streak = await self.manager.get_streaks(lookup_member)
