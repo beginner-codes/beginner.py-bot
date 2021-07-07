@@ -114,3 +114,4 @@ postgres-data
 *.sqlite.db
 *.sqlite
 bot.dev.yaml
+/dev.db
