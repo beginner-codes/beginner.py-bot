@@ -130,7 +130,11 @@ class KudosExtension(dippy.Extension):
 
         current_streak, best_streak = await self.manager.get_streaks(lookup_member)
         last_active = await self.manager.get_last_active_date(lookup_member)
-        next_day = last_active + timedelta(hours=23, minutes=30)
+        next_day = (
+            last_active + timedelta(hours=23, minutes=30)
+            if last_active
+            else datetime.utcnow()
+        )
 
         plural = lambda num: "s" * (num != 1)
 
