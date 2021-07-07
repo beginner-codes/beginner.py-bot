@@ -112,11 +112,10 @@ class KudosExtension(dippy.Extension):
         lifetime_kudos = await self.manager.get_lifetime_kudos(lookup_member)
 
         leaderboard = []
-        for index, (member, member_kudos) in islice(
-            enumerate(leaders.items(), start=1), 0, 10
-        ):
+        indexes = ["🥇", "🥈", "🥉", *(f"{i}." for i in range(4, 11))]
+        for index, (member, member_kudos) in zip(indexes, leaders.items()):
             name = member.display_name if member else "*Old Member*"
-            entry = f"{index}. {name} has {member_kudos} kudos"
+            entry = f"{index} {name} has {member_kudos} kudos"
             if member == lookup_member:
                 entry = f"**{entry}**"
             leaderboard.append(entry)
