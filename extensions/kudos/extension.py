@@ -109,7 +109,9 @@ class KudosExtension(dippy.Extension):
 
         leaders = await self.manager.get_lifetime_leaderboard(message.guild)
         user_kudos = await self.manager.get_kudos(lookup_member)
-        lifetime_kudos = await self.manager.get_lifetime_kudos(lookup_member)
+        lifetime_kudos = (
+            await self.manager.get_lifetime_kudos(lookup_member)
+        ) or user_kudos
 
         leaderboard = []
         indexes = ["🥇", "🥈", "🥉", *(f"{i}." for i in range(4, 11))]
