@@ -10,6 +10,7 @@ PyYAML = "^5.4.1"
 SQLAlchemy = "^1.4.1"
 psycopg2-binary = "^2.8.6"
 "dippy.bot" = "^0.1.1-alpha.19"
+arrow = "^1.1.0"
 
 [tool.poetry.dev-dependencies]
 
