@@ -113,12 +113,20 @@ class KudosExtension(dippy.Extension):
 
         leaderboard = []
         indexes = ["🥇", "🥈", "🥉", *(f"{i}." for i in range(4, 11))]
+        found = False
         for index, (member, member_kudos) in zip(indexes, leaders.items()):
             name = member.display_name if member else "*Old Member*"
             entry = f"{index} {name} has {member_kudos} kudos"
             if member == lookup_member:
                 entry = f"**{entry}**"
+                found = True
             leaderboard.append(entry)
+
+        if not found:
+            index = list(leaders).index(lookup_member)
+            leaderboard.append(
+                f"...\n{index + 1}. {lookup_member.name} has {leaders[lookup_member]} kudos"
+            )
 
         current_streak, best_streak = await self.manager.get_streaks(lookup_member)
         last_active = await self.manager.get_last_active_date(lookup_member)
