@@ -107,7 +107,7 @@ class KudosManager(Injectable):
         kudos = await self.get_kudos(member)
         await self.set_kudos(member, kudos + amount)
 
-        lifetime_kudos = await self.get_lifetime_kudos(member)
+        lifetime_kudos = await self.get_lifetime_kudos(member) or kudos
         await self.set_lifetime_kudos(member, lifetime_kudos + amount)
 
         await self._send_kudos_message_to_ledger(
