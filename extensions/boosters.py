@@ -44,7 +44,7 @@ class BoostersExtension(dippy.Extension):
         channel = await self.get_booster_channel(member.guild)
         await channel.send(
             embed=discord.Embed(
-                content=(
+                description=(
                     f"{member.mention} has boosted the server! That's {member.guild.premium_subscription_count} "
                     f"boosts from {len(member.guild.premium_subscribers)} members!!!"
                 ),
@@ -52,7 +52,7 @@ class BoostersExtension(dippy.Extension):
             )
             .set_author(
                 name=f"{member} Has Boosted The Server!!!{' (TEST)' * test}",
-                url=member.avatar_url,
+                icon_url=member.avatar_url,
             )
             .set_thumbnail(
                 url="https://raw.githubusercontent.com/beginnerpy-com/beginner.py-bot/dippy-rewrite/booster.png"
