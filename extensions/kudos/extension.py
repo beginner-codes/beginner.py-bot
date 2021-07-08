@@ -8,6 +8,7 @@ from discord import (
     Message,
     MessageType,
     RawReactionActionEvent,
+    Role,
     TextChannel,
     utils,
     errors,
@@ -439,6 +440,18 @@ class KudosExtension(dippy.Extension):
             or not isinstance(message.channel, TextChannel)
             or message.type == MessageType.new_member
         ):
+            return
+
+        coders_role: Role = utils.get(message.guild.roles, name="coders")
+        # If the send messages permission could be none, so explicitly check for false
+        coders_can_send = (
+            message.channel.overwrites_for(coders_role).send_messages is not False
+        )
+        everyone_can_send = (
+            message.channel.overwrites_for(message.guild.default_role).send_messages
+            is not False
+        )
+        if not coders_can_send or (not everyone_can_send and not coders_can_send):
             return
 
         last_active_date = await self.manager.get_last_active_date(message.author)
