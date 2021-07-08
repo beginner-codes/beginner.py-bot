@@ -289,6 +289,8 @@ class ChannelManager(Injectable):
         if helping_category.channels:
             args["position"] = helping_category.channels[0].position
 
+        pins = await channel.pins()
+
         new_message = await channel.send(
             f"{owner.mention}",
             embed=Embed(
@@ -319,7 +321,11 @@ class ChannelManager(Injectable):
             self.labels.set(
                 "text_channel", channel.id, "last-active", datetime.utcnow().isoformat()
             ),
+            new_message.pin(reason="Jump to start of current help question"),
         ]
+
+        if pins:
+            tasks.append(pins[0].unpin())
 
         try:
             message, *_ = await channel.history(limit=1, before=new_message).flatten()
