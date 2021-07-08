@@ -454,18 +454,6 @@ class KudosExtension(dippy.Extension):
             coders_overwrites.send_messages
             or everyone_overwrites.send_messages is not False
         )
-        print(
-            coders_can_send,
-            coders_can_view,
-            "\nCoders View",
-            coders_overwrites.view_channel,
-            "\nCoders Send",
-            coders_overwrites.send_messages,
-            "\nEveryone View",
-            everyone_overwrites.view_channel,
-            "\nEveryone Send",
-            everyone_overwrites.send_messages,
-        )
         if not coders_can_view or not coders_can_send:
             return
 
