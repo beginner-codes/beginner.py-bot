@@ -49,7 +49,7 @@ class Achievements(UserDict, Injectable):
                     ),
                     "You're a Coder! Thanks for being 😎 AWESOME 😎!!!",
                     "😎",
-                    112,
+                    188,  # 4 weeks of daily activity
                 ),
             }
         )
