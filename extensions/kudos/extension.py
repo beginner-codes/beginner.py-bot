@@ -83,8 +83,8 @@ class KudosExtension(dippy.Extension):
 
     @dippy.Extension.command("!kudos")
     async def get_kudos_stats(self, message: Message):
-        *_, content = message.content.partition(" ")
-        content = content.strip().casefold()
+        content_parts = message.content.casefold().split(" ")
+        content = content_parts[1] if len(content_parts) > 1 else ""
         if content in {"help", "leaderboard"}:
             return
 
@@ -107,7 +107,6 @@ class KudosExtension(dippy.Extension):
                     break
         self_lookup = lookup_member == message.author
 
-        leaders = await self.manager.get_lifetime_leaderboard(message.guild)
         user_kudos = await self.manager.get_kudos(lookup_member)
         lifetime_kudos = (
             await self.manager.get_lifetime_kudos(lookup_member)
@@ -216,7 +215,7 @@ class KudosExtension(dippy.Extension):
         if not found:
             index = list(leaders).index(lookup_member)
             leaderboard.append(
-                f"...\n{index + 1}. {lookup_member.display_name} has {leaders[lookup_member]} kudos"
+                f"...\n**{index + 1}. {lookup_member.display_name} has {leaders[lookup_member]} kudos**"
             )
 
         await message.channel.send(
