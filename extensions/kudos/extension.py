@@ -78,27 +78,27 @@ class KudosExtension(dippy.Extension):
                 inline=False,
             )
             .set_thumbnail(url=self.manager.get_emoji(self.client, "expert").url)
-            .set_footer(text="!kudos | !kudos help")
+            .set_footer(text="!kudos | !kudos @user | !kudos leaderboard | !kudos help")
         )
 
     @dippy.Extension.command("!kudos")
     async def get_kudos_stats(self, message: Message):
-        if "help" in message.content.casefold():
+        *_, content = message.content.partition(" ")
+        content = content.strip().casefold()
+        if content in {"help", "leaderboard"}:
             return
 
         member_mentions = [
             member for member in message.mentions if isinstance(member, Member)
         ]
         lookup_member = message.author
-        *_, content = message.content.partition(" ")
-        content = content.strip()
         if member_mentions:
             lookup_member = member_mentions[0]
         elif content.isdigit() and message.guild.get_member(int(content)):
             lookup_member = message.guild.get_member(int(content))
         elif content:
             for member in message.guild.members:
-                if content.casefold() in {
+                if content in {
                     str(member).casefold(),
                     member.display_name.casefold(),
                     member.name.casefold(),
@@ -112,23 +112,6 @@ class KudosExtension(dippy.Extension):
         lifetime_kudos = (
             await self.manager.get_lifetime_kudos(lookup_member)
         ) or user_kudos
-
-        leaderboard = []
-        indexes = ["🥇", "🥈", "🥉", *(f"{i}." for i in range(4, 11))]
-        found = False
-        for index, (member, member_kudos) in zip(indexes, leaders.items()):
-            name = member.display_name if member else "*Old Member*"
-            entry = f"{index} {name} has {member_kudos} kudos"
-            if member == lookup_member:
-                entry = f"**{entry}**"
-                found = True
-            leaderboard.append(entry)
-
-        if not found:
-            index = list(leaders).index(lookup_member)
-            leaderboard.append(
-                f"...\n{index + 1}. {lookup_member.display_name} has {leaders[lookup_member]} kudos"
-            )
 
         current_streak, best_streak = await self.manager.get_streaks(lookup_member)
         last_active = await self.manager.get_last_active_date(lookup_member)
@@ -181,7 +164,7 @@ class KudosExtension(dippy.Extension):
                 value=streak,
                 inline=False,
             )
-            .set_footer(text="!kudos | !kudos help")
+            .set_footer(text="!kudos | !kudos @user | !kudos leaderboard | !kudos help")
         )
 
         achievements = await self.manager.get_achievements(lookup_member)
@@ -194,8 +177,62 @@ class KudosExtension(dippy.Extension):
                 ),
             )
 
-        embed.add_field(name="Leaderboard", value="\n".join(leaderboard), inline=False)
         await message.channel.send(embed=embed)
+
+    @dippy.Extension.command("!kudos leaderboard")
+    async def get_kudos_leaderboard(self, message: Message):
+        if "help" in message.content.casefold():
+            return
+
+        member_mentions = [
+            member for member in message.mentions if isinstance(member, Member)
+        ]
+        lookup_member = message.author
+        *_, content = message.content.partition(" ")
+        content = content.strip()
+        if member_mentions:
+            lookup_member = member_mentions[0]
+        elif content.isdigit() and message.guild.get_member(int(content)):
+            lookup_member = message.guild.get_member(int(content))
+        elif content:
+            for member in message.guild.members:
+                if content.casefold() in {
+                    str(member).casefold(),
+                    member.display_name.casefold(),
+                    member.name.casefold(),
+                }:
+                    lookup_member = member
+                    break
+
+        leaders = await self.manager.get_lifetime_leaderboard(message.guild)
+        leaderboard = []
+        indexes = ["🥇", "🥈", "🥉", *(f"{i}." for i in range(4, 11))]
+        found = False
+        for index, (member, member_kudos) in zip(indexes, leaders.items()):
+            name = member.display_name if member else "*Old Member*"
+            entry = f"{index} {name} has {member_kudos} kudos"
+            if member == lookup_member:
+                entry = f"**{entry}**"
+                found = True
+            leaderboard.append(entry)
+
+        if not found:
+            index = list(leaders).index(lookup_member)
+            leaderboard.append(
+                f"...\n{index + 1}. {lookup_member.display_name} has {leaders[lookup_member]} kudos"
+            )
+
+        await message.channel.send(
+            embed=Embed(
+                color=0x4285F4,
+                description="\n".join(leaderboard),
+                title="Kudos Leaderboard",
+            )
+            .set_thumbnail(
+                url="https://cdn.discordapp.com/emojis/669941420454576131.png?v=1"
+            )
+            .set_footer(text="!kudos | !kudos @user | !kudos leaderboard | !kudos help")
+        )
 
     @dippy.Extension.command("!adjust kudos")
     async def adjust_members_kudos(self, message: Message):
