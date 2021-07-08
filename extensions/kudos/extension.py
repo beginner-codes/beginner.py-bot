@@ -453,14 +453,17 @@ class KudosExtension(dippy.Extension):
         current_streak, best_streak = await self.manager.get_streaks(message.author)
 
         kudos = DAILY_MESSAGE_BONUS
-        reason = f"{message.author.mention} has continued their {current_streak} day activity streak!"
+        reason = (
+            f"{message.author.mention} has continued their {current_streak} day activity streak! "
+            f"[See Message]({message.jump_url})"
+        )
         notification = (
             f"Gave {message.author} their daily {kudos} kudos bonus! Their current activity streak is "
             f"{current_streak + 1} day{'s' * (current_streak > 0)}!"
         )
         if best_streak == 0:
             kudos = FIRST_TIME_BONUS
-            reason = f"{message.author.mention} has joined the server!!!"
+            reason = f"{message.author.mention} has sent their first [message]({message.jump_url})!!!"
             await self.manager.set_streak(message.author, 1)
 
             notification = f"Gave {message.author} {kudos} kudos for joining us!!!"
@@ -472,13 +475,16 @@ class KudosExtension(dippy.Extension):
             if current_streak % 7 == 0:
                 kudos = WEEKLY_STREAK_BONUS
                 weeks = current_streak // 7
-                reason = f"{message.author.mention} has messaged every day for {weeks} week{'s' * (weeks > 1)}!"
+                reason = (
+                    f"{message.author.mention} has messaged every day for {weeks} week{'s' * (weeks > 1)}! "
+                    f"[See Message]({message.jump_url})"
+                )
 
                 notification = (
                     f"Gave {message.author} {kudos} for their 7 day activity streak!!!"
                 )
         else:
-            reason = f"{message.author.mention} has begun a new activity streak!!!"
+            reason = f"{message.author.mention} has begun a new activity streak!!!  [See Message]({message.jump_url})"
             await self.manager.set_streak(message.author, 1)
 
         await self.manager.give_kudos(message.author, kudos, reason)
