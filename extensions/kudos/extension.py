@@ -181,14 +181,11 @@ class KudosExtension(dippy.Extension):
 
     @dippy.Extension.command("!kudos leaderboard")
     async def get_kudos_leaderboard(self, message: Message):
-        if "help" in message.content.casefold():
-            return
-
         member_mentions = [
             member for member in message.mentions if isinstance(member, Member)
         ]
         lookup_member = message.author
-        *_, content = message.content.partition(" ")
+        *_, content = message.content.rpartition(" ")
         content = content.strip()
         if member_mentions:
             lookup_member = member_mentions[0]
