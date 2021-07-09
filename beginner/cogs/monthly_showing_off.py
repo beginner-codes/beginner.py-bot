@@ -290,7 +290,7 @@ class MonthlyShowingOffCog(Cog):
             name="Check out the project:", value=author_project
         )
         wolf_cheer_emoji = discord.utils.get(
-            self.guild.emojis, name="github"
+            self.guild.emojis, name="wolfcheer"
         )
 
         default_winner_embed.set_thumbnail(url=wolf_cheer_emoji.url)
