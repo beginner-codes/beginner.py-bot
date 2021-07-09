@@ -314,7 +314,6 @@ class MonthlyShowingOffCog(Cog):
         winners_string = ""
         winner_projects = []
 
-        # Getting winner objects with a try block just in case the db doesnt have the person
         winner_details = [
             self.channel.guild.get_member(self.get_author_id(winner_id))
             for winner_id in winner_ids
