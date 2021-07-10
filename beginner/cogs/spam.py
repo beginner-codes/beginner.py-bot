@@ -168,9 +168,8 @@ class SpamCog(Cog):
         if disallowed:
             embed.add_field(
                 name="Ignored these files",
-                value="\n".join(
-                    f"- {attachment.filename}" for attachment in disallowed
-                ),
+                value="\n".join(f"- {attachment.filename}" for attachment in disallowed)
+                or "*NO FILES*",
             )
 
         try:
