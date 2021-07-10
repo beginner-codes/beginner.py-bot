@@ -150,9 +150,10 @@ class SpamCog(Cog):
             embed.set_thumbnail(
                 url="https://cdn.discordapp.com/emojis/651959497698574338.png?v=1"
             )
-            embed.add_field(
-                name=f"{message.author.display_name} Said", value=user_message
-            )
+            if user_message:
+                embed.add_field(
+                    name=f"{message.author.display_name} Said", value=user_message
+                )
             embed.add_field(
                 name="Code Formatting",
                 value=f"You can share your code using triple backticks like this:\n\\```\nYOUR CODE\n\\```",
