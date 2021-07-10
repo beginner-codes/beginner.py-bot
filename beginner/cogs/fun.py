@@ -341,6 +341,8 @@ class Fun(Cog):
         await message.reply(
             message.content.replace("<", r"\<")
             .replace("> ", r"\> ")
+            .replace("*", r"\*")
+            .replace("_", r"\_")
             .replace("`", r"\`"),
             allowed_mentions=discord.AllowedMentions(
                 everyone=False, users=False, roles=False, replied_user=True
