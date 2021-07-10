@@ -327,6 +327,26 @@ class Fun(Cog):
             rr = bool(re.findall("|".join(phrases), source, re.MULTILINE))
             await ctx.send("👎" if rr else "👍", reference=ctx.message)
 
+    @Cog.command()
+    async def raw(self, ctx):
+        if not ctx.message.reference:
+            await ctx.send("🛑 You must reply to a message.")
+            return
+
+        message = ctx.message.reference.resolved
+        if not message or not message.content.strip():
+            await message.reply.send("*Empty Message*")
+            return
+
+        await message.reply(
+            message.content.replace("<", r"\<")
+            .replace("> ", r"\> ")
+            .replace("`", r"\`"),
+            allowed_mentions=discord.AllowedMentions(
+                everyone=False, users=False, roles=False, replied_user=True
+            ),
+        )
+
 
 def setup(client):
     client.add_cog(Fun(client))
