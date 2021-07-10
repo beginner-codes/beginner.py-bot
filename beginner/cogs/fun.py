@@ -328,7 +328,7 @@ class Fun(Cog):
             await ctx.send("👎" if rr else "👍", reference=ctx.message)
 
     @Cog.command()
-    async def raw(self, ctx):
+    async def reveal(self, ctx):
         if not ctx.message.reference:
             await ctx.send("🛑 You must reply to a message.")
             return
@@ -339,11 +339,17 @@ class Fun(Cog):
             return
 
         await message.reply(
-            message.content.replace("<", r"\<")
-            .replace("> ", r"\> ")
-            .replace("*", r"\*")
-            .replace("_", r"\_")
-            .replace("`", r"\`"),
+            "> "
+            + (
+                "\n> ".join(
+                    message.content.replace("<", r"\<")
+                    .replace("> ", r"\> ")
+                    .replace("*", r"\*")
+                    .replace("_", r"\_")
+                    .replace("`", r"\`")
+                    .split("\n")
+                )
+            ),
             allowed_mentions=discord.AllowedMentions(
                 everyone=False, users=False, roles=False, replied_user=True
             ),
