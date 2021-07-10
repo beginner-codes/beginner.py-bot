@@ -347,6 +347,7 @@ class Fun(Cog):
                     .replace("*", r"\*")
                     .replace("_", r"\_")
                     .replace("`", r"\`")
+                    .replace("|", r"\|")
                     .split("\n")
                 )
             ),
