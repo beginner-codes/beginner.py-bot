@@ -5,6 +5,7 @@ import inspect
 import io
 import json
 import calendar
+import dataclass
 import numpy
 import random
 import resource
