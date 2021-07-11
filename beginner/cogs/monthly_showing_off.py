@@ -95,6 +95,16 @@ class MonthlyShowingOffCog(Cog):
 
         return author_id
 
+    def save_message(self, author_id: int, bot_message_id: int) -> None:
+        """Saves message data in database"""
+
+        contestant = ContestantInfo(
+                original_author_id=author_id,
+                bot_message_id=bot_message_id,
+            ) 
+        contestant.save()
+
+
     def delete_message(self, bot_message_id):
         """Delete message from the database"""
         ContestantInfo.delete().where(bot_message_id == ContestantInfo.bot_message_id)
@@ -107,7 +117,6 @@ class MonthlyShowingOffCog(Cog):
 
         if "https://" in message.content:
             author_id = message.author.id
-            time_sent = message.created_at.strftime("%Y-%m")
             if "https://github.com" in message.content:
                 await self.github_get(message)
 
@@ -122,12 +131,8 @@ class MonthlyShowingOffCog(Cog):
                 await message.delete()
 
             bot_message_id = self.channel.last_message_id
-            contestant = ContestantInfo(
-                original_author_id=author_id,
-                bot_message_id=bot_message_id,
-                datetime=time_sent,
-            )
-            contestant.save()
+
+            self.save_message(author_id, bot_message_id)
 
         else:
             await message.channel.send(
@@ -161,7 +166,7 @@ class MonthlyShowingOffCog(Cog):
 
         repo_data = requests.get(modified_msg).json()
         await self.github_response(
-            message, repo_data, message.author.id, message.created_at
+            message, repo_data, message.author.id
         )
 
     def parse_git_to_embed(
@@ -198,7 +203,7 @@ class MonthlyShowingOffCog(Cog):
 
         return git_embed
 
-    async def github_response(self, message, json, author_id, time_sent):
+    async def github_response(self, message, json, author_id):
         """Getting the github response and sending the values in an embed, as well as saving it in the db"""
         error = json.get("message")
 
@@ -251,12 +256,9 @@ class MonthlyShowingOffCog(Cog):
         await message.delete()
 
         bot_message_id = self.channel.last_message_id
-        contestant = ContestantInfo(
-            original_author_id=author_id,
-            bot_message_id=bot_message_id,
-            datetime=time_sent,
-        )
-        contestant.save()
+        
+        self.save_message(author_id, bot_message_id)
+
 
     async def get_message_history(self):
         """Getting the message history and returning messages that are applicable to the month's challenge. After that
@@ -289,7 +291,7 @@ class MonthlyShowingOffCog(Cog):
             name="Check out the project:", value=author_project
         )
         wolf_cheer_emoji = discord.utils.get(self.guild.emojis, name="wolfcheer")
-
+                
         default_winner_embed.set_thumbnail(url=wolf_cheer_emoji.url)
         return await self.channel.send(embed=default_winner_embed)
 
