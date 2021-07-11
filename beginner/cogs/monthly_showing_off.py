@@ -99,11 +99,10 @@ class MonthlyShowingOffCog(Cog):
         """Saves message data in database"""
 
         contestant = ContestantInfo(
-                original_author_id=author_id,
-                bot_message_id=bot_message_id,
-            ) 
+            original_author_id=author_id,
+            bot_message_id=bot_message_id,
+        )
         contestant.save()
-
 
     def delete_message(self, bot_message_id):
         """Delete message from the database"""
@@ -165,9 +164,7 @@ class MonthlyShowingOffCog(Cog):
             return
 
         repo_data = requests.get(modified_msg).json()
-        await self.github_response(
-            message, repo_data, message.author.id
-        )
+        await self.github_response(message, repo_data, message.author.id)
 
     def parse_git_to_embed(
         self,
@@ -256,9 +253,8 @@ class MonthlyShowingOffCog(Cog):
         await message.delete()
 
         bot_message_id = self.channel.last_message_id
-        
-        self.save_message(author_id, bot_message_id)
 
+        self.save_message(author_id, bot_message_id)
 
     async def get_message_history(self):
         """Getting the message history and returning messages that are applicable to the month's challenge. After that
@@ -291,7 +287,7 @@ class MonthlyShowingOffCog(Cog):
             name="Check out the project:", value=author_project
         )
         wolf_cheer_emoji = discord.utils.get(self.guild.emojis, name="wolfcheer")
-                
+
         default_winner_embed.set_thumbnail(url=wolf_cheer_emoji.url)
         return await self.channel.send(embed=default_winner_embed)
 
