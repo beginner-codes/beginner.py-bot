@@ -29,6 +29,22 @@ class Admin(Cog):
                     )
                 await ctx.send(f"🚨 {user.mention} is sus 🚨")
 
+    @Cog.command()
+    async def list_sus(self, ctx: discord.ext.commands.Context):
+        await ctx.reply(
+            embed=discord.Embed(
+                title=f"🚨Sus Members 🚨",
+                description="\n".join(
+                    member.mention
+                    for member in discord.utils.get(
+                        ctx.guild.roles, name="🚨sus🚨"
+                    ).members
+                )
+                or "*No One Is Sus*",
+                color=0x00A35A,
+            )
+        )
+
     @tag("schedule", "remove-sus")
     async def remove_sus(self, user_id, guild_id):
         guild = self.client.get_guild(guild_id)
