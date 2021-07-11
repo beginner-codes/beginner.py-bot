@@ -32,22 +32,21 @@ class MonthlyShowingOffCog(Cog):
 
     @Cog.listener()
     async def on_ready(self):
-        self.log.debug(f"{type(self).__name__} is ready")      
+        self.log.debug(f"{type(self).__name__} is ready")
 
-        
     def calculate_time_left(self):
         """Calculate time left for the next challenge"""
         current_date = datetime.today()
         current_month = current_date.month
         current_year = current_date.year
         last_date = datetime(current_year, current_month + 1, 1, 0, 0, 0)
-        return (last_date - current_date).seconds                                      
+        return (last_date - current_date).seconds
 
     async def send_challenge_message(self):
         """Send the monthly message to begin the contest"""
-        github_emoji = discord.utils.get(self.channel.guild.emojis, name="github") 
+        github_emoji = discord.utils.get(self.channel.guild.emojis, name="github")
         embed = discord.Embed(
-            color=0xFFE873, 
+            color=0xFFE873,
             title="Monthly Project!",
             description=(
                 f"Post your projects in this channel for the community to see!\n Below are a few ways to submit your "
@@ -79,23 +78,22 @@ class MonthlyShowingOffCog(Cog):
 
     def get_author_id(self, bot_message_id):
         """Get the author id from the database by using the message id"""
-        
+
         try:
             author_id = (
-                        ContestantInfo.select(ContestantInfo.original_author_id)
-                        .where(bot_message_id == ContestantInfo.bot_message_id)
-                        .get()
-                        .original_author_id
-                        )
+                ContestantInfo.select(ContestantInfo.original_author_id)
+                .where(bot_message_id == ContestantInfo.bot_message_id)
+                .get()
+                .original_author_id
+            )
         except IndexError:
-            return 
+            return
 
         except ContestantInfo.DoesNotExist:
-            self.log.error("Contestant was not found") 
+            self.log.error("Contestant was not found")
             return
 
         return author_id
-
 
     def save_message(self, author_id: int, bot_message_id: int) -> None:
         """Saves message data in database"""
@@ -105,6 +103,7 @@ class MonthlyShowingOffCog(Cog):
                 bot_message_id=bot_message_id,
             ) 
         contestant.save()
+
 
     def delete_message(self, bot_message_id):
         """Delete message from the database"""
@@ -132,6 +131,7 @@ class MonthlyShowingOffCog(Cog):
                 await message.delete()
 
             bot_message_id = self.channel.last_message_id
+
             self.save_message(author_id, bot_message_id)
 
         else:
@@ -259,7 +259,6 @@ class MonthlyShowingOffCog(Cog):
         
         self.save_message(author_id, bot_message_id)
 
-    
 
     async def get_message_history(self):
         """Getting the message history and returning messages that are applicable to the month's challenge. After that
@@ -271,16 +270,16 @@ class MonthlyShowingOffCog(Cog):
         )
         last_month = (this_month - timedelta(days=1)).replace(day=1)
         messages = await self.channel.history(
-            after=last_month, before = this_month, limit=1000
+            after=last_month, before=this_month, limit=1000
         ).flatten()
         for message in messages:
-            author_id = self.get_author_id(message.id) 
+            author_id = self.get_author_id(message.id)
             if self.guild.get_member(author_id):
                 reaction_count = sum(reaction.count for reaction in message.reactions)
-                votes.append(reaction_count) 
+                votes.append(reaction_count)
                 users.append((message.id, reaction_count))
         await self.get_winners(votes, users)
-                
+
     async def send_default_winner_embed(self, author_project, member):
         """A function that sends an embed if there is single winner"""
         default_winner_embed = discord.Embed(
@@ -291,9 +290,7 @@ class MonthlyShowingOffCog(Cog):
         default_winner_embed.add_field(
             name="Check out the project:", value=author_project
         )
-        wolf_cheer_emoji = discord.utils.get(
-            self.guild.emojis, name="github"
-        )
+        wolf_cheer_emoji = discord.utils.get(self.guild.emojis, name="wolfcheer")
 
         default_winner_embed.set_thumbnail(url=wolf_cheer_emoji.url)
         return await self.channel.send(embed=default_winner_embed)
@@ -319,7 +316,6 @@ class MonthlyShowingOffCog(Cog):
         winners_string = ""
         winner_projects = []
 
-        # Getting winner objects with a try block just in case the db doesnt have the person
         winner_details = [
             self.channel.guild.get_member(self.get_author_id(winner_id))
             for winner_id in winner_ids
@@ -381,9 +377,9 @@ class MonthlyShowingOffCog(Cog):
     async def on_raw_reaction_add(self, payload: discord.RawReactionActionEvent):
         """The listener function that will take car of people deleting there own projects if wanted. As well as will
         take care of people wanting to cheat."""
-        self.log.debug("Logged")
         if payload.channel_id != self.channel.id:
             return
+
         # Retrieving required data
         author_id = self.get_author_id(payload.message_id)
         payload_author_object = self.channel.guild.get_member(payload.user_id)
@@ -397,7 +393,6 @@ class MonthlyShowingOffCog(Cog):
                 return
 
             await message.remove_reaction("⛔", payload_author_object)
-            return
 
         if payload.emoji.name != "⛔" and author_id == payload.user_id:
             await message.remove_reaction(payload.emoji, payload_author_object)
@@ -405,8 +400,3 @@ class MonthlyShowingOffCog(Cog):
 
 def setup(client):
     client.add_cog(MonthlyShowingOffCog(client))
-
-
-
-
-
