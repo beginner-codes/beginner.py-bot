@@ -1,10 +1,12 @@
 from beginner.logging import get_logger
 from beginner.models.contestants import ContestantInfo
-from discord.ext.commands import Cog
+from discord.ext import commands
+from discord.ext.commands import Cog, has_permissions
 import discord
 import requests
 from datetime import datetime, timedelta
 import os
+import asyncio
 
 
 class MonthlyShowingOffCog(Cog):
@@ -33,17 +35,9 @@ class MonthlyShowingOffCog(Cog):
     @Cog.listener()
     async def on_ready(self):
         self.log.debug(f"{type(self).__name__} is ready")
+        await self.check_invalid_messages()
 
-    def calculate_time_left(self):
-        """Calculate time left for the next challenge"""
-        current_date = datetime.today()
-        current_month = current_date.month
-        current_year = current_date.year
-        last_date = datetime(current_year, current_month + 1, 1, 0, 0, 0)
-        return (last_date - current_date).seconds
-
-    async def send_challenge_message(self):
-        """Send the monthly message to begin the contest"""
+    def challenge_message_embed(self):
         github_emoji = discord.utils.get(self.channel.guild.emojis, name="github")
         embed = discord.Embed(
             color=0xFFE873,
@@ -67,8 +61,65 @@ class MonthlyShowingOffCog(Cog):
         embed.set_thumbnail(
             url="https://clipart.world/wp-content/uploads/2020/12/Winner-Trophy-clipart-transparent.png"
         )
+
+        return embed
+
+    @commands.command()
+    @has_permissions(administrator=True)
+    async def start(self, ctx) -> None:
+        start_message = await ctx.send(embed=self.challenge_message_embed())
+        await start_message.pin()
+        await ctx.message.delete()
+
+    @start.error
+    async def err(*args):
+        ...
+
+    def calculate_time_left(self):
+        """Calculate time left for the next challenge"""
+        current_date = datetime.today()
+        current_month = current_date.month
+        current_year = current_date.year
+        last_date = datetime(current_year, current_month + 1, 1, 0, 0, 0)
+        return (last_date - current_date).seconds
+
+    async def check_invalid_messages(self):
+        """Will iterate over messages while the bot was offline to make sure no incorrectly formatted messages were sent"""
+        current_time = datetime.utcnow()
+        first_day = datetime.utcnow() - timedelta(hours=0, minutes=10)
+
+        messages = await self.channel.history(
+            after=first_day, before=current_time, limit=1000
+        ).flatten()
+
+        for message in messages:
+            try:
+                x = (
+                    ContestantInfo.select()
+                    .where(message.id == ContestantInfo.bot_message_id)
+                    .get()
+                )
+                print(x)
+            except ContestantInfo.DoesNotExist:
+                await asyncio.sleep(0.9)
+                await message.delete()
+
+            except IndexError:
+                pass
+
+    def check_link(self, link):
+        try:
+            response = requests.get(link).status_code
+        except requests.exceptions.ConnectionError:
+            return False
+
+        if response == 200:
+            return True
+
+    async def send_challenge_message(self):
+        """Send the monthly message to begin the contest"""
         await self.get_message_history()
-        await self.channel.send(embed=embed)
+        await self.channel.send(embed=self.challenge_message_embed())
 
     @Cog.listener()
     async def on_message(self, message):
@@ -99,11 +150,10 @@ class MonthlyShowingOffCog(Cog):
         """Saves message data in database"""
 
         contestant = ContestantInfo(
-                original_author_id=author_id,
-                bot_message_id=bot_message_id,
-            ) 
+            original_author_id=author_id,
+            bot_message_id=bot_message_id,
+        )
         contestant.save()
-
 
     def delete_message(self, bot_message_id):
         """Delete message from the database"""
@@ -115,8 +165,14 @@ class MonthlyShowingOffCog(Cog):
         if message.channel != self.channel:
             return
 
-        if "https://" in message.content:
-            author_id = message.author.id
+        if (
+            message.content.startswith("!")
+            and message.author.guild_permissions.administrator
+        ):
+            return
+
+        if "https://" in (content := message.content) and self.check_link(content):
+
             if "https://github.com" in message.content:
                 await self.github_get(message)
 
@@ -132,7 +188,7 @@ class MonthlyShowingOffCog(Cog):
 
             bot_message_id = self.channel.last_message_id
 
-            self.save_message(author_id, bot_message_id)
+            self.save_message(message.author.id, bot_message_id)
 
         else:
             await message.channel.send(
@@ -165,9 +221,7 @@ class MonthlyShowingOffCog(Cog):
             return
 
         repo_data = requests.get(modified_msg).json()
-        await self.github_response(
-            message, repo_data, message.author.id
-        )
+        await self.github_response(message, repo_data, message.author.id)
 
     def parse_git_to_embed(
         self,
@@ -256,15 +310,15 @@ class MonthlyShowingOffCog(Cog):
         await message.delete()
 
         bot_message_id = self.channel.last_message_id
-        
-        self.save_message(author_id, bot_message_id)
 
+        self.save_message(author_id, bot_message_id)
 
     async def get_message_history(self):
         """Getting the message history and returning messages that are applicable to the month's challenge. After that
         we are parsing the reactions and id and sending that to get_winners()."""
         votes = []
         users = []
+
         this_month = datetime.utcnow().replace(
             hour=0, minute=0, second=0, microsecond=0
         )
@@ -273,11 +327,20 @@ class MonthlyShowingOffCog(Cog):
             after=last_month, before=this_month, limit=1000
         ).flatten()
         for message in messages:
+            final_reactions = 0
             author_id = self.get_author_id(message.id)
+
             if self.guild.get_member(author_id):
-                reaction_count = sum(reaction.count for reaction in message.reactions)
-                votes.append(reaction_count)
-                users.append((message.id, reaction_count))
+                for reaction in message.reactions:
+                    reaction_authors = await reaction.users().flatten()
+
+                    for reaction_author in reaction_authors:
+                        if reaction_author.id != author_id:
+                            final_reactions += 1
+
+                votes.append(final_reactions)
+                users.append((message.id, final_reactions))
+
         await self.get_winners(votes, users)
 
     async def send_default_winner_embed(self, author_project, member):
@@ -364,6 +427,7 @@ class MonthlyShowingOffCog(Cog):
         if winners_votes == 1:
             for message_id, votes in users:
                 if votes == max_vote:
+                    print(message_id, votes)
                     await self.get_single_winner_info(message_id)
 
         # If there is more than one winner
