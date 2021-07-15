@@ -53,7 +53,7 @@ class ModeratorsExtension(dippy.Extension):
         if boosters:
             embed.add_field(
                 name="✨Discord Boosters!!!",
-                value=", ".join(boosters.mention for booster in boosters),
+                value=", ".join(booster.mention for booster in boosters),
                 inline=False,
             )
         await message.reply(embed=embed)
