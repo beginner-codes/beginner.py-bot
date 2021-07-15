@@ -23,10 +23,11 @@ class ModeratorsExtension(dippy.Extension):
     async def team_command(self, message: Message):
         helpers = utils.get(message.guild.roles, name="helpers").members
         mods = utils.get(message.guild.roles, name="mods").members
+        boosters = utils.get(message.guild.roles, name="Discord Boosters!!!").members
         wolf_wave_emoji = utils.get(message.guild.emojis, name="wolfwave")
         owner = max(mods, key=message.guild.owner.__eq__)
-        await message.reply(
-            embed=Embed(
+        embed = (
+            Embed(
                 title="Beginner.py Team",
                 description=(
                     "Hi! The Beginner.py team is dedicated to maintaining a friendly environment where everyone can "
@@ -49,6 +50,13 @@ class ModeratorsExtension(dippy.Extension):
             )
             .set_thumbnail(url=wolf_wave_emoji.url)
         )
+        if boosters:
+            embed.add_field(
+                name="✨Discord Boosters!!!",
+                value=", ".join(boosters.mention for booster in boosters),
+                inline=False,
+            )
+        await message.reply(embed=embed)
 
     @dippy.Extension.command("!!mute")
     async def mute_command(self, message: Message):
