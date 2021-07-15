@@ -1,4 +1,4 @@
-from discord import Guild, Message
+from discord import AllowedMentions, Guild, Message
 import dippy.labels
 import dippy
 
@@ -63,5 +63,7 @@ class DMBindingExtension(dippy.Extension):
         if not channel:
             return False
 
-        await channel.send(message)
+        await channel.send(
+            message, allowed_mentions=AllowedMentions(everyone=False, roles=False)
+        )
         return True
