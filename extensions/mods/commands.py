@@ -35,16 +35,22 @@ class ModeratorsExtension(dippy.Extension):
                 ),
                 color=0x00A35A,
             )
-            .add_field(name="🤴Server Owner", value=owner.display_name, inline=False)
+            .add_field(
+                name="🤴Server Owner", value=f"`{owner.display_name}`", inline=False
+            )
             .add_field(
                 name="👮Moderators",
-                value=", ".join(mod.display_name for mod in mods if mod != owner),
+                value=", ".join(
+                    f"`{mod.display_name}`" for mod in mods if mod != owner
+                ),
                 inline=False,
             )
             .add_field(
                 name="👷Helpers",
                 value=", ".join(
-                    helper.display_name for helper in helpers if helper not in mods
+                    f"`{helper.display_name}`"
+                    for helper in helpers
+                    if helper not in mods
                 ),
                 inline=False,
             )
@@ -53,7 +59,7 @@ class ModeratorsExtension(dippy.Extension):
         if boosters:
             embed.add_field(
                 name="✨Discord Boosters!!!",
-                value=", ".join(booster.display_name for booster in boosters),
+                value=", ".join(f"`{booster.display_name}`" for booster in boosters),
                 inline=False,
             )
         await message.reply(embed=embed)
