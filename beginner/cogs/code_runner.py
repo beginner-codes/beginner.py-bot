@@ -141,11 +141,11 @@ class CodeRunner(Cog):
 
         if user_input:
             code, *_ = re.match(
-                r"^.*?```(?:py|python)?\s*(.+?)\s*```.*$", content, re.DOTALL
+                r"^.*?```(?:python|py)?\s*(.+?)\s*```.*$", content, re.DOTALL
             ).groups()
         else:
             code, user_input = re.match(
-                r"^.*?```(?:py|python)?\s*(.+?)\s*```\s*(.+)?$", content, re.DOTALL
+                r"^.*?```(?:python|py)?\s*(.+?)\s*```\s*(.+)?$", content, re.DOTALL
             ).groups()
 
         out, err, duration = await self.code_runner(
