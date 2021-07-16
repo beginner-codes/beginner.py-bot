@@ -73,6 +73,19 @@ resources:
       Alison.com (login required): https://alison.com/topic/learn/100096/synopsis
       Offensive Security (Metasploit course): https://www.offensive-security.com/metasploit-unleashed/
 
+  cybersecurity:
+    name: Ethical hacking and cybersecurity
+    Courses:
+      Cybrary General Cybersecurity: https://www.cybrary.it/catalog/cybersecurity/
+      Cybrary Ethical Hacking: https://www.cybrary.it/catalog/cybersecurity/ethical-hacking/
+      Coursera cybersecurity courses: https://www.coursera.org/courses?query=cybersecurity
+      Cisco NetAcad 'Introduction to Cybersecurity': https://www.netacad.com/courses/cybersecurity/introduction-cybersecurity
+    Practice Sites:
+      Hack This Site: https://www.hackthissite.org/
+      Hack The Box: https://www.hackthebox.eu/
+      PicoCTF: https://picoctf.org/
+      CTF101 Database: https://ctf101.org/
+
 lang_aliases:
   python: py
   python3: py
@@ -85,3 +98,7 @@ lang_aliases:
   machinelearning: ds
   machine learning: ds
   hacking: pentesting
+  ethical-hacking: cybersecurity
+  ethical hacking: cybersecurity
+  capture the flag: cybersecurity
+  ctf: cybersecurity
