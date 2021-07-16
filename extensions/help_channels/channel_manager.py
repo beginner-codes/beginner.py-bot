@@ -248,26 +248,26 @@ class ChannelManager(Injectable):
         owner = await self.labels.get(
             "text_channel", channel.id, "owner", default=author.id
         )
-        if owner == author.id:
-            for chan in channel.category.channels:
-                if chan == channel:
-                    break
-                last_active = datetime.fromisoformat(
-                    str(
-                        await self.labels.get(
-                            "text_channel",
-                            chan.id,
-                            "last-active",
-                        )
+        if owner != author.id:
+            return
+
+        top_channel = channel.category.channels[0]
+        if top_channel != channel:
+            last_active = datetime.fromisoformat(
+                str(
+                    await self.labels.get(
+                        "text_channel",
+                        channel.id,
+                        "last-active",
                     )
                 )
-                if (datetime.utcnow() - last_active).total_seconds() > 60:
-                    await channel.edit(position=chan.position)
-                    break
-
-            await self.labels.set(
-                "text_channel", channel.id, "last-active", datetime.utcnow().isoformat()
             )
+            if (datetime.utcnow() - last_active) >= timedelta(minutes=15):
+                await channel.edit(position=top_channel.position)
+
+        await self.labels.set(
+            "text_channel", channel.id, "last-active", datetime.utcnow().isoformat()
+        )
 
     async def update_get_help_channel(
         self, channel: TextChannel, owner: Member, topic: Optional[str] = None
