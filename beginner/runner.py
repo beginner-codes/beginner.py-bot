@@ -3,6 +3,7 @@ import contextlib
 import inspect
 import io
 import json
+import pathlib
 import resource
 import signal
 import sys
@@ -172,6 +173,13 @@ class Executer:
 
 
 if __name__ == "__main__":
+    with (
+        pathlib.Path(__file__).parent / "allowed_modules.txt"
+    ).open() as allowed_modules_file:
+        allowed_modules = list(
+            line.strip() for line in allowed_modules_file.readlines() if line.strip()
+        )
+
     executer = Executer(
         {
             "__import__",
@@ -282,56 +290,7 @@ if __name__ == "__main__":
             "__dict__",
             "__await__",
         },
-        {
-            "abc",
-            "array",
-            "base64",
-            "binascii",
-            "bisect",
-            "calendar",
-            "cmath",
-            "collections",
-            "collections.abc",
-            "contextlib",
-            "copy",
-            "copyreg",
-            "dataclasses",
-            "datetime",
-            "decimal",
-            "dectest",
-            "enum",
-            "fractions",
-            "functools",
-            "getpass",
-            "hashlib",
-            "heapq",
-            "hmac",
-            "itertools",
-            "json",
-            "math",
-            "numbers",
-            "numpy",
-            "operator",
-            "pickle",
-            "pprint",
-            "random",
-            "re",
-            "reprlib",
-            "secrets",
-            "statistics",
-            "string",
-            "stringprep",
-            "struct",
-            "textwrap",
-            "this",
-            "time",
-            "types",
-            "typing",
-            "unicodedata",
-            "unittest",
-            "weakref",
-            "urllib.parse",
-        },
+        allowed_modules,
     )
     data = json.loads(sys.stdin.read(-1))
     runners = {"eval": eval, "exec": exec, "docs": eval}
