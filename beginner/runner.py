@@ -227,6 +227,8 @@ if __name__ == "__main__":
             "dir",
             "divmod",
             "enumerate",
+            "eval",
+            "exec",
             "exit",
             "filter",
             "float",
