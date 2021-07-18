@@ -109,7 +109,7 @@ class Executer:
                 msg, (file, line_no, column, line) = excp.args
                 spaces = " " * (column - 1)
                 sys.stderr.write(
-                    f"Line {line_no}\n{line.rstrip()}\n{spaces}^\nSyntaxError: {msg}"
+                    f"Line {line_no}\n{line.rstrip() if line else ''}\n{spaces}^\nSyntaxError: {msg}"
                 )
                 exceptions = True
             else:
