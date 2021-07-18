@@ -76,10 +76,10 @@ class Executer:
     def generate_locals(self):
         return self.locals.copy()
 
-    def getattr(self, name, *args, **kwargs):
+    def getattr(self, obj, name, *args, **kwargs):
         if name not in self.name_whitelist | self.dunder_whitelist:
             raise NameError(f"'{name}' is not a whitelisted name")
-        return getattr(name, *args, **kwargs)
+        return getattr(obj, name, *args, **kwargs)
 
     def imported_module_parser(self, name):
         return name.split(".")[0]
