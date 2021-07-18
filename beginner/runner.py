@@ -102,7 +102,7 @@ class Executer:
         self.stdin = io.StringIO(user_input)
         exceptions = False
 
-        with self.set_recursion_depth(50):
+        with self.set_recursion_depth(100):
             try:
                 code_tree = ast.parse(code, "<string>", runner.__name__)
             except SyntaxError as excp:
