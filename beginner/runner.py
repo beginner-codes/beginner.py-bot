@@ -59,6 +59,10 @@ class Executer:
         if restricted:
             if "getattr" in builtins:
                 builtins["getattr"] = self.getattr
+            if "exec" in builtins:
+                builtins["exec"] = lambda *a, **k: self.exec(*a, runner=exec, **k)
+            if "eval" in builtins:
+                builtins["eval"] = lambda *a, **k: self.exec(*a, runner=eval, **k)
         if "__import__" in builtins:
             builtins["__import__"] = (
                 self.importer
@@ -97,6 +101,34 @@ class Executer:
         line = self.stdin.readline().rstrip("\n")
         print(line)
         return line
+
+    def exec(self, code, runner=exec, restricted=True):
+        try:
+            code_tree = ast.parse(code, "<string>", runner.__name__)
+        except SyntaxError as excp:
+            msg, (file, line_no, column, line) = excp.args
+            spaces = " " * (column - 1)
+            sys.stderr.write(
+                f"Line {line_no}\n{line.rstrip() if line else ''}\n{spaces}^\nSyntaxError: {msg}"
+            )
+            exceptions = True
+        else:
+            dunder_attributes = self.dunder_attributes(code_tree)
+            if restricted and dunder_attributes - self.dunder_whitelist:
+                prohibited_attributes = ", ".join(
+                    sorted(dunder_attributes - self.dunder_whitelist)
+                )
+                raise NameError(
+                    f"These attributes are not whitelisted: {prohibited_attributes}"
+                )
+
+            code_object = compile(code_tree, "<string>", runner.__name__)
+            ns_globals = self.generate_globals(restricted)
+            result = runner(code_object, ns_globals, ns_globals)
+            if runner == eval:
+                print(repr(result))
+
+            return result
 
     def run(self, code, user_input, runner=exec, docs=False, restricted=True):
         self.stdin = io.StringIO(user_input)
