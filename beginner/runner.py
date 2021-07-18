@@ -1,19 +1,13 @@
-from io import StringIO
 import ast
 import contextlib
 import inspect
 import io
 import json
-import calendar
-import numpy
-import random
 import resource
 import signal
-import statistics
 import sys
 import time
 import traceback
-import unicodedata
 
 
 class CPUTimeExceeded(Exception):
