@@ -201,7 +201,7 @@ class CodeRunner(Cog):
             allowed_mentions=discord.AllowedMentions(
                 replied_user=member is None,
                 users=[member] if member else False,
-                roles=None,
+                roles=[],
             ),
         )
 
