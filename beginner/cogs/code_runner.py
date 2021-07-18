@@ -9,6 +9,7 @@ import dis
 import discord
 import io
 import json
+import pathlib
 import re
 
 
@@ -58,6 +59,28 @@ class CodeRunner(Cog):
             "```brainfuck"
         ):
             await self._exec_brainfuck(ctx.message, content)
+            return
+
+        if content.strip() == "modules":
+            with (
+                pathlib.Path(__file__).parent.parent / "allowed_modules.txt"
+            ).open() as allowed_modules_file:
+                allowed_modules_list = list(
+                    line.strip()
+                    for line in allowed_modules_file.readlines()
+                    if line.strip()
+                )
+                length = len(max(allowed_modules_list, key=len)) + 2
+                allowed_modules = "".join(
+                    f"{module:{length}}" for module in allowed_modules_list
+                )
+            await ctx.send(
+                embed=discord.Embed(
+                    description=f"Here are all of the allowed modules:\n```\n{allowed_modules}\n```",
+                    title="✅ Exec/Eval Allowed Modules",
+                    color=BLUE,
+                )
+            )
             return
 
         message: discord.Message = ctx.message
@@ -171,7 +194,9 @@ class CodeRunner(Cog):
             content="" if member is None else member.mention,
             embed=discord.Embed(
                 title=title, description=f"```\n{out}\n```", color=color
-            ).set_footer(text=f"Completed in {duration:0.4f} milliseconds"),
+            ).set_footer(
+                text=f"!exec modules | Completed in {duration:0.4f} milliseconds"
+            ),
             reference=message,
             allowed_mentions=discord.AllowedMentions(
                 replied_user=member is None, users=[member] if member else False
