@@ -199,7 +199,9 @@ class CodeRunner(Cog):
             ),
             reference=message,
             allowed_mentions=discord.AllowedMentions(
-                replied_user=member is None, users=[member] if member else False
+                replied_user=member is None,
+                users=[member] if member else False,
+                roles=None,
             ),
         )
 
