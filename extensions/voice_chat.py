@@ -65,6 +65,10 @@ class VoiceChatExtension(dippy.Extension):
                 "last-mod-in-vc",
                 datetime.utcnow().isoformat(),
             )
+            if not self.get_num_mods():
+                await self.client.get_channel(644828412405481492).send(
+                    "🟡 If a mod or helper doesn't rejoin voice chat, video streaming will be disabled."
+                )
             await asyncio.sleep(60)
             if not self.get_num_mods():
                 changed = await self.disable_streaming()
