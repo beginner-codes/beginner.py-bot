@@ -82,6 +82,10 @@ class KudosExtension(dippy.Extension):
             .set_footer(text="!kudos | !kudos @user | !kudos leaderboard | !kudos help")
         )
 
+    @dippy.Extension.command("!streak")
+    async def streaker_no_streaking_command(self, message: Message):
+        await message.channel.send("✋ Streaker no streaking! ✋", delete_after=15)
+
     @dippy.Extension.command("!kudos")
     async def get_kudos_stats(self, message: Message):
         content_parts = message.content.casefold().split(" ")
