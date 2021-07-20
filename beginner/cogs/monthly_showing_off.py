@@ -56,7 +56,7 @@ class MonthlyShowingOffCog(Cog):
 
         embed.set_author(
             name=self.client.user.display_name,
-            icon_url=self.client.user.default_avatar_url,
+            icon_url=str(self.client.user.avatar_url),
         )
 
         embed.set_thumbnail(
@@ -100,7 +100,7 @@ class MonthlyShowingOffCog(Cog):
                     .where(message.id == ContestantInfo.bot_message_id)
                     .get()
                 )
-                print(x)
+                
             except ContestantInfo.DoesNotExist:
                 await asyncio.sleep(0.9)
                 await message.delete()
@@ -117,19 +117,12 @@ class MonthlyShowingOffCog(Cog):
         if response == 200:
             return True
 
-    async def check_invalid_website(self, website_link):
-        invalid_website = ["giphy.com", "tenor.com"]
-        link_object = urlparse(website_link.content.lower()).netloc
-        if link_object in invalid_website:
-            await website_link.delete()
-            await website_link.channel.send(
-                embed=self.send_error_message(website_link, "Invalid website"),
-                delete_after=8,
-            )
-            return True
-        return False
+    async def check_invalid_website(self, website_link: str) -> bool:
+        invalid_domains = ["giphy.com", "tenor.com"]
+        domain = urlparse(website_link.lower()).netloc
+        return domain in invalid_domains
 
-    def send_error_message(self, message, reason):
+    def create_error_message(self, message, reason):
         embed = discord.Embed(
             title="Error!",
             description=f"{message.author.mention} {reason}",
@@ -144,11 +137,10 @@ class MonthlyShowingOffCog(Cog):
 
     @Cog.listener()
     async def on_message(self, message):
-        if message.author.bot:
+        if message.channel != self.channel or message.author.bot:
             return
-        invalid_message = await self.check_invalid_website(message)
-        if not invalid_message:
-            await self.scan_link(message)
+        
+        await self.scan_link(message)
 
     def get_author_id(self, bot_message_id):
         """Get the author id from the database by using the message id"""
@@ -185,8 +177,6 @@ class MonthlyShowingOffCog(Cog):
 
     async def scan_link(self, message):
         """Check what type of link it is (Github, non-Github, or invalid)"""
-        if message.channel != self.channel:
-            return
 
         if (
             message.content.startswith("!")
@@ -195,6 +185,13 @@ class MonthlyShowingOffCog(Cog):
             return
 
         if "https://" in (content := message.content) and self.check_link(content):
+
+            if self.check_invalid_website(content):
+                await message.delete()
+                await self.channel.send(
+                    self.create_error_message(message, "This is a blacklisted link!")
+                    )
+                return
 
             if "https://github.com" in message.content:
                 await self.github_get(message)
