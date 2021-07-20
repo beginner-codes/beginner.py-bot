@@ -119,7 +119,7 @@ class MonthlyShowingOffCog(Cog):
 
     async def check_invalid_website(self, website_link):
         invalid_website = ["giphy.com", "tenor.com"]
-        link_object = urlparse(website_link.content).netloc
+        link_object = urlparse(website_link.content.lower()).netloc
         if link_object in invalid_website:
             await website_link.delete()
             await website_link.channel.send(
