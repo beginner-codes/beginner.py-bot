@@ -7,6 +7,7 @@ import requests
 from datetime import datetime, timedelta
 import os
 import asyncio
+from urllib.parse import urlparse
 
 
 class MonthlyShowingOffCog(Cog):
@@ -116,6 +117,26 @@ class MonthlyShowingOffCog(Cog):
         if response == 200:
             return True
 
+    async def check_invalid_website(self, website_link):
+        invalid_website = ["giphy.com", "tenor.com"]
+        link_object = urlparse(website_link.content.lower()).netloc
+        if link_object in invalid_website:
+            await website_link.delete()
+            await website_link.channel.send(
+                embed=self.send_error_message(website_link, "Invalid website"),
+                delete_after=8,
+            )
+            return True
+        return False
+
+    def send_error_message(self, message, reason):
+        embed = discord.Embed(
+            title="Error!",
+            description=f"{message.author.mention} {reason}",
+            color=discord.Colour.red(),
+        )
+        return embed
+
     async def send_challenge_message(self):
         """Send the monthly message to begin the contest"""
         await self.get_message_history()
@@ -125,7 +146,9 @@ class MonthlyShowingOffCog(Cog):
     async def on_message(self, message):
         if message.author.bot:
             return
-        await self.scan_link(message)
+        invalid_message = await self.check_invalid_website(message)
+        if not invalid_message:
+            await self.scan_link(message)
 
     def get_author_id(self, bot_message_id):
         """Get the author id from the database by using the message id"""
@@ -192,11 +215,7 @@ class MonthlyShowingOffCog(Cog):
 
         else:
             await message.channel.send(
-                embed=discord.Embed(
-                    title=f"Error!",
-                    description=f"{message.author.mention} Invalid resource, not a link!",
-                    colour=discord.Colour.red(),
-                ),
+                self.send_error_message(message, "Invalid resource, not a link"),
                 delete_after=8,
             )
             await message.delete()
@@ -210,11 +229,7 @@ class MonthlyShowingOffCog(Cog):
             modified_msg = f"https://api.github.com/repos/{msg[3]}/{msg[4]}"
         except IndexError:
             await message.channel.send(
-                embed=discord.Embed(
-                    title="Error!",
-                    description=f"{message.author.mention} Invalid github link!",
-                    color=discord.Colour.red(),
-                ),
+                embed=self.send_error_message(message, "Invalid GitHub link"),
                 delete_after=8,
             )
             await message.delete()
@@ -261,11 +276,8 @@ class MonthlyShowingOffCog(Cog):
         """Getting the github response and sending the values in an embed, as well as saving it in the db"""
         error = json.get("message")
 
-        error_embed = discord.Embed(
-            title="Error!",
-            description=f"{message.author.mention} Unsuccessful Github response!",
-            color=discord.Colour.red(),
-        )
+        error_embed = self.send_error_message(message, "Unsuccessful Github response!")
+
         error_embed.add_field(name="Response:", value=error)
 
         if error:
