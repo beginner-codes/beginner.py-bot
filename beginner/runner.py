@@ -284,6 +284,7 @@ if __name__ == "__main__":
             "map",
             "max",
             "min",
+            "NameError",
             "next",
             "object",
             "oct",
