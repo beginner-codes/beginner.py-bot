@@ -39,7 +39,7 @@ class DMMonitoringExtension(dippy.Extension):
                 color=0xFFE873,
             ).set_footer(text=f"Bound to DM message {message.author}")
         )
-        await message.guild.set_label(
+        await self.client.get_guild(644299523686006834).set_label(
             "message-bind-target", ("member", message.author.id)
         )
 
