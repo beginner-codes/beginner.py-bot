@@ -82,7 +82,10 @@ class OnBoarding(Cog):
         ]
         message = random.choice(welcome_messages).format(member.mention)
         wolf_wave_emoji = discord.utils.get(self.client.emojis, name="wolfwave")
-        await self.get_channel("🙋hello-world").send(f"{wolf_wave_emoji} {message}")
+        await self.get_channel("🙋hello-world").send(
+            f"{wolf_wave_emoji} {message}",
+            allowed_mentions=discord.AllowedMentions(users=False),
+        )
 
         await member.add_roles(self.get_role("member"))
 
