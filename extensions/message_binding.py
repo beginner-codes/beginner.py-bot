@@ -64,7 +64,7 @@ class DMBindingExtension(dippy.Extension):
             return False
 
         await channel.send(
-            f"{message}\n\n*From {from_member}",
+            f"{message}\n\n*From {from_member}*",
             allowed_mentions=AllowedMentions(everyone=False, roles=False),
         )
 
