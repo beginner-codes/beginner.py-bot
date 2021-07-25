@@ -68,7 +68,7 @@ class DMBindingExtension(dippy.Extension):
             allowed_mentions=AllowedMentions(everyone=False, roles=False),
         )
 
-        channel_id = await message.guild.get_label("message-binding-channel-id")
+        channel_id = await guild.get_label("message-binding-channel-id")
         await guild.get_channel(channel_id).send(
             f"Sent to {channel.mention}", delete_after=2
         )
