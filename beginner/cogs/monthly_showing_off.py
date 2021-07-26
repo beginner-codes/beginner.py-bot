@@ -26,7 +26,9 @@ class MonthlyShowingOffCog(Cog):
     @property
     def channel(self):
         return self.client.get_channel(
-            os.environ.get("BPY_MONTHLY_SHOWING_OFF_CHANNEL_ID", 836419179779063868)
+            int(
+                os.environ.get("BPY_MONTHLY_SHOWING_OFF_CHANNEL_ID", 836419179779063868)
+            )
         )
 
     @property
@@ -100,7 +102,7 @@ class MonthlyShowingOffCog(Cog):
                     .where(message.id == ContestantInfo.bot_message_id)
                     .get()
                 )
-                
+
             except ContestantInfo.DoesNotExist:
                 await asyncio.sleep(0.9)
                 await message.delete()
@@ -139,7 +141,7 @@ class MonthlyShowingOffCog(Cog):
     async def on_message(self, message):
         if message.channel != self.channel or message.author.bot:
             return
-        
+
         await self.scan_link(message)
 
     def get_author_id(self, bot_message_id):
@@ -190,7 +192,7 @@ class MonthlyShowingOffCog(Cog):
                 await message.delete()
                 await self.channel.send(
                     self.create_error_message(message, "This is a blacklisted link!")
-                    )
+                )
                 return
 
             if "https://github.com" in message.content:
