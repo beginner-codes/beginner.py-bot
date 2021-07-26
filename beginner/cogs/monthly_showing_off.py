@@ -22,6 +22,9 @@ class MonthlyShowingOffCog(Cog):
             self.calculate_time_left(),
             lambda: self.client.loop.create_task(self.send_challenge_message()),
         )
+        self.log.debug(
+            f"Channel ID {os.environ.get('BPY_MONTHLY_SHOWING_OFF_CHANNEL_ID', 'NOT SET')}"
+        )
 
     @property
     def channel(self):
