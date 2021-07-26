@@ -43,7 +43,9 @@ class MonthlyShowingOffCog(Cog):
             self.log.debug("Channel was not set")
 
         while not self.channel:
-            self.log.debug("Channel couldn't be found, trying again in 5 seconds")
+            self.log.debug(
+                f"Channel couldn't be found, trying again in 5 seconds ({channel_id!r})"
+            )
             await asyncio.sleep(5)
 
         await self.check_invalid_messages()
