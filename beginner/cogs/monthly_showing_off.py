@@ -119,7 +119,7 @@ class MonthlyShowingOffCog(Cog):
         if response == 200:
             return True
 
-    async def check_invalid_website(self, website_link: str) -> bool:
+    def check_invalid_website(self, website_link: str) -> bool:
         invalid_domains = ["giphy.com", "tenor.com"]
         domain = urlparse(website_link.lower()).netloc
         return domain in invalid_domains
@@ -191,7 +191,10 @@ class MonthlyShowingOffCog(Cog):
             if self.check_invalid_website(content):
                 await message.delete()
                 await self.channel.send(
-                    self.create_error_message(message, "This is a blacklisted link!")
+                    embed=self.create_error_message(
+                        message, "This is a blacklisted link!"
+                    ),
+                    delete_after=8,
                 )
                 return
 
@@ -214,7 +217,9 @@ class MonthlyShowingOffCog(Cog):
 
         else:
             await message.channel.send(
-                self.send_error_message(message, "Invalid resource, not a link"),
+                embed=self.create_error_message(
+                    message, "Invalid resource, not a link"
+                ),
                 delete_after=8,
             )
             await message.delete()
@@ -228,7 +233,7 @@ class MonthlyShowingOffCog(Cog):
             modified_msg = f"https://api.github.com/repos/{msg[3]}/{msg[4]}"
         except IndexError:
             await message.channel.send(
-                embed=self.send_error_message(message, "Invalid GitHub link"),
+                embed=self.create_error_message(message, "Invalid GitHub link"),
                 delete_after=8,
             )
             await message.delete()
@@ -275,7 +280,9 @@ class MonthlyShowingOffCog(Cog):
         """Getting the github response and sending the values in an embed, as well as saving it in the db"""
         error = json.get("message")
 
-        error_embed = self.send_error_message(message, "Unsuccessful Github response!")
+        error_embed = self.create_error_message(
+            message, "Unsuccessful Github response!"
+        )
 
         error_embed.add_field(name="Response:", value=error)
 
