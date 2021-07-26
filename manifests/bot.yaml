@@ -18,6 +18,8 @@ spec:
         - name: beginner-py-bot
           image: zzmmrmn/beginner-py-bot:<IMAGE_VERSION>
           env:
+            - name: BPY_MONTHLY_SHOWING_OFF_CHANNEL_ID
+              value: "863925515768037406"
             - name: PRODUCTION_BOT
               value: "PRODUCTION"
             - name: "DISCORD_TOKEN"
