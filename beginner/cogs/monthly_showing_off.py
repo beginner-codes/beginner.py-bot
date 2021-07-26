@@ -22,9 +22,6 @@ class MonthlyShowingOffCog(Cog):
             self.calculate_time_left(),
             lambda: self.client.loop.create_task(self.send_challenge_message()),
         )
-        self.log.debug(
-            f"Channel ID {os.environ.get('BPY_MONTHLY_SHOWING_OFF_CHANNEL_ID', 'NOT SET')}"
-        )
 
     @property
     def channel(self):
@@ -41,6 +38,14 @@ class MonthlyShowingOffCog(Cog):
     @Cog.listener()
     async def on_ready(self):
         self.log.debug(f"{type(self).__name__} is ready")
+        channel_id = os.environ.get("BPY_MONTHLY_SHOWING_OFF_CHANNEL_ID")
+        if not channel_id:
+            self.log.debug("Channel was not set")
+
+        while not self.channel:
+            self.log.debug("Channel couldn't be found, trying again in 5 seconds")
+            await asyncio.sleep(5)
+
         await self.check_invalid_messages()
 
     def challenge_message_embed(self):
