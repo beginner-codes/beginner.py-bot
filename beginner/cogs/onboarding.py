@@ -79,8 +79,14 @@ class OnBoarding(Cog):
             "Say hello to our newest member {}!!!",
             "Welcome to our newest & coolest member {}!!!",
             "Hey hey hey!!! {} has joined the party!!!",
+            "{} welcome to the party!!!}",
+            "{} has landed!!! Welcome!!!",
+            "Hi there {}!!! Welcome to the server!!!",
+            "Oh boy!!! The super cool {} has joined the server!!!",
+            "Hello {}!!! Glad you've joined us!!!",
+            "Yo!!! {} how's it going!!!",
         ]
-        message = random.choice(welcome_messages).format(member.mention)
+        message = random.choice(welcome_messages).format(f"*{member}*")
         wolf_wave_emoji = discord.utils.get(self.client.emojis, name="wolfwave")
         await self.get_channel("🙋hello-world").send(
             f"{wolf_wave_emoji} {message}",
