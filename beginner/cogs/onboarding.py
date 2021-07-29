@@ -79,7 +79,7 @@ class OnBoarding(Cog):
             "Say hello to our newest member {}!!!",
             "Welcome to our newest & coolest member {}!!!",
             "Hey hey hey!!! {} has joined the party!!!",
-            "{} welcome to the party!!!}",
+            "{} welcome to the party!!!",
             "{} has landed!!! Welcome!!!",
             "Hi there {}!!! Welcome to the server!!!",
             "Oh boy!!! The super cool {} has joined the server!!!",
