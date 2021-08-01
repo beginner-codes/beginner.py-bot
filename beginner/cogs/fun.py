@@ -383,6 +383,8 @@ class Fun(Cog):
                     json_response = await response.json()
 
         text = json_response.get("text")
+        if text and len(text) > 1500:
+            text = text[:1500] + "..."
         embed = embed_to_edit.embeds[0]
 
         embed.set_footer(text=f"Settings: temperature={temperature}, top_p={top_p}")
