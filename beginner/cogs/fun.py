@@ -383,14 +383,15 @@ class Fun(Cog):
                     json_response = await response.json()
 
         text = json_response.get("text")
-        if text and len(text) > 1500:
-            text = text[:1500] + "..."
         embed = embed_to_edit.embeds[0]
 
         embed.set_footer(text=f"Settings: temperature={temperature}, top_p={top_p}")
         if text:
             embed.add_field(name="Context Given to GPT-J-6b", value=content)
-            embed.add_field(name="GPT-J-6b's Response", value=text, inline=False)
+            embed.add_field(name="GPT-J-6b's Response", value=text[:1000], inline=False)
+            if len(text) > 1000:
+                embed.add_field(name="[Continued]", value=text[1000:2000], inline=False)
+
         else:
             embed.add_field(
                 name="GPT-J-6b Had an Issue",
