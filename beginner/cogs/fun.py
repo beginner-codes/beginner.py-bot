@@ -385,7 +385,7 @@ class Fun(Cog):
         text = json_response.get("text")
         embed = embed_to_edit.embeds[0]
 
-        embed.set_footer(f"Settings: temperature={temperature}, top_p={top_p}")
+        embed.set_footer(text=f"Settings: temperature={temperature}, top_p={top_p}")
         if text:
             embed.add_field(name="Context Given to GPT-J-6b", value=content)
             embed.add_field(name="GPT-J-6b's Response", value=text, inline=False)
