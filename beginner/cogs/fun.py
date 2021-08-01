@@ -1,8 +1,8 @@
 from beginner.cog import Cog
+import aiohttp
 import discord
 import discord.ext.commands
 import ast
-import os
 import math
 import re
 import socket
@@ -355,30 +355,44 @@ class Fun(Cog):
                 everyone=False, users=False, roles=False, replied_user=True
             ),
         )
-    @Cog.command()
-    async def autocomplete(self, ctx):
-     embed_to_edit=await ctx.message.reply(embed=discord.Embed(title="Getting response from gpt-j-6b...",
-                                                              description="It might take up to one minute if your sentence is short\n[Learn more about gpt-j-6b here](https://gpt3demo.com/apps/gpt-j-6b)",
-                                                              colour=0x6c8eb4), mention_author=False)
-     async with message.channel.typing():
-         context =message.content.casefold()
-         payload = {
-            "context": context,
-            "token_max_length": 50,
-            "temperature": 0.1,
-            "top_p": 1,
-        }
-         json_response = requests.post("http://api.vicgalle.net:5000/generate", params=payload).json()
-         string =json_response["text"]
-         response=f"**{message.content.lower()}** "+re.match(r'(.+?)[\n?!".].*',string).groups()[0]
-     if response != None:
-         await embed_to_edit.edit(embed=discord.Embed(description=response,colour=0x6c8eb4,allowed_mentions=discord.AllowedMentions(
-                everyone=False, users=False, roles=False, replied_user=False
-            )))
-     else:
-         await embed_to_edit.edit(embed=discord.Embed(description="Not enough context to auto complete", colour=0x6c8eb4,allowed_mentions=discord.AllowedMentions(
-                everyone=False, users=False, roles=False, replied_user=False
-            )))
+
+    @Cog.command(name="gpt-talk")
+    async def gpt_talk(self, ctx, *, content):
+        embed_to_edit = await ctx.message.reply(
+            embed=discord.Embed(
+                title="Getting response from gpt-j-6b...",
+                description="It might take up to one minute if your sentence is short\n[Learn more about gpt-j-6b here](https://gpt3demo.com/apps/gpt-j-6b)",
+                colour=0x6C8EB4,
+            ),
+            mention_author=False,
+        )
+        async with ctx.channel.typing():
+            payload = {
+                "context": content.casefold(),
+                "token_max_length": 200,
+                "temperature": 1,
+                "top_p": 1,
+            }
+            async with aiohttp.ClientSession() as session:
+                async with session.post(
+                    "http://api.vicgalle.net:5000/generate", params=payload
+                ) as response:
+                    json_response = await response.json()
+
+        text = json_response.get("text")
+        embed = embed_to_edit.embeds[0]
+
+        if text:
+            embed.add_field(name="Context Given to GPT-J-6b", value=content)
+            embed.add_field(name="GPT-J-6b's Response", value=text, inline=False)
+        else:
+            embed.add_field(
+                name="GPT-J-6b Had an Issue",
+                value="Not enough context to auto complete",
+            )
+
+        await embed_to_edit.edit(embed=embed)
+
 
 def setup(client):
     client.add_cog(Fun(client))
