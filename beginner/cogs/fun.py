@@ -370,7 +370,7 @@ class Fun(Cog):
             payload = {
                 "context": content.casefold(),
                 "token_max_length": 200,
-                "temperature": 0.1,
+                "temperature": 0.8,
                 "top_p": 0.9,
             }
             async with aiohttp.ClientSession() as session:
