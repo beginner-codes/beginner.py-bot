@@ -372,7 +372,7 @@ class Fun(Cog):
         async with ctx.channel.typing():
             payload = {
                 "context": content.casefold(),
-                "token_max_length": 200,
+                "token_max_length": 512,
                 "temperature": temperature,
                 "top_p": top_p,
             }
