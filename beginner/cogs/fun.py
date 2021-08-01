@@ -351,13 +351,12 @@ class Fun(Cog):
                     .split("\n")
                 )
             ),
-            allowed
-    @Cog.command()
-    async def autocomplete(self, ctx):
-        mentions=discord.AllowedMentions(
+            allowed_mentions=discord.AllowedMentions(
                 everyone=False, users=False, roles=False, replied_user=True
             ),
         )
+    @Cog.command()
+    async def autocomplete(self, ctx):
      embed_to_edit=await message.reply(embed=discord.Embed(title="Getting response from gpt-j-6b...",
                                                               description="It might take up to one minute if your sentence is short\n[Learn more about gpt-j-6b here](https://gpt3demo.com/apps/gpt-j-6b)",
                                                               colour=0x6c8eb4))
@@ -373,9 +372,13 @@ class Fun(Cog):
          string =json_response["text"]
          response=f"**{message.content.lower()}** "+re.match(r'(.+?)[\n?!".].*',string).groups()[0]
      if response != None:
-         await embed_to_edit.edit(embed=discord.Embed(description=response,colour=0x6c8eb4,allowed_mention=mentions))
+         await embed_to_edit.edit(embed=discord.Embed(description=response,colour=0x6c8eb4,allowed_mentions=discord.AllowedMentions(
+                everyone=False, users=False, roles=False, replied_user=True
+            )))
      else:
-         await embed_to_edit.edit(embed=discord.Embed(description="Not enough context to auto complete", colour=0x6c8eb4,allowed_mention=mentions))
+         await embed_to_edit.edit(embed=discord.Embed(description="Not enough context to auto complete", colour=0x6c8eb4,allowed_mentions=discord.AllowedMentions(
+                everyone=False, users=False, roles=False, replied_user=True
+            )))
 
 def setup(client):
     client.add_cog(Fun(client))
