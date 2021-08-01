@@ -5,6 +5,7 @@ import discord.ext.commands
 import ast
 import math
 import re
+import random
 import socket
 
 
@@ -366,12 +367,14 @@ class Fun(Cog):
             ),
             mention_author=False,
         )
+        temperature = round(random.randint(50000, 100000) / 100000, 3)
+        top_p = round(random.randint(50000, 100000) / 100000, 3)
         async with ctx.channel.typing():
             payload = {
                 "context": content.casefold(),
                 "token_max_length": 200,
-                "temperature": 0.8,
-                "top_p": 0.9,
+                "temperature": temperature,
+                "top_p": top_p,
             }
             async with aiohttp.ClientSession() as session:
                 async with session.post(
@@ -382,6 +385,7 @@ class Fun(Cog):
         text = json_response.get("text")
         embed = embed_to_edit.embeds[0]
 
+        embed.set_footer(f"Settings: temperature={temperature}, top_p={top_p}")
         if text:
             embed.add_field(name="Context Given to GPT-J-6b", value=content)
             embed.add_field(name="GPT-J-6b's Response", value=text, inline=False)
