@@ -357,9 +357,9 @@ class Fun(Cog):
         )
     @Cog.command()
     async def autocomplete(self, ctx):
-     embed_to_edit=await message.reply(embed=discord.Embed(title="Getting response from gpt-j-6b...",
+     embed_to_edit=await ctx.message.reply(embed=discord.Embed(title="Getting response from gpt-j-6b...",
                                                               description="It might take up to one minute if your sentence is short\n[Learn more about gpt-j-6b here](https://gpt3demo.com/apps/gpt-j-6b)",
-                                                              colour=0x6c8eb4))
+                                                              colour=0x6c8eb4), mention_author=False)
      async with message.channel.typing():
          context =message.content.casefold()
          payload = {
@@ -373,11 +373,11 @@ class Fun(Cog):
          response=f"**{message.content.lower()}** "+re.match(r'(.+?)[\n?!".].*',string).groups()[0]
      if response != None:
          await embed_to_edit.edit(embed=discord.Embed(description=response,colour=0x6c8eb4,allowed_mentions=discord.AllowedMentions(
-                everyone=False, users=False, roles=False, replied_user=True
+                everyone=False, users=False, roles=False, replied_user=False
             )))
      else:
          await embed_to_edit.edit(embed=discord.Embed(description="Not enough context to auto complete", colour=0x6c8eb4,allowed_mentions=discord.AllowedMentions(
-                everyone=False, users=False, roles=False, replied_user=True
+                everyone=False, users=False, roles=False, replied_user=False
             )))
 
 def setup(client):
