@@ -94,7 +94,7 @@ class Bumping(Cog):
             embed=discord.Embed(
                 title="👊 Bump List 🕰",
                 description="\n".join(
-                    f"<t:{awarded.timestamp()}> {ctx.guild.get_member(user_id)}"
+                    f"<t:{awarded.timestamp():.0f}> {ctx.guild.get_member(user_id)}"
                     for user_id, awarded in bumps
                 ),
                 color=YELLOW,
