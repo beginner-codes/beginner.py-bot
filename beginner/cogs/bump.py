@@ -78,6 +78,29 @@ class Bumping(Cog):
             )
         )
 
+    @Cog.command()
+    async def bumps(self, ctx):
+        bumps = (
+            Points.select(Points.user_id, Points.awarded)
+            .order_by(Points.awarded.asc())
+            .filter(
+                Points.point_type == "BUMP",
+                Points.awarded
+                > datetime.utcnow() - timedelta(days=self._bump_score_days),
+            )
+            .tuples()
+        )
+        await ctx.send(
+            embed=discord.Embed(
+                title="👊 Bump List 🕰",
+                description="\n".join(
+                    f"<t:{awarded.timestamp()}> {ctx.guild.get_member(user_id)}"
+                    for user_id, awarded in bumps
+                ),
+                color=YELLOW,
+            )
+        )
+
     @Cog.command(name="d", aliases=["D"])
     async def bump_handler(self, ctx: discord.ext.commands.Context, action: str):
         if not action.casefold() == "bump":
