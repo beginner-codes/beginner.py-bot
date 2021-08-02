@@ -98,7 +98,7 @@ class Bumping(Cog):
                 days = (now - awarded) // timedelta(days=1)
                 message.append(f"\n**{days * 24} Hours Ago**")
             message.append(
-                f"<t:{awarded.timestamp():.0f}:t> {ctx.guild.get_member(user_id)}"
+                f"<t:{awarded.timestamp():.0f}:t> {ctx.guild.get_member(user_id) or '*Unknown User*'}"
             )
         await ctx.send(
             embed=discord.Embed(
