@@ -82,7 +82,7 @@ class Bumping(Cog):
     async def bumps(self, ctx):
         bumps = (
             Points.select(Points.user_id, Points.awarded)
-            .order_by(Points.awarded.asc())
+            .order_by(Points.awarded.desc())
             .filter(
                 Points.point_type == "BUMP",
                 Points.awarded
@@ -94,7 +94,7 @@ class Bumping(Cog):
             embed=discord.Embed(
                 title="👊 Bump List 🕰",
                 description="\n".join(
-                    f"<t:{awarded.timestamp():.0f}> {ctx.guild.get_member(user_id)}"
+                    f"<t:{awarded.timestamp():.0f}:t> {ctx.guild.get_member(user_id)}"
                     for user_id, awarded in bumps
                 ),
                 color=YELLOW,
