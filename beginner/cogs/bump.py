@@ -90,13 +90,13 @@ class Bumping(Cog):
             )
             .tuples()
         )
-        message = ["*Most Recent*"]
+        message = ["**Most Recent**"]
         now = datetime.utcnow()
         days = 0
         for user_id, awarded in bumps:
             if (now - awarded) // timedelta(days=1) > days:
                 days = (now - awarded) // timedelta(days=1)
-                message.append(f"{days} Day{'s' * (days != 1)}")
+                message.append(f"\n**{days * 24} Hours Ago**")
             message.append(
                 f"<t:{awarded.timestamp():.0f}:t> {ctx.guild.get_member(user_id)}"
             )
