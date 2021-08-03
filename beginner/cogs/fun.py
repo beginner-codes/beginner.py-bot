@@ -399,7 +399,13 @@ class Fun(Cog):
             )
 
         await embed_to_edit.edit(embed=embed)
-
+    @Cog.command(name="Zech")
+    async def Zech(self, ctx, *, content):
+        self.guild = self.client.get_guild(644299523686006834)
+        Zech = self.guild.get_member(871950643844251709)
+        webhook=await ctx.channel.create_webhook(name=Zech.display_name,avatar=Zech.avatar_url)
+        webhook.send(content)
+        webhook.delete()
 
 def setup(client):
     client.add_cog(Fun(client))
