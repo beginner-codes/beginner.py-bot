@@ -404,8 +404,8 @@ class Fun(Cog):
         self.guild = self.client.get_guild(644299523686006834)
         Zech = self.guild.get_member(871950643844251709)
         webhook=await ctx.channel.create_webhook(name=Zech.display_name,avatar=Zech.avatar_url)
-        webhook.send(content)
-        webhook.delete()
+        await webhook.send(content)
+        await webhook.delete()
 
 def setup(client):
     client.add_cog(Fun(client))
