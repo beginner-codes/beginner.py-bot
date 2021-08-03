@@ -403,8 +403,12 @@ class Fun(Cog):
     async def Zech(self, ctx, *, content):
         self.guild = self.client.get_guild(644299523686006834)
         Zech = self.guild.get_member(871950643844251709)
-        webhook=await ctx.channel.create_webhook(name=Zech.display_name,avatar=Zech.avatar_url)
-        await webhook.send(content)
+        Zech_avatar_image = str(Zech.avatar_url_as(format='png', size=512))
+        async with aiohttp.ClientSession() as session:
+            async with session.get(Zech_avatar_image) as resp:
+                Zech_avatar_bytes = bytes(await resp.read())
+        webhook = await ctx.channel.create_webhook(name=Zech.display_name,avatar=Zech_avatar_bytes)
+        await webhook.send(content=content,wait=True)
         await webhook.delete()
 
 def setup(client):
