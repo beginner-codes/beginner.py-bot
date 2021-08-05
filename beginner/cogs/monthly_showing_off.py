@@ -66,6 +66,16 @@ class MonthlyShowingOffCog(Cog):
         embed.add_field(
             name="▶ YT video", value="Post a video on Youtube", inline=False
         )
+        embed.add_field(
+            name="⛔ Deleting messages",
+            value="To delete your submission, react with ⛔",
+            inline=False,
+        )
+        embed.add_field(
+            name="🏆 Winner",
+            value="In order to win, you must have the most reactions. Winners will be announced monthly",
+            inline=False,
+        )
 
         embed.set_author(
             name=self.client.user.display_name,
@@ -207,7 +217,7 @@ class MonthlyShowingOffCog(Cog):
             self.get_link(content)
         ):
             link = self.get_link(message.content)
-            desc = message.content.split(link)
+            desc = " ".join(message.content.split(link))
             if self.check_invalid_website(content):
                 await message.delete()
                 await self.channel.send(
@@ -219,18 +229,16 @@ class MonthlyShowingOffCog(Cog):
                 return
 
             if "https://github.com" in message.content:
-                await self.github_get(message)
-                await message.channel.send(f"```{''.join(desc)}```")
+                await self.github_get(message, desc)
 
             else:
                 await message.channel.send(
                     embed=discord.Embed(
                         title=f"**{message.author.display_name}**",
-                        description=f"Project: {link}",
+                        description=f"Project: {link}\n {desc}",
                         color=discord.Colour.green(),
                     ).set_thumbnail(url=message.author.avatar_url)
                 )
-                await message.channel.send(f"```{''.join(desc)}```")
                 await message.delete()
 
             bot_message_id = self.channel.last_message_id
@@ -248,9 +256,10 @@ class MonthlyShowingOffCog(Cog):
 
         return
 
-    async def github_get(self, message):
+    async def github_get(self, message, desc):
         """Manipulating the url that was sent and converting it into a appropriate url for the api"""
-        msg = message.content.split("/")
+        link = self.get_link(message.content)
+        msg = link.split("/")
         try:
             modified_msg = f"https://api.github.com/repos/{msg[3]}/{msg[4]}"
         except IndexError:
@@ -262,7 +271,7 @@ class MonthlyShowingOffCog(Cog):
             return
 
         repo_data = requests.get(modified_msg).json()
-        await self.github_response(message, repo_data, message.author.id)
+        await self.github_response(message, repo_data, message.author.id, desc)
 
     def parse_git_to_embed(
         self,
@@ -284,6 +293,7 @@ class MonthlyShowingOffCog(Cog):
         )
 
         if description:
+            print(description)
             git_embed.add_field(
                 name="Description:", value=f"```{description}```", inline=False
             )
@@ -298,10 +308,10 @@ class MonthlyShowingOffCog(Cog):
 
         return git_embed
 
-    async def github_response(self, message, json, author_id):
+    async def github_response(self, message, json, author_id, desc):
         """Getting the github response and sending the values in an embed, as well as saving it in the db"""
         error = json.get("message")
-
+        print(error)
         error_embed = self.create_error_message(
             message, "Unsuccessful Github response!"
         )
@@ -331,7 +341,7 @@ class MonthlyShowingOffCog(Cog):
         owner = json["owner"]["login"]
         avatar = json["owner"]["avatar_url"]
         project_url = json["html_url"]
-        description = json["description"]
+        description = desc
         profile_url = json["owner"]["html_url"]
         language = json["language"]
 
