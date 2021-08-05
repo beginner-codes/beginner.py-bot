@@ -8,6 +8,7 @@ from datetime import datetime, timedelta
 import os
 import asyncio
 from urllib.parse import urlparse
+import re
 
 
 class MonthlyShowingOffCog(Cog):
@@ -187,6 +188,13 @@ class MonthlyShowingOffCog(Cog):
         ContestantInfo.delete().where(bot_message_id == ContestantInfo.bot_message_id)
         self.log.debug("Deleted message successfully")
 
+    def get_link(self, message):
+        url = re.findall(
+            "(?:(?:https?|ftp):\/\/)?[\w/\-?=%.]+\.[\w/\-&?=%.]+",
+            message,
+        )
+        return "".join(url[0]) if url[0] else None
+
     async def scan_link(self, message):
         """Check what type of link it is (Github, non-Github, or invalid)"""
 
@@ -195,9 +203,11 @@ class MonthlyShowingOffCog(Cog):
             and message.author.guild_permissions.administrator
         ):
             return
-
-        if "https://" in (content := message.content) and self.check_link(content):
-
+        if "https://" in (content := message.content) and self.check_link(
+            self.get_link(content)
+        ):
+            link = self.get_link(message.content)
+            desc = message.content.split(link)
             if self.check_invalid_website(content):
                 await message.delete()
                 await self.channel.send(
@@ -210,15 +220,17 @@ class MonthlyShowingOffCog(Cog):
 
             if "https://github.com" in message.content:
                 await self.github_get(message)
+                await message.channel.send(f"```{''.join(desc)}```")
 
             else:
                 await message.channel.send(
                     embed=discord.Embed(
-                        title=f"**{message.author.name}**",
-                        description=f"Project: {message.content}",
+                        title=f"**{message.author.display_name}**",
+                        description=f"Project: {link}",
                         color=discord.Colour.green(),
                     ).set_thumbnail(url=message.author.avatar_url)
                 )
+                await message.channel.send(f"```{''.join(desc)}```")
                 await message.delete()
 
             bot_message_id = self.channel.last_message_id
@@ -280,7 +292,7 @@ class MonthlyShowingOffCog(Cog):
         git_embed.add_field(name="Project Url:", value=project_url, inline=True)
         git_embed.add_field(name="Github profile:", value=profile_url, inline=False)
         git_embed.set_author(
-            name=message.author.name, icon_url=message.author.avatar_url
+            name=message.author.display_name, icon_url=message.author.avatar_url
         )
         git_embed.set_thumbnail(url=avatar)
 
@@ -476,10 +488,12 @@ class MonthlyShowingOffCog(Cog):
         author_id = self.get_author_id(payload.message_id)
         payload_author_object = self.channel.guild.get_member(payload.user_id)
         message = await self.channel.fetch_message(payload.message_id)
-
+        has_manage_perms = self.channel.permissions_for(
+            payload_author_object
+        ).manage_messages
         # Checking if the user wants to delete and checking if someone is trying to cheat
         if payload.emoji.name == "⛔":
-            if payload.user_id == author_id:
+            if payload.user_id == author_id or has_manage_perms:
                 self.delete_message(payload.message_id)
                 await message.delete()
                 return
