@@ -31,7 +31,7 @@ class BeginnerCog(Cog):
         m: discord.Message = await message.channel.send(
             f"Hi {message.author.mention}! I'm the beginner.py bot developed collaboratively by members of this server "
             f"using the Discord.py package! If you'd like to see my code or even contribute yourself I'm on GitHub "
-            f"https://github.com/beginnerpy-com/beginner.py-bot",
+            f"https://github.com/beginner-codes/beginner.py-bot",
             allowed_mentions=discord.AllowedMentions(users=[message.author]),
         )
         await m.edit(suppress=True)
