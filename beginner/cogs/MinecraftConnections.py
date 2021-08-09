@@ -119,7 +119,7 @@ class MinecraftConnections(commands.Cog):
                                          inline=False)
             await embed_to_edit.edit(embed=java_embed)
 
-    @commands.Cog.listener()
+    @Cog.listener()
     async def on_ready(self):
         self.guild = self.client.get_guild(644299523686006834)
 def setup(client):
