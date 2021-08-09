@@ -1,23 +1,18 @@
-from discord.ext import commands
-import discord
+from beginner.cog import Cog
 import aiohttp
+import discord
+import discord.ext.commands
 from mcstatus import MinecraftServer, MinecraftBedrockServer
 from MinePI import MinePI
 import datetime
 import base64, io, json
-from googleapiclient.discovery import build as google
-from urllib.parse import quote_plus
-from random import choice
 class MinecraftConnections(commands.Cog):
     def __init__(self,client):
         self.client = client
-        self.colors = [0xEA4335, 0x4285F4, 0xFBBC05, 0x34A853]
+        self.beginnerMC="IP"
 
     @commands.command()
     async def mcinfo(self,ctx, *, user_name):
-        if ctx.channel.id != self.bot_channel.id and not ctx.author.guild_permissions.administrator:
-            await ctx.send(f"Use this command in the {self.bot_channel.mention} channel",delete_after=10)
-            return
         async with ctx.typing():
             try:
                 online_emoji = discord.utils.get(self.client.emojis, name="Online")
@@ -77,14 +72,11 @@ class MinecraftConnections(commands.Cog):
         if isinstance(error, commands.MissingRequiredArgument):
             await ctx.send("you need to do !mcinfo (MC Java account username)", delete_after=10)
     @commands.command()
-    async def online(self,ctx, arg):
-        if ctx.channel.id != self.bot_channel.id and not ctx.author.guild_permissions.administrator:
-            await ctx.send(f"Use this command in the {self.bot_channel.mention} channel",delete_after=10)
-            return
+    async def mcstatus(self,ctx):
         online_emoji = discord.utils.get(self.client.emojis, name="Online")
         embed_to_edit = await ctx.send(embed=discord.Embed(title="Searching......Please wait", color=0xffffff))
         try:
-            server = MinecraftServer.lookup(arg)
+            server = MinecraftServer.lookup(self.BeginnerMc)
             async with ctx.typing():
                 status =await server.async_status()
                 try:
@@ -126,90 +118,9 @@ class MinecraftConnections(commands.Cog):
                                          value=f"{','.join(server_query.players.names if len(server_query.players.names) <= 50 else server_query.players.names[:50])}",
                                          inline=False)
             await embed_to_edit.edit(embed=java_embed)
-        except ConnectionRefusedError:
-            try:
-                server = MinecraftBedrockServer.lookup(arg)
-                async with ctx.typing():
-                    bedrock =await server.async_status()
-                    try:bedrock_latency=bedrock.latency
-                    except:bedrock_latency="Unknown"
-                    bedrock_embed = discord.Embed(title=f"{online_emoji}Status of {arg}:(Bedrock)",
-                                                  description=f"Server is Online with a latency of {round(bedrock_latency*100)}ms\nRunning on {bedrock.map}",
-                                                  colour=0x48a14d)
-                    bedrock_embed.add_field(name="Online", value=f"There are {bedrock.players_online} online players out of {bedrock.players_max} max players",inline=False)
-                    if bedrock.motd :
-                        bedrock_embed.add_field(name="Description", value=bedrock.motd)
-                await embed_to_edit.edit(embed=bedrock_embed)
-            except ConnectionResetError:
-                await embed_to_edit.edit(embed=discord.Embed(
-                    description="The server you chose dont allow third party fetchers",
-                    colour=0xf9423a))
-        except:
-            await embed_to_edit.edit(embed=discord.Embed(description="The server you chose is either not online , don't exist or don't use the regular Minecraft server protocols",colour=0xf9423a))
-    @online.error
-    async def online_error(self,ctx,error):
-        if isinstance(error, commands.MissingRequiredArgument):
-            await ctx.send("you need to do !online (ip) eg: play.nethergames.net)",delete_after=10)
-
-    @commands.command(aliases=["wiki"])
-    async def mcwiki(self, ctx, *, query):
-        if ctx.channel.id != self.bot_channel.id and not ctx.author.guild_permissions.administrator:
-            await ctx.send(f"Use this command in the {self.bot_channel.mention} channel",delete_after=10)
-            return
-        async with ctx.typing():
-            color = choice(self.colors)
-            url_search = (
-                f"https://www.google.com/search?hl=en&q={quote_plus(query)}"
-                "&btnG=Google+Search&tbs=0&safe=on"
-            )
-            message = await ctx.send(
-                embed=self.create_google_message(
-                    f"Searching...\n\n[More Results]({url_search})", color
-                )
-            )
-            query_obj = google(
-                "customsearch",
-                "v1",
-                developerKey="AIzaSyBzmxAhFaj5hRNjW7IppPXGYdN5m_bht2Q",
-            )
-            query_result = (
-                query_obj.cse()
-                    .list(
-                    q=query,
-                    cx="f9026cceb2d7420a2",
-                    num=5,
-                )
-                    .execute()
-            )
-
-        results = []
-        for result in query_result.get("items", []):
-            title = result["title"]
-            if len(title) > 77:
-                title = f"{title[:77]}..."
-            results.append(f"{len(results) + 1}. [{title}]({result['link']})\n")
-        await message.edit(
-            embed=self.create_google_message(
-                f"Results for \"{query}\"\n\n{''.join(results)}\n[More Results]({url_search})",
-                color,
-            )
-        )
-
-    def create_google_message(self, message, color):
-        return discord.Embed(description=message, color=color).set_author(
-            name=f"Minecraft wiki result", icon_url=self.guild.icon_url
-        ).set_thumbnail(
-            url="https://cdn.discordapp.com/attachments/850019796014858280/867928608201662554/2021-07-22-180514.gif"
-        )
-
-    @mcwiki.error
-    async def mcwiki_error(self, ctx, error):
-        if isinstance(error, commands.MissingRequiredArgument):
-            await ctx.send("you need to do !mcwiki (your search term))", delete_after=10)
 
     @commands.Cog.listener()
     async def on_ready(self):
-        self.guild = self.client.get_guild(844231449014960160)
-        self.bot_channel = self.bump_channel = discord.utils.get(self.guild.text_channels, name="🤖〢bot-commands")
+        self.guild = self.client.get_guild(644299523686006834)
 def setup(client):
     client.add_cog(MinecraftConnections(client))
