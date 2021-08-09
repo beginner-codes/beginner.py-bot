@@ -11,7 +11,7 @@ class MinecraftConnections(commands.Cog):
         self.client = client
         self.beginnerMC="IP"
 
-    @commands.command()
+    @Cog.command()
     async def mcinfo(self,ctx, *, user_name):
         async with ctx.typing():
             try:
@@ -71,7 +71,7 @@ class MinecraftConnections(commands.Cog):
     async def mcinfo_error(self,ctx, error):
         if isinstance(error, commands.MissingRequiredArgument):
             await ctx.send("you need to do !mcinfo (MC Java account username)", delete_after=10)
-    @commands.command()
+    @Cog.command()
     async def mcstatus(self,ctx):
         online_emoji = discord.utils.get(self.client.emojis, name="Online")
         embed_to_edit = await ctx.send(embed=discord.Embed(title="Searching......Please wait", color=0xffffff))
