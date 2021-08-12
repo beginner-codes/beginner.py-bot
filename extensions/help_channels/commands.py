@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-from discord import Member, Message, utils
+from discord import Member, Message, RawReactionActionEvent, utils
 from extensions.help_channels.channel_manager import ChannelManager
 import dippy.labels
 import dippy.logging
@@ -54,6 +54,30 @@ class HelpRotatorCommandsExtension(dippy.Extension):
             await message.channel.send(
                 f"You can claim {channel.mention} to ask your question."
             )
+
+    @dippy.Extension.listener("raw_reaction_add")
+    async def on_message(self, payload: RawReactionActionEvent):
+        if payload.emoji != "📌":
+            return
+
+        guild = self.client.get_guild(payload.guild_id)
+        categories = await self.manager.get_categories(guild)
+        if not categories:
+            return
+
+        channel = guild.get_channel(payload.channel_id)
+        if channel.category.id != categories["getting-help"]:
+            return
+
+        helper = utils.get(guild.roles, name="helpers")
+        mods = utils.get(guild.roles, name="mods")
+        member = payload.member or await guild.fetch_member(payload.user_id)
+        message = await channel.fetch_message(payload.message_id)
+        if helper not in member.roles and mods not in member.roles:
+            await message.remove_reaction(payload.emoji, member)
+            return
+
+        await message.pin()
 
     @dippy.Extension.command("!claim")
     async def claim(self, message: Message):
