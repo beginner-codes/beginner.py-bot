@@ -325,7 +325,7 @@ class ChannelManager(Injectable):
         ]
 
         if pins:
-            tasks.append(pins[0].unpin())
+            tasks.extend(pin.unpin() for pin in pins)
 
         try:
             message, *_ = await channel.history(limit=1, before=new_message).flatten()
