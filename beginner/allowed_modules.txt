@@ -46,3 +46,4 @@ unicodedata
 unittest
 urllib.parse
 weakref
+_strptime
