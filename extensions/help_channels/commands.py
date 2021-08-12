@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-from discord import Member, Message, RawReactionActionEvent, utils
+from discord import AllowedMentions, Member, Message, RawReactionActionEvent, utils
 from extensions.help_channels.channel_manager import ChannelManager
 import dippy.labels
 import dippy.logging
@@ -78,6 +78,41 @@ class HelpRotatorCommandsExtension(dippy.Extension):
             return
 
         await message.pin()
+        await channel.send(
+            f"📌 {member.mention} pinned a message",
+            reference=message,
+            allowed_mentions=AllowedMentions(users=[], replied_user=False),
+        )
+
+    @dippy.Extension.listener("raw_reaction_remove")
+    async def on_unpin_reaction(self, payload: RawReactionActionEvent):
+        if payload.emoji.name != "📌":
+            return
+
+        guild = self.client.get_guild(payload.guild_id)
+        categories = await self.manager.get_categories(guild)
+        if not categories:
+            return
+
+        channel = guild.get_channel(payload.channel_id)
+        if channel.category.id != categories["getting-help"]:
+            return
+
+        for message in channel.pins:
+            if message.id == payload.message_id:
+                helper = utils.get(guild.roles, name="helpers")
+                mods = utils.get(guild.roles, name="mods")
+                member = payload.member or await guild.fetch_member(payload.user_id)
+                if helper not in member.roles and mods not in member.roles:
+                    break
+
+                await message.unpin()
+                await channel.send(
+                    f"🗑 {member.mention} unpinned a message",
+                    reference=message,
+                    allowed_mentions=AllowedMentions(users=[], replied_user=False),
+                )
+                break
 
     @dippy.Extension.command("!claim")
     async def claim(self, message: Message):
