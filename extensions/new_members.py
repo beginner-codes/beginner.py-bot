@@ -29,7 +29,7 @@ class VoiceChatExtension(dippy.Extension):
             last_highest = await self.labels.get(
                 "guild", after.guild.id, "highest-member-count", default=0
             )
-            count = after.guild.member_count
+            count = self.get_num_members(after.guild)
             if count > last_highest:
                 await self.labels.set(
                     "guild", after.guild.id, "highest-member-count", count
@@ -38,6 +38,9 @@ class VoiceChatExtension(dippy.Extension):
                     await after.guild.get_channel(644299524151443487).send(
                         f"🎉🥳🎈 We've reached {count // 100 * 100} members!!! 🎈🥳🎉"
                     )
+
+    def get_num_members(self, guild: Guild) -> int:
+        return sum(1 for member in guild.members if not member.bot)
 
     @dippy.Extension.listener("message")
     async def welcome_messages(self, message: Message):
