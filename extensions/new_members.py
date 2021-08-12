@@ -26,6 +26,19 @@ class VoiceChatExtension(dippy.Extension):
         if before.pending and not after.pending:
             await self.add_unwelcomed_user(after)
 
+            last_highest = self.labels.get(
+                "guild", after.guild.id, "highest-member-count", default=0
+            )
+            count = after.guild.member_count
+            if count > last_highest:
+                await self.labels.set(
+                    "guild", after.guild.id, "highest-member-count", count
+                )
+                if count // 100 > last_highest // 100:
+                    await after.guild.get_channel(644299524151443487).send(
+                        f"🎉🥳🎈 We've reached {count // 100 * 100} members!!! 🎈🥳🎉"
+                    )
+
     @dippy.Extension.listener("message")
     async def welcome_messages(self, message: Message):
         if message.author.bot or not isinstance(message.channel, TextChannel):
