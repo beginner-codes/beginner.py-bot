@@ -23,15 +23,21 @@ class KudosManager(Injectable):
     def __init__(self):
         self._achievements = []
         self._ledger_channels: dict[Guild, TextChannel] = {}
+        self._kudos_emoji: dict[Guild, dict[str, int]] = {}
 
     def get_emoji(self, guild: Guild, name: str) -> Emoji:
         return utils.get(guild.emojis, name=name) or name
 
     async def get_kudos_emoji(self, guild: Guild) -> dict[str, int]:
-        return await self.labels.get("guild", guild.id, "kudos_emoji", default={})
+        if guild not in self._kudos_emoji:
+            self._kudos_emoji[guild] = await self.labels.get(
+                "guild", guild.id, "kudos_emoji", default={}
+            )
+        return self._kudos_emoji[guild]
 
     async def set_kudos_emoji(self, guild: Guild, emoji: dict[str, int]):
         await self.labels.set("guild", guild.id, "kudos_emoji", emoji)
+        self._kudos_emoji[guild] = emoji
 
     async def get_leaderboard(self, guild: Guild) -> dict[Member, int]:
         leaderboard = await self.labels.find(f"member[{guild.id}]", key="kudos")
