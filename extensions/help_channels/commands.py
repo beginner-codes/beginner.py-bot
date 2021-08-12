@@ -98,7 +98,7 @@ class HelpRotatorCommandsExtension(dippy.Extension):
         if channel.category.id != categories["getting-help"]:
             return
 
-        for message in channel.pins:
+        for message in await channel.pins():
             if message.id == payload.message_id:
                 helper = utils.get(guild.roles, name="helpers")
                 mods = utils.get(guild.roles, name="mods")
