@@ -57,8 +57,7 @@ class HelpRotatorCommandsExtension(dippy.Extension):
 
     @dippy.Extension.listener("raw_reaction_add")
     async def on_pin_reaction(self, payload: RawReactionActionEvent):
-        print(payload)
-        if payload.emoji != "📌":
+        if payload.emoji.name != "📌":
             return
 
         guild = self.client.get_guild(payload.guild_id)
