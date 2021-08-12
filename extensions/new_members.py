@@ -26,7 +26,7 @@ class VoiceChatExtension(dippy.Extension):
         if before.pending and not after.pending:
             await self.add_unwelcomed_user(after)
 
-            last_highest = self.labels.get(
+            last_highest = await self.labels.get(
                 "guild", after.guild.id, "highest-member-count", default=0
             )
             count = after.guild.member_count
