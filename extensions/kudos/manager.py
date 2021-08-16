@@ -196,9 +196,12 @@ class KudosManager(Injectable):
         )
 
     async def get_days_active(self, member: Member) -> int:
-        return await self.labels.get(
-            f"member[{member.guild.id}]", member.id, "total-days-active", default=0
+        days = await self.labels.get(
+            f"member[{member.guild.id}]", member.id, "total-days-active", default=-1
         )
+        if days == -1:
+            _, days = await self.get_streaks(member)
+        return days
 
     async def get_recent_kudos(
         self, member: Member
