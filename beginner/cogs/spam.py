@@ -2,7 +2,7 @@ import re
 
 from beginner.cog import Cog
 from beginner.colors import *
-from discord import Embed
+from discord import Embed, TextChannel
 from discord.ext import commands
 from functools import cached_property
 from typing import Optional, Set
@@ -183,6 +183,14 @@ class SpamCog(Cog):
     def categorize_attachments(self, message):
         allowed = []
         disallowed = []
+        allowed_extensions = {".gif", ".png", ".jpeg", ".jpg", ".bmp", ".webp"}
+        if (
+            isinstance(message.channel, TextChannel)
+            and message.channel.category_id != 829826215997210644
+        ):
+            allowed_extensions.add(".mp4")
+            allowed_extensions.add(".mov")
+
         for attachment in message.attachments:
             _, extension = os.path.splitext(attachment.filename.lower())
             if (
@@ -190,7 +198,7 @@ class SpamCog(Cog):
                 or attachment.filename.lower() == "dockerfile"
             ):
                 allowed.append(attachment)
-            elif extension not in {".gif", ".png", ".jpeg", ".jpg", ".bmp", ".webp"}:
+            elif extension not in allowed_extensions:
                 disallowed.append(attachment)
 
         return allowed, disallowed
