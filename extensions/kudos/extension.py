@@ -476,7 +476,7 @@ class KudosExtension(dippy.Extension):
 
         kudos = DAILY_MESSAGE_BONUS
         reason = (
-            f"{message.author.mention} has continued their {current_streak} day activity streak! "
+            f"{message.author.mention} has continued their {current_streak + 1} day activity streak! "
             f"[See Message]({message.jump_url})"
         )
         notification = (
