@@ -166,8 +166,9 @@ class KudosExtension(dippy.Extension):
             )
             .add_field(
                 name="Activity Streak",
-                value=f"{'You' if self_lookup else 'They'}'ve been active on {active_days} "
-                f"day{'s' * (active_days != 1)}.\n{streak}",
+                value=f"{'You' if self_lookup else 'They'}'ve been active on {active_days} different days.\n{streak}"
+                if active_days != 1
+                else streak,
                 inline=False,
             )
             .set_footer(text="!kudos | !kudos @user | !kudos leaderboard | !kudos help")
