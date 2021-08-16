@@ -149,7 +149,7 @@ class ModerationCog(Cog):
         )
 
     @Cog.command(name="purge")
-    @commands.has_guild_permissions(manage_messages=True)
+    @commands.has_permissions(manage_messages=True)
     async def purge(self, ctx, messages: str):
         if messages.startswith("<"):
             user_id = re.findall("\d+", messages)
