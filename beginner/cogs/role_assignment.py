@@ -37,13 +37,12 @@ class RoleAssignmentCog(Cog):
                 inline=False,
             )
             .add_field(
-                name="🤪 Off Topic",
+                name="🗞 News & World Events",
                 value=(
-                    "React to this message with 🤪 to gain access to the hidden off topic channel. There are a few "
-                    "special rules for anyone wanting to chat in that channel:\n\n"
+                    "React to this message with 🗞 to gain access to the opt-in news and world events channel. There "
+                    "are a few special rules for anyone wanting to chat in that channel:\n\n"
                     "- No misinformation will be allowed. Be ready to provide **trustworthy** sources for any claims.\n"
                     "- Name calling and insults are **strictly** prohibited.\n"
-                    "- **Safe for work** only."
                 ),
                 inline=False,
             )
