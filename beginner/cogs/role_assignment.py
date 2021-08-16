@@ -114,7 +114,7 @@ class RoleAssignmentCog(Cog):
 
     async def assign_off_topic(self, member):
         channel = self.get_channel("role-assignment")
-        off_topic = self.get_channel("🤠wild-west-off-topic")
+        off_topic = self.get_channel("🗞news-events-discussion")
 
         await off_topic.set_permissions(
             member, overwrite=PermissionOverwrite(read_messages=True)
