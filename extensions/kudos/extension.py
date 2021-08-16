@@ -150,6 +150,7 @@ class KudosExtension(dippy.Extension):
                 f"<t:{int(next_day.replace(tzinfo=timezone.utc).timestamp())}:t>. That's in {thats_in_msg}.*"
             )
 
+        active_days = await self.manager.get_days_active(lookup_member)
         embed = (
             Embed(
                 color=0x4285F4,
@@ -165,7 +166,8 @@ class KudosExtension(dippy.Extension):
             )
             .add_field(
                 name="Activity Streak",
-                value=streak,
+                value=f"{'You' if self_lookup else 'They'}'ve been active on {active_days} "
+                f"day{'s' * (active_days != 1)}.\n{streak}",
                 inline=False,
             )
             .set_footer(text="!kudos | !kudos @user | !kudos leaderboard | !kudos help")

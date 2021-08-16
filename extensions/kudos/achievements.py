@@ -12,7 +12,8 @@ class Achievement:
     description: str
     unlock_description: str
     emoji: str
-    kudos: int
+    kudos: int = -1
+    days_active: int = -1
     awarded_handlers: set[Callable[[Member], Coroutine]] = field(default_factory=set)
 
     def on_awarded(self, callback: Callable[[Member], Coroutine]):
@@ -51,10 +52,22 @@ class Achievements(UserDict, Injectable):
                     "😎",
                     188,  # 4 weeks of daily activity
                 ),
+                "MINECRAFTER": Achievement(
+                    "Minecrafter",
+                    (
+                        "Minecrafters are members who have shown they will return and contribute to the community from "
+                        "time to time."
+                    ),
+                    "You're a Minecrafter! You can now access the Minecraft server and the Discord discussion channel.",
+                    "😎",
+                    -1,
+                    7,
+                ),
             }
         )
 
         self.on_award("CODER", self.give_coders_role)
+        self.on_award("MINECRAFTER", self.give_minecraft_role)
 
     async def awarded_achievement(self, member: Member, achievement: Achievement):
         if achievement.awarded_handlers:
@@ -72,6 +85,19 @@ class Achievements(UserDict, Injectable):
             await self.client.get_channel(851228622832533534).send(
                 f"{member.mention} you're awesome! Thank you for contributing and being such an amazing part of this "
                 f"community! Now that you've unlocked the 😎Coders😎 achievement you have access to this channel!"
+            )
+        except errors.Forbidden:
+            pass
+
+    async def give_minecraft_role(self, member: Member):
+        role = utils.get(member.guild.roles, name="minecraft")
+        try:
+            await member.add_roles(role)
+            await self.client.get_channel(834200603474657321).send(
+                f"{member.mention} you're now able to access the Minecraft server!\n\n```\nJava Edition: "
+                f"mc.beginnerpy.com\nBedrock: mc.beginnerpy.com:8152\n```\n**Rules**\n- Mods that give unfair advantage"
+                f" are not allowed.\n- If your mods or custom client get you banned you may not be allowed back.\n- "
+                f"Griefing and such are not allowed."
             )
         except errors.Forbidden:
             pass

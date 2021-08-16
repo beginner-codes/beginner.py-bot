@@ -79,8 +79,12 @@ class KudosManager(Injectable):
 
     async def _determine_achievements(self, member: Member, kudos: int):
         achievements = await self.get_achievement_keys(member)
+        days = await self.get_days_active(member)
         for achievement_key, achievement in self.achievements.items():
-            if achievement_key not in achievements and kudos >= achievement.kudos:
+            if achievement_key not in achievements and (
+                (kudos >= achievement.kudos or achievement.kudos == -1)
+                or (days >= achievement.days_active or achievement.days_active == -1)
+            ):
                 await self.award_achievement(member, achievement_key)
 
     async def get_achievements(self, member: Member) -> set[Achievement]:
@@ -182,6 +186,18 @@ class KudosManager(Injectable):
             member.id,
             "messaging_streak",
             (days, max(best, days)),
+        )
+
+        await self.labels.set(
+            f"member[{member.guild.id}]",
+            member.id,
+            "total-days-active",
+            await self.get_days_active(member) + 1,
+        )
+
+    async def get_days_active(self, member: Member) -> int:
+        return await self.labels.get(
+            f"member[{member.guild.id}]", member.id, "total-days-active", default=0
         )
 
     async def get_recent_kudos(
