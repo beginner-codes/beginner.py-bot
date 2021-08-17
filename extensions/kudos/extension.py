@@ -39,6 +39,19 @@ class KudosExtension(dippy.Extension):
                 emoji.items(), key=lambda item: item[1], reverse=True
             )
         )
+        achievements = []
+        for achievement in self.manager.achievements.values():
+            achievements.append(
+                f"**{achievement.emoji} {achievement.name} {achievement.emoji}**"
+            )
+            if achievement.kudos > -1:
+                achievements.append(f"*{achievement.kudos} Kudos to unlock*")
+            if achievement.days_active > -1:
+                achievements.append(
+                    f"*Be active on {achievement.days_active} different days*"
+                )
+            achievements.append(f"{achievement.description}\n")
+
         await message.channel.send(
             embed=Embed(
                 title="Kudos Help",
@@ -60,11 +73,7 @@ class KudosExtension(dippy.Extension):
                 value=(
                     "You can unlock achievements the more kudos you earn. Your lifetime kudos received will be used to "
                     "unlock achievements, so giving kudos to others will not slow you down.\n\n"
-                    + "\n".join(
-                        f"**{achievement.emoji} {achievement.name} {achievement.emoji}**\n*{achievement.kudos} Kudos "
-                        f"to unlock*\n{achievement.description}\n"
-                        for achievement in self.manager.achievements.values()
-                    )
+                    + "\n".join(achievements)
                 ),
                 inline=False,
             )
