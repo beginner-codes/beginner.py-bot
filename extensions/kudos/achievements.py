@@ -59,7 +59,7 @@ class Achievements(UserDict, Injectable):
                         "time to time."
                     ),
                     "You're a Minecrafter! You can now access the Minecraft server and the Discord discussion channel.",
-                    "😎",
+                    "🌳",
                     -1,
                     7,
                 ),
