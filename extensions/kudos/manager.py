@@ -114,7 +114,7 @@ class KudosManager(Injectable):
         )
 
     async def give_kudos(self, member: Member, amount: int, reason: str):
-        kudos = await self.get_kudos(member)
+        kudos = await self.get_lifetime_kudos(member)
         await self.set_kudos(member, kudos + amount)
 
         lifetime_kudos = await self.get_lifetime_kudos(member) or kudos
