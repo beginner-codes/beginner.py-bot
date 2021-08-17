@@ -54,10 +54,7 @@ class Achievements(UserDict, Injectable):
                 ),
                 "MINECRAFTER": Achievement(
                     "Minecrafter",
-                    (
-                        "Minecrafters are members who have shown they will return and contribute to the community from "
-                        "time to time."
-                    ),
+                    "Minecrafters get access to the Minecraft server and the Discord discussion channel.",
                     "You're a Minecrafter! You can now access the Minecraft server and the Discord discussion channel.",
                     "🌳",
                     -1,
