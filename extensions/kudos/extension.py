@@ -71,8 +71,8 @@ class KudosExtension(dippy.Extension):
             .add_field(
                 name="Kudos Achievements",
                 value=(
-                    "You can unlock achievements the more kudos you earn. Your lifetime kudos received will be used to "
-                    "unlock achievements, so giving kudos to others will not slow you down.\n\n"
+                    "You can unlock achievements by earning kudos and being active. Your lifetime kudos received will "
+                    "be used to unlock achievements, so giving kudos to others will not slow you down.\n\n"
                     + "\n".join(achievements)
                 ),
                 inline=False,
