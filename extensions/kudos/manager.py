@@ -83,7 +83,7 @@ class KudosManager(Injectable):
         for achievement_key, achievement in self.achievements.items():
             if achievement_key not in achievements and (
                 (kudos >= achievement.kudos or achievement.kudos == -1)
-                or (days >= achievement.days_active or achievement.days_active == -1)
+                and (days >= achievement.days_active or achievement.days_active == -1)
             ):
                 await self.award_achievement(member, achievement_key)
 
