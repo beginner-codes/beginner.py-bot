@@ -16,7 +16,7 @@ class MinecraftExtension(dippy.Extension):
             return
 
         await message.channel.send(
-            f"```\nJava Edition: mc.beginnerpy.com\nBedrock: mc.beginnerpy.com:8152\n```\n**Rules**\n- Mods that give "
-            f"unfair advantage are not allowed.\n- If your mods or custom client get you banned you may not be allowed "
-            f"back.\n- Griefing and such are not allowed."
+            f"**Server Details**\n```\nJava Edition: mc.beginnerpy.com\nBedrock: mc.beginnerpy.com:8152\n```\n**Rules**"
+            f"\n- Mods that give unfair advantage are not allowed.\n- If your mods or custom client get you banned you "
+            f"may not be allowed back.\n- Griefing and such are not allowed."
         )
