@@ -114,7 +114,7 @@ class KudosManager(Injectable):
         )
 
     async def give_kudos(self, member: Member, amount: int, reason: str):
-        kudos = await self.get_lifetime_kudos(member)
+        kudos = await self.get_lifetime_kudos(member, use_default=True)
         await self.set_kudos(member, kudos + amount)
 
         lifetime_kudos = await self.get_lifetime_kudos(member) or kudos
@@ -147,7 +147,7 @@ class KudosManager(Injectable):
         kudos = await self.labels.get(
             f"member[{member.guild.id}]", member.id, "lifetime_kudos", default=None
         )
-        return kudos
+        return kudos if kudos or not use_default else 0
 
     async def set_kudos(self, member: Member, amount: int):
         await self.labels.set(f"member[{member.guild.id}]", member.id, "kudos", amount)
