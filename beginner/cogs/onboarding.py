@@ -25,8 +25,8 @@ class OnBoarding(Cog):
             return
 
         self._join_history.add(updated_member)
-        await self.monitor_for_mass_join()
-        await self.welcome_member(updated_member)
+        self.client.loop.create_task(self.welcome_member(updated_member))
+        self.client.loop.create_task(self.monitor_for_mass_join())
 
     def under_mass_attack(self):
         minute_ago = datetime.utcnow() - timedelta(minutes=1)
