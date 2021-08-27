@@ -101,5 +101,5 @@ class VoiceChatExtension(dippy.Extension):
             "guild",
             guild.id,
             "unwelcomed_members",
-            [member.id for member in unwelcomed],
+            [member.id for member in unwelcomed if member],
         )
