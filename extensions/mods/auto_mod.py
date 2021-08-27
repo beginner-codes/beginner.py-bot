@@ -32,7 +32,20 @@ class AutoModExtension(dippy.Extension):
             return
 
         self._message_buffer.appendleft(message)
+        self.client.loop.create_task(self._handle_zech_pings(message))
         await self._handle_spamming_violations(message.channel, message.author)
+
+    async def _handle_zech_pings(self, message: Message):
+        if message.author.id != 404264989147529217:
+            return
+
+        if all(mention.id != 266432511897370625 for mention in message.mentions):
+            return
+
+        await message.channel.send(
+            "https://media.giphy.com/media/zCpYQh5YVhdI1rVYpE/giphy.gif?cid=ecf05e47wjeu9l485ah1baq2pwmzht4im9surk8figwr5xq8&rid=giphy.gif&ct=g",
+            reference=message,
+        )
 
     async def _handle_spamming_violations(self, channel: TextChannel, member: Member):
         last_warned = self._warned[member.id] if member.id in self._warned else None
