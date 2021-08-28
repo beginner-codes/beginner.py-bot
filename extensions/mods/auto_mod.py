@@ -26,8 +26,8 @@ class AutoModExtension(dippy.Extension):
         if message.author.bot:
             return
 
-        # if message.channel.permissions_for(message.author).manage_messages:
-        #     return
+        if message.channel.permissions_for(message.author).manage_messages:
+            return
 
         if (
             message.author.id in self._muting
