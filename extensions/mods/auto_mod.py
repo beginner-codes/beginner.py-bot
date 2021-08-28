@@ -1,8 +1,12 @@
+from aiohttp import ClientSession
 from collections import deque
 from datetime import datetime, timedelta
-from discord import Guild, Member, Message, Role, TextChannel, utils
+from discord import Embed, Guild, Member, Message, Role, TextChannel, utils
+from discord.errors import NotFound
+from discord.webhook import Webhook, AsyncWebhookAdapter
 from typing import Optional
 import dippy
+import re
 
 
 class AutoModExtension(dippy.Extension):
@@ -22,8 +26,8 @@ class AutoModExtension(dippy.Extension):
         if message.author.bot:
             return
 
-        if message.channel.permissions_for(message.author).manage_messages:
-            return
+        # if message.channel.permissions_for(message.author).manage_messages:
+        #     return
 
         if (
             message.author.id in self._muting
@@ -33,7 +37,39 @@ class AutoModExtension(dippy.Extension):
 
         self._message_buffer.appendleft(message)
         self.client.loop.create_task(self._handle_zech_pings(message))
+        self.client.loop.create_task(self._scan_for_webhooks(message))
         await self._handle_spamming_violations(message.channel, message.author)
+
+    async def _scan_for_webhooks(self, message: Message):
+        webhooks = re.findall(
+            r"https://discord\.com/api/webhooks/\d+/[a-zA-Z0-9-_]+", message.content
+        )
+        for webhook in webhooks:
+            await self._delete_webhook(webhook)
+
+        if webhooks:
+            title = f"{len(webhooks)} Webhooks" if len(webhooks) > 1 else "A Webhook"
+            hooks = "\n".join(f"`{hook}`" for hook in webhooks)
+            await message.channel.send(
+                embed=Embed(
+                    title=f"🗑 Deleted {title}",
+                    description=(
+                        f"Anyone can send messages to a webhook. For this reason we call the delete method on all "
+                        f"webhooks that we detect. You will need to create a new webhook to replace the ones we "
+                        f"deleted. Be sure to not share your webhooks publicly."
+                    ),
+                    color=0xFF0000,
+                ).add_field(name="Deleted Webhooks", value=hooks),
+                reference=message,
+            )
+
+    async def _delete_webhook(self, webhook: str):
+        async with ClientSession() as session:
+            hook = Webhook.from_url(webhook, adapter=AsyncWebhookAdapter(session))
+            try:
+                await hook.delete()
+            except NotFound:
+                pass  # Don't care, just want it gone
 
     async def _handle_zech_pings(self, message: Message):
         if message.author.id != 404264989147529217:
