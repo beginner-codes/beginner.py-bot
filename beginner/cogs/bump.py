@@ -9,6 +9,7 @@ import nextcord
 import nextcord.ext.commands
 import os
 import peewee
+import pytz
 
 
 class Bumping(Cog):
@@ -381,7 +382,7 @@ class Bumping(Cog):
             except asyncio.TimeoutError:
                 break
 
-            created = message.created_at
+            created = pytz.utc.localize(message.created_at)
             time_since_created = (
                 started_watching - created
                 if started_watching > created
