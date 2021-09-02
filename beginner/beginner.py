@@ -33,6 +33,7 @@ class BeginnerCog(Cog):
                     color=0xFF8800,
                 )
             )
+        raise error
 
     @Cog.listener()
     async def on_message(self, message: discord.Message):
