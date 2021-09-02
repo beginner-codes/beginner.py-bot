@@ -5,8 +5,8 @@ from beginner.scheduler import schedule, task_scheduled
 from beginner.tags import tag
 from datetime import datetime, timedelta
 import asyncio
-import discord
-import discord.ext.commands
+import nextcord
+import nextcord.ext.commands
 import os
 import peewee
 
@@ -21,7 +21,7 @@ class Bumping(Cog):
         self._bump_score_days = 7
         self._message_queue = asyncio.Queue()
 
-    def log_bump(self, message: str, bumper: discord.Member):
+    def log_bump(self, message: str, bumper: nextcord.Member):
         loop = asyncio.get_event_loop()
         loop.create_task(
             self.get_channel("bump-log").send(
@@ -30,19 +30,19 @@ class Bumping(Cog):
         )
 
     @property
-    def channel(self) -> discord.TextChannel:
+    def channel(self) -> nextcord.TextChannel:
         if not self._channel:
             self._channel = self.get_channel(os.environ.get("BUMP_CHANNEL", "👊bumping"))
         return self._channel
 
     @property
-    def disboard(self) -> discord.Member:
+    def disboard(self) -> nextcord.Member:
         if not self._disboard:
             self._disboard = self.server.get_member(302050872383242240)
         return self._disboard
 
     @property
-    def role(self) -> discord.Role:
+    def role(self) -> nextcord.Role:
         if not self._role:
             self._role = self.get_role("bumpers")
         return self._role
@@ -65,13 +65,13 @@ class Bumping(Cog):
         for emoji, (user_id, points) in zip(
             ["🥇", "🥈", "🥉"] + ["✨"] * max(len(scores) - 3, 0), scores
         ):
-            member: discord.Member = self.server.get_member(user_id)
+            member: nextcord.Member = self.server.get_member(user_id)
             message.append(
                 f"{emoji} {member.mention if member else '*Unknown*'} **{str(points)}**"
             )
 
         await ctx.send(
-            embed=discord.Embed(
+            embed=nextcord.Embed(
                 title="🏆 Bumping Leaderboard 🏆",
                 description="\n".join(message),
                 color=YELLOW,
@@ -101,7 +101,7 @@ class Bumping(Cog):
                 f"{index}. <t:{awarded.timestamp():.0f}:t> {ctx.guild.get_member(user_id) or '*Unknown User*'}"
             )
         await ctx.send(
-            embed=discord.Embed(
+            embed=nextcord.Embed(
                 title="👊 Bump List 🕰",
                 description="\n".join(message),
                 color=YELLOW,
@@ -109,7 +109,7 @@ class Bumping(Cog):
         )
 
     @Cog.command(name="d", aliases=["D"])
-    async def bump_handler(self, ctx: discord.ext.commands.Context, action: str):
+    async def bump_handler(self, ctx: nextcord.ext.commands.Context, action: str):
         if not action.casefold() == "bump":
             return
 
@@ -119,7 +119,7 @@ class Bumping(Cog):
         async with self._bump_lock:
             if task_scheduled("disboard-bump-reminder"):
                 await ctx.send(
-                    embed=discord.Embed(
+                    embed=nextcord.Embed(
                         color=YELLOW,
                         description=f"{ctx.author.mention} please wait until the next bump reminder",
                         title="Please Wait",
@@ -129,10 +129,10 @@ class Bumping(Cog):
                 self.log_bump(f"Bump already scheduled", ctx.author)
                 return
 
-            if not self.disboard.status == discord.Status.online:
+            if not self.disboard.status == nextcord.Status.online:
                 await ctx.send(
                     embed=(
-                        discord.Embed(
+                        nextcord.Embed(
                             color=RED,
                             description=(
                                 f"Whoa {self.disboard.mention} appears to be offline right now! "
@@ -205,7 +205,7 @@ class Bumping(Cog):
 
                 await ctx.send(
                     embed=(
-                        discord.Embed(
+                        nextcord.Embed(
                             color=color,
                             description=f"{message} Next bump in {' & '.join(next_bump_message)}",
                             title=title,
@@ -222,7 +222,7 @@ class Bumping(Cog):
                     await self.award_points(ctx.message)
 
     @Cog.listener()
-    async def on_member_update(self, before: discord.Member, after: discord.Member):
+    async def on_member_update(self, before: nextcord.Member, after: nextcord.Member):
         if before != self.disboard:
             return
 
@@ -232,11 +232,11 @@ class Bumping(Cog):
         if task_scheduled("disboard-bump-reminder"):
             return
 
-        if after.status.online == discord.Status.online:
+        if after.status.online == nextcord.Status.online:
             await self.bump_reminder()
 
     @Cog.listener()
-    async def on_message(self, message: discord.Message):
+    async def on_message(self, message: nextcord.Message):
         if not message.channel.id == self.channel.id:
             return
 
@@ -253,12 +253,12 @@ class Bumping(Cog):
         self.log_bump("Deleted message", message.author)
         await message.delete()
 
-    async def award_points(self, message: discord.Message):
+    async def award_points(self, message: nextcord.Message):
         self.award_bump_points(message.author.id)
 
         king_id = self.get_bump_king_id()
         king = self.server.get_member(king_id)
-        role: discord.Role = self.get_role("bump king")
+        role: nextcord.Role = self.get_role("bump king")
         if role not in king.roles:
             self.log_bump("New king", king)
 
@@ -283,7 +283,7 @@ class Bumping(Cog):
             os.environ.get("BUMP_KING_ANNOUNCE_CHANNEL", "🦄off-topic")
         )
         await channel.send(
-            embed=discord.Embed(
+            embed=nextcord.Embed(
                 description=f"All hail {king.mention} our new {role.mention}!!!"
             ).set_author(name="New Bump King", icon_url=self.server.icon_url)
         )
@@ -323,7 +323,7 @@ class Bumping(Cog):
         )
         if scores:
             king = scores.pop(0)
-            embed = discord.Embed(
+            embed = nextcord.Embed(
                 title="Bump Leaders",
                 description=f"Here are the people who have bumped the most in the last {self._bump_score_days} days!",
                 color=YELLOW,
@@ -349,7 +349,7 @@ class Bumping(Cog):
     async def bump_reminder(self):
         self.logger.debug(f"SENDING BUMP REMINDER: {self.role.name}")
         await self.clear_channel()
-        if self.disboard.status == discord.Status.online:
+        if self.disboard.status == nextcord.Status.online:
             self.log_bump("Sending bump reminder", self.server.me)
             await self.channel.send(
                 f"{self.role.mention} It's been 2hrs since the last bump!\n"
@@ -358,7 +358,7 @@ class Bumping(Cog):
         else:
             self.log_bump("Bot appears to be offline", self.server.me)
             await self.channel.send(
-                embed=discord.Embed(
+                embed=nextcord.Embed(
                     color=RED,
                     description=(
                         f"Whoa {self.disboard.mention} appears to be offline right now! "
@@ -463,7 +463,7 @@ class Bumping(Cog):
 
     async def create_explanation_message(self):
         message = await self.channel.send(
-            embed=discord.Embed(
+            embed=nextcord.Embed(
                 description=(
                     f"To help us stay at the top of Disboard join the *Bump Squad* by reacting with the 🔔, "
                     f"react again to leave the squad"

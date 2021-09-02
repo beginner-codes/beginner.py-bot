@@ -1,6 +1,6 @@
 from beginner.cog import Cog
 from beginner.models.messages import Message, MessageTypes
-from discord import Embed
+from nextcord import Embed
 
 
 class TipsCog(Cog):

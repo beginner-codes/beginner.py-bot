@@ -5,7 +5,7 @@ from beginner.scheduler import schedule
 from beginner.tags import tag
 from datetime import timedelta, datetime
 import asyncio
-import discord
+import nextcord
 import random
 
 
@@ -19,7 +19,7 @@ class OnBoarding(Cog):
 
     @Cog.listener()
     async def on_member_update(
-        self, old_member: discord.Member, updated_member: discord.Member
+        self, old_member: nextcord.Member, updated_member: nextcord.Member
     ):
         if updated_member.pending or not old_member.pending:
             return
@@ -64,7 +64,7 @@ class OnBoarding(Cog):
             await self.welcome_member(member)
             await asyncio.sleep(1)
 
-    async def welcome_member(self, member: discord.Member):
+    async def welcome_member(self, member: nextcord.Member):
         self.logger.debug(f"Welcoming {member.display_name}")
         await member.add_roles(self.get_role("member"))
 

@@ -1,7 +1,7 @@
 from typing import Optional
 from beginner.cog import Cog, commands
 from beginner.colors import *
-from discord import Embed, Message, RawReactionActionEvent, PermissionOverwrite
+from nextcord import Embed, Message, RawReactionActionEvent, PermissionOverwrite
 
 
 class RoleAssignmentCog(Cog):

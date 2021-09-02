@@ -1,4 +1,4 @@
-import discord
+import nextcord
 import json
 from beginner.cog import Cog
 
@@ -33,7 +33,7 @@ class Python(Cog):
                                 text += f"{r['alias']}, "
                         else:
                             text = text[:-2]
-                            embedded = discord.Embed(description=text, color=0x306998)
+                            embedded = nextcord.Embed(description=text, color=0x306998)
                             if page == 1:
                                 embedded.set_author(
                                     name="Missing", icon_url=self.server.icon_url
@@ -43,7 +43,7 @@ class Python(Cog):
                             await ctx.send(embed=embedded)
                             counter = 0
                 text = text[:-2]
-                embedded = discord.Embed(description=text, color=0x306998)
+                embedded = nextcord.Embed(description=text, color=0x306998)
 
         elif "-add code" in cmd:  # allow to add a new example code to a python command
             if len([r for r in ctx.author.roles if r.id == 644301991832453120]) > 0:
@@ -61,7 +61,7 @@ class Python(Cog):
                             file = open("./cogs/python.json", "w")
                             file.write(json.dumps(self.commands))
                             file.close()
-                            embedded = discord.Embed(
+                            embedded = nextcord.Embed(
                                 title="Success",
                                 description=f"{r['alias']} {r['type']} successfully updated.",
                                 color=0x22CC22,
@@ -70,7 +70,7 @@ class Python(Cog):
                                 name="Success", icon_url=self.server.icon_url
                             )
                         else:
-                            embedded = discord.Embed(
+                            embedded = nextcord.Embed(
                                 description=f"The *{r['alias']}* {r['type']} already has two examples, more cannot be added.",
                                 color=0xCC2222,
                             )
@@ -82,7 +82,7 @@ class Python(Cog):
 
                 if foundInner == False:
                     text = f"I'm sorry <@{ctx.author.id}>, it looks like you're trying to add an example to a python keyword or function that doesn't exist in my database."
-                    embedded = discord.Embed(description=text, color=0xCC2222)
+                    embedded = nextcord.Embed(description=text, color=0xCC2222)
                     embedded.set_author(
                         name="Error - not found", icon_url=self.server.icon_url
                     )
@@ -103,7 +103,7 @@ class Python(Cog):
                         file = open("./cogs/python.json", "w")
                         file.write(json.dumps(self.commands))
                         file.close()
-                        embedded = discord.Embed(
+                        embedded = nextcord.Embed(
                             description=f"{r['alias']} successfully updated.",
                             color=0x22CC22,
                         )
@@ -113,7 +113,7 @@ class Python(Cog):
 
                 if foundInner == False:
                     text = f"I'm sorry <@{ctx.author.id}>, it looks like you're trying to edit the description of a python keyword or function that doesn't exist in my database."
-                    embedded = discord.Embed(description=text, color=0xCC2222)
+                    embedded = nextcord.Embed(description=text, color=0xCC2222)
                     embedded.set_author(
                         name="Error - not found", icon_url=self.server.icon_url
                     )
@@ -138,7 +138,7 @@ class Python(Cog):
                                 file = open("./cogs/python.json", "w")
                                 file.write(json.dumps(self.commands))
                                 file.close()
-                                embedded = discord.Embed(
+                                embedded = nextcord.Embed(
                                     description=f"{r['alias']} successfully updated.",
                                     color=0x22CC22,
                                 )
@@ -147,7 +147,7 @@ class Python(Cog):
                                 )
                             else:
                                 text = f"I'm sorry <@{ctx.author.id}>, it seems that the {r['alias']} python command has no example code #{count}."
-                                embedded = discord.Embed(
+                                embedded = nextcord.Embed(
                                     description=text, color=0xCC2222
                                 )
                                 embedded.set_author(
@@ -157,7 +157,7 @@ class Python(Cog):
 
                     if foundInner == False:
                         text = f"I'm sorry <@{ctx.author.id}>, it looks like you're trying to edit the description of a python keyword or function that doesn't exist in my database."
-                        embedded = discord.Embed(description=text, color=0xCC2222)
+                        embedded = nextcord.Embed(description=text, color=0xCC2222)
                         embedded.set_author(
                             name="Error - not found", icon_url=self.server.icon_url
                         )
@@ -165,7 +165,7 @@ class Python(Cog):
                 except ValueError:
                     found = True
                     text = f"<@{ctx.author.id}>, the proper format for editing a code example is the following:\n!python -edit code <example_number>\n\```py\n# code here\n\```\n*<example_number> specifies which example should be overwritten (1 or 2).*"
-                    embedded = discord.Embed(description=text, color=0xCC2222)
+                    embedded = nextcord.Embed(description=text, color=0xCC2222)
                     embedded.set_author(
                         name="Error - incorrect format", icon_url=self.server.icon_url
                     )
@@ -174,7 +174,7 @@ class Python(Cog):
             for r in self.commands["responses"]:
                 if r["alias"] == cmd or r["alias"] == cmd + "()":
                     found = True
-                    embedded = discord.Embed(description=r["text"], color=0x306998)
+                    embedded = nextcord.Embed(description=r["text"], color=0x306998)
                     embedded.set_author(
                         name=r["title"] + " " + r["type"], icon_url=self.server.icon_url
                     )
@@ -203,7 +203,7 @@ class Python(Cog):
 
         if found == False:
             text = f"I'm sorry <@{ctx.author.id}>, I don't know this Python keyword or function."
-            embedded = discord.Embed(description=text, color=0xCC2222)
+            embedded = nextcord.Embed(description=text, color=0xCC2222)
             embedded.set_author(name="Error - not found", icon_url=self.server.icon_url)
 
         await ctx.send(embed=embedded)

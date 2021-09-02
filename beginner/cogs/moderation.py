@@ -3,9 +3,9 @@ from beginner.cogs.rules import RulesCog
 from beginner.models.mod_actions import ModAction
 from beginner.scheduler import schedule
 from datetime import timedelta, datetime
-from discord import Embed, Message, Member, User, utils
+from nextcord import Embed, Message, Member, User, utils
 from beginner.tags import tag
-import discord
+import nextcord
 import pickle
 import re
 
@@ -341,7 +341,7 @@ class ModerationCog(Cog):
         try:
             await member.send(embed=embed)
             return True
-        except discord.errors.Forbidden:
+        except nextcord.errors.Forbidden:
             return False
 
     def save_action(self, action_type: str, user: Member, mod: Member, **details):

@@ -1,8 +1,8 @@
 from __future__ import annotations
 from beginner.cog import Cog
 from dataclasses import dataclass
-from discord import Message
-from discord.ext.commands import Context
+from nextcord import Message
+from nextcord.ext.commands import Context
 from typing import Dict, Tuple
 import random
 

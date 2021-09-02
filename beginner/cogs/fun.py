@@ -1,7 +1,7 @@
 from beginner.cog import Cog
 import aiohttp
-import discord
-import discord.ext.commands
+import nextcord
+import nextcord.ext.commands
 import ast
 import math
 import re
@@ -260,7 +260,7 @@ class Fun(Cog):
     @Cog.command()
     async def dgo(self, ctx):
         await ctx.send(
-            embed=discord.Embed().set_image(
+            embed=nextcord.Embed().set_image(
                 url="https://media1.tenor.com/images/f688c77103e32fdd6a9599713b546435/tenor.gif?itemid=7666830"
             )
         )
@@ -276,11 +276,11 @@ class Fun(Cog):
         await ctx.send(message)
 
     @Cog.command()
-    async def raw(self, ctx: discord.ext.commands.Context):
-        message: discord.Message = ctx.message
+    async def raw(self, ctx: nextcord.ext.commands.Context):
+        message: nextcord.Message = ctx.message
         await ctx.send(
             f"```\n{message.content!r}\n```",
-            allowed_mentions=discord.AllowedMentions(
+            allowed_mentions=nextcord.AllowedMentions(
                 everyone=False, users=False, roles=False
             ),
         )
@@ -352,7 +352,7 @@ class Fun(Cog):
                     .split("\n")
                 )
             ),
-            allowed_mentions=discord.AllowedMentions(
+            allowed_mentions=nextcord.AllowedMentions(
                 everyone=False, users=False, roles=False, replied_user=True
             ),
         )
@@ -360,7 +360,7 @@ class Fun(Cog):
     @Cog.command(name="gpt-talk")
     async def gpt_talk(self, ctx, *, content):
         embed_to_edit = await ctx.message.reply(
-            embed=discord.Embed(
+            embed=nextcord.Embed(
                 title="Getting response from gpt-j-6b...",
                 description="It might take up to one minute if your sentence is short\n[Learn more about gpt-j-6b here](https://gpt3demo.com/apps/gpt-j-6b)",
                 colour=0x6C8EB4,

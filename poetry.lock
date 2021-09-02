@@ -158,21 +158,6 @@ python-versions = "*"
 six = "*"
 
 [[package]]
-name = "discord.py"
-version = "1.7.3"
-description = "A Python wrapper for the Discord API"
-category = "main"
-optional = false
-python-versions = ">=3.5.3"
-
-[package.dependencies]
-aiohttp = ">=3.6.0,<3.8.0"
-
-[package.extras]
-docs = ["sphinx (==3.0.3)", "sphinxcontrib-trio (==1.1.2)", "sphinxcontrib-websupport"]
-voice = ["PyNaCl (>=1.3.0,<1.5)"]
-
-[[package]]
 name = "google"
 version = "2.0.3"
 description = "Python bindings to the Google search engine."
@@ -324,6 +309,22 @@ description = "Experimental type system extensions for programs checked with the
 category = "main"
 optional = false
 python-versions = "*"
+
+[[package]]
+name = "nextcord"
+version = "2.0.0a2"
+description = "A Python wrapper for the Discord API forked from discord.py"
+category = "main"
+optional = false
+python-versions = ">=3.8.0"
+
+[package.dependencies]
+aiohttp = ">=3.6.0,<3.8.0"
+
+[package.extras]
+docs = ["sphinx (==4.0.2)", "sphinxcontrib_trio (==1.1.2)", "sphinxcontrib-websupport"]
+speed = ["orjson (>=3.5.4)"]
+voice = ["PyNaCl (>=1.3.0,<1.5)"]
 
 [[package]]
 name = "numpy"
@@ -562,7 +563,7 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8.0"
-content-hash = "40bb510e33ae6a9bc34479ef008632bc5df5faf2e8b814e665aa9c7fc495805f"
+content-hash = "e57c9eb40a8e420c78b124a1f49425ed83ae9c484f2f7866ca0ac25d60b7d089"
 
 [metadata.files]
 aiohttp = [
@@ -655,10 +656,6 @@ colorama = [
 cycler = [
     {file = "cycler-0.10.0-py2.py3-none-any.whl", hash = "sha256:1d8a5ae1ff6c5cf9b93e8811e581232ad8920aeec647c37316ceac982b08cb2d"},
     {file = "cycler-0.10.0.tar.gz", hash = "sha256:cd7b2d1018258d7247a71425e9f26463dfb444d411c39569972f4ce586b0c9d8"},
-]
-"discord.py" = [
-    {file = "discord.py-1.7.3-py3-none-any.whl", hash = "sha256:c6f64db136de0e18e090f6752ea68bdd4ab0a61b82dfe7acecefa22d6477bb0c"},
-    {file = "discord.py-1.7.3.tar.gz", hash = "sha256:462cd0fe307aef8b29cbfa8dd613e548ae4b2cb581d46da9ac0d46fb6ea19408"},
 ]
 google = [
     {file = "google-2.0.3-py2.py3-none-any.whl", hash = "sha256:c03517e6f9eec7a03c07b864f9a64384fd4bc1efce9034d42e3f90addc9fe4ee"},
@@ -789,6 +786,9 @@ multidict = [
 mypy-extensions = [
     {file = "mypy_extensions-0.4.3-py2.py3-none-any.whl", hash = "sha256:090fedd75945a69ae91ce1303b5824f428daf5a028d2f6ab8a299250a846f15d"},
     {file = "mypy_extensions-0.4.3.tar.gz", hash = "sha256:2d82818f5bb3e369420cb3c4060a7970edba416647068eb4c5343488a6c604a8"},
+]
+nextcord = [
+    {file = "nextcord-2.0.0a2.tar.gz", hash = "sha256:fcae92330105d817ac35f0de35da0bf6b1ad880d63515f12c812a621c4c76fe8"},
 ]
 numpy = [
     {file = "numpy-1.21.1-cp37-cp37m-macosx_10_9_x86_64.whl", hash = "sha256:38e8648f9449a549a7dfe8d8755a5979b45b3538520d1e735637ef28e8c2dc50"},

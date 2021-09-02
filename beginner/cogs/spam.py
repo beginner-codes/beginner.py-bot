@@ -2,13 +2,13 @@ import re
 
 from beginner.cog import Cog
 from beginner.colors import *
-from discord import Embed, TextChannel
-from discord.ext import commands
+from nextcord import Embed, TextChannel
+from nextcord.ext import commands
 from functools import cached_property
 from typing import Optional, Set
 import asyncio
 import beginner.config
-import discord
+import nextcord
 import os.path
 import aiohttp
 import requests
@@ -67,7 +67,7 @@ class SpamCog(Cog):
             self.attachment_filter(message), self.mention_filter(message)
         )
 
-    async def mention_filter(self, message: discord.Message):
+    async def mention_filter(self, message: nextcord.Message):
         if "@everyone" not in message.content and "@here" not in message.content:
             return
 
@@ -175,7 +175,7 @@ class SpamCog(Cog):
 
         try:
             await message.delete()
-        except discord.errors.NotFound:
+        except nextcord.errors.NotFound:
             pass
 
         await message.channel.send(message.author.mention, embed=embed)

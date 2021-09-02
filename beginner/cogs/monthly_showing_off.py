@@ -1,8 +1,8 @@
 from beginner.logging import get_logger
 from beginner.models.contestants import ContestantInfo
-from discord.ext import commands
-from discord.ext.commands import Cog, has_permissions
-import discord
+from nextcord.ext import commands
+from nextcord.ext.commands import Cog, has_permissions
+import nextcord
 import requests
 from datetime import datetime, timedelta
 import os
@@ -52,8 +52,8 @@ class MonthlyShowingOffCog(Cog):
         await self.check_invalid_messages()
 
     def challenge_message_embed(self):
-        github_emoji = discord.utils.get(self.channel.guild.emojis, name="github")
-        embed = discord.Embed(
+        github_emoji = nextcord.utils.get(self.channel.guild.emojis, name="github")
+        embed = nextcord.Embed(
             color=0xFFE873,
             title="Monthly Project!",
             description=(
@@ -146,10 +146,10 @@ class MonthlyShowingOffCog(Cog):
         return domain in invalid_domains
 
     def create_error_message(self, message, reason):
-        embed = discord.Embed(
+        embed = nextcord.Embed(
             title="Error!",
             description=f"{message.author.mention} {reason}",
-            color=discord.Colour.red(),
+            color=nextcord.Colour.red(),
         )
         return embed
 
@@ -233,10 +233,10 @@ class MonthlyShowingOffCog(Cog):
 
             else:
                 await message.channel.send(
-                    embed=discord.Embed(
+                    embed=nextcord.Embed(
                         title=f"**{message.author.display_name}**",
                         description=f"Project: {link}\n {desc}",
-                        color=discord.Colour.green(),
+                        color=nextcord.Colour.green(),
                     ).set_thumbnail(url=message.author.avatar_url)
                 )
                 await message.delete()
@@ -285,9 +285,9 @@ class MonthlyShowingOffCog(Cog):
         message,
     ):
         """Making an embed for the github response wrapped in a function"""
-        git_embed = discord.Embed(title=project_name, color=discord.Colour.random())
+        git_embed = nextcord.Embed(title=project_name, color=nextcord.Colour.random())
 
-        github_emoji = discord.utils.get(self.channel.guild.emojis, name="github")
+        github_emoji = nextcord.utils.get(self.channel.guild.emojis, name="github")
         git_embed.add_field(
             name="Owner:", value=f"{github_emoji} {owner}", inline=False
         )
@@ -327,10 +327,10 @@ class MonthlyShowingOffCog(Cog):
 
         if size == 0:
             await message.channel.send(
-                embed=discord.Embed(
+                embed=nextcord.Embed(
                     title="Error!",
                     description=f"{message.author.mention} Thats an empty Repository!",
-                    color=discord.Colour.red(),
+                    color=nextcord.Colour.red(),
                 ),
                 delete_after=8,
             )
@@ -395,15 +395,15 @@ class MonthlyShowingOffCog(Cog):
 
     async def send_default_winner_embed(self, author_project, member):
         """A function that sends an embed if there is single winner"""
-        default_winner_embed = discord.Embed(
+        default_winner_embed = nextcord.Embed(
             title=f"🥁 The winner this month is... 🥁",
             description=f"The One & Only: 🎉{member.mention}",
-            color=discord.Color.orange(),
+            color=nextcord.Color.orange(),
         )
         default_winner_embed.add_field(
             name="Check out the project:", value=author_project
         )
-        wolf_cheer_emoji = discord.utils.get(self.guild.emojis, name="wolfcheer")
+        wolf_cheer_emoji = nextcord.utils.get(self.guild.emojis, name="wolfcheer")
 
         default_winner_embed.set_thumbnail(url=wolf_cheer_emoji.url)
         return await self.channel.send(embed=default_winner_embed)
@@ -411,13 +411,13 @@ class MonthlyShowingOffCog(Cog):
     def multiple_winner_embed(self, winners_string):
         """Simple making the code neater by making a function for making a embed with multiple winners"""
 
-        embed = discord.Embed(
+        embed = nextcord.Embed(
             title="🥁 The winners of this month are... 🥁",
             description=winners_string,
-            color=discord.Color.orange(),
+            color=nextcord.Color.orange(),
         )
 
-        wolf_cheer_emoji = discord.utils.get(
+        wolf_cheer_emoji = nextcord.utils.get(
             self.channel.guild.emojis, name="wolfcheer"
         )
         embed.set_thumbnail(url=wolf_cheer_emoji.url)
@@ -488,7 +488,7 @@ class MonthlyShowingOffCog(Cog):
             )  # Like i did here
 
     @Cog.listener()
-    async def on_raw_reaction_add(self, payload: discord.RawReactionActionEvent):
+    async def on_raw_reaction_add(self, payload: nextcord.RawReactionActionEvent):
         """The listener function that will take car of people deleting there own projects if wanted. As well as will
         take care of people wanting to cheat."""
         if payload.channel_id != self.channel.id:

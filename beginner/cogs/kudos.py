@@ -1,5 +1,5 @@
 import beginner.kudos as kudos
-import discord
+import nextcord
 import os
 from beginner.cog import Cog, commands
 from beginner.colors import *
@@ -53,7 +53,7 @@ class Kudos(Cog):
         file.seek(0)
         await ctx.send(
             f"User kudos totals as of {datetime.utcnow().date().isoformat()}",
-            file=discord.File(
+            file=nextcord.File(
                 file,
                 filename=f"member-kudos-{datetime.utcnow().date().isoformat().replace('-', '')}.csv",
             ),
@@ -73,7 +73,7 @@ class Kudos(Cog):
         if option.casefold() in {"help", "h"}:
             await ctx.send(
                 embed=(
-                    discord.Embed(
+                    nextcord.Embed(
                         color=YELLOW,
                         description=(
                             "Users can give kudos to anyone that they feel deserves recognition. It might be for help "
@@ -122,7 +122,7 @@ class Kudos(Cog):
             )
 
         embed = (
-            discord.Embed(color=BLUE, description="\n".join(message))
+            nextcord.Embed(color=BLUE, description="\n".join(message))
             .set_author(name="Kudos", icon_url=self.server.icon_url)
             .set_thumbnail(
                 url="https://cdn.discordapp.com/emojis/669941420454576131.png?v=1"
@@ -169,9 +169,9 @@ class Kudos(Cog):
         if reaction.emoji.id not in self.reactions:
             return
 
-        reacter: discord.Member = self.server.get_member(reaction.user_id)
-        channel: discord.TextChannel = self.server.get_channel(reaction.channel_id)
-        message: discord.Message = await channel.fetch_message(reaction.message_id)
+        reacter: nextcord.Member = self.server.get_member(reaction.user_id)
+        channel: nextcord.TextChannel = self.server.get_channel(reaction.channel_id)
+        message: nextcord.Message = await channel.fetch_message(reaction.message_id)
 
         # Don't allow kudos in channels the user can't message in unless it's the archive
         if not channel.permissions_for(reacter).send_messages and (
@@ -194,7 +194,7 @@ class Kudos(Cog):
         if -1 < kudos_left < kudos_points:
             await channel.send(
                 delete_after=5,
-                embed=discord.Embed(
+                embed=nextcord.Embed(
                     color=RED,
                     description=f"{reacter.mention} you don't have enough kudos right now",
                 ),
@@ -224,7 +224,7 @@ class Kudos(Cog):
             kudos_message = "∞"
 
         await channel.send(
-            embed=discord.Embed(
+            embed=nextcord.Embed(
                 color=BLUE,
                 description=(
                     f"{reacter.mention} gave {message.author.mention} {kudos_points} kudos!"
@@ -233,7 +233,7 @@ class Kudos(Cog):
                 text=f"'!kudos help' or '!kudos leaderboard' | {kudos_message} kudos to give"
             ),
             reference=message,
-            allowed_mentions=discord.AllowedMentions(replied_user=False),
+            allowed_mentions=nextcord.AllowedMentions(replied_user=False),
         )
 
     @Cog.listener()
@@ -244,7 +244,7 @@ class Kudos(Cog):
         if reaction.emoji.id not in self.reactions:
             return
 
-        reacter: discord.Member = self.server.get_member(reaction.user_id)
+        reacter: nextcord.Member = self.server.get_member(reaction.user_id)
         channel = self.server.get_channel(reaction.channel_id)
         message = await channel.fetch_message(reaction.message_id)
 
@@ -306,7 +306,7 @@ class Kudos(Cog):
 
         return total_points
 
-    def get_pool_multiplier(self, member: discord.Member) -> int:
+    def get_pool_multiplier(self, member: nextcord.Member) -> int:
         if self.get_role("jedi council") in member.roles:
             return 0  # Infinite kudos
         elif self.get_role("mods") in member.roles:

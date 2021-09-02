@@ -1,5 +1,5 @@
 from beginner.cog import Cog
-from discord import Embed
+from nextcord import Embed
 
 
 class RepeaterCog(Cog):

@@ -2,14 +2,14 @@ from beginner.cog import Cog, commands
 from beginner.colors import *
 from beginner.models.messages import Message, MessageTypes
 from datetime import datetime
-from discord import Embed
+from nextcord import Embed
 import re
-import discord.utils
+import nextcord.utils
 import pytz
 
 
 class RulesCog(Cog):
-    def __init__(self, client: discord.Client):
+    def __init__(self, client: nextcord.Client):
         super().__init__(client)
         self.message_fields = {
             "No DMing others or asking others DM you": {
@@ -77,7 +77,7 @@ class RulesCog(Cog):
     @Cog.command(name="update-rules")
     @commands.has_guild_permissions(manage_channels=True)
     async def update_rules_message(self, ctx, *, reason: str):
-        rules: discord.TextChannel = discord.utils.get(
+        rules: nextcord.TextChannel = nextcord.utils.get(
             self.server.channels, name="rules"
         )
         messages = await rules.history(limit=1, oldest_first=True).flatten()
@@ -89,7 +89,7 @@ class RulesCog(Cog):
                         "Welcome!!! We're happy to have you! Please give these rules and guidelines a quick read!"
                     ),
                 ),
-                allowed_mentions=discord.AllowedMentions(
+                allowed_mentions=nextcord.AllowedMentions(
                     everyone=False, users=False, roles=False
                 ),
             )
@@ -97,8 +97,8 @@ class RulesCog(Cog):
                 f"Rules message has been updated: {reason}", delete_after=60
             )
 
-    def build_rule_message_embed(self, title: str, message: str) -> discord.Embed:
-        admin: discord.Member = self.server.get_member(266432511897370625)
+    def build_rule_message_embed(self, title: str, message: str) -> nextcord.Embed:
+        admin: nextcord.Member = self.server.get_member(266432511897370625)
         embed = Embed(
             title=title,
             description=message,

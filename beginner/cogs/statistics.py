@@ -1,5 +1,5 @@
 from beginner.cog import Cog
-from discord import Embed, Status
+from nextcord import Embed, Status
 
 
 class StatisticsCog(Cog):

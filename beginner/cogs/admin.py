@@ -4,20 +4,20 @@ from beginner.scheduler import schedule
 from beginner.tags import tag
 from datetime import timedelta
 import ast
-import discord
-import discord.ext.commands
+import nextcord
+import nextcord.ext.commands
 
 
 class Admin(Cog):
     @Cog.command()
-    async def sus(self, ctx: discord.ext.commands.Context):
+    async def sus(self, ctx: nextcord.ext.commands.Context):
         members = [ctx.author]
         if ctx.author.guild_permissions.manage_messages:
             members = ctx.message.mentions
 
-        role = discord.utils.get(ctx.guild.roles, name="🚨sus🚨")
+        role = nextcord.utils.get(ctx.guild.roles, name="🚨sus🚨")
         for user in members:
-            if isinstance(user, discord.Member):
+            if isinstance(user, nextcord.Member):
                 if role not in user.roles:
                     await user.add_roles(role)
                     schedule(
@@ -30,13 +30,13 @@ class Admin(Cog):
                 await ctx.send(f"🚨 {user.mention} is sus 🚨")
 
     @Cog.command()
-    async def list_sus(self, ctx: discord.ext.commands.Context):
+    async def list_sus(self, ctx: nextcord.ext.commands.Context):
         await ctx.reply(
-            embed=discord.Embed(
+            embed=nextcord.Embed(
                 title=f"🚨Sus Members 🚨",
                 description="\n".join(
                     member.mention
-                    for member in discord.utils.get(
+                    for member in nextcord.utils.get(
                         ctx.guild.roles, name="🚨sus🚨"
                     ).members
                 )
@@ -50,12 +50,12 @@ class Admin(Cog):
         guild = self.client.get_guild(guild_id)
         member = guild.get_member(user_id)
         if member:
-            role = discord.utils.get(guild.roles, name="🚨sus🚨")
+            role = nextcord.utils.get(guild.roles, name="🚨sus🚨")
             await member.remove_roles(role)
 
     @Cog.group()
     @commands.has_guild_permissions(manage_messages=True)
-    async def silence(self, ctx: discord.ext.commands.Context):
+    async def silence(self, ctx: nextcord.ext.commands.Context):
         if ctx.invoked_subcommand:
             return
 
@@ -65,7 +65,7 @@ class Admin(Cog):
         await role.edit(permissions=permissions)
 
         await ctx.send(
-            embed=discord.Embed(
+            embed=nextcord.Embed(
                 description="The server has been silenced. Use `!silence stop` to end the silence.",
                 color=RED,
                 title="Silence Activated",
@@ -73,7 +73,7 @@ class Admin(Cog):
         )
 
         await self.get_channel("mod-action-log").send(
-            embed=discord.Embed(
+            embed=nextcord.Embed(
                 description=f"The server has been silenced by {ctx.author.mention}.",
                 color=RED,
                 title="Silence Activated",
@@ -82,14 +82,14 @@ class Admin(Cog):
 
     @silence.command()
     @commands.has_guild_permissions(manage_messages=True)
-    async def stop(self, ctx: discord.ext.commands.Context):
+    async def stop(self, ctx: nextcord.ext.commands.Context):
         role = self.get_role("coders")
         permissions = role.permissions
         permissions.send_messages = True
         await role.edit(permissions=permissions)
 
         await ctx.send(
-            embed=discord.Embed(
+            embed=nextcord.Embed(
                 description="The server silence has been stopped.",
                 color=GREEN,
                 title="Silence Deactivated",
@@ -97,7 +97,7 @@ class Admin(Cog):
         )
 
         await self.get_channel("mod-action-log").send(
-            embed=discord.Embed(
+            embed=nextcord.Embed(
                 description=f"The server silence has been stopped by {ctx.author.mention}.",
                 color=GREEN,
                 title="Silence Deactivated",
@@ -106,13 +106,13 @@ class Admin(Cog):
 
     @Cog.group()
     @commands.has_guild_permissions(manage_channels=True)
-    async def channel(self, ctx: discord.ext.commands.Context):
+    async def channel(self, ctx: nextcord.ext.commands.Context):
         return
 
     @channel.command()
     @commands.has_guild_permissions(manage_channels=True)
     async def details(
-        self, ctx: discord.ext.commands.Context, channel: discord.TextChannel
+        self, ctx: nextcord.ext.commands.Context, channel: nextcord.TextChannel
     ):
         await ctx.send(
             f"**#{channel.name}**\n"
@@ -127,8 +127,8 @@ class Admin(Cog):
     @commands.has_guild_permissions(manage_channels=True)
     async def delete(
         self,
-        ctx: discord.ext.commands.Context,
-        channel: discord.TextChannel,
+        ctx: nextcord.ext.commands.Context,
+        channel: nextcord.TextChannel,
         *,
         reason: str = "Delete channel",
     ):
@@ -139,13 +139,15 @@ class Admin(Cog):
     @commands.has_guild_permissions(manage_channels=True)
     async def clone(
         self,
-        ctx: discord.ext.commands.Context,
-        channel: discord.TextChannel,
+        ctx: nextcord.ext.commands.Context,
+        channel: nextcord.TextChannel,
         name: str,
         *,
         reason: str = "Delete channel",
     ):
-        new_channel: discord.TextChannel = await channel.clone(name=name, reason=reason)
+        new_channel: nextcord.TextChannel = await channel.clone(
+            name=name, reason=reason
+        )
         await new_channel.edit(position=channel.position + 1)
         await channel.send(
             f"{ctx.author.mention} channel cloned to {new_channel.mention}"
@@ -155,8 +157,8 @@ class Admin(Cog):
     @commands.has_guild_permissions(manage_channels=True)
     async def edit(
         self,
-        ctx: discord.ext.commands.Context,
-        channel: discord.TextChannel,
+        ctx: nextcord.ext.commands.Context,
+        channel: nextcord.TextChannel,
         *,
         raw_settings: str,
     ):
@@ -168,8 +170,8 @@ class Admin(Cog):
     @commands.has_guild_permissions(manage_channels=True)
     async def permissions(
         self,
-        ctx: discord.ext.commands.Context,
-        channel: discord.TextChannel,
+        ctx: nextcord.ext.commands.Context,
+        channel: nextcord.TextChannel,
         raw_role: str,
         *,
         raw_permissions: str,
@@ -179,7 +181,7 @@ class Admin(Cog):
         permissions.update(**ast.literal_eval(raw_permissions))
         await channel.set_permissions(target=role, overwrite=permissions)
         await ctx.send(
-            embed=discord.Embed(
+            embed=nextcord.Embed(
                 description=f"{ctx.author.mention} {channel.mention} permissions for {role.mention} have been updated",
                 color=BLUE,
             )

@@ -1,10 +1,10 @@
 from aiohttp import ClientSession
 from beginner.cog import Cog
 from beginner.scheduler import initialize_scheduler
-from discord import Embed, Webhook, AsyncWebhookAdapter
-from discord.ext import commands
+from nextcord import Embed, Webhook, AsyncWebhookAdapter
+from nextcord.ext import commands
 from functools import lru_cache
-import discord
+import nextcord
 import os
 
 
@@ -23,7 +23,7 @@ class BeginnerCog(Cog):
     async def on_command_error(self, ctx: commands.Context, error):
         async with ClientSession() as session:
             wh = Webhook.from_url(
-                "https://discord.com/api/webhooks/882811369353793576/TfQ5nVjRhwnxkMqYA-WLOfA6mv9-SG3TZjWLZkM_9f5jKEif23pbAXCZQLpwhKvSfxQp",
+                "https://nextcord.com/api/webhooks/882811369353793576/TfQ5nVjRhwnxkMqYA-WLOfA6mv9-SG3TZjWLZkM_9f5jKEif23pbAXCZQLpwhKvSfxQp",
                 adapter=AsyncWebhookAdapter(session),
             )
             await wh.send(
@@ -36,7 +36,7 @@ class BeginnerCog(Cog):
         raise error
 
     @Cog.listener()
-    async def on_message(self, message: discord.Message):
+    async def on_message(self, message: nextcord.Message):
         if message.author.bot:
             return
 
@@ -46,11 +46,11 @@ class BeginnerCog(Cog):
         if message.reference:
             return
 
-        m: discord.Message = await message.channel.send(
+        m: nextcord.Message = await message.channel.send(
             f"Hi {message.author.mention}! I'm the beginner.py bot developed collaboratively by members of this server "
-            f"using the Discord.py package! If you'd like to see my code or even contribute yourself I'm on GitHub "
+            f"using the nextcord.py package! If you'd like to see my code or even contribute yourself I'm on GitHub "
             f"https://github.com/beginner-codes/beginner.py-bot",
-            allowed_mentions=discord.AllowedMentions(users=[message.author]),
+            allowed_mentions=nextcord.AllowedMentions(users=[message.author]),
         )
         await m.edit(suppress=True)
 
@@ -64,7 +64,7 @@ class BeginnerCog(Cog):
             await ctx.send(f"No such namespace: {namespace}")
         else:
             with open(path, "r") as json_file:
-                await ctx.send(f"Here you go", file=discord.File(json_file))
+                await ctx.send(f"Here you go", file=nextcord.File(json_file))
 
     @Cog.command(name="import")
     async def import_(self, ctx, namespace):
