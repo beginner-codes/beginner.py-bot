@@ -374,7 +374,7 @@ class Bumping(Cog):
         await self.channel.purge(check=lambda m: not m.id == explanation.id)
 
     async def get_next_bump_timer(self):
-        started_watching = datetime.utcnow()
+        started_watching = pytz.utc.localize(datetime.utcnow())
         while datetime.utcnow() - started_watching <= timedelta(minutes=1):
             try:
                 self.log_bump("Looking for bump confirmation", self.server.me)
@@ -382,7 +382,7 @@ class Bumping(Cog):
             except asyncio.TimeoutError:
                 break
 
-            created = pytz.utc.localize(message.created_at)
+            created = message.created_at
             time_since_created = (
                 started_watching - created
                 if started_watching > created
