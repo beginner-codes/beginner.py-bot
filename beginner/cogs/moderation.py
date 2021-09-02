@@ -1,3 +1,5 @@
+import pytz as pytz
+
 from beginner.cog import Cog, commands
 from beginner.cogs.rules import RulesCog
 from beginner.models.mod_actions import ModAction
@@ -302,7 +304,7 @@ class ModerationCog(Cog):
                 )
             message = "\n".join(action_items)
 
-        how_long_ago = datetime.utcnow() - member.joined_at
+        how_long_ago = pytz.utc.localize(datetime.utcnow()) - member.joined_at
         how_long_ago_msg = "Just now"
         if how_long_ago > timedelta(days=1):
             how_long_ago_msg = f"{how_long_ago // timedelta(days=1)} days ago"
