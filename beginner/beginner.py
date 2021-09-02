@@ -1,7 +1,7 @@
 from aiohttp import ClientSession
 from beginner.cog import Cog
 from beginner.scheduler import initialize_scheduler
-from nextcord import Embed, Webhook, AsyncWebhookAdapter
+from nextcord import Embed, Webhook
 from nextcord.ext import commands
 from functools import lru_cache
 import nextcord
