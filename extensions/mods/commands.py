@@ -19,6 +19,11 @@ class ModeratorsExtension(dippy.Extension):
     async def on_ready(self):
         self.client.remove_command("help")
 
+    @dippy.Extension.command("!bans")
+    async def bans(self, message: Message):
+        num_bans = len(await message.guild.bans())
+        await message.channel.send(f"Found {num_bans} banned members")
+
     @dippy.Extension.command("!team")
     async def team_command(self, message: Message):
         helpers = utils.get(message.guild.roles, name="helpers").members
