@@ -24,7 +24,7 @@ class BeginnerCog(Cog):
         async with ClientSession() as session:
             wh = Webhook.from_url(
                 "https://nextcord.com/api/webhooks/882811369353793576/TfQ5nVjRhwnxkMqYA-WLOfA6mv9-SG3TZjWLZkM_9f5jKEif23pbAXCZQLpwhKvSfxQp",
-                adapter=AsyncWebhookAdapter(session),
+                session=session,
             )
             await wh.send(
                 embed=Embed(
