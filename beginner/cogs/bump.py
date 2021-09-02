@@ -375,7 +375,9 @@ class Bumping(Cog):
 
     async def get_next_bump_timer(self):
         started_watching = pytz.utc.localize(datetime.utcnow())
-        while datetime.utcnow() - started_watching <= timedelta(minutes=1):
+        while pytz.utc.localize(datetime.utcnow()) - started_watching <= timedelta(
+            minutes=1
+        ):
             try:
                 self.log_bump("Looking for bump confirmation", self.server.me)
                 message = await asyncio.wait_for(self._message_queue.get(), 60)
