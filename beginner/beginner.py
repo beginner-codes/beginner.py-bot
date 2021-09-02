@@ -1,5 +1,7 @@
+from aiohttp import ClientSession
 from beginner.cog import Cog
 from beginner.scheduler import initialize_scheduler
+from discord import Embed, Webhook, AsyncWebhookAdapter
 from discord.ext import commands
 from functools import lru_cache
 import discord
@@ -15,6 +17,21 @@ class BeginnerCog(Cog):
         if not BeginnerCog.is_dev_env():
             await self.get_channel("🤖bot-dev").send(
                 f"Bot back online! Image Version: {os.environ.get('BOT_IMAGE_VERSION', 'NOT SET')}"
+            )
+
+    @Cog.listener()
+    async def on_command_error(self, ctx: commands.Context, error):
+        async with ClientSession() as session:
+            wh = Webhook.from_url(
+                "https://discord.com/api/webhooks/882811369353793576/TfQ5nVjRhwnxkMqYA-WLOfA6mv9-SG3TZjWLZkM_9f5jKEif23pbAXCZQLpwhKvSfxQp",
+                adapter=AsyncWebhookAdapter(session),
+            )
+            await wh.send(
+                embed=Embed(
+                    title="🛑Error Encountered",
+                    description=f"{error}\n\n{ctx.command!r}",
+                    color=0xFF8800,
+                )
             )
 
     @Cog.listener()
