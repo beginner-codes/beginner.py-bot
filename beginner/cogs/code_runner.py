@@ -51,10 +51,6 @@ class CodeRunner(Cog):
 
     @Cog.command()
     async def exec(self, ctx, *, content=""):
-        if not self.settings.get("EXEC_ENABLED", False):
-            await ctx.channel.send("The exec command has been disabled.")
-            return
-
         if content.strip().startswith("```bf") or content.strip().startswith(
             "```brainfuck"
         ):
@@ -302,10 +298,6 @@ class CodeRunner(Cog):
 
     @Cog.command()
     async def eval(self, ctx, *, content):
-        if not self.settings.get("EVAL_ENABLED", False):
-            await ctx.send("The eval command has been disabled.")
-            return
-
         if content.casefold().strip() == "help":
             await ctx.send(
                 embed=discord.Embed(
