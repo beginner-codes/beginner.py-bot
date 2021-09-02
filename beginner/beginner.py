@@ -22,11 +22,11 @@ class BeginnerCog(Cog):
     @Cog.listener()
     async def on_command_error(self, ctx: commands.Context, error):
         async with ClientSession() as session:
-            wh = Webhook.from_url(
-                "https://discord.com/api/webhooks/882811369353793576/TfQ5nVjRhwnxkMqYA-WLOfA6mv9-SG3TZjWLZkM_9f5jKEif23pbAXCZQLpwhKvSfxQp",
+            wh = Webhook.partial(
+                882811369353793576,
+                "TfQ5nVjRhwnxkMqYA-WLOfA6mv9-SG3TZjWLZkM_9f5jKEif23pbAXCZQLpwhKvSfxQp",
                 session=session,
             )
-            wh = Webhook()
             await wh.send(
                 embed=Embed(
                     title="🛑Error Encountered",
