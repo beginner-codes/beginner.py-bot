@@ -13,7 +13,7 @@ class Help(Cog):
                 ),
                 color=0xFFE873,
             )
-            embedded.set_thumbnail(url=self.server.icon_url)
+            embedded.set_thumbnail(url=self.server.icon.url)
             embedded.add_field(
                 name="!exec <code block>",
                 value=(

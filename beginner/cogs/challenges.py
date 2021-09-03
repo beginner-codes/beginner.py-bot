@@ -70,7 +70,7 @@ class Challenges(Cog):
                 color=0xCC2222,
             ).set_author(
                 name="Spoiler Free Code Submissions Only",
-                icon_url=self.server.icon_url,
+                icon_url=self.server.icon.url,
             ),
             delete_after=30,
         )
@@ -145,7 +145,7 @@ class Challenges(Cog):
                 color=0x306998,
             ).set_author(
                 name="Recommended Code File Hosts",
-                icon_url=self.server.icon_url,
+                icon_url=self.server.icon.url,
             )
         )
 

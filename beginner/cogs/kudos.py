@@ -104,7 +104,7 @@ class Kudos(Cog):
                         inline=False,
                         value="You can see a kudos leader board by using `!kudos leaderboard`.",
                     )
-                    .set_author(name="Kudos - Help", icon_url=self.server.icon_url)
+                    .set_author(name="Kudos - Help", icon_url=self.server.icon.url)
                     .set_thumbnail(
                         url="https://cdn.discordapp.com/emojis/669941420454576131.png?v=1"
                     )
@@ -123,7 +123,7 @@ class Kudos(Cog):
 
         embed = (
             nextcord.Embed(color=BLUE, description="\n".join(message))
-            .set_author(name="Kudos", icon_url=self.server.icon_url)
+            .set_author(name="Kudos", icon_url=self.server.icon.url)
             .set_thumbnail(
                 url="https://cdn.discordapp.com/emojis/669941420454576131.png?v=1"
             )

@@ -105,7 +105,7 @@ class RulesCog(Cog):
             timestamp=datetime(2020, 8, 31, 0, 0, 0, 0, pytz.timezone("US/Eastern")),
             color=BLUE,
         )
-        embed.set_footer(text=admin.name, icon_url=admin.avatar_url)
+        embed.set_footer(text=admin.name, icon_url=admin.avatar.url)
 
         for field_title, field_content in self.message_fields.items():
             embed.add_field(
@@ -135,7 +135,7 @@ class RulesCog(Cog):
                     if label
                     else f"Here are all the rules: \n{', '.join(sorted(rule_primary_labels))}",
                     color=0x306998,
-                ).set_thumbnail(url=ctx.guild.icon_url)
+                ).set_thumbnail(url=ctx.guild.icon.url)
             )
 
     @Cog.command(name="formatting", aliases=("format", "code"))
@@ -161,7 +161,7 @@ class RulesCog(Cog):
                     ),
                     inline=False,
                 )
-                .set_thumbnail(url=ctx.guild.icon_url)
+                .set_thumbnail(url=ctx.guild.icon.url)
             )
         )
 
@@ -170,7 +170,7 @@ class RulesCog(Cog):
             title=rule,
             description=self.message_fields[rule]["description"],
             color=0x306998,
-        ).set_thumbnail(url=self.server.icon_url)
+        ).set_thumbnail(url=self.server.icon.url)
 
     def get_rule(self, label, fuzzy=False):
         for rule_name, rule_info in self.message_fields.items():
