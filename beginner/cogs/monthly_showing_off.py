@@ -79,7 +79,7 @@ class MonthlyShowingOffCog(Cog):
 
         embed.set_author(
             name=self.client.user.display_name,
-            icon_url=str(self.client.user.avatar_url),
+            icon_url=str(self.client.user.avatar.url),
         )
 
         embed.set_thumbnail(
@@ -237,7 +237,7 @@ class MonthlyShowingOffCog(Cog):
                         title=f"**{message.author.display_name}**",
                         description=f"Project: {link}\n {desc}",
                         color=nextcord.Colour.green(),
-                    ).set_thumbnail(url=message.author.avatar_url)
+                    ).set_thumbnail(url=message.author.avatar.url)
                 )
                 await message.delete()
 
@@ -302,7 +302,7 @@ class MonthlyShowingOffCog(Cog):
         git_embed.add_field(name="Project Url:", value=project_url, inline=True)
         git_embed.add_field(name="Github profile:", value=profile_url, inline=False)
         git_embed.set_author(
-            name=message.author.display_name, icon_url=message.author.avatar_url
+            name=message.author.display_name, icon_url=message.author.avatar.url
         )
         git_embed.set_thumbnail(url=avatar)
 

@@ -113,7 +113,7 @@ class HelpRotatorCog(Cog):
                 description="Feel free to ask any of your Python related questions in this channel!",
                 color=GREEN,
             ).set_author(
-                name="This Channel Is Available", icon_url=self.server.icon_url
+                name="This Channel Is Available", icon_url=self.server.icon.url
             )
         )
 
