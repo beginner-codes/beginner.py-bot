@@ -89,7 +89,7 @@ class UserRolesCog(Cog):
                 f"Use {self.get_emoji('expert')} if you're an expert (e.g. production work experience)\n"
             )
             embed = Embed(description=message_content, color=0x306998).set_author(
-                name=f"Skill Level Assignment", icon_url=self.server.icon_url
+                name=f"Skill Level Assignment", icon_url=self.server.icon.url
             )
             embed.set_footer(
                 text="We reserve the right to adjust your skill level manually if "

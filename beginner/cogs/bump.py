@@ -286,7 +286,7 @@ class Bumping(Cog):
         await channel.send(
             embed=nextcord.Embed(
                 description=f"All hail {king.mention} our new {role.mention}!!!"
-            ).set_author(name="New Bump King", icon_url=self.server.icon_url)
+            ).set_author(name="New Bump King", icon_url=self.server.icon.url)
         )
 
     def award_bump_points(self, author_id):
@@ -472,7 +472,7 @@ class Bumping(Cog):
                     f"react again to leave the squad"
                 ),
                 color=0x306998,
-            ).set_author(name="Beginner.py Bump Squad", icon_url=self.server.icon_url)
+            ).set_author(name="Beginner.py Bump Squad", icon_url=self.server.icon.url)
         )
         await message.add_reaction("🔔")
         return message
