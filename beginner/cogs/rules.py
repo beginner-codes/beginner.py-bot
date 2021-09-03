@@ -105,7 +105,7 @@ class RulesCog(Cog):
             timestamp=datetime(2020, 8, 31, 0, 0, 0, 0, pytz.timezone("US/Eastern")),
             color=BLUE,
         )
-        embed.set_footer(text=admin.name, icon_url=admin.avatar_url)
+        embed.set_footer(text=admin.name, icon_url=admin.avatar.url)
 
         for field_title, field_content in self.message_fields.items():
             embed.add_field(

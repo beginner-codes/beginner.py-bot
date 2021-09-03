@@ -16,7 +16,7 @@ class RepeaterCog(Cog):
         embed = (
             Embed(description=content, color=0x306998)
             .set_author(name=title, icon_url=self.server.icon.url)
-            .set_footer(text=ctx.author.display_name, icon_url=ctx.author.avatar_url)
+            .set_footer(text=ctx.author.display_name, icon_url=ctx.author.avatar.url)
         )
         await self.server.get_channel(int(channel[2:-1])).send(embed=embed)
 

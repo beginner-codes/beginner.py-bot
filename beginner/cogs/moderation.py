@@ -390,7 +390,7 @@ class ModerationCog(Cog):
     ) -> Embed:
         embed = Embed(description=reason, color=0xCC2222)
         embed.set_author(name=title, icon_url=self.server.icon.url)
-        embed.set_footer(text=ctx.author.display_name, icon_url=ctx.author.avatar_url)
+        embed.set_footer(text=ctx.author.display_name, icon_url=ctx.author.avatar.url)
         return embed
 
     def format_duration(self, minutes: int) -> str:
