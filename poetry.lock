@@ -68,7 +68,7 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
 
 [[package]]
 name = "dippy.bot"
-version = "0.1.1a23"
+version = "0.1.1a24"
 description = "A Discord bot framework built to simplify the complicated parts of bot development."
 category = "main"
 optional = false
@@ -76,28 +76,13 @@ python-versions = ">=3.9,<4.0"
 
 [package.dependencies]
 bevy = ">=0.4.5,<0.5.0"
-"discord.py" = ">=1.6.0,<2.0.0"
+nextcord = ">=2.0.0-alpha.2,<3.0.0"
 pydantic = ">=1.8.1,<2.0.0"
 
 [package.extras]
 yaml = ["pyyaml (>=5.3.1,<6.0.0)"]
 sqlalchemy = ["SQLAlchemy (>=1.3.23,<2.0.0)"]
 postgres = ["psycopg2-binary (>=2.8.6,<3.0.0)"]
-
-[[package]]
-name = "discord.py"
-version = "1.7.0"
-description = "A Python wrapper for the Discord API"
-category = "main"
-optional = false
-python-versions = ">=3.5.3"
-
-[package.dependencies]
-aiohttp = ">=3.6.0,<3.8.0"
-
-[package.extras]
-docs = ["sphinx (==3.0.3)", "sphinxcontrib-trio (==1.1.2)", "sphinxcontrib-websupport"]
-voice = ["PyNaCl (>=1.3.0,<1.5)"]
 
 [[package]]
 name = "greenlet"
@@ -125,6 +110,22 @@ description = "multidict implementation"
 category = "main"
 optional = false
 python-versions = ">=3.6"
+
+[[package]]
+name = "nextcord"
+version = "2.0.0a2"
+description = "A Python wrapper for the Discord API forked from discord.py"
+category = "main"
+optional = false
+python-versions = ">=3.8.0"
+
+[package.dependencies]
+aiohttp = ">=3.6.0,<3.8.0"
+
+[package.extras]
+docs = ["sphinx (==4.0.2)", "sphinxcontrib_trio (==1.1.2)", "sphinxcontrib-websupport"]
+speed = ["orjson (>=3.5.4)"]
+voice = ["PyNaCl (>=1.3.0,<1.5)"]
 
 [[package]]
 name = "psycopg2-binary"
@@ -291,12 +292,8 @@ chardet = [
     {file = "chardet-4.0.0.tar.gz", hash = "sha256:0d6f53a15db4120f2b08c94f11e7d93d2c911ee118b6b30a04ec3ee8310179fa"},
 ]
 "dippy.bot" = [
-    {file = "Dippy.bot-0.1.1a23-py3-none-any.whl", hash = "sha256:26008b73d837e369adfe71cf36caea96caadd268ee145a737029c17f3b6409ab"},
-    {file = "Dippy.bot-0.1.1a23.tar.gz", hash = "sha256:c7f765a680c73d540639509185687728b7840f2bab95485d170017c39d44da27"},
-]
-"discord.py" = [
-    {file = "discord.py-1.7.0-py3-none-any.whl", hash = "sha256:330edfa11e59c1d1eae31e68f02f8cfcea2702813439dfe58dd587018979e1c9"},
-    {file = "discord.py-1.7.0.tar.gz", hash = "sha256:1b05150e767c4a18941d863d819844ecef8395b0ca3784055d78770b8fa70b68"},
+    {file = "Dippy.bot-0.1.1a24-py3-none-any.whl", hash = "sha256:d6f33f79f44840c5f26426fa954a3e2cb2e7709b0919920513429f2a4bdd73b5"},
+    {file = "Dippy.bot-0.1.1a24.tar.gz", hash = "sha256:2279fe705d6e253061ca4ae12ac0aee61b6e723db820c356614ce716ab946740"},
 ]
 greenlet = [
     {file = "greenlet-1.0.0-cp27-cp27m-macosx_10_14_x86_64.whl", hash = "sha256:1d1d4473ecb1c1d31ce8fd8d91e4da1b1f64d425c1dc965edc4ed2a63cfa67b2"},
@@ -385,6 +382,9 @@ multidict = [
     {file = "multidict-5.1.0-cp39-cp39-win32.whl", hash = "sha256:fc13a9524bc18b6fb6e0dbec3533ba0496bbed167c56d0aabefd965584557d80"},
     {file = "multidict-5.1.0-cp39-cp39-win_amd64.whl", hash = "sha256:7df80d07818b385f3129180369079bd6934cf70469f99daaebfac89dca288359"},
     {file = "multidict-5.1.0.tar.gz", hash = "sha256:25b4e5f22d3a37ddf3effc0710ba692cfc792c2b9edfb9c05aefe823256e84d5"},
+]
+nextcord = [
+    {file = "nextcord-2.0.0a2.tar.gz", hash = "sha256:fcae92330105d817ac35f0de35da0bf6b1ad880d63515f12c812a621c4c76fe8"},
 ]
 psycopg2-binary = [
     {file = "psycopg2-binary-2.8.6.tar.gz", hash = "sha256:11b9c0ebce097180129e422379b824ae21c8f2a6596b159c7659e2e5a00e1aa0"},

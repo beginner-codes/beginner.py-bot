@@ -52,7 +52,7 @@ class BoostersExtension(dippy.Extension):
             )
             .set_author(
                 name=f"{member} Has Boosted The Server!!!{' (TEST)' * test}",
-                icon_url=member.avatar_url,
+                icon_url=member.avatar.url,
             )
             .set_thumbnail(
                 url="https://raw.githubusercontent.com/beginnerpy-com/beginner.py-bot/dippy-rewrite/booster.png"
