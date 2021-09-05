@@ -69,7 +69,7 @@ class HelpRotatorExtension(dippy.Extension):
                 await message.remove_reaction(emoji, member)
                 return
 
-        await message.edit(description="*Claiming channel for you, please standby*")
+        await message.edit(content="*Claiming channel for you, please standby*")
         await message.clear_reactions()
         await self.manager.update_get_help_channel(
             channel, member, self.manager.reaction_topics.get(emoji, "")
