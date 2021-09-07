@@ -121,7 +121,7 @@ class KudosManager(Injectable):
         await self.set_lifetime_kudos(member, lifetime_kudos + amount)
 
         await self._send_kudos_message_to_ledger(
-            member.guild, amount, reason, member.avatar.url
+            member.guild, amount, reason, member.display_avatar.url
         )
 
         await self._determine_achievements(member, kudos + amount)
