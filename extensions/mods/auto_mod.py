@@ -1,9 +1,9 @@
 from aiohttp import ClientSession
 from collections import deque
 from datetime import datetime, timedelta
-from discord import Embed, Guild, Member, Message, Role, TextChannel, utils
-from discord.errors import NotFound
-from discord.webhook import Webhook, AsyncWebhookAdapter
+from nextcord import Embed, Guild, Member, Message, Role, TextChannel, utils
+from nextcord.errors import NotFound
+from nextcord.webhook import Webhook
 from typing import Optional
 import dippy
 import re
@@ -64,7 +64,7 @@ class AutoModExtension(dippy.Extension):
 
     async def _delete_webhook(self, webhook: str):
         async with ClientSession() as session:
-            hook = Webhook.from_url(webhook, adapter=AsyncWebhookAdapter(session))
+            hook = Webhook.from_url(webhook, session=session)
             try:
                 await hook.delete()
             except NotFound:
