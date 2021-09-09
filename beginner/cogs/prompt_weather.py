@@ -1,7 +1,7 @@
 from __future__ import annotations
 from beginner.cog import Cog
 from beginner.config import scope_getter
-from discord.ext.commands import Context
+from nextcord.ext.commands import Context
 import re
 import requests
 import urllib.parse

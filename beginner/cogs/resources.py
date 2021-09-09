@@ -1,9 +1,9 @@
 from __future__ import annotations
-from discord.ext.commands import Context
+from nextcord.ext.commands import Context
 from beginner.cog import Cog
 from beginner.config import get_setting
 from beginner.colors import *
-import discord
+import nextcord
 
 
 class ResourcesCog(Cog):
@@ -18,7 +18,7 @@ class ResourcesCog(Cog):
             await ctx.send(f"Could not find any resources for `{lang_code}`")
             return
 
-        embed = discord.Embed(
+        embed = nextcord.Embed(
             title=f"Helpful {lang['name']} Resources",
             description="Here are some resources you may find helpful.",
             color=YELLOW,
@@ -37,7 +37,7 @@ class ResourcesCog(Cog):
 
     @Cog.command(aliases=["project-ideas", "ideas"])
     async def project(self, ctx):
-        project_embed = discord.Embed(
+        project_embed = nextcord.Embed(
             title="Project Ideas",
             description=(
                 f"{ctx.author.mention} Here's our official list of "
@@ -45,7 +45,9 @@ class ResourcesCog(Cog):
             ),
             color=BLUE,
             url="https://github.com/beginnerpy-com/project-ideas",
-        ).set_thumbnail(url="https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/120/twitter/282/brain_1f9e0.png")
+        ).set_thumbnail(
+            url="https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/120/twitter/282/brain_1f9e0.png"
+        )
         await ctx.send(embed=project_embed)
 
 

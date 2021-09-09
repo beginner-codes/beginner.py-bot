@@ -6,7 +6,7 @@ from typing import Tuple
 import asyncio
 import black
 import dis
-import discord
+import nextcord
 import io
 import json
 import pathlib
@@ -32,7 +32,7 @@ class CodeRunner(Cog):
             msg, (file, line_no, column, line) = excp.args
             spaces = " " * (column - 1)
             await ctx.send(
-                embed=discord.Embed(
+                embed=nextcord.Embed(
                     title="Disassemble - Exception",
                     description=f"```py\nLine {line_no}\n{line.rstrip()}\n{spaces}^\nSyntaxError: {msg}\n```",
                     color=YELLOW,
@@ -42,7 +42,7 @@ class CodeRunner(Cog):
 
         dis.dis(code, file=buffer)
         await ctx.send(
-            embed=discord.Embed(
+            embed=nextcord.Embed(
                 title="Disassemble - Byte Code Instructions",
                 description=f"```asm\n{buffer.getvalue()}\n```",
                 color=BLUE,
@@ -51,10 +51,6 @@ class CodeRunner(Cog):
 
     @Cog.command()
     async def exec(self, ctx, *, content=""):
-        if not self.settings.get("EXEC_ENABLED", False):
-            await ctx.channel.send("The exec command has been disabled.")
-            return
-
         if content.strip().startswith("```bf") or content.strip().startswith(
             "```brainfuck"
         ):
@@ -75,7 +71,7 @@ class CodeRunner(Cog):
                     f"{module:{length}}" for module in allowed_modules_list
                 )
             await ctx.send(
-                embed=discord.Embed(
+                embed=nextcord.Embed(
                     description=f"Here are all of the allowed modules:\n```\n{allowed_modules}\n```",
                     title="✅ Exec/Eval Allowed Modules",
                     color=BLUE,
@@ -83,7 +79,7 @@ class CodeRunner(Cog):
             )
             return
 
-        message: discord.Message = ctx.message
+        message: nextcord.Message = ctx.message
         if message.reference:
             ref_message = await ctx.channel.fetch_message(message.reference.message_id)
             await self._exec(
@@ -97,7 +93,7 @@ class CodeRunner(Cog):
         await self._exec(ctx.message, content, ctx.author)
 
     @Cog.listener()
-    async def on_raw_reaction_add(self, reaction: discord.RawReactionActionEvent):
+    async def on_raw_reaction_add(self, reaction: nextcord.RawReactionActionEvent):
         if (
             reaction.emoji.name
             not in self._code_runner_emojis + self._formatting_emojis
@@ -106,7 +102,7 @@ class CodeRunner(Cog):
 
         now = datetime.utcnow()
         delta = now - self._exec_rate_limit.get(reaction.message_id, now)
-        channel: discord.TextChannel = self.client.get_channel(reaction.channel_id)
+        channel: nextcord.TextChannel = self.client.get_channel(reaction.channel_id)
         message = await channel.fetch_message(reaction.message_id)
         if timedelta(seconds=0) < delta < timedelta(minutes=2):
             await message.remove_reaction(reaction.emoji, reaction.member)
@@ -128,9 +124,9 @@ class CodeRunner(Cog):
 
     async def _exec(
         self,
-        message: discord.Message,
+        message: nextcord.Message,
         content: str,
-        member: discord.Member = None,
+        member: nextcord.Member = None,
         user_input: str = "",
     ):
         if (
@@ -140,7 +136,7 @@ class CodeRunner(Cog):
         ):
             await message.channel.send(
                 content="" if member is None else member.mention,
-                embed=discord.Embed(
+                embed=nextcord.Embed(
                     title="Exec - No Code",
                     description=(
                         "\n**NO PYTHON CODE BLOCK FOUND**\n\nThe command format is as follows:\n\n"
@@ -149,7 +145,7 @@ class CodeRunner(Cog):
                     color=RED,
                 ),
                 reference=message,
-                allowed_mentions=discord.AllowedMentions(
+                allowed_mentions=nextcord.AllowedMentions(
                     replied_user=member is None, users=[member] if member else False
                 ),
             )
@@ -192,20 +188,20 @@ class CodeRunner(Cog):
             out = out[:497] + "\n.\n.\n.\n" + out[-504:]
         await message.channel.send(
             content="" if member is None else member.mention,
-            embed=discord.Embed(
+            embed=nextcord.Embed(
                 title=title, description=f"```\n{out}\n```", color=color
             ).set_footer(
                 text=f"!exec modules | Completed in {duration:0.4f} milliseconds"
             ),
             reference=message,
-            allowed_mentions=discord.AllowedMentions(
+            allowed_mentions=nextcord.AllowedMentions(
                 replied_user=member is None,
                 users=[member] if member else False,
                 roles=[],
             ),
         )
 
-    async def _exec_brainfuck(self, message: discord.Message, content: str):
+    async def _exec_brainfuck(self, message: nextcord.Message, content: str):
         title = "✅ Exec Brainfuck - Success"
         color = BLUE
 
@@ -231,15 +227,15 @@ class CodeRunner(Cog):
         if len(out) > 1000:
             out = out[:497] + "\n.\n.\n.\n" + out[-504:]
         await message.channel.send(
-            embed=discord.Embed(
+            embed=nextcord.Embed(
                 title=title, description=f"```\n{out}\n```", color=color
             ),
             reference=message,
-            allowed_mentions=discord.AllowedMentions(replied_user=True),
+            allowed_mentions=nextcord.AllowedMentions(replied_user=True),
         )
 
     async def _black_formatting(
-        self, message: discord.Message, content: str, member: discord.Member = None
+        self, message: nextcord.Message, content: str, member: nextcord.Member = None
     ):
         if (
             not len(content.strip())
@@ -268,11 +264,11 @@ class CodeRunner(Cog):
 
         await message.channel.send(
             content="" if member is None else member.mention,
-            embed=discord.Embed(
+            embed=nextcord.Embed(
                 title=title, description=f"```{formatted_code}```", color=color
             ),
             reference=message,
-            allowed_mentions=discord.AllowedMentions(
+            allowed_mentions=nextcord.AllowedMentions(
                 replied_user=member is None, users=[member] if member else False
             ),
         )
@@ -302,13 +298,9 @@ class CodeRunner(Cog):
 
     @Cog.command()
     async def eval(self, ctx, *, content):
-        if not self.settings.get("EVAL_ENABLED", False):
-            await ctx.send("The eval command has been disabled.")
-            return
-
         if content.casefold().strip() == "help":
             await ctx.send(
-                embed=discord.Embed(
+                embed=nextcord.Embed(
                     title="Statement Eval - Help",
                     description=(
                         "This command allows you to run a single statement and see the results. For security "
@@ -334,7 +326,7 @@ class CodeRunner(Cog):
             output = err
 
         await ctx.send(
-            embed=discord.Embed(
+            embed=nextcord.Embed(
                 title=title,
                 description=f"{code_message.strip()}\n{output}\n```",
                 color=color,
@@ -364,7 +356,7 @@ class CodeRunner(Cog):
 
         output = "\n".join(message)
         await ctx.send(
-            embed=discord.Embed(
+            embed=nextcord.Embed(
                 title=title, description=f"```{output}\n```", color=color
             ),
             reference=ctx.message,

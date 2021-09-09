@@ -1,6 +1,6 @@
 import beginner.config as config
 import beginner.logging
-import discord.ext.commands
+import nextcord.ext.commands
 import logging
 from beginner.models import set_database, PostgresqlDatabase, SqliteDatabase
 
@@ -43,18 +43,18 @@ def connect_db(logger):
     set_database(db)
 
 
-def create_bot(logger) -> discord.ext.commands.Bot:
+def create_bot(logger) -> nextcord.ext.commands.Bot:
     bot_settings = beginner.config.scope_getter("bot")
-    intents = discord.Intents.default()
+    intents = nextcord.Intents.default()
     intents.members = True
     intents.presences = True
 
     logger.debug(f"Creating bot with prefix '{bot_settings('prefix')}'")
-    client = discord.ext.commands.Bot(
+    client = nextcord.ext.commands.Bot(
         command_prefix=bot_settings("prefix"),
-        activity=discord.Activity(
+        activity=nextcord.Activity(
             name=bot_settings("status"),
-            type=discord.ActivityType.watching,
+            type=nextcord.ActivityType.watching,
         ),
         intents=intents,
     )
@@ -62,7 +62,7 @@ def create_bot(logger) -> discord.ext.commands.Bot:
     return client
 
 
-def load_cogs(client: discord.ext.commands.Bot, logger):
+def load_cogs(client: nextcord.ext.commands.Bot, logger):
     logger.debug("Loading cogs")
     files = (
         "production"

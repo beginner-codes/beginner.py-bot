@@ -1,9 +1,9 @@
 from __future__ import annotations
 from beginner.colors import *
 from beginner.cog import Cog
-from discord.ext.commands import Context
+from nextcord.ext.commands import Context
 from typing import Any, Optional
-import discord
+import nextcord
 import requests
 import xmltodict
 
@@ -32,7 +32,7 @@ class PipCog(Cog):
             color = BLUE
 
         await ctx.send(
-            embed=discord.Embed(
+            embed=nextcord.Embed(
                 title=title,
                 description=description,
                 color=color,

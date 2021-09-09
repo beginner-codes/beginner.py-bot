@@ -1,6 +1,6 @@
 from beginner.cog import Cog
 from urllib.parse import urlparse
-import discord
+import nextcord
 import os
 
 
@@ -9,7 +9,7 @@ class Challenges(Cog):
         super().__init__(client)
         self.approved_hosts = [
             "gist.github.com",
-            "paste.pythondiscord.com",
+            "paste.pythonnextcord.com",
             "hastebin.com",
             "pastebin.com",
             "github.com",
@@ -53,7 +53,7 @@ class Challenges(Cog):
         await message.delete()
         await message.channel.send(
             content=f"{message.author.mention}",
-            embed=discord.Embed(
+            embed=nextcord.Embed(
                 description=(
                     f"All code submissions must be either shared on an approved site or must be enclosed in spoiler"
                     f"tags\n\n**Approved Sites**\n"
@@ -70,7 +70,7 @@ class Challenges(Cog):
                 color=0xCC2222,
             ).set_author(
                 name="Spoiler Free Code Submissions Only",
-                icon_url=self.server.icon_url,
+                icon_url=self.server.icon.url,
             ),
             delete_after=30,
         )
@@ -132,7 +132,7 @@ class Challenges(Cog):
     @Cog.command()
     async def codehosts(self, ctx):
         await ctx.send(
-            embed=discord.Embed(
+            embed=nextcord.Embed(
                 description=(
                     f"These are the code file hosts we recommend for sharing code:\n"
                     + (
@@ -145,7 +145,7 @@ class Challenges(Cog):
                 color=0x306998,
             ).set_author(
                 name="Recommended Code File Hosts",
-                icon_url=self.server.icon_url,
+                icon_url=self.server.icon.url,
             )
         )
 

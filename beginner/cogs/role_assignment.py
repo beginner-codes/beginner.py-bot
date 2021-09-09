@@ -1,7 +1,7 @@
 from typing import Optional
 from beginner.cog import Cog, commands
 from beginner.colors import *
-from discord import Embed, Message, RawReactionActionEvent, PermissionOverwrite
+from nextcord import Embed, Message, RawReactionActionEvent, PermissionOverwrite
 
 
 class RoleAssignmentCog(Cog):
@@ -37,13 +37,12 @@ class RoleAssignmentCog(Cog):
                 inline=False,
             )
             .add_field(
-                name="🤪 Off Topic",
+                name="🗞 News & World Events",
                 value=(
-                    "React to this message with 🤪 to gain access to the hidden off topic channel. There are a few "
-                    "special rules for anyone wanting to chat in that channel:\n\n"
+                    "React to this message with 🗞 to gain access to the opt-in news and world events channel. There "
+                    "are a few special rules for anyone wanting to chat in that channel:\n\n"
                     "- No misinformation will be allowed. Be ready to provide **trustworthy** sources for any claims.\n"
                     "- Name calling and insults are **strictly** prohibited.\n"
-                    "- **Safe for work** only."
                 ),
                 inline=False,
             )
@@ -114,7 +113,7 @@ class RoleAssignmentCog(Cog):
 
     async def assign_off_topic(self, member):
         channel = self.get_channel("role-assignment")
-        off_topic = self.get_channel("🤠wild-west-off-topic")
+        off_topic = self.get_channel("🗞news-events-discussion")
 
         await off_topic.set_permissions(
             member, overwrite=PermissionOverwrite(read_messages=True)

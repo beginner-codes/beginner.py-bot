@@ -5,14 +5,13 @@ from beginner.scheduler import schedule
 from beginner.tags import tag
 from datetime import timedelta, datetime
 import asyncio
-import discord
+import nextcord
 import random
 
 
 class OnBoarding(Cog):
     def __init__(self, client):
         super().__init__(client)
-        self._disabled_welcome_messages = None
         self._join_history = HistoryQueue(timedelta(minutes=10))
 
     async def ready(self):
@@ -20,20 +19,14 @@ class OnBoarding(Cog):
 
     @Cog.listener()
     async def on_member_update(
-        self, old_member: discord.Member, updated_member: discord.Member
+        self, old_member: nextcord.Member, updated_member: nextcord.Member
     ):
         if updated_member.pending or not old_member.pending:
             return
 
         self._join_history.add(updated_member)
-        await self.monitor_for_mass_join()
-
-        five_minutes_ago = datetime.utcnow() - timedelta(minutes=5)
-        if (
-            not self._disabled_welcome_messages
-            or self._disabled_welcome_messages < five_minutes_ago
-        ):
-            await self.welcome_member(updated_member)
+        self.client.loop.create_task(self.welcome_member(updated_member))
+        self.client.loop.create_task(self.monitor_for_mass_join())
 
     def under_mass_attack(self):
         minute_ago = datetime.utcnow() - timedelta(minutes=1)
@@ -48,9 +41,8 @@ class OnBoarding(Cog):
         if self.under_mass_attack():
             mods = self.get_role("mods")
             await self.get_channel("staff").send(
-                f"{mods.mention} We may be experiencing a mass join attack. Disabling welcome messages for 5 minutes."
+                f"{mods.mention} We may be experiencing a mass join attack."
             )
-            self._disabled_welcome_messages = datetime.utcnow()
 
     async def scan_for_unwelcomed_members(self):
         self.logger.debug("Scanning for unwelcomed members")
@@ -72,27 +64,8 @@ class OnBoarding(Cog):
             await self.welcome_member(member)
             await asyncio.sleep(1)
 
-    async def welcome_member(self, member: discord.Member):
+    async def welcome_member(self, member: nextcord.Member):
         self.logger.debug(f"Welcoming {member.display_name}")
-        welcome_messages = [
-            "Everybody say hi to {}!!!",
-            "Say hello to our newest member {}!!!",
-            "Welcome to our newest & coolest member {}!!!",
-            "Hey hey hey!!! {} has joined the party!!!",
-            "{} welcome to the party!!!",
-            "{} has landed!!! Welcome!!!",
-            "Hi there {}!!! Welcome to the server!!!",
-            "Oh boy!!! The super cool {} has joined the server!!!",
-            "Hello {}!!! Glad you've joined us!!!",
-            "Yo!!! {} how's it going!!!",
-        ]
-        message = random.choice(welcome_messages).format(f"*{member}*")
-        wolf_wave_emoji = discord.utils.get(self.client.emojis, name="wolfwave")
-        await self.get_channel("🙋hello-world").send(
-            f"{wolf_wave_emoji} {message}",
-            allowed_mentions=discord.AllowedMentions(users=False),
-        )
-
         await member.add_roles(self.get_role("member"))
 
 

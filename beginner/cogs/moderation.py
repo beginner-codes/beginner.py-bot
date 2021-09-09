@@ -1,11 +1,13 @@
+import pytz as pytz
+
 from beginner.cog import Cog, commands
 from beginner.cogs.rules import RulesCog
 from beginner.models.mod_actions import ModAction
 from beginner.scheduler import schedule
 from datetime import timedelta, datetime
-from discord import Embed, Message, Member, User, utils
+from nextcord import Embed, Message, Member, User, utils
 from beginner.tags import tag
-import discord
+import nextcord
 import pickle
 import re
 
@@ -149,7 +151,7 @@ class ModerationCog(Cog):
         )
 
     @Cog.command(name="purge")
-    @commands.has_guild_permissions(manage_messages=True)
+    @commands.has_permissions(manage_messages=True)
     async def purge(self, ctx, messages: str):
         if messages.startswith("<"):
             user_id = re.findall("\d+", messages)
@@ -302,7 +304,7 @@ class ModerationCog(Cog):
                 )
             message = "\n".join(action_items)
 
-        how_long_ago = datetime.utcnow() - member.joined_at
+        how_long_ago = pytz.utc.localize(datetime.utcnow()) - member.joined_at
         how_long_ago_msg = "Just now"
         if how_long_ago > timedelta(days=1):
             how_long_ago_msg = f"{how_long_ago // timedelta(days=1)} days ago"
@@ -341,7 +343,7 @@ class ModerationCog(Cog):
         try:
             await member.send(embed=embed)
             return True
-        except discord.errors.Forbidden:
+        except nextcord.errors.Forbidden:
             return False
 
     def save_action(self, action_type: str, user: Member, mod: Member, **details):
@@ -379,7 +381,7 @@ class ModerationCog(Cog):
                 color=0xCC2222,
             ).set_author(
                 name=f"{action} @{user.display_name if user else mod.display_name}",
-                icon_url=self.server.icon_url,
+                icon_url=self.server.icon.url,
             )
         )
 
@@ -387,8 +389,8 @@ class ModerationCog(Cog):
         self, ctx, user: Member, reason: str, title: str
     ) -> Embed:
         embed = Embed(description=reason, color=0xCC2222)
-        embed.set_author(name=title, icon_url=self.server.icon_url)
-        embed.set_footer(text=ctx.author.display_name, icon_url=ctx.author.avatar_url)
+        embed.set_author(name=title, icon_url=self.server.icon.url)
+        embed.set_footer(text=ctx.author.display_name, icon_url=ctx.author.avatar.url)
         return embed
 
     def format_duration(self, minutes: int) -> str:

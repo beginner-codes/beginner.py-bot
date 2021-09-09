@@ -1,5 +1,5 @@
 from beginner.cog import Cog, commands
-from discord import Member, Role
+from nextcord import Member, Role
 import asyncio
 
 

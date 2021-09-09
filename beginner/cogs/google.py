@@ -3,7 +3,7 @@ from googleapiclient.discovery import build as google
 from urllib.parse import quote_plus
 from random import choice
 import beginner.config
-import discord
+import nextcord
 
 
 class Google(Cog):
@@ -58,8 +58,8 @@ class Google(Cog):
         )
 
     def create_google_message(self, message, color):
-        return discord.Embed(description=message, color=color).set_author(
-            name=f"Google Results", icon_url=self.server.icon_url
+        return nextcord.Embed(description=message, color=color).set_author(
+            name=f"Google Results", icon_url=self.server.icon.url
         )
 
 

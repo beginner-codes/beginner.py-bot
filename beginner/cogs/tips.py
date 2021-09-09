@@ -1,6 +1,6 @@
 from beginner.cog import Cog
 from beginner.models.messages import Message, MessageTypes
-from discord import Embed
+from nextcord import Embed
 
 
 class TipsCog(Cog):
@@ -118,7 +118,7 @@ class TipsCog(Cog):
             embed=Embed(
                 description=f"Title:\n{tip.title if tip.title else '*NO TITLE*'}\n\nMessage:\n{tip.message}",
                 color=0x306998,
-            ).set_author(name=response, icon_url=self.server.icon_url)
+            ).set_author(name=response, icon_url=self.server.icon.url)
         )
 
     async def list_tips(self, channel, tips, label=None):

@@ -3,8 +3,8 @@ from beginner.config import get_setting
 from beginner.logging import get_logger
 from beginner.settings import Settings
 from beginner.tags import TaggableMeta
-from discord.ext import commands
-from discord import TextChannel, Client, Guild, Emoji, CategoryChannel, Role
+from nextcord.ext import commands
+from nextcord import TextChannel, Client, Guild, Emoji, CategoryChannel, Role
 from typing import Any, AnyStr, Coroutine, List, Optional
 import json
 import os.path

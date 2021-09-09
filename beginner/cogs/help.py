@@ -1,4 +1,4 @@
-import discord
+import nextcord
 from beginner.cog import Cog
 
 
@@ -6,14 +6,14 @@ class Help(Cog):
     @Cog.command(aliases=["commands"])
     async def help(self, ctx, *, cmd=None):
         if not cmd:
-            embedded = discord.Embed(
+            embedded = nextcord.Embed(
                 title="Beginner.py Commands",
                 description=(
                     "**Commands:**\n- exec/eval\n- free\n- google\n- kudos\n- pip\n- resources\n- tip"
                 ),
                 color=0xFFE873,
             )
-            embedded.set_thumbnail(url=self.server.icon_url)
+            embedded.set_thumbnail(url=self.server.icon.url)
             embedded.add_field(
                 name="!exec <code block>",
                 value=(
@@ -72,7 +72,7 @@ class Help(Cog):
                 644309581476003860,
             ]:
                 if cmd == "-admin":
-                    embedded = discord.Embed(
+                    embedded = nextcord.Embed(
                         title="Admin help",
                         description="Commands used to modify the content used by this bot are listed below.",
                         color=0xFFE873,
@@ -112,7 +112,7 @@ class Help(Cog):
                     )
                     await ctx.send(embed=embedded)
 
-                    embedded = discord.Embed(
+                    embedded = nextcord.Embed(
                         title="Admin help explanation",
                         description="Commands for modifying this bot's content use the following attributes in their description.",
                         color=0xFFE873,
@@ -142,7 +142,7 @@ class Help(Cog):
                     )
                     await ctx.send(embed=embedded)
             else:
-                embedded = discord.Embed(
+                embedded = nextcord.Embed(
                     title="Error",
                     description="This channel has no access to the admin help option.",
                     color=0xCC2222,
@@ -151,7 +151,7 @@ class Help(Cog):
 
     @Cog.command()
     async def info(self, ctx):
-        embedded = discord.Embed(
+        embedded = nextcord.Embed(
             description="I am the official beginner.py server bot. I'm here to make everyone's life easier on this server.\nType **!help** to see how you can get help from me.",
             color=0xFFE873,
         )

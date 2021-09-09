@@ -1,5 +1,5 @@
 from collections import defaultdict
-from discord.ext import commands
+from nextcord.ext import commands
 from functools import partial, update_wrapper
 from typing import Any, AnyStr, Dict, Callable, NoReturn, Set
 import operator

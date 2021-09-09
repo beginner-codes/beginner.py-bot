@@ -3,8 +3,8 @@ from beginner.cog import Cog, commands
 from beginner.scheduler import schedule
 from beginner.tags import tag
 from datetime import datetime, timedelta
-import discord
-import discord.ext.commands
+import nextcord
+import nextcord.ext.commands
 import dateutil.tz
 
 
@@ -50,7 +50,7 @@ class AdventOfCode(Cog):
         help_2 = self.get_channel("🎄advent-of-code-help")
         suffixes = {1: "st", 21: "st", 2: "nd", 22: "nd", 3: "rd", 23: "rd"}
         await channel.send(
-            embed=discord.Embed(
+            embed=nextcord.Embed(
                 description=(
                     f"**Here's the [{self.now.day}{suffixes.get(self.now.day, 'th')} challenge]"
                     f"(https://adventofcode.com/2020/day/{self.now.day})!!!**\n\n"
@@ -75,7 +75,7 @@ class AdventOfCode(Cog):
         )
 
         await self.get_channel("🎁solutions").send(
-            embed=discord.Embed(
+            embed=nextcord.Embed(
                 description=f"🎄🎅❄️ Share your Day {self.now.day} solutions!!! ❄️🎅🎄"
             )
         )

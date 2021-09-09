@@ -2,14 +2,14 @@ from beginner.cog import Cog, commands
 from beginner.colors import *
 from beginner.models.messages import Message, MessageTypes
 from datetime import datetime
-from discord import Embed
+from nextcord import Embed
 import re
-import discord.utils
+import nextcord.utils
 import pytz
 
 
 class RulesCog(Cog):
-    def __init__(self, client: discord.Client):
+    def __init__(self, client: nextcord.Client):
         super().__init__(client)
         self.message_fields = {
             "No DMing others or asking others DM you": {
@@ -77,7 +77,7 @@ class RulesCog(Cog):
     @Cog.command(name="update-rules")
     @commands.has_guild_permissions(manage_channels=True)
     async def update_rules_message(self, ctx, *, reason: str):
-        rules: discord.TextChannel = discord.utils.get(
+        rules: nextcord.TextChannel = nextcord.utils.get(
             self.server.channels, name="rules"
         )
         messages = await rules.history(limit=1, oldest_first=True).flatten()
@@ -89,7 +89,7 @@ class RulesCog(Cog):
                         "Welcome!!! We're happy to have you! Please give these rules and guidelines a quick read!"
                     ),
                 ),
-                allowed_mentions=discord.AllowedMentions(
+                allowed_mentions=nextcord.AllowedMentions(
                     everyone=False, users=False, roles=False
                 ),
             )
@@ -97,15 +97,15 @@ class RulesCog(Cog):
                 f"Rules message has been updated: {reason}", delete_after=60
             )
 
-    def build_rule_message_embed(self, title: str, message: str) -> discord.Embed:
-        admin: discord.Member = self.server.get_member(266432511897370625)
+    def build_rule_message_embed(self, title: str, message: str) -> nextcord.Embed:
+        admin: nextcord.Member = self.server.get_member(266432511897370625)
         embed = Embed(
             title=title,
             description=message,
             timestamp=datetime(2020, 8, 31, 0, 0, 0, 0, pytz.timezone("US/Eastern")),
             color=BLUE,
         )
-        embed.set_footer(text=admin.name, icon_url=admin.avatar_url)
+        embed.set_footer(text=admin.name, icon_url=admin.avatar.url)
 
         for field_title, field_content in self.message_fields.items():
             embed.add_field(
@@ -135,7 +135,7 @@ class RulesCog(Cog):
                     if label
                     else f"Here are all the rules: \n{', '.join(sorted(rule_primary_labels))}",
                     color=0x306998,
-                ).set_thumbnail(url=ctx.guild.icon_url)
+                ).set_thumbnail(url=ctx.guild.icon.url)
             )
 
     @Cog.command(name="formatting", aliases=("format", "code"))
@@ -161,7 +161,7 @@ class RulesCog(Cog):
                     ),
                     inline=False,
                 )
-                .set_thumbnail(url=ctx.guild.icon_url)
+                .set_thumbnail(url=ctx.guild.icon.url)
             )
         )
 
@@ -170,7 +170,7 @@ class RulesCog(Cog):
             title=rule,
             description=self.message_fields[rule]["description"],
             color=0x306998,
-        ).set_thumbnail(url=self.server.icon_url)
+        ).set_thumbnail(url=self.server.icon.url)
 
     def get_rule(self, label, fuzzy=False):
         for rule_name, rule_info in self.message_fields.items():
