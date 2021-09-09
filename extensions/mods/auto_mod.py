@@ -1,6 +1,6 @@
 from aiohttp import ClientSession
 from collections import deque
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from nextcord import Embed, Guild, Member, Message, Role, TextChannel, utils
 from nextcord.errors import NotFound
 from nextcord.webhook import Webhook
@@ -138,7 +138,7 @@ class AutoModExtension(dippy.Extension):
         messages_last_minute = set()
 
         now = datetime.utcnow()
-        since = min(oldest or now, now - timedelta(minutes=1))
+        since = min(oldest or now, now - timedelta(minutes=1)).astimezone(timezone.utc)
         for message in (
             message for message in self._message_buffer if message.author == member
         ):
