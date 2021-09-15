@@ -12,9 +12,30 @@ import peewee
 import pytz
 
 
+class BumpButton(nextcord.ui.View):
+    def __init__(self):
+        super().__init__(timeout=None)
+
+    @nextcord.ui.button(emoji="🔔", style=nextcord.ButtonStyle.blurple, custom_id='BumpButton')
+    async def green(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
+        guild = interaction.guild
+        BumpRole=nextcord.utils.get(guild.roles, name="Bumpers")
+        if BumpRole in interaction.user.roles:
+            await interaction.user.remove_roles(BumpRole)
+            await interaction.response.send_message(f"{interaction.user.mention} you will no longer be tagged by bump reminders")
+            await asyncio.sleep(7)
+            await interaction.delete_original_message()
+        elif BumpRole not in interaction.user.roles:
+            await interaction.user.add_roles(BumpRole)
+            await interaction.response.send_message(f"{interaction.user.mention} you will be tagged by bump reminders")
+            await asyncio.sleep(7)
+            await interaction.delete_original_message()
+            
+            
 class Bumping(Cog):
     def __init__(self, client):
         super().__init__(client)
+        self.bump_button_added = False
         self._channel = None
         self._disboard = None
         self._role = None
@@ -47,7 +68,13 @@ class Bumping(Cog):
         if not self._role:
             self._role = self.get_role("bumpers")
         return self._role
-
+    
+    @commands.Cog.listener()
+    async def on_ready(self):
+        if not self.bump_button_added:
+            self.client.add_view(BumpButton())
+            self.bump_button_added = True
+            
     @Cog.command()
     async def bumpers(self, ctx):
         scores = (
@@ -428,42 +455,7 @@ class Bumping(Cog):
         self.log_bump("Seems no confirmation was found", self.server.me)
         return -1
 
-    @Cog.listener()
-    async def on_raw_reaction_add(self, reaction):
-        if reaction.emoji.name != "🔔":
-            return
-
-        if reaction.message_id != (await self.get_explanation_message()).id:
-            return
-
-        member = self.server.get_member(reaction.user_id)
-        if member.bot:
-            return
-
-        if self.role not in member.roles:
-            await self.add_bumper_role(member)
-
-    @Cog.listener()
-    async def on_raw_reaction_remove(self, reaction):
-        if reaction.emoji.name != "🔔":
-            return
-
-        if reaction.message_id != (await self.get_explanation_message()).id:
-            return
-
-        member = self.server.get_member(reaction.user_id)
-        if member.bot:
-            return
-
-        if self.role in member.roles:
-            await self.remove_bumper_role(member)
-
-    async def add_bumper_role(self, member):
-        await member.add_roles(self.role)
-        await self.channel.send(
-            f"{member.mention} you will be tagged by bump reminders", delete_after=10
-        )
-
+    
     async def create_explanation_message(self):
         message = await self.channel.send(
             embed=nextcord.Embed(
@@ -473,8 +465,9 @@ class Bumping(Cog):
                 ),
                 color=0x306998,
             ).set_author(name="Beginner.py Bump Squad", icon_url=self.server.icon.url)
+        ,view=BumpButton()
         )
-        await message.add_reaction("🔔")
+        
         return message
 
     async def get_explanation_message(self):
