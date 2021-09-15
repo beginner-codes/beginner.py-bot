@@ -1,5 +1,3 @@
-from datetime import datetime
-from typing import Optional
 import dippy.labels
 import discord
 
@@ -9,6 +7,7 @@ class LolStreakExtension(dippy.Extension):
     labels: dippy.labels.storage.StorageInterface
 
     def __init__(self):
+        super().__init__()
         self.lol_counts = {}
 
     async def get_count(self, channel: discord.TextChannel) -> int:
