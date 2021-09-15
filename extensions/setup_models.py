@@ -33,3 +33,12 @@ class SetupModelsExtension(dippy.Extension):
 
         Guild.get_label = get_label
         Guild.set_label = set_label
+
+        async def get_label(channel: TextChannel, label_name: str, default=None):
+            return await self.labels.get("channel", channel.id, label_name, default)
+
+        async def set_label(channel: TextChannel, label_name: str, value):
+            await self.labels.set(f"channel", channel.id, label_name, value)
+
+        TextChannel.get_label = get_label
+        TextChannel.set_label = set_label
