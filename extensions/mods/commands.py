@@ -144,13 +144,9 @@ class ModeratorsExtension(dippy.Extension):
             return
 
         guild: Guild = message.guild
-        bans = []
-        new_bans = None
-        while new_bans is None or new_bans:
-            new_bans = await guild.audit_logs(
-                action=AuditLogAction.ban, after=datetime.utcnow() - timedelta(days=1)
-            ).flatten()
-            bans.extend(new_bans)
+        bans = await guild.audit_logs(
+            action=AuditLogAction.ban, after=datetime.utcnow() - timedelta(days=1)
+        ).flatten()
         await message.channel.send(f"Found {len(bans)} in the last 24hrs")
 
     @dippy.Extension.command("!username history")
