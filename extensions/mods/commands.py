@@ -1,5 +1,14 @@
 from datetime import datetime, timedelta
-from discord import AuditLogAction, Embed, Guild, Member, Message, utils
+from nextcord import (
+    AuditLogAction,
+    Embed,
+    Guild,
+    Member,
+    Message,
+    utils,
+    Permissions,
+    AllowedMentions,
+)
 from extensions.user_tracking.manager import UserTracker
 from extensions.mods.mod_settings import ModSettingsExtension
 from extensions.mods.mod_manager import ModManager
@@ -18,6 +27,22 @@ class ModeratorsExtension(dippy.Extension):
     @dippy.Extension.listener("ready")
     async def on_ready(self):
         self.client.remove_command("help")
+
+    @dippy.Extension.command("!lockdown")
+    async def lockdown(self, message: Message):
+        if not message.author.guild_permissions.manage_messages:
+            return
+        guild = message.guild
+        member_role = guild.get_role(644299523686006834)
+        lift = "lift" in message.content.casefold()
+        permissions = Permissions(
+            send_messages=lift, send_messages_in_threads=lift, add_reactions=lift
+        )
+        await member_role.edit(permissions=permissions)
+        await message.channel.send(
+            f"{'Unlocked' if lift else 'Locked'} the server for {member_role}",
+            allowed_mentions=AllowedMentions(roles=False, everyone=False),
+        )
 
     @dippy.Extension.command("!bans")
     async def bans(self, message: Message):
