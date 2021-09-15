@@ -25,7 +25,7 @@ class LolStreakExtension(dippy.Extension):
 
     @dippy.Extension.listener("message")
     async def on_message(self, message: discord.Message):
-        if not message.author.bot:
+        if message.author.bot:
             return
 
         lol_count = await self.get_count(message.channel)
