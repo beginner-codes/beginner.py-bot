@@ -138,7 +138,7 @@ class ModeratorsExtension(dippy.Extension):
                 f"Muted {member.mention} for {self.mod_manager.format_duration(time_duration)}"
             )
 
-    @dippy.Extension.command("!!count bans")
+    @dippy.Extension.command("!count bans")
     async def cleanup_help_section(self, message: Message):
         if not message.author.guild_permissions.kick_members:
             return
