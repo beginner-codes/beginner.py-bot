@@ -1,13 +1,26 @@
 from extensions.kudos.manager import KudosManager
+from extensions.mods.mod_manager import ModManager
 from discord import Guild, Member, Message, TextChannel, utils
+from datetime import datetime, timedelta, timezone
 from typing import Optional
+import asyncio
 import dippy.labels
 import dippy
 
 
 class VoiceChatExtension(dippy.Extension):
+    client: dippy.Client
     kudos: KudosManager
     labels: dippy.labels.storage.StorageInterface
+    mod_manager: ModManager
+
+    @dippy.Extension.listener("ready")
+    async def onboard_new_members(self):
+        guild = self.client.get_guild(644299523686006834)
+        role = guild.get_role(888160821673349140)
+        for member in role.members:
+            joined = datetime.fromisoformat(await member.get_label("joined"))
+            self.schedule_onboarding(member, joined)
 
     @dippy.Extension.command("!set welcome channel")
     async def set_welcome_channel(self, message: Message):
@@ -24,20 +37,49 @@ class VoiceChatExtension(dippy.Extension):
     @dippy.Extension.listener("member_update")
     async def member_accepts_rules(self, before: Member, after: Member):
         if before.pending and not after.pending:
-            await self.add_unwelcomed_user(after)
-
-            last_highest = await self.labels.get(
-                "guild", after.guild.id, "highest-member-count", default=0
+            await asyncio.gather(
+                self.add_unwelcomed_user(after),
+                self.onboard_member(after),
+                self.check_for_highscore(after.guild),
             )
-            count = self.get_num_members(after.guild)
-            if count > last_highest:
-                await self.labels.set(
-                    "guild", after.guild.id, "highest-member-count", count
+
+    async def check_for_highscore(self, guild: Guild):
+        if self.mod_manager.locked_down(guild):
+            return
+
+        last_highest = await guild.get_label("highest-member-count", default=0)
+        count = self.get_num_members(guild)
+        if count > last_highest or last_highest - count > 200:
+            await guild.set_label("highest-member-count", count)
+            if count // 100 > last_highest // 100:
+                await guild.get_channel(644299524151443487).send(
+                    f"🎉🥳🎈 We've reached {count // 100 * 100} members!!! 🎈🥳🎉"
                 )
-                if count // 100 > last_highest // 100:
-                    await after.guild.get_channel(644299524151443487).send(
-                        f"🎉🥳🎈 We've reached {count // 100 * 100} members!!! 🎈🥳🎉"
-                    )
+
+    async def onboard_member(self, member: Member):
+        await member.add_roles(member.guild.get_role(888160821673349140))
+        joined = datetime.now().astimezone(timezone.utc)
+        await member.set_label("joined", joined.isoformat())
+        self.schedule_onboarding(member, joined)
+
+    def schedule_onboarding(self, member: Member, joined: datetime):
+        async def onboard():
+            try:
+                await member.add_roles(member.guild.get_role(644325811301777426))
+            except:
+                pass
+            else:
+                await member.remove_roles(member.guild.get_role(888160821673349140))
+
+        now = datetime.now().astimezone(timezone.utc)
+        when = joined + timedelta(days=2)
+        if when <= now:
+            await onboard()
+        else:
+            asyncio.get_running_loop().call_later(
+                (when - now).total_seconds(),
+                lambda: asyncio.get_running_loop().create_task(onboard()),
+            )
 
     def get_num_members(self, guild: Guild) -> int:
         return sum(1 for member in guild.members if not member.bot)
