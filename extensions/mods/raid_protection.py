@@ -174,7 +174,6 @@ class RaidProtection(dippy.Extension):
         if await self.mod_manager.locked_down(guild):
             return
         await self.mod_manager.lockdown(guild, guild.get_channel(720663441966366850))
-        await self.mod_manager.start_alert(guild)
 
     async def _alert(self, guild: Guild):
         if await self.mod_manager.locked_down(guild):
