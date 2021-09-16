@@ -38,7 +38,7 @@ class ModManager(Injectable):
 
         now = datetime.utcnow().astimezone(timezone.utc)
         duration = (now - started) // timedelta(minutes=1)
-        return duration if duration <= 15 else -1
+        return duration if duration <= 30 else -1
 
     async def start_alert(self, guild: Guild):
         await guild.set_label(
