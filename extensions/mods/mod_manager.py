@@ -48,6 +48,16 @@ class ModManager(Injectable):
             "alert_started", datetime.utcnow().astimezone(timezone.utc)
         )
 
+    async def mass_ban(self, guild: Guild, start: datetime, end: datetime) -> int:
+        count = 0
+        log_channel = guild.get_channel(719311864479219813)
+        for member in guild.members:
+            if start <= member.joined_at <= end:
+                await member.ban(reason="Mass ban")
+                await log_channel.send(f"Banned {member.display_name}")
+                count += 1
+        return count
+
     async def locked_down(self, guild: Guild) -> bool:
         return await guild.get_label("locked_down", default=False)
 

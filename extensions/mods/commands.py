@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from nextcord import (
     AuditLogAction,
     Embed,
@@ -37,6 +37,31 @@ class ModeratorsExtension(dippy.Extension):
             await self.mod_manager.lift_lockdown(message.guild, message.channel)
         else:
             await self.mod_manager.lockdown(message.guild, message.channel)
+
+    @dippy.Extension.command("!mass ban")
+    async def mass_ban(self, message: Message):
+        if not message.author.guild_permissions.manage_messages:
+            return
+
+        alerting = await self.mod_manager.alert_active(message.guild)
+        if alerting == -1:
+            await message.channel.send("No alerts active. Mass ban is disabled.")
+            return
+
+        now = datetime.now().astimezone(timezone.utc)
+        start = now - timedelta(minutes=alerting)
+        try:
+            duration = int(message.content.rpartition(" ")[-1].strip())
+        except ValueError:
+            end = now
+        else:
+            end = start + timedelta(minutes=duration)
+
+        await message.channel.send(
+            f"Banning all members who joined from <t:{start.timestamp():.0f}:t> until <t:{end.timestamp():.0f}:t>"
+        )
+        num_banned = await self.mod_manager.mass_ban(message.guild, start, end)
+        await message.channel.send(f"Banned {num_banned} members")
 
     @dippy.Extension.command("!bans")
     async def bans(self, message: Message):
