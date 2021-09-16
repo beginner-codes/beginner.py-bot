@@ -138,16 +138,42 @@ class ModeratorsExtension(dippy.Extension):
                 f"Muted {member.mention} for {self.mod_manager.format_duration(time_duration)}"
             )
 
-    @dippy.Extension.command("!count bans")
+    @dippy.Extension.command("!!count bans")
     async def cleanup_help_section(self, message: Message):
         if not message.author.guild_permissions.kick_members:
             return
 
+        content = message.content.rpartition(" ")[-1].strip()
+        days = timedelta(days=int(content) if content.isdigit() else 1)
+
         guild: Guild = message.guild
-        bans = await guild.audit_logs(
-            action=AuditLogAction.ban, after=datetime.utcnow() - timedelta(days=1)
-        ).flatten()
-        await message.channel.send(f"Found {len(bans)} in the last 24hrs")
+        bans = 0
+        resp = await guild._state.http.get_audit_logs(
+            guild.id, limit=100, action_type=AuditLogAction.ban.value
+        )
+        stop = utils.time_snowflake(datetime.utcnow() - days, high=True)
+        bans += len(
+            [1 for entry in resp["audit_log_entries"] if int(entry["id"]) > stop]
+        )
+        while (
+            resp
+            and resp["audit_log_entries"]
+            and int(resp["audit_log_entries"][-1]["id"]) > stop
+        ):
+            resp = await guild._state.http.get_audit_logs(
+                guild.id,
+                limit=100,
+                action_type=AuditLogAction.ban.value,
+                before=int(resp["audit_log_entries"][-1]["id"]),
+            )
+            bans += len(
+                [1 for entry in resp["audit_log_entries"] if int(entry["id"]) > stop]
+            )
+
+        num_days = days // timedelta(days=1)
+        await message.channel.send(
+            f"Found {bans} in the last {'day' if num_days == 1 else f'{num_days} days'}"
+        )
 
     @dippy.Extension.command("!username history")
     async def show_username_history_command(self, message: Message):
