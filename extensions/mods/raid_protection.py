@@ -1,14 +1,16 @@
 from asyncio import get_running_loop
 from datetime import datetime, timedelta, timezone
 from dippy.sqlalchemy_connector import SQLAlchemyConnector
-from sqlalchemy import Column, DateTime, Integer, BigInteger, String
+from extensions.mods.mod_manager import ModManager
 from enum import Enum
 from nextcord import (
     Guild,
     Member,
     Message,
+    TextChannel,
     User,
 )
+from sqlalchemy import Column, DateTime, Integer, BigInteger, String
 import dippy
 import statistics
 
@@ -36,6 +38,7 @@ class ActivityEntry(SQLAlchemyConnector.BaseModel):
 class RaidProtection(dippy.Extension):
     client: dippy.Client
     db: SQLAlchemyConnector
+    mod_manager: ModManager
 
     def __init__(self):
         super().__init__()
@@ -82,11 +85,20 @@ class RaidProtection(dippy.Extension):
 
         bans = await self._get_bans(message.guild, week)
         joins = await self._get_joins_by_hour(message.guild, week, bans)
+        last_5_minutes_joins = await self.get_activity_entries(
+            ActivityType.MEMBER_JOIN,
+            message.guild.id,
+            self._now() - timedelta(minutes=5),
+        )
         most_recent = joins.pop(0)
         mu = statistics.mean(joins.values()) if joins else 0
         degree_of_variation = self._get_degree_of_variation(joins)
         await message.channel.send(
-            f"Join Periods: {len(joins)}\nMean: {mu}\nMost Recent: {most_recent}\nDegree of Variation: {degree_of_variation}"
+            f"Join Periods: {len(joins)}\n"
+            f"Mean: {mu}\n"
+            f"Most Recent: {most_recent}\n"
+            f"Degree of Variation: {degree_of_variation}\n"
+            f"Last 5 Minutes: {len(last_5_minutes_joins)}"
         )
 
     @dippy.extensions.Extension.listener("member_join")
@@ -152,13 +164,40 @@ class RaidProtection(dippy.Extension):
     def _now(self) -> datetime:
         return datetime.utcnow().astimezone(timezone.utc)
 
-    async def _scan_for_raid(self, guild: Guild):
+    async def _lockdown(self, guild: Guild):
+        if await self.mod_manager.locked_down(guild):
+            return
+        await self.mod_manager.lockdown(guild, guild.get_channel(720663441966366850))
+
+    async def _alert(self, guild: Guild):
+        if await self.mod_manager.locked_down(guild):
+            return
+
+        await guild.get_channel(720663441966366850).send(
+            "There's been an increase in joins. Watch out for a raid. @mods can use `!lockdown` to prevent new members "
+            "from interacting with the server."
+        )
+
+    async def _do_spike_raid_check(self, guild: Guild) -> bool:
+        joins = await self.get_activity_entries(
+            ActivityType.MEMBER_JOIN, guild.id, self._now() - timedelta(minutes=5)
+        )
+        if len(joins) > 10:
+            await self._lockdown(guild)
+
+        elif len(joins) > 5:
+            await self._alert(guild)
+
+        return len(joins) > 5
+
+    async def _do_out_of_bounds_raid_check(self, guild: Guild) -> bool:
         week = timedelta(days=7)
 
         bans = await self._get_bans(guild, week)
         joins = await self._get_joins_by_hour(guild, week, bans)
+
         if len(joins) < timedelta(days=5) // timedelta(hours=1):
-            return
+            return False
 
         degree_of_variation = self._get_degree_of_variation(joins)
         if degree_of_variation > 0.05:
@@ -170,3 +209,10 @@ class RaidProtection(dippy.Extension):
             await guild.get_channel(644309581476003860).send(
                 f"LOCKDOWN Degree of variation is {degree_of_variation}"
             )
+
+    async def _scan_for_raid(self, guild: Guild):
+        if await self._do_spike_raid_check(guild):
+            return
+
+        if await self._do_out_of_bounds_raid_check(guild):
+            return
