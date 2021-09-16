@@ -115,17 +115,17 @@ class RaidProtection(dippy.Extension):
         await self._scan_for_raid(member.guild)
 
     @dippy.extensions.Extension.listener("member_remove")
-    async def add_member_join_to_activity_history(self, member: Member):
+    async def add_member_leave_to_activity_history(self, member: Member):
         await self.add_activity_entry(
             ActivityType.MEMBER_LEAVE, member.id, member.guild.id
         )
 
     @dippy.extensions.Extension.listener("member_ban")
-    async def add_member_join_to_activity_history(self, guild: Guild, user: User):
+    async def add_member_ban_to_activity_history(self, guild: Guild, user: User):
         await self.add_activity_entry(ActivityType.MEMBER_BANNED, user.id, guild.id)
 
     @dippy.extensions.Extension.listener("member_unban")
-    async def add_member_join_to_activity_history(self, guild: Guild, user: User):
+    async def add_member_unban_to_activity_history(self, guild: Guild, user: User):
         await self.add_activity_entry(ActivityType.MEMBER_UNBANNED, user.id, guild.id)
 
     async def _get_bans(self, guild: Guild, duration: timedelta) -> list[int]:
