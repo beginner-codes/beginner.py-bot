@@ -66,7 +66,6 @@ class OnBoarding(Cog):
 
     async def welcome_member(self, member: nextcord.Member):
         self.logger.debug(f"Welcoming {member.display_name}")
-        await member.add_roles(self.get_role("member"))
 
 
 def setup(client):
