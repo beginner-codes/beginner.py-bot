@@ -168,7 +168,7 @@ class RaidProtection(dippy.Extension):
         return joins_by_hour
 
     def _now(self) -> datetime:
-        return datetime.utcnow().astimezone(timezone.utc)
+        return datetime.now().astimezone(timezone.utc)
 
     async def _lockdown(self, guild: Guild):
         if await self.mod_manager.locked_down(guild):
