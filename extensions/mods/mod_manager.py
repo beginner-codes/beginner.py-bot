@@ -36,7 +36,8 @@ class ModManager(Injectable):
         if not started:
             return -1
 
-        now = datetime.utcnow().astimezone(timezone.utc)
+        started = datetime.fromisoformat(started)
+        now = datetime.now().astimezone(timezone.utc)
         duration = (now - started) // timedelta(minutes=1)
         return duration if duration <= 30 else -1
 
@@ -45,7 +46,7 @@ class ModManager(Injectable):
             return
 
         await guild.set_label(
-            "alert_started", datetime.utcnow().astimezone(timezone.utc)
+            "alert_started", datetime.now().astimezone(timezone.utc).isoformat()
         )
 
     async def mass_ban(self, guild: Guild, start: datetime, end: datetime) -> int:
