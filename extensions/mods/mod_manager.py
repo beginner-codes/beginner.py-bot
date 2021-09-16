@@ -2,7 +2,17 @@ from bevy import Injectable
 from datetime import datetime, timedelta
 from dippy import Client
 from dippy.labels.storage import StorageInterface
-from discord import Embed, Member, Message, HTTPException, Forbidden
+from discord import (
+    AllowedMentions,
+    Embed,
+    Guild,
+    Member,
+    Message,
+    Permissions,
+    TextChannel,
+    HTTPException,
+    Forbidden,
+)
 from extensions.mods.mod_settings import ModSettingsExtension
 from typing import Optional
 import asyncio
@@ -20,6 +30,33 @@ class ModManager(Injectable):
     @property
     def loop(self) -> asyncio.AbstractEventLoop:
         return asyncio.get_event_loop()
+
+    async def locked_down(self, guild: Guild) -> bool:
+        return await guild.get_label("locked_down", default=False)
+
+    async def lockdown(self, guild: Guild, channel: TextChannel):
+        member_role = guild.get_role(644299523686006834)
+        permissions = Permissions(
+            send_messages=False, send_messages_in_threads=False, add_reactions=False
+        )
+        await member_role.edit(permissions=permissions)
+        await guild.set_label("locked_down", True)
+        await channel.send(
+            f"Locked the server for {member_role}",
+            allowed_mentions=AllowedMentions(roles=False, everyone=False),
+        )
+
+    async def lift_lockdown(self, guild: Guild, channel: TextChannel):
+        member_role = guild.get_role(644299523686006834)
+        permissions = Permissions(
+            send_messages=True, send_messages_in_threads=True, add_reactions=True
+        )
+        await member_role.edit(permissions=permissions)
+        await guild.set_label("locked_down", False)
+        await channel.send(
+            f"Unlocked the server for {member_role}",
+            allowed_mentions=AllowedMentions(roles=False, everyone=False),
+        )
 
     async def mute(
         self,
