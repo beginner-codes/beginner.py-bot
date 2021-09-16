@@ -33,7 +33,7 @@ class LolStreakExtension(dippy.Extension):
             return
 
         if lol_count > 0:
-            await message.channel.set_label("lol_count", 0)
+            await self.set_count(message.channel, 0)
 
         if lol_count > 1:
             await message.channel.send(
