@@ -1,5 +1,5 @@
 from bevy import Injectable
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from dippy import Client
 from dippy.labels.storage import StorageInterface
 from discord import (
@@ -30,6 +30,20 @@ class ModManager(Injectable):
     @property
     def loop(self) -> asyncio.AbstractEventLoop:
         return asyncio.get_event_loop()
+
+    async def alert_active(self, guild: Guild) -> int:
+        started = await guild.get_label("alert_started", default=None)
+        if not started:
+            return -1
+
+        now = datetime.utcnow().astimezone(timezone.utc)
+        duration = (now - started) // timedelta(minutes=1)
+        return duration if duration <= 15 else -1
+
+    async def start_alert(self, guild: Guild):
+        await guild.set_label(
+            "alert_started", datetime.utcnow().astimezone(timezone.utc)
+        )
 
     async def locked_down(self, guild: Guild) -> bool:
         return await guild.get_label("locked_down", default=False)

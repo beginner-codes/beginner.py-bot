@@ -7,7 +7,6 @@ from nextcord import (
     Guild,
     Member,
     Message,
-    TextChannel,
     User,
 )
 from sqlalchemy import Column, DateTime, Integer, BigInteger, String
@@ -93,12 +92,19 @@ class RaidProtection(dippy.Extension):
         most_recent = joins.pop(0)
         mu = statistics.mean(joins.values()) if joins else 0
         degree_of_variation = self._get_degree_of_variation(joins)
+        alert_started = await self.mod_manager.alert_active(message.guild)
+        alert = "No"
+        if alert_started == 0:
+            alert = "Just Now"
+        elif alert_started > 0:
+            alert = f"{alert_started} minute{'s' * (alert_started != 1)}"
         await message.channel.send(
             f"Join Periods: {len(joins)}\n"
             f"Mean: {mu}\n"
             f"Most Recent: {most_recent}\n"
             f"Degree of Variation: {degree_of_variation}\n"
-            f"Last 5 Minutes: {len(last_5_minutes_joins)}"
+            f"Last 5 Minutes: {len(last_5_minutes_joins)}\n"
+            f"Alert Active: {alert}"
         )
 
     @dippy.extensions.Extension.listener("member_join")
@@ -173,6 +179,7 @@ class RaidProtection(dippy.Extension):
         if await self.mod_manager.locked_down(guild):
             return
 
+        await self.mod_manager.start_alert(guild)
         await guild.get_channel(720663441966366850).send(
             "There's been an increase in joins. Watch out for a raid. @mods can use `!lockdown` to prevent new members "
             "from interacting with the server."
