@@ -20,7 +20,7 @@ class VoiceChatExtension(dippy.Extension):
         role = guild.get_role(888160821673349140)
         for member in role.members:
             joined = datetime.fromisoformat(await member.get_label("joined"))
-            self.schedule_onboarding(member, joined)
+            await self.schedule_onboarding(member, joined)
 
     @dippy.Extension.command("!set welcome channel")
     async def set_welcome_channel(self, message: Message):
@@ -60,9 +60,9 @@ class VoiceChatExtension(dippy.Extension):
         await member.add_roles(member.guild.get_role(888160821673349140))
         joined = datetime.now().astimezone(timezone.utc)
         await member.set_label("joined", joined.isoformat())
-        self.schedule_onboarding(member, joined)
+        await self.schedule_onboarding(member, joined)
 
-    def schedule_onboarding(self, member: Member, joined: datetime):
+    async def schedule_onboarding(self, member: Member, joined: datetime):
         async def onboard():
             try:
                 await member.add_roles(member.guild.get_role(644325811301777426))
