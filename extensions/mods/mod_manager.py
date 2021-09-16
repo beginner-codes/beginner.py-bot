@@ -64,7 +64,18 @@ class ModManager(Injectable):
     async def lockdown(self, guild: Guild, channel: TextChannel):
         member_role = guild.get_role(644299523686006834)
         permissions = Permissions(
-            send_messages=False, send_messages_in_threads=False, add_reactions=False
+            send_messages=False,
+            send_messages_in_threads=False,
+            add_reactions=False,
+            embed_links=False,
+            attach_files=False,
+            external_emojis=False,
+            connect=False,
+            speak=False,
+            use_voice_activation=False,
+            change_nickname=False,
+            request_to_speak=False,
+            external_stickers=False,
         )
         await member_role.edit(permissions=permissions)
         await guild.set_label("locked_down", True)
@@ -77,7 +88,18 @@ class ModManager(Injectable):
     async def lift_lockdown(self, guild: Guild, channel: TextChannel):
         member_role = guild.get_role(644299523686006834)
         permissions = Permissions(
-            send_messages=True, send_messages_in_threads=True, add_reactions=True
+            send_messages=True,
+            send_messages_in_threads=True,
+            add_reactions=True,
+            embed_links=True,
+            attach_files=True,
+            external_emojis=True,
+            connect=True,
+            speak=True,
+            use_voice_activation=True,
+            change_nickname=True,
+            request_to_speak=True,
+            external_stickers=True,
         )
         await member_role.edit(permissions=permissions)
         await guild.set_label("locked_down", False)
