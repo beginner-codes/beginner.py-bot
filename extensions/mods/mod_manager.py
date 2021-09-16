@@ -76,6 +76,8 @@ class ModManager(Injectable):
             change_nickname=False,
             request_to_speak=False,
             external_stickers=False,
+            read_messages=True,
+            read_message_history=True,
         )
         await member_role.edit(permissions=permissions)
         await guild.set_label("locked_down", True)
@@ -100,6 +102,8 @@ class ModManager(Injectable):
             change_nickname=True,
             request_to_speak=True,
             external_stickers=True,
+            read_messages=True,
+            read_message_history=True,
         )
         await member_role.edit(permissions=permissions)
         await guild.set_label("locked_down", False)
