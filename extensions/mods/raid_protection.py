@@ -68,6 +68,7 @@ class RaidProtection(dippy.Extension):
                     session.query(ActivityEntry)
                     .filter(ActivityEntry.activity_type == activity_type)
                     .filter(ActivityEntry.date > date)
+                    .filter(ActivityEntry.guild_id == guild_id)
                     .order_by(ActivityEntry.date.desc())
                 )
                 session.expunge_all()
