@@ -49,7 +49,7 @@ class RaidProtection(dippy.Extension):
         def _add_to_db():
             with self.db.session() as session:
                 label = ActivityEntry(
-                    activity_type_type=activity_type,
+                    activity_type_type=str(activity_type),
                     target_id=target_id,
                     guild_id=guild_id,
                     date=datetime.now().astimezone(timezone.utc),
