@@ -114,6 +114,9 @@ class VoiceChatExtension(dippy.Extension):
         ]
 
     async def add_unwelcomed_user(self, member: Member):
+        if member.id == 335491211039080458:
+            return  # Ignore dev alt
+
         unwelcomed = await self.get_unwelcomed_users(member.guild)
         unwelcomed.append(member)
         await self._set_unwelcomed_users(member.guild, unwelcomed)
