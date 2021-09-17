@@ -52,7 +52,7 @@ class RaidProtection(dippy.Extension):
                     activity_type=str(activity_type),
                     target_id=target_id,
                     guild_id=guild_id,
-                    date=datetime.now().astimezone(timezone.utc),
+                    date=datetime.utcnow(),
                 )
                 session.add(label)
                 session.commit()
