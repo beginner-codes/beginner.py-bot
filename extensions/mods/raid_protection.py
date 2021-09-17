@@ -31,7 +31,7 @@ class ActivityEntry(SQLAlchemyConnector.BaseModel):
     activity_type = Column(String(32), nullable=False)
     date = Column(DateTime, nullable=False)
     target_id = Column(BigInteger, nullable=False)
-    guild_id: Column(BigInteger, nullable=False)
+    guild_id = Column(BigInteger, nullable=False)
 
 
 class RaidProtection(dippy.Extension):
