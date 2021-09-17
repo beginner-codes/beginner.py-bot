@@ -42,3 +42,5 @@ class SetupModelsExtension(dippy.Extension):
 
         TextChannel.get_label = get_label
         TextChannel.set_label = set_label
+        Thread.get_label = get_label
+        Thread.set_label = set_label
