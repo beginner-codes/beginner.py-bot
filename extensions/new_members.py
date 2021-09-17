@@ -44,7 +44,7 @@ class VoiceChatExtension(dippy.Extension):
             )
 
     async def check_for_highscore(self, guild: Guild):
-        if self.mod_manager.locked_down(guild):
+        if await self.mod_manager.locked_down(guild):
             return
 
         last_highest = await guild.get_label("highest-member-count", default=0)
