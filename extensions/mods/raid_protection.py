@@ -1,4 +1,5 @@
 from asyncio import get_running_loop
+from collections import defaultdict
 from datetime import datetime, timedelta, timezone
 from dippy.sqlalchemy_connector import SQLAlchemyConnector
 from extensions.mods.mod_manager import ModManager
@@ -159,7 +160,8 @@ class RaidProtection(dippy.Extension):
     ) -> dict[int, int]:
         now = self._now()
         period = timedelta(hours=1)
-        joins_by_hour = {0: 0}
+        joins_by_hour = defaultdict(lambda: 0)
+        joins_by_hour[0] = 0
 
         for entry in await self.get_activity_entries(
             ActivityType.MEMBER_JOIN, guild.id, now - duration
@@ -169,7 +171,7 @@ class RaidProtection(dippy.Extension):
                     (now - entry.date.astimezone(timezone.utc)) // period
                 ] += 1
 
-        return joins_by_hour
+        return dict(joins_by_hour)
 
     def _now(self) -> datetime:
         return datetime.now().astimezone(timezone.utc)
