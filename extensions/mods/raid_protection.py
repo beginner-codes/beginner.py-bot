@@ -25,6 +25,11 @@ class ActivityType(str, Enum):
         return self.value
 
 
+SPIKE_ALERT_THRESHOLD = 2
+SPIKE_LOCKDOWN_THRESHOLD = 4
+SPIKE_CHECK_MINUTES = 5
+
+
 class ActivityEntry(SQLAlchemyConnector.BaseModel):
     __tablename__ = "activity_entries"
 
@@ -193,15 +198,17 @@ class RaidProtection(dippy.Extension):
 
     async def _do_spike_raid_check(self, guild: Guild) -> bool:
         joins = await self.get_activity_entries(
-            ActivityType.MEMBER_JOIN, guild.id, self._now() - timedelta(minutes=5)
+            ActivityType.MEMBER_JOIN,
+            guild.id,
+            self._now() - timedelta(minutes=SPIKE_CHECK_MINUTES),
         )
-        if len(joins) > 10:
+        if len(joins) > SPIKE_LOCKDOWN_THRESHOLD:
             await self._lockdown(guild)
 
-        elif len(joins) > 5:
+        elif len(joins) > SPIKE_ALERT_THRESHOLD:
             await self._alert(guild)
 
-        return len(joins) > 5
+        return len(joins) > SPIKE_ALERT_THRESHOLD
 
     async def _do_out_of_bounds_raid_check(self, guild: Guild) -> bool:
         week = timedelta(days=7)
