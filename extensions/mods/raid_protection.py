@@ -109,6 +109,7 @@ class RaidProtection(dippy.Extension):
         await message.channel.send(
             f"Join Periods: {len(joins)}\n"
             f"Mean: {mu}\n"
+            f"Max: {max(joins.values())}\n"
             f"Most Recent: {most_recent}\n"
             f"Degree of Variation: {degree_of_variation}\n"
             f"Last 5 Minutes: {len(last_5_minutes_joins)}\n"
