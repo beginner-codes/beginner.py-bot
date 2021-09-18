@@ -165,7 +165,9 @@ class RaidProtection(dippy.Extension):
             ActivityType.MEMBER_JOIN, guild.id, now - duration
         ):
             if entry.target_id not in bans:
-                joins_by_hour[(now - entry.date) // period] += 1
+                joins_by_hour[
+                    (now - entry.date.astimezone(timezone.utc)) // period
+                ] += 1
 
         return joins_by_hour
 
