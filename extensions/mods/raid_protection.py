@@ -71,7 +71,6 @@ class RaidProtection(dippy.Extension):
                     .filter(ActivityEntry.guild_id == guild_id)
                     .order_by(ActivityEntry.date.desc())
                 )
-                session.expunge_all()
                 return list(query.all())
 
         return await get_running_loop().run_in_executor(None, _query_db)
