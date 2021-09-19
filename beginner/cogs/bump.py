@@ -302,7 +302,7 @@ class Bumping(Cog):
     @Cog.command()
     @commands.has_guild_permissions(manage_channels=True)
     async def send_explanation_message(self, _):
-        await self.send_explanation_message(_)
+        await self.create_explanation_message()
 
     @Cog.command(name="announce_king")
     @commands.has_guild_permissions(manage_channels=True)
