@@ -69,12 +69,14 @@ class HelpRotatorExtension(dippy.Extension):
                     delete_after=30,
                 )
                 await message.remove_reaction(emoji, member)
-                await self.manager.update_archived_channel(claimed_channel, member)
-                pins = await claimed_channel.pins()
-                await claimed_channel.purge(
-                    after=pins[0],
-                    check=lambda msg: msg.author.bot and "✅" in msg.reactions,
-                )
+                categories = await self.manager.get_categories(channel.guild)
+                if claimed_channel.category.id == categories["help-archive"]:
+                    await self.manager.update_archived_channel(claimed_channel, member)
+                    await claimed_channel.purge(
+                        after=datetime.now() - timedelta(days=1),
+                        check=lambda msg: msg.author.bot
+                        and "moved to the archive" in msg.content,
+                    )
                 return
 
         await message.edit(content="*Claiming channel for you, please standby*")
