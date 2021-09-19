@@ -138,7 +138,9 @@ class AutoModExtension(dippy.Extension):
         messages_last_minute = set()
 
         now = datetime.now().astimezone(timezone.utc)
-        since = min(oldest or now, now - timedelta(minutes=1)).astimezone(timezone.utc)
+        since = min(
+            oldest.astimezone(timezone.utc) or now, now - timedelta(minutes=1)
+        ).astimezone(timezone.utc)
         for message in (
             message for message in self._message_buffer if message.author == member
         ):
