@@ -91,7 +91,8 @@ class HelpRotatorExtension(dippy.Extension):
             return
 
         owner = await self.manager.get_owner(channel)
-        if member != owner:
+        helper = utils.get(channel.guild.roles, name="helpers")
+        if member != owner and helper not in member.roles:
             return
 
         await self.manager.update_archived_channel(channel, member)
