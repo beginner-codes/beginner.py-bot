@@ -62,7 +62,7 @@ class HelpRotatorExtension(dippy.Extension):
         message = await channel.fetch_message(reaction.message_id)
         if last_claimed:
             last_claimed = datetime.fromisoformat(last_claimed)
-            if datetime.utcnow() - last_claimed < timedelta(minutes=15):
+            if datetime.utcnow() - last_claimed < timedelta(hours=6):
                 claimed_channel = channel.guild.get_channel(channel_id)
                 await claimed_channel.send(
                     f"{member.mention} please use this channel for your question.",
