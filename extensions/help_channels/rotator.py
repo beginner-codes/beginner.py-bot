@@ -60,6 +60,8 @@ class HelpRotatorExtension(dippy.Extension):
         if member.bot:
             return
 
+        self._claim_attempts[member.id].append(datetime.now())
+
         message = await channel.fetch_message(reaction.message_id)
         if not self._allow_claim_attempt(member):
             await message.remove_reaction(reaction.emoji, member)
