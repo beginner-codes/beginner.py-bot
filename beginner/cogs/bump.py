@@ -299,9 +299,12 @@ class Bumping(Cog):
             await king.add_roles(role)
             await self.announce_king()
 
-    @Cog.command(
-        name="announce_king",
-    )
+    @Cog.command()
+    @commands.has_guild_permissions(manage_channels=True)
+    async def send_explanation_message(self, _):
+        await self.send_explanation_message(_)
+
+    @Cog.command(name="announce_king")
     @commands.has_guild_permissions(manage_channels=True)
     async def command_announce_king(self, _):
         await self.announce_king()
