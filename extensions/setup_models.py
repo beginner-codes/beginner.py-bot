@@ -6,8 +6,9 @@ from discord import *
 class SetupModelsExtension(dippy.Extension):
     labels: dippy.labels.storage.StorageInterface
 
-    @dippy.Extension.listener("ready")
-    async def on_ready(self):
+    def __init__(self):
+        super().__init__()
+
         async def get_label(member: Member, label_name: str, default=None):
             return await self.labels.get(
                 f"member[{member.guild.id}]", member.id, label_name, default
