@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-from discord import Guild, Message, RawReactionActionEvent, TextChannel
+from discord import Guild, Message, RawReactionActionEvent, TextChannel, utils
 from extensions.help_channels.channel_manager import ChannelManager
 import asyncio
 import dippy.labels
@@ -63,10 +63,18 @@ class HelpRotatorExtension(dippy.Extension):
         if last_claimed:
             last_claimed = datetime.fromisoformat(last_claimed)
             if datetime.utcnow() - last_claimed < timedelta(minutes=15):
-                await channel.guild.get_channel(channel_id).send(
-                    f"{member.mention} please use this channel for your question."
+                claimed_channel = channel.guild.get_channel(channel_id)
+                await claimed_channel.send(
+                    f"{member.mention} please use this channel for your question.",
+                    delete_after=30,
                 )
                 await message.remove_reaction(emoji, member)
+                await self.manager.update_archived_channel(claimed_channel, member)
+                pins = await claimed_channel.pins()
+                await claimed_channel.purge(
+                    after=pins[0],
+                    check=lambda msg: msg.author.bot and "✅" in msg.reactions,
+                )
                 return
 
         await message.edit(content="*Claiming channel for you, please standby*")
