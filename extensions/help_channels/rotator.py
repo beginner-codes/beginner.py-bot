@@ -1,5 +1,6 @@
+from collections import defaultdict
 from datetime import datetime, timedelta
-from discord import Guild, Message, RawReactionActionEvent, TextChannel, utils
+from discord import Guild, Member, Message, RawReactionActionEvent, TextChannel, utils
 from extensions.help_channels.channel_manager import ChannelManager
 import asyncio
 import dippy.labels
@@ -10,6 +11,10 @@ class HelpRotatorExtension(dippy.Extension):
     log: dippy.logging.Logging
     labels: dippy.labels.storage.StorageInterface
     manager: ChannelManager
+
+    def __init__(self):
+        super().__init__()
+        self._claim_attempts: dict[int, list[datetime]] = defaultdict(list)
 
     @dippy.Extension.listener("guild_join")
     async def on_guild_added_setup_cleanup(self, guild: Guild):
@@ -46,7 +51,6 @@ class HelpRotatorExtension(dippy.Extension):
 
         channel: TextChannel = self.client.get_channel(reaction.channel_id)
         categories = await self.manager.get_categories(channel.guild)
-
         if channel.category.id != categories["get-help"]:
             return
 
@@ -56,10 +60,14 @@ class HelpRotatorExtension(dippy.Extension):
         if member.bot:
             return
 
+        message = await channel.fetch_message(reaction.message_id)
+        if not self._allow_claim_attempt(member):
+            await message.remove_reaction(reaction.emoji, member)
+            return
+
         last_claimed, channel_id = await self.labels.get(
             "user", member.id, "last-claimed-channel", (None, None)
         )
-        message = await channel.fetch_message(reaction.message_id)
         if last_claimed:
             last_claimed = datetime.fromisoformat(last_claimed)
             if datetime.utcnow() - last_claimed < timedelta(hours=6):
@@ -127,6 +135,16 @@ class HelpRotatorExtension(dippy.Extension):
         self.log.info(f"Cleaning up channels for {guild.name}")
         self.client.loop.create_task(self.guild_cleanup_task(guild))
         await self.manager.cleanup_help_channels(guild)
+
+    def _allow_claim_attempt(self, member: Member) -> bool:
+        now = datetime.now()
+        attempts = 0
+        for attempt in self._claim_attempts[member.id].copy():
+            if attempt < now - timedelta(minutes=30):
+                self._claim_attempts[member.id].remove(attempt)
+            else:
+                attempts += 1
+        return attempts < 2
 
     def _setup_cleanup(self, guild: Guild):
         self.log.info(f"Starting channel cleanup for {guild.name}")
