@@ -68,6 +68,11 @@ class HelpRotatorExtension(dippy.Extension):
                     f"{member.mention} please use this channel for your question.",
                     delete_after=30,
                 )
+                await channel.send(
+                    f"You've already claimed {claimed_channel.mention}, please use that channel. If you need to change "
+                    f"the topic ask a helper.",
+                    delete_after=15,
+                )
                 await message.remove_reaction(emoji, member)
                 categories = await self.manager.get_categories(channel.guild)
                 if claimed_channel.category.id == categories["help-archive"]:
