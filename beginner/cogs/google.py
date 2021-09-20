@@ -6,6 +6,12 @@ import beginner.config
 import nextcord
 
 
+class MoreResultsButton(nextcord.ui.View):
+    def __init__(self, url_search):
+        super().__init__()
+        self.add_item(nextcord.ui.Button(label='More Results', url=url_search))
+
+        
 class Google(Cog):
     def __init__(self, client):
         super().__init__(client)
@@ -52,9 +58,10 @@ class Google(Cog):
             results.append(f"{len(results) + 1}. [{title}]({result['link']})\n")
         await message.edit(
             embed=self.create_google_message(
-                f"Results for \"{query}\"\n\n{''.join(results)}\n[More Results]({url_search})",
+                f"Results for \"{query}\"\n\n{''.join(results)}",
                 color,
             )
+            ,view=MoreResultsButton(url_search)
         )
 
     def create_google_message(self, message, color):
