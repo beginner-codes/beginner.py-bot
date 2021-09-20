@@ -61,7 +61,7 @@ class Google(Cog):
                 f"Results for \"{query}\"\n\n{''.join(results)}",
                 color,
             )
-            ,view=MoreResultsButton()
+            ,view=MoreResultsButton(url_search)
         )
 
     def create_google_message(self, message, color):
