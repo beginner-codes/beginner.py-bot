@@ -9,7 +9,7 @@ import nextcord
 class MoreResultsButton(nextcord.ui.View):
     def __init__(self, url_search):
         super().__init__()
-        self.add_item(nextcord.ui.Button(label='Click Here', url=url_search))
+        self.add_item(nextcord.ui.Button(label='More Results', url=url_search))
 
         
 class Google(Cog):
