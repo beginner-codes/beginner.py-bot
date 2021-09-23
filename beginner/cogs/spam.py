@@ -64,7 +64,25 @@ class SpamCog(Cog):
     @Cog.listener()
     async def on_message(self, message):
         await asyncio.gather(
-            self.attachment_filter(message), self.mention_filter(message)
+            self.attachment_filter(message),
+            self.mention_filter(message),
+            self.newline_filter(message),
+        )
+
+    async def newline_filter(self, message: nextcord.Message):
+        count = message.content.count("\n")
+        if count < 10:
+            return
+
+        if count / len(message.content) < 0.25:
+            return
+
+        await asyncio.gather(
+            message.channel.send(
+                f"{message.author.mention} your message has been deleted for having an excessive number of lines.",
+                delete_after=60,
+            ),
+            message.delete(),
         )
 
     async def mention_filter(self, message: nextcord.Message):
