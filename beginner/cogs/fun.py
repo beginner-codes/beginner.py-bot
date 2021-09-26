@@ -357,6 +357,11 @@ class Fun(Cog):
             ),
         )
 
+    @Cog.command()
+    async def bruh(self, ctx, num: int = -1):
+        n = min(num, 100) if num > 0 else random.randint(5, 100)
+        await ctx.send(f"Br{'u' * n}h")
+
     @Cog.command(name="gpt-talk")
     async def gpt_talk(self, ctx, *, content):
         embed_to_edit = await ctx.message.reply(
