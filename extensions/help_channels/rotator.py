@@ -121,7 +121,7 @@ class HelpRotatorExtension(dippy.Extension):
         if member != owner and helper not in member.roles:
             return
 
-        await self.manager.update_archived_channel(channel, member)
+        await self.manager.update_archived_channel(channel, owner)
         await (await channel.fetch_message(reaction.message_id)).delete()
 
     async def guild_cleanup_task(self, guild: Guild):
