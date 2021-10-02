@@ -24,7 +24,13 @@ class VoiceChatExtension(dippy.Extension):
         suspended = guild.get_role(856200823854989372)
         for label in results:
             member = guild.get_member(label.id)
-            if start <= label.value <= end and new_member in member.roles:
+            if not isinstance(label.value, str):
+                print("Not a string:", repr(label.value))
+                continue
+            if (
+                start <= datetime.fromisoformat(label.value) <= end
+                and new_member in member.roles
+            ):
                 print(f"Suspending {member}")
                 await member.add_roles(suspended)
                 await member.remove_roles(new_member)
@@ -34,8 +40,14 @@ class VoiceChatExtension(dippy.Extension):
         guild = self.client.get_guild(644299523686006834)
         role = guild.get_role(888160821673349140)
         for member in role.members:
-            joined = datetime.fromisoformat(await member.get_label("joined"))
-            await self.schedule_onboarding(member, joined)
+            try:
+                joined_time = await member.get_label("joined")
+                joined = datetime.fromisoformat(joined_time)
+                await self.schedule_onboarding(member, joined)
+            except TypeError:
+                print(
+                    f"{datetime.utcnow().isoformat()} FAILED TO GET JOINED TIME {joined_time!r}"
+                )
 
     @dippy.Extension.listener("ready")
     async def assign_missing_roles(self):
