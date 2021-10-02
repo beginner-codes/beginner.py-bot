@@ -11,7 +11,7 @@ class RoleAssignmentCog(Cog):
         self.reactions = {
             "📣": self.assign_announcements,
             "🗓": self.assign_events,
-            "🤪": self.assign_off_topic,
+            "🗞": self.assign_off_topic,
         }
 
     @commands.command(name="create-role-assignment")
