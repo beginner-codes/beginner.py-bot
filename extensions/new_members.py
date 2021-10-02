@@ -24,6 +24,8 @@ class VoiceChatExtension(dippy.Extension):
         suspended = guild.get_role(856200823854989372)
         for label in results:
             member = guild.get_member(label.id)
+            if not member:
+                continue
             if not isinstance(label.value, str):
                 print("Not a string:", repr(label.value))
                 continue
