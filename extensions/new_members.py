@@ -22,6 +22,20 @@ class VoiceChatExtension(dippy.Extension):
             joined = datetime.fromisoformat(await member.get_label("joined"))
             await self.schedule_onboarding(member, joined)
 
+    @dippy.Extension.listener("ready")
+    async def assign_missing_roles(self):
+        guild = self.client.get_guild(644299523686006834)
+        need_roles = []
+        for member in guild.members:
+            if len(member.roles) < 2:
+                need_roles.append(self.onboard_member(member))
+
+        if need_roles:
+            await asyncio.gather(*need_roles)
+            await guild.get_channel(865010559861522442).send(
+                f"Restarted and added roles to {len(need_roles)} members"
+            )
+
     @dippy.Extension.command("!set welcome channel")
     async def set_welcome_channel(self, message: Message):
         if not message.author.guild_permissions.manage_channels:
