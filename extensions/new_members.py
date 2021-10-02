@@ -36,6 +36,7 @@ class VoiceChatExtension(dippy.Extension):
                 print(f"Suspending {member}")
                 await member.add_roles(suspended)
                 await member.remove_roles(new_member)
+        print("DONE SUSPENDING")
 
     @dippy.Extension.listener("ready")
     async def onboard_new_members(self):
