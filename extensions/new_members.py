@@ -19,14 +19,15 @@ class VoiceChatExtension(dippy.Extension):
         guild = self.client.get_guild(644299523686006834)
         role = guild.get_role(888160821673349140)
         for member in role.members:
-            try:
-                joined_time = await member.get_label("joined")
+            joined_time = await member.get_label("joined")
+            if joined_time is None:
+                await asyncio.gather(
+                    self.onboard_member(member),
+                    self.check_for_highscore(member.guild),
+                )
+            else:
                 joined = datetime.fromisoformat(joined_time)
                 await self.schedule_onboarding(member, joined)
-            except TypeError:
-                print(
-                    f"{datetime.utcnow().isoformat()} FAILED TO GET JOINED TIME {joined_time!r}"
-                )
 
     @dippy.Extension.listener("ready")
     async def assign_missing_roles(self):
