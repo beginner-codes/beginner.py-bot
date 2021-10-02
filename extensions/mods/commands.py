@@ -48,7 +48,7 @@ class ModeratorsExtension(dippy.Extension):
             await message.channel.send("No alerts active. Mass ban is disabled.")
             return
 
-        now = datetime.now().astimezone(timezone.utc)
+        now = datetime.utcnow().astimezone(timezone.utc)
         start = now - timedelta(minutes=alerting)
         try:
             duration = int(message.content.rpartition(" ")[-1].strip())
