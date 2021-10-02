@@ -33,7 +33,7 @@ class VoiceChatExtension(dippy.Extension):
         guild = self.client.get_guild(644299523686006834)
         need_roles = []
         for member in guild.members:
-            if len(member.roles) < 2:
+            if len(member.roles) < 2 and not member.pending:
                 need_roles.append(self.onboard_member(member))
 
         if need_roles:
