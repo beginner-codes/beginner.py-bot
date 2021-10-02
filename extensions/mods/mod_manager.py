@@ -53,6 +53,7 @@ class ModManager(Injectable):
         count = 0
         log_channel = guild.get_channel(719311864479219813)
         for member in guild.members:
+            print(start, member.joined_at, end)
             if start <= member.joined_at <= end:
                 await member.ban(reason="Mass ban")
                 await log_channel.send(f"Banned {member.display_name}")
