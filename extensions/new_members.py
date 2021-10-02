@@ -15,6 +15,21 @@ class VoiceChatExtension(dippy.Extension):
     mod_manager: ModManager
 
     @dippy.Extension.listener("ready")
+    async def fix_joins(self):
+        results = await self.labels.find("member[644299523686006834]", key="joined")
+        guild = self.client.get_guild(644299523686006834)
+        start = datetime.now().astimezone(timezone.utc) - timedelta(hours=1, minutes=10)
+        end = start + timedelta(minutes=40)
+        new_member = guild.get_role(888160821673349140)
+        suspended = guild.get_role(856200823854989372)
+        for label in results:
+            member = guild.get_member(label.id)
+            if start <= label.value <= end and new_member in member.roles:
+                print(f"Suspending {member}")
+                await member.add_roles(suspended)
+                await member.remove_roles(new_member)
+
+    @dippy.Extension.listener("ready")
     async def onboard_new_members(self):
         guild = self.client.get_guild(644299523686006834)
         role = guild.get_role(888160821673349140)
