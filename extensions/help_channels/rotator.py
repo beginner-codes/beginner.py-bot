@@ -113,10 +113,14 @@ class HelpRotatorExtension(dippy.Extension):
             return
 
         member = channel.guild.get_member(reaction.user_id)
-        if member.bot:
+        if not member or member.bot:
             return
 
         owner = await self.manager.get_owner(channel)
+        if not owner:
+            await channel.send("User is no longer a member here", delete_after=5)
+            return
+
         helper = utils.get(channel.guild.roles, name="helpers")
         if member != owner and helper not in member.roles:
             return
