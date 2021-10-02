@@ -15,13 +15,14 @@ class HelpRotatorExtension(dippy.Extension):
     def __init__(self):
         super().__init__()
         self._claim_attempts: dict[int, list[datetime]] = defaultdict(list)
+        self.client.loop.create_task(self.setup_cleanup())
 
     @dippy.Extension.listener("guild_join")
     async def on_guild_added_setup_cleanup(self, guild: Guild):
         self._setup_cleanup(guild)
 
-    @dippy.Extension.listener("ready")
-    async def on_ready_setup_cleanup(self):
+    async def setup_cleanup(self):
+        await self.client.wait_for("ready")
         for guild in self.client.guilds:
             self._setup_cleanup(guild)
 
