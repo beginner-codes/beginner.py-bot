@@ -7,8 +7,8 @@ class BumpReminderExtension(dippy.Extension):
     client: dippy.Client
     log: dippy.logging.Logging
 
-    @dippy.Extension.listener("ready")
-    async def setup_reminder(self):
+    def __init__(self):
+        super().__init__()
         self.log.info("Bump reminder setting up")
         self.client.loop.create_task(self.schedule_next())
 
