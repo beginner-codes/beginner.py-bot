@@ -184,11 +184,12 @@ class CodeRunner(Cog):
             output = ["*No output or exceptions*"]
 
         out = "\n\n".join(output)
-        if out.count("\n") > 32:
+        old_out = out
+        if out.count("\n") > 30:
             lines = out.split("\n")
-            out = "\n".join(lines[:15] + [".\n.\n.\n."] + lines[-17:])
+            out = "\n".join(lines[:15] + [f".\n.\nRemoved {len(lines) - 30}\n.\n."] + lines[-17:])
         if len(out) > 1000:
-            out = out[:497] + "\n.\n.\n.\n" + out[-504:]
+            out = old_out[:497] + f"\n.\n.\nRemoved {len(old_out) - 1000} characters\n.\n.\n" + old_out[-504:]
         await message.channel.send(
             content="" if member is None else member.mention,
             embed=nextcord.Embed(
