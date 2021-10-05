@@ -35,6 +35,7 @@ class Numpy:
 class Pickle:
     def __init__(self):
         self.__pickles = {}
+        self.__pickle = __import__("pickle")
 
     def __getattr__(self, item):
         raise AttributeError(f"pickle.{item} is disabled")
