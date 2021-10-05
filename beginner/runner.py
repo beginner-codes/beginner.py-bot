@@ -11,43 +11,52 @@ import time
 import traceback
 import uuid
 import hashlib
+from types import ModuleType
 
 
-class Numpy:
-    def __init__(self):
-        self.__numpy = __import__("numpy")
+class Module:
+    def __init__(self, module, executor):
+        self.__module = module
+        self.__executor =executor
+
+    def __getattr__(self, item):
+        attr = getattr(self.__module, item)
+        if isinstance(attr, ModuleType):
+            if attr.__name__ not in self.__executor.import_whitelist:
+                raise RuntimeError(f"{attr.__name__} is not an enabled module")
+
+            attr = Module(attr)
+
+        return attr
+
+    def __repr__(self):
+        return repr(self.__module)
+
+    def __str__(self):
+        return str(self.__module)
+
+    def __dir__(self):
+        return dir(self.__module)
+
+
+class Numpy(Module):
+    def __init__(self, executor):
+        super().__init__(__import__("numpy"), executor)
 
     def __getattr__(self, item):
         if item in {"load", "save", "savetxt"}:
             raise AttributeError(f"numpy.{item} is disabled")
-        return getattr(self.__numpy, item)
 
-    def __repr__(self):
-        return repr(self.__numpy)
-
-    def __str__(self):
-        return str(self.__numpy)
-
-    def __dir__(self):
-        return dir(self.__numpy)
+        return super().__getattr__(item)
 
 
-class Pickle:
-    def __init__(self):
+class Pickle(Module):
+    def __init__(self, executor):
+        super().__init__(__import__("pickle"), executor)
         self.__pickles = {}
-        self.__pickle = __import__("pickle")
 
     def __getattr__(self, item):
         raise AttributeError(f"pickle.{item} is disabled")
-
-    def __repr__(self):
-        return repr(self.__pickle)
-
-    def __str__(self):
-        return str(self.__pickle)
-
-    def __dir__(self):
-        return dir(self.__pickle)
 
     def load(self, file, *_, **__):
         unique_id = file.read()
@@ -128,7 +137,7 @@ class Executer:
         if "__import__" in builtins:
             builtins["__import__"] = (
                 self.importer
-                if restricted
+                if restricted or True
                 else self.admin_importer
             )
         builtins["getsizeof"] = sys.getsizeof
@@ -154,10 +163,10 @@ class Executer:
         if self.imported_module_parser(name) not in self.import_whitelist:
             raise ImportError(f"Module is not whitelisted: {name}")
         if name == "numpy":
-            return Numpy()
+            return Numpy(self)
         if name == "pickle":
-            return Pickle()
-        return __import__(name, *args, **kwargs)
+            return Pickle(self)
+        return Module(__import__(name, *args, **kwargs), self)
 
     def admin_importer(self, name, *args, **kwargs):
         if name in {"pickle"}:
