@@ -63,12 +63,12 @@ class Pickle:
         return self.__pickles[unique_id]
 
     def dump(self, obj, file, *_, **__):
-        unique_id = hashlib.md5(uuid.uuid4())
+        unique_id = hashlib.md5(uuid.uuid4().bytes)
         self.__pickles[unique_id] = obj
         file.write(unique_id)
 
     def dumps(self, obj, *_, **__):
-        unique_id = hashlib.md5(uuid.uuid4())
+        unique_id = hashlib.md5(uuid.uuid4().bytes)
         self.__pickles[unique_id] = obj
         return unique_id
 
