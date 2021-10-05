@@ -28,6 +28,7 @@ math
 numbers
 numpy
 operator
+pickle
 pprint
 random
 re

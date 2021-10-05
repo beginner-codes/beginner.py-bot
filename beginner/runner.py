@@ -9,6 +9,8 @@ import signal
 import sys
 import time
 import traceback
+import uuid
+import hashlib
 
 
 class Numpy:
@@ -28,6 +30,46 @@ class Numpy:
 
     def __dir__(self):
         return dir(self.__numpy)
+
+
+class Pickle:
+    def __init__(self):
+        self.__pickles = {}
+
+    def __getattr__(self, item):
+        raise AttributeError(f"pickle.{item} is disabled")
+
+    def __repr__(self):
+        return repr(self.__pickle)
+
+    def __str__(self):
+        return str(self.__pickle)
+
+    def __dir__(self):
+        return dir(self.__pickle)
+
+    def load(self, file, *_, **__):
+        unique_id = file.read()
+        if unique_id not in self.__pickles:
+            raise RuntimeError("Unknown pickle detected")
+
+        return self.__pickles[unique_id]
+
+    def loads(self, unique_id, *_, **__):
+        if unique_id not in self.__pickles:
+            raise RuntimeError("Unknown pickle detected")
+
+        return self.__pickles[unique_id]
+
+    def dump(self, obj, file, *_, **__):
+        unique_id = hashlib.md5(uuid.uuid4())
+        self.__pickles[unique_id] = obj
+        file.write(unique_id)
+
+    def dumps(self, obj, *_, **__):
+        unique_id = hashlib.md5(uuid.uuid4())
+        self.__pickles[unique_id] = obj
+        return unique_id
 
 
 class CPUTimeExceeded(Exception):
@@ -86,7 +128,7 @@ class Executer:
             builtins["__import__"] = (
                 self.importer
                 if restricted
-                else lambda *args, **kwargs: __import__(*args, **kwargs)
+                else self.admin_importer
             )
         builtins["getsizeof"] = sys.getsizeof
         return builtins
@@ -112,6 +154,14 @@ class Executer:
             raise ImportError(f"Module is not whitelisted: {name}")
         if name == "numpy":
             return Numpy()
+        if name == "pickle":
+            return Pickle()
+        return __import__(name, *args, **kwargs)
+
+    def admin_importer(self, name, *args, **kwargs):
+        if name in {"pickle"}:
+            return self.importer(name, *args, **kwargs)
+
         return __import__(name, *args, **kwargs)
 
     def input(self, prompt="", **kwargs):
