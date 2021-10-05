@@ -1,3 +1,4 @@
+_strptime
 abc
 array
 base64
@@ -27,7 +28,6 @@ math
 numbers
 numpy
 operator
-pickle
 pprint
 random
 re
@@ -46,4 +46,3 @@ unicodedata
 unittest
 urllib.parse
 weakref
-_strptime
