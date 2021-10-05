@@ -184,6 +184,9 @@ class CodeRunner(Cog):
             output = ["*No output or exceptions*"]
 
         out = "\n\n".join(output)
+        if out.count("\n") > 32:
+            lines = out.split("\n")
+            out = "\n".join(lines[:15] + [".\n.\n.\n."] + lines[-17:])
         if len(out) > 1000:
             out = out[:497] + "\n.\n.\n.\n" + out[-504:]
         await message.channel.send(
