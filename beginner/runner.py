@@ -110,7 +110,6 @@ class Executer:
     def importer(self, name, *args, **kwargs):
         if self.imported_module_parser(name) not in self.import_whitelist:
             raise ImportError(f"Module is not whitelisted: {name}")
-        print(name)
         if name == "numpy":
             return Numpy()
         return __import__(name, *args, **kwargs)
