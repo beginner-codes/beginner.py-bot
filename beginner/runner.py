@@ -183,10 +183,13 @@ class Executer:
             raise ImportError(f"Module is not whitelisted: {name}")
         if name in special_modules:
             return special_modules[name](self)
+        if name == "antigravity":
+            print("https://xkcd.com/353/")
+            return
         return Module(__import__(name, *args, **kwargs), self)
 
     def admin_importer(self, name, *args, **kwargs):
-        if name in {"pickle"}:
+        if name in {"pickle", "antigravity"}:
             return self.importer(name, *args, **kwargs)
 
         return __import__(name, *args, **kwargs)

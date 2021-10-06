@@ -190,13 +190,16 @@ class CodeRunner(Cog):
             out = "\n".join(lines[:15] + [f".\n.\nRemoved {len(lines) - 30} lines\n.\n."] + lines[-17:])
         if len(out) > 1000:
             out = old_out[:497] + f"\n.\n.\nRemoved {len(old_out) - 1000} characters\n.\n.\n" + old_out[-504:]
-        await message.channel.send(
-            content="" if member is None else member.mention,
-            embed=nextcord.Embed(
+        embed = nextcord.Embed(
                 title=title, description=f"```\n{out}\n```", color=color
             ).set_footer(
                 text=f"!exec modules | Completed in {duration:0.4f} milliseconds"
-            ),
+            )
+        if "https://xkcd.com/353/" in old_out:
+            embed.set_image(url="https://imgs.xkcd.com/comics/python.png")
+        await message.channel.send(
+            content="" if member is None else member.mention,
+            embed=embed,
             reference=message,
             allowed_mentions=nextcord.AllowedMentions(
                 replied_user=member is None,
