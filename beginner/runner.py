@@ -19,7 +19,10 @@ class Module:
         self._module = module
         self.__executor =executor
 
-    def __getattr__(self, item):
+    def __getattr__(self, item: str):
+        if item.startswith("_"):
+            raise AttributeError(f"{self._module.__name__}.{item} is disabled")
+
         attr = getattr(self._module, item)
         if isinstance(attr, ModuleType):
             if attr.__name__ not in self.__executor.import_whitelist:
