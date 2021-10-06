@@ -16,11 +16,11 @@ from types import ModuleType
 
 class Module:
     def __init__(self, module, executor):
-        self.__module = module
+        self._module = module
         self.__executor =executor
 
     def __getattr__(self, item):
-        attr = getattr(self.__module, item)
+        attr = getattr(self._module, item)
         if isinstance(attr, ModuleType):
             if attr.__name__ not in self.__executor.import_whitelist:
                 raise RuntimeError(f"{attr.__name__} is not an enabled module")
@@ -30,13 +30,13 @@ class Module:
         return attr
 
     def __repr__(self):
-        return repr(self.__module)
+        return repr(self._module)
 
     def __str__(self):
-        return str(self.__module)
+        return str(self._module)
 
     def __dir__(self):
-        return dir(self.__module)
+        return dir(self._module)
 
 
 class Numpy(Module):
@@ -46,6 +46,17 @@ class Numpy(Module):
     def __getattr__(self, item):
         if item in {"load", "save", "savetxt"}:
             raise AttributeError(f"numpy.{item} is disabled")
+
+        return super().__getattr__(item)
+
+
+class IO(Module):
+    def __init__(self, executor):
+        super().__init__(__import__("io"), executor)
+
+    def __getattr__(self, item):
+        if item in {"open", "open_code", "FileIO"}:
+            raise AttributeError(f"{self._module.__name__}.{item} is disabled")
 
         return super().__getattr__(item)
 
@@ -137,7 +148,7 @@ class Executer:
         if "__import__" in builtins:
             builtins["__import__"] = (
                 self.importer
-                if restricted or True
+                if restricted
                 else self.admin_importer
             )
         builtins["getsizeof"] = sys.getsizeof
@@ -160,12 +171,15 @@ class Executer:
         return name.split(".")[0]
 
     def importer(self, name, *args, **kwargs):
+        special_modules = {
+            "numpy": Numpy,
+            "pickle": Pickle,
+            "io": IO
+        }
         if self.imported_module_parser(name) not in self.import_whitelist:
             raise ImportError(f"Module is not whitelisted: {name}")
-        if name == "numpy":
-            return Numpy(self)
-        if name == "pickle":
-            return Pickle(self)
+        if name in special_modules:
+            return special_modules[name](self)
         return Module(__import__(name, *args, **kwargs), self)
 
     def admin_importer(self, name, *args, **kwargs):
