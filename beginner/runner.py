@@ -28,7 +28,7 @@ class Module:
             if attr.__name__ not in self.__executor.import_whitelist:
                 raise RuntimeError(f"{attr.__name__} is not an enabled module")
 
-            attr = Module(attr)
+            attr = Module(attr, self.__executor)
 
         return attr
 
