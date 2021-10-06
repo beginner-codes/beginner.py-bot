@@ -22,6 +22,7 @@ getpass
 hashlib
 heapq
 hmac
+io
 itertools
 json
 math
