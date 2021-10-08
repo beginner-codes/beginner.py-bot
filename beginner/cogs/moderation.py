@@ -7,6 +7,7 @@ from beginner.scheduler import schedule
 from datetime import timedelta, datetime
 from nextcord import Embed, Message, Member, User, utils
 from beginner.tags import tag
+import discord
 import nextcord
 import pickle
 import re
@@ -239,14 +240,13 @@ class ModerationCog(Cog):
         )
 
     @Cog.command(name="unmute")
-    async def unmute(self, ctx, user):
+    async def unmute(self, ctx, member: discord.Member):
         if not (
             set(ctx.author.roles)
             & {self.get_role("jedi council"), self.get_role("mods")}
         ):
             return
 
-        member: Member = self.server.get_member(int(user[3:-1]))
         await member.remove_roles(self.get_role("muted"), reason="Mod unmute")
 
         await ctx.send(f"*{member.mention} is unmuted*")
