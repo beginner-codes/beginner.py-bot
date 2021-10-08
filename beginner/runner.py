@@ -47,7 +47,7 @@ class Numpy(Module):
         super().__init__(__import__("numpy"), executor)
 
     def __getattr__(self, item):
-        if item in {"load", "save", "savetxt"}:
+        if item in {"load", "loads", "loadtxt", "save", "savetxt", "savez", "savez_compressed"}:
             raise AttributeError(f"numpy.{item} is disabled")
 
         return super().__getattr__(item)
