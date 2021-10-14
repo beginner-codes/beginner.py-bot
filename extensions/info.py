@@ -9,6 +9,8 @@ class InfoExtension(dippy.Extension):
     async def manage_streaming_permissions(
         self, message: Message
     ):
+        if not message.content.startswith("!channel count"):
+            return
         if not message.guild:
             await message.channel.send("This command can only be used in a guild channel")
             return
