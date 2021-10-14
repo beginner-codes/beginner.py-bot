@@ -106,7 +106,12 @@ class ModerationCog(Cog):
         await ctx.send(f"{member.display_name} has been banned")
         await self.log_action("Ban", member, ctx.author, reason, ctx.message)
         self.save_action(
-            "BAN", member, ctx.author, message=reason, reference=ctx.message.id
+            "BAN",
+            member,
+            ctx.author,
+            message=reason,
+            reference=ctx.message.id,
+            link=ctx.message.jump_url,
         )
 
     @Cog.command(name="kick")
@@ -148,7 +153,12 @@ class ModerationCog(Cog):
         await ctx.send(f"{member.display_name} has been kicked")
         await self.log_action("Kick", member, ctx.author, reason, ctx.message)
         self.save_action(
-            "KICK", member, ctx.author, message=reason, reference=ctx.message.id
+            "KICK",
+            member,
+            ctx.author,
+            message=reason,
+            reference=ctx.message.id,
+            link=ctx.message.jump_url,
         )
 
     @Cog.command(name="purge")
@@ -236,7 +246,12 @@ class ModerationCog(Cog):
         )
 
         self.save_action(
-            "MUTE", member, ctx.author, message=reason, reference=message.id
+            "MUTE",
+            member,
+            ctx.author,
+            message=reason,
+            reference=message.id,
+            link=message.jump_url,
         )
 
     @Cog.command(name="unmute")
@@ -250,7 +265,13 @@ class ModerationCog(Cog):
         await member.remove_roles(self.get_role("muted"), reason="Mod unmute")
 
         await ctx.send(f"*{member.mention} is unmuted*")
-        self.save_action("UNMUTE", member, ctx.author, message="Mod unmute")
+        self.save_action(
+            "UNMUTE",
+            member,
+            ctx.author,
+            message="Mod unmute",
+            link=ctx.message.jump_url,
+        )
 
     @Cog.command(name="warn")
     async def warn(self, ctx, user, *, reason: str):
@@ -275,7 +296,12 @@ class ModerationCog(Cog):
 
         await self.log_action("WARN", member, ctx.author, reason, message)
         self.save_action(
-            "WARN", member, ctx.author, message=reason, reference=message.id
+            "WARN",
+            member,
+            ctx.author,
+            message=reason,
+            reference=message.id,
+            link=message.jump_url,
         )
 
     @Cog.command(aliases=("whois",))
@@ -299,11 +325,8 @@ class ModerationCog(Cog):
             for action in history:
                 details = pickle.loads(action.details.encode())
                 msg = details.get("message", "*No message*")
-                ref = details.get("reference", None)
-                ref_link = (
-                    (await ctx.channel.fetch_message(ref)).jump_url if ref else None
-                )
-                link = f"\n[Jump To Action]({ref_link})" if ref_link else ""
+                link_url = details.get("link", None)
+                link = f"\n[Jump To Action]({link_url})" if link_url else ""
                 action_items.append(
                     f"**{action.action_type:6} {action.datetime:%d/%m/%Y}**\n{msg}{link}"
                 )
