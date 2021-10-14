@@ -299,8 +299,13 @@ class ModerationCog(Cog):
             for action in history:
                 details = pickle.loads(action.details.encode())
                 msg = details.get("message", "*No message*")
+                ref = details.get("reference", None)
+                ref_link = (
+                    (await ctx.channel.fetch_message(ref)).jump_url if ref else None
+                )
+                link = f"\n[Jump To Action]({ref_link})" if ref_link else ""
                 action_items.append(
-                    f"**{action.action_type:6} {action.datetime:%d/%m/%Y}**\n{msg}"
+                    f"**{action.action_type:6} {action.datetime:%d/%m/%Y}**\n{msg}{link}"
                 )
             message = "\n".join(action_items)
 
