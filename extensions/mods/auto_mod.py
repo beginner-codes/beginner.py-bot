@@ -29,6 +29,8 @@ class AutoModExtension(dippy.Extension):
         if message.channel.permissions_for(message.author).manage_messages:
             return
 
+        await self._scan_for_links(message)
+
         if (
             message.author.id in self._muting
             or self.mute_role(message.guild) in message.author.roles
@@ -38,6 +40,44 @@ class AutoModExtension(dippy.Extension):
         self._message_buffer.appendleft(message)
         self.client.loop.create_task(self._scan_for_webhooks(message))
         await self._handle_spamming_violations(message.channel, message.author)
+
+    async def _scan_for_links(self, message: Message):
+        blocked_links = [
+            tld.lower()
+            for tld in re.findall(r"[a-z0-9_-]\.(?:gay|xxx)", message.content, re.I)
+        ]
+        if not blocked_links:
+            return
+
+        links = "\n".join(blocked_links)
+        tlds = ", ".join(link.rpartition(".")[-1] for link in blocked_links)
+        content = (
+            message.content
+            if len(message.content) < 800
+            else message.content[:800].strip() + "..."
+        )
+        await message.delete()
+        await message.channel.send(
+            content=message.author.mention,
+            embed=Embed(
+                title=f"Blocked Web TLDs",
+                description=(
+                    f"To maintain a wholesome and friendly environment we block all links to websites using certain "
+                    f"TLDs. Your message has been deleted.\n\n**Detected TLD(s)**\n{tlds}"
+                ),
+                color=0xFF0000,
+            ),
+        )
+        await self.client.get_channel(719311864479219813).send(
+            embed=Embed(
+                title=f"Blocked Web TLDs",
+                description=(
+                    f"**User:** {message.author.mention} ({message.author})\n**Links**: {links}\n**Channel**: "
+                    f"{message.channel.mention}\n**Message**\n{content}"
+                ),
+                color=0xFF0000,
+            ),
+        )
 
     async def _scan_for_webhooks(self, message: Message):
         webhooks = re.findall(
