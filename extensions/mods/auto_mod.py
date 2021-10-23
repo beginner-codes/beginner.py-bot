@@ -51,7 +51,7 @@ class AutoModExtension(dippy.Extension):
         if not blocked_links:
             return
 
-        links = "\n".join(blocked_links)
+        links = " | ".join(blocked_links)
         tlds = ", ".join(link.rpartition(".")[-1] for link in blocked_links)
         content = (
             message.content
