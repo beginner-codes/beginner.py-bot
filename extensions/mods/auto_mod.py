@@ -44,7 +44,9 @@ class AutoModExtension(dippy.Extension):
     async def _scan_for_links(self, message: Message):
         blocked_links = [
             tld.lower()
-            for tld in re.findall(r"[a-z0-9_-]\.(?:gay|xxx)", message.content, re.I)
+            for tld in re.findall(
+                r"([a-z0-9_./:\-]+\.(?:gay|xxx))", message.content, re.I
+            )
         ]
         if not blocked_links:
             return
