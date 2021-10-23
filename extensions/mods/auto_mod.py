@@ -1,7 +1,7 @@
 from aiohttp import ClientSession
 from collections import deque
 from datetime import datetime, timedelta, timezone
-from nextcord import Embed, Guild, Member, Message, Role, TextChannel, utils
+from nextcord import Embed, Guild, Member, Message, NotFound, Role, TextChannel, utils
 from nextcord.errors import NotFound
 from nextcord.webhook import Webhook
 from typing import Optional
@@ -58,7 +58,10 @@ class AutoModExtension(dippy.Extension):
             if len(message.content) < 800
             else message.content[:800].strip() + "..."
         )
-        await message.delete()
+        try:
+            await message.delete()
+        except NotFound:
+            pass
         await message.channel.send(
             content=message.author.mention,
             embed=Embed(
