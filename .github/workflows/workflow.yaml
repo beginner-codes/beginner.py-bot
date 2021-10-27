@@ -41,4 +41,4 @@ jobs:
       run: kubectl apply -f $GITHUB_WORKSPACE/manifests/bot.yaml -n bpy
 
     - name: Verify deployment
-      run: kubectl rollout status deployment/frontend -n bpy
+      run: kubectl rollout status deployment/bpy-dippy-bot -n bpy
