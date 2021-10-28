@@ -162,8 +162,7 @@ class HelpRotatorCommandsExtension(dippy.Extension):
 
         if message.content.partition(" ")[2].lower().strip() == "list":
             await message.channel.send(
-                "That is not an allowed topic.\nAllowed Topics:\n"
-                + (", ".join(self.manager.allowed_topics())),
+                "Allowed Topics:\n" + (", ".join(self.manager.allowed_topics())),
                 delete_after=60,
             )
             return
