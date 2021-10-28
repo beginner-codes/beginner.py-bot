@@ -157,6 +157,17 @@ class HelpRotatorCommandsExtension(dippy.Extension):
     async def topic(self, message: Message):
         await message.delete()
 
+        if message.author.bot:
+            return
+
+        if message.content.partition(" ")[2].lower().strip() == "list":
+            await message.channel.send(
+                "That is not an allowed topic.\nAllowed Topics:\n"
+                + (", ".join(self.manager.allowed_topics())),
+                delete_after=60,
+            )
+            return
+
         rate_limit = 60
         if time.time() - self._topic_limit < rate_limit:
             await message.channel.send(
