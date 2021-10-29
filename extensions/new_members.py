@@ -1,6 +1,6 @@
 from extensions.kudos.manager import KudosManager
 from extensions.mods.mod_manager import ModManager
-from discord import Guild, Member, Message, TextChannel, utils
+from nextcord import Guild, Member, Message, MessageType, TextChannel, utils
 from datetime import datetime, timedelta, timezone
 from typing import Optional
 import asyncio
@@ -108,6 +108,9 @@ class VoiceChatExtension(dippy.Extension):
     @dippy.Extension.listener("message")
     async def welcome_messages(self, message: Message):
         if message.author.bot or not isinstance(message.channel, TextChannel):
+            return
+
+        if message.type not in {MessageType.default, MessageType.reply}:
             return
 
         channel = await self.get_welcome_channel(message.guild)
