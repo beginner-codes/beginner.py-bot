@@ -1,6 +1,5 @@
 import re
 
-from bevy import Injectable
 from datetime import datetime, timedelta, timezone
 from discord import Embed, Member, Message, TextChannel
 from extensions.help_channels.channel_manager import ChannelManager
@@ -47,7 +46,8 @@ class HelpChannelModerationExtension(dippy.Extension):
 
     async def can_alert(self, channel: TextChannel, member: Member) -> bool:
         last_alert = await self.get_last_alert(channel, member)
-        return last_alert - datetime.utcnow() < timedelta(minutes=15)
+        now = datetime.utcnow().astimezone(timezone.utc)
+        return last_alert - now < timedelta(minutes=15)
 
     async def flag_message(self, message: Message):
         await message.add_reaction("🚩")
