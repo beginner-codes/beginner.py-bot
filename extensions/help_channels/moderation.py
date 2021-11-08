@@ -49,7 +49,7 @@ class HelpChannelModerationExtension(dippy.Extension):
     async def can_alert(self, channel: TextChannel, member: Member) -> bool:
         last_alert = await self.get_last_alert(channel, member)
         now = datetime.utcnow().astimezone(timezone.utc)
-        return last_alert - now >= timedelta(minutes=15)
+        return now - last_alert >= timedelta(minutes=15)
 
     async def flag_message(self, message: Message):
         await message.add_reaction("🚩")
