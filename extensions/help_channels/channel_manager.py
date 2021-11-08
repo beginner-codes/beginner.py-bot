@@ -144,6 +144,10 @@ class ChannelManager(Injectable):
 
         return self._categories[guild]
 
+    async def is_help_channel(self, channel: TextChannel) -> bool:
+        categories = await self.get_categories(channel.guild)
+        return channel.category.id == categories["getting-help"]
+
     async def get_last_active(self, channel: TextChannel) -> datetime:
         last_active = await self.labels.get(
             "text_channel",
