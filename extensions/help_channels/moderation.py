@@ -12,9 +12,11 @@ class HelpChannelModerationExtension(dippy.Extension):
 
     bad_words = {
         "asshole": 60,
+        "@ss": 60,
         "bitch": 60,
         "dumb": 30,
         "fuck": 60,
+        "f@ck": 60,
         "gay": 60,
         "idiot": 30,
         "mf": 60,
