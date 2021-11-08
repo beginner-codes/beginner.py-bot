@@ -88,12 +88,22 @@ class HelpChannelModerationExtension(dippy.Extension):
                 Embed(
                     title="Possible Bad Behavior",
                     description=(
-                        f"{message.author} ({message.author.id}) has been flagged in {message.channel.mention} for "
-                        f"{description}."
+                        f"{message.author.mention} has been flagged in {message.channel.mention} for {description}."
                     ),
                     color=0xBB0000,
                 )
-                .add_field(name="Message Content", value=message.clean_content[:1000])
-                .add_field(name="Link", value=message.jump_url)
+                .add_field(
+                    name="Details",
+                    value=(
+                        f"User: {message.author} ({message.author.id})\nChannel: {message.channel.mention}\nMessage: "
+                        f"[Jump]({message.jump_url})"
+                    ),
+                    inline=False,
+                )
+                .add_field(
+                    name="Message Content",
+                    value=message.clean_content[:1000],
+                    inline=False,
+                )
             )
         )
