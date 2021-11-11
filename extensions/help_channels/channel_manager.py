@@ -6,6 +6,7 @@ from discord import (
     Embed,
     Guild,
     Member,
+    PartialEmoji,
     PermissionOverwrite,
     TextChannel,
     utils,
@@ -58,6 +59,7 @@ class ChannelManager(Injectable):
             "🌎": "web-dev",
             "💾": "os",
             "☕": "java",
+            "javascript": "javascript",
         }
 
     def allowed_topic(self, topic: str) -> bool:

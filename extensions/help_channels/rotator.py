@@ -84,7 +84,7 @@ class HelpRotatorExtension(dippy.Extension):
                     f"the topic ask a helper.",
                     delete_after=15,
                 )
-                await message.remove_reaction(emoji, member)
+                await message.remove_reaction(reaction.emoji, member)
                 categories = await self.manager.get_categories(channel.guild)
                 if claimed_channel.category.id == categories["help-archive"]:
                     await self.manager.update_archived_channel(claimed_channel, member)
