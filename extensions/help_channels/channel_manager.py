@@ -6,15 +6,12 @@ from discord import (
     Embed,
     Guild,
     Member,
-    PartialEmoji,
-    PermissionOverwrite,
     TextChannel,
     utils,
 )
 from typing import Any, Optional, Union
 import asyncio
 import dippy.labels
-import dippy.logging
 import dippy.client
 import re
 
@@ -195,6 +192,7 @@ class ChannelManager(Injectable):
     async def setup_help_channel(self, category: CategoryChannel):
         channels = await self.get_archive_channels(category.guild)
         channel = channels[0]
+        js_emoji = utils.get(category.guild.emojis, name="javascript")
         await channel.edit(name=f"🙋get-help", category=category, sync_permissions=True)
         message = await channel.send(
             embed=Embed(
@@ -208,8 +206,8 @@ class ChannelManager(Injectable):
                 name="Categories",
                 value=(
                     (
-                        "🐍 Python/Discord.py\n🌵 C/C++/C#\n🌎 Web Dev/JavaScript/HTML\n💾 OS/Docker/Kubernetes\n"
-                        "☕️ Java/Kotlin\n🙋 General Help"
+                        f"🐍 Python/Discord.py\n{js_emoji} JavaScript/Node.js/Deno\n🌵 C/C++/C#\n🌎 Web Dev/HTML/CSS\n"
+                        f"💾 OS/Docker/Kubernetes\n☕️ Java/Kotlin\n🙋 General Help"
                     )
                 ),
             )
