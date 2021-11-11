@@ -86,6 +86,12 @@ resources:
       Hack The Box: https://www.hackthebox.eu/
       PicoCTF: https://picoctf.org/
       CTF101 Database: https://ctf101.org/
+      
+  webdev:
+    name: Web Development
+    Websites:
+      FreeCodeCamp: https://www.freecodecamp.org/
+      The Odin Project: https://www.theodinproject.com/
 
 lang_aliases:
   python: py
