@@ -60,7 +60,7 @@ class AutoModExtension(dippy.Extension):
 
                 now = datetime.utcnow().astimezone(timezone.utc)
                 tasks = [
-                    owner.get_label(
+                    owner.set_label(
                         "last-help-channel-mention-warn",
                         now.timestamp(),
                     ),
