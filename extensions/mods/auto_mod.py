@@ -1,3 +1,6 @@
+import asyncio
+
+from extensions.help_channels.channel_manager import ChannelManager
 from aiohttp import ClientSession
 from collections import deque
 from datetime import datetime, timedelta, timezone
@@ -11,6 +14,7 @@ import re
 
 class AutoModExtension(dippy.Extension):
     client: dippy.Client
+    help_manager: ChannelManager
 
     def __init__(self):
         super().__init__()
@@ -29,7 +33,8 @@ class AutoModExtension(dippy.Extension):
         if message.channel.permissions_for(message.author).manage_messages:
             return
 
-        await self._scan_for_links(message)
+        self.client.loop.create_task(self._scan_for_links(message))
+        self.client.loop.create_task(self._scan_for_help_channel_mentions(message))
 
         if (
             message.author.id in self._muting
@@ -40,6 +45,39 @@ class AutoModExtension(dippy.Extension):
         self._message_buffer.appendleft(message)
         self.client.loop.create_task(self._scan_for_webhooks(message))
         await self._handle_spamming_violations(message.channel, message.author)
+
+    async def _scan_for_help_channel_mentions(self, message: Message):
+        for channel in message.channel_mentions:
+            owner = await self.help_manager.get_owner(channel, just_id=True)
+            if owner == message.author:
+                last_warn = datetime.fromtimestamp(
+                    await owner.get_label(
+                        "last-help-channel-mention-warn",
+                        default=0,
+                    ),
+                    tz=timezone.utc,
+                )
+
+                now = datetime.utcnow().astimezone(timezone.utc)
+                tasks = [
+                    owner.get_label(
+                        "last-help-channel-mention-warn",
+                        now.timestamp(),
+                    ),
+                    message.delete(),
+                ]
+
+                if now - last_warn > timedelta(days=7):
+                    tasks.append(
+                        message.channel.send(
+                            f"{message.author.mention} please don't mention your own help channel, it's spammy. People "
+                            f"will see the unread notification on the channel and will help when they have the "
+                            f"opportunity.",
+                            delete_after=30,
+                        )
+                    )
+
+                await asyncio.gather(*tasks)
 
     async def _scan_for_links(self, message: Message):
         blocked_links = [
