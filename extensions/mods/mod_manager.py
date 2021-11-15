@@ -45,9 +45,8 @@ class ModManager(Injectable):
         if (await self.alert_active(guild)) >= 0:
             return
 
-        await guild.set_label(
-            "alert_started", datetime.now().astimezone(timezone.utc).isoformat()
-        )
+        now = datetime.now().astimezone(timezone.utc).replace(second=0, microsecond=0)
+        await guild.set_label("alert_started", now.isoformat())
 
     async def mass_ban(self, guild: Guild, start: datetime, end: datetime) -> int:
         count = 0
