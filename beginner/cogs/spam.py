@@ -65,7 +65,6 @@ class SpamCog(Cog):
     async def on_message(self, message):
         await asyncio.gather(
             self.attachment_filter(message),
-            self.mention_filter(message),
             self.newline_filter(message),
         )
 
@@ -81,20 +80,6 @@ class SpamCog(Cog):
             message.channel.send(
                 f"{message.author.mention} your message has been deleted for having an excessive number of lines.",
                 delete_after=60,
-            ),
-            message.delete(),
-        )
-
-    async def mention_filter(self, message: nextcord.Message):
-        if "@everyone" not in message.content and "@here" not in message.content:
-            return
-
-        if message.channel.permissions_for(message.author).manage_messages:
-            return
-
-        await asyncio.gather(
-            message.channel.send(
-                f"{message.author.mention} please don't mention everyone, your message has been deleted."
             ),
             message.delete(),
         )
