@@ -184,7 +184,7 @@ class AutoModExtension(dippy.Extension):
             return
 
         action_description = []
-        if should_mute:
+        if should_mute or too_many_everyone_mentions_with_nitro:
             action_description.append(
                 f"{member.mention} you're being muted until the mods can review your behavior:\n"
             )
@@ -194,11 +194,11 @@ class AutoModExtension(dippy.Extension):
                 action_description.append("- Spamming in multiple channels\n")
             if too_many_duplicates:
                 action_description.append("- Sending duplicate messages\n")
-            if too_many_everyone_mentions:
+            if too_many_everyone_mentions or too_many_everyone_mentions_with_nitro:
                 action_description.append(
                     "- Spamming mentions to everyone **(your message has been deleted)**\n"
                 )
-            if too_many_everyone_mentions:
+            if too_many_everyone_mentions_with_nitro:
                 action_description.append("- Nitro scamming\n")
 
         else:
@@ -208,7 +208,7 @@ class AutoModExtension(dippy.Extension):
                 action_description.append(" messaging in so many channels")
             if too_many_duplicates:
                 action_description.append(" sending duplicate messages")
-            if too_many_everyone_mentions:
+            if too_many_everyone_mentions or too_many_everyone_mentions_with_nitro:
                 action_description.append(
                     " mentioning everyone **(your message has been deleted)**"
                 )
@@ -265,7 +265,7 @@ class AutoModExtension(dippy.Extension):
             if now - timedelta(seconds=15) <= message.created_at:
                 recent_channels.add(message.channel.id)
 
-                content = message.clean_content.casefold()
+                content = message.content.casefold()
                 if "@everyone" in content or "@here" in content:
                     num_everyone_mentions += 1
 
