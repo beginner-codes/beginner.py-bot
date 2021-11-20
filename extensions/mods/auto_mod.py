@@ -183,8 +183,10 @@ class AutoModExtension(dippy.Extension):
         ):
             return
 
+        should_mute = should_mute or too_many_everyone_mentions_with_nitro
+
         action_description = []
-        if should_mute or too_many_everyone_mentions_with_nitro:
+        if should_mute:
             action_description.append(
                 f"{member.mention} you're being muted until the mods can review your behavior:\n"
             )
