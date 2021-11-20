@@ -265,7 +265,7 @@ class AutoModExtension(dippy.Extension):
             if now - timedelta(seconds=15) <= message.created_at:
                 recent_channels.add(message.channel.id)
 
-                content = message.content.casefold()
+                content = message.clean_content.casefold()
                 if "@everyone" in content or "@here" in content:
                     num_everyone_mentions += 1
 
