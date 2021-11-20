@@ -162,13 +162,23 @@ class AutoModExtension(dippy.Extension):
             num_messages_last_five_seconds,
             num_channels_last_fifteen_seconds,
             num_duplicate_messages,
+            num_everyone_mentions,
+            num_everyone_mentions_with_nitro,
         ) = self._metrics_on_messages_from_member(member, last_warned)
 
         too_many_messages = num_messages_last_five_seconds > 5
         too_many_channels = num_channels_last_fifteen_seconds > 3
         too_many_duplicates = num_duplicate_messages > 1
+        too_many_everyone_mentions = num_everyone_mentions > 1
+        too_many_everyone_mentions_with_nitro = num_everyone_mentions_with_nitro > 0
 
-        if not too_many_messages and not too_many_channels and not too_many_duplicates:
+        if (
+            not too_many_messages
+            and not too_many_channels
+            and not too_many_duplicates
+            and not too_many_everyone_mentions
+            and not too_many_everyone_mentions_with_nitro
+        ):
             return
 
         action_description = []
@@ -182,6 +192,12 @@ class AutoModExtension(dippy.Extension):
                 action_description.append("- Spamming in multiple channels\n")
             if too_many_duplicates:
                 action_description.append("- Sending duplicate messages\n")
+            if too_many_everyone_mentions:
+                action_description.append(
+                    "- Spamming mentions to everyone **(your message has been deleted)**\n"
+                )
+            if too_many_everyone_mentions:
+                action_description.append("- Nitro scamming\n")
 
         else:
             if too_many_messages:
@@ -190,6 +206,12 @@ class AutoModExtension(dippy.Extension):
                 action_description.append(" messaging in so many channels")
             if too_many_duplicates:
                 action_description.append(" sending duplicate messages")
+            if too_many_everyone_mentions:
+                action_description.append(
+                    " mentioning everyone **(your message has been deleted)**"
+                )
+            if too_many_everyone_mentions_with_nitro:
+                action_description.append(" nitro scamming")
 
             if len(action_description) > 1:
                 action_description[-1] = f" and{action_description[-1]}"
@@ -214,9 +236,11 @@ class AutoModExtension(dippy.Extension):
 
     def _metrics_on_messages_from_member(
         self, member: Member, oldest: Optional[datetime] = None
-    ) -> tuple[int, int, int]:
+    ) -> tuple[int, ...]:
         num_messages_checked = 0
         num_recent_messages = 0
+        num_everyone_mentions = 0
+        num_everyone_mentions_with_nitro = 0
         recent_channels = set()
         messages_last_minute = set()
 
@@ -236,6 +260,13 @@ class AutoModExtension(dippy.Extension):
             if now - timedelta(seconds=15) <= message.created_at:
                 recent_channels.add(message.channel.id)
 
+                content = message.content.casefold()
+                if "@everyone" in content or "@here" in content:
+                    num_everyone_mentions += 1
+
+                    if "nitro" in content:
+                        num_everyone_mentions_with_nitro += 1
+
             if len(message.content) > 15:
                 messages_last_minute.add(message.content)
                 num_messages_checked += 1
@@ -244,4 +275,6 @@ class AutoModExtension(dippy.Extension):
             num_recent_messages,
             len(recent_channels),
             num_messages_checked - len(messages_last_minute),
+            num_everyone_mentions,
+            num_everyone_mentions_with_nitro,
         )
