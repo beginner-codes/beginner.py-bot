@@ -44,7 +44,7 @@ class AutoModExtension(dippy.Extension):
 
         self._message_buffer.appendleft(message)
         self.client.loop.create_task(self._scan_for_webhooks(message))
-        await self._handle_spamming_violations(message.channel, message.author)
+        await self._handle_spamming_violations(message, message.channel, message.author)
 
     async def _scan_for_help_channel_mentions(self, message: Message):
         for channel in message.channel_mentions:
@@ -153,7 +153,9 @@ class AutoModExtension(dippy.Extension):
             except NotFound:
                 pass  # Don't care, just want it gone
 
-    async def _handle_spamming_violations(self, channel: TextChannel, member: Member):
+    async def _handle_spamming_violations(
+        self, message: Message, channel: TextChannel, member: Member
+    ):
         last_warned = self._warned[member.id] if member.id in self._warned else None
         should_mute = last_warned and datetime.utcnow() - last_warned <= timedelta(
             minutes=2
@@ -224,6 +226,9 @@ class AutoModExtension(dippy.Extension):
             self._muting.add(member.id)
             await member.add_roles(self.mute_role(member.guild))
             self._muting.remove(member.id)
+
+        if num_everyone_mentions > 0:
+            await message.delete()
 
         m: Message = await channel.send("".join(action_description))
         if should_mute:
