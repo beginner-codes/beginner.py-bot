@@ -49,7 +49,7 @@ class AutoModExtension(dippy.Extension):
     async def _scan_for_help_channel_mentions(self, message: Message):
         for channel in message.channel_mentions:
             owner = await self.help_manager.get_owner(channel)
-            if owner == message.author:
+            if owner.id == message.author.id:
                 last_warn = datetime.fromtimestamp(
                     await owner.get_label(
                         "last-help-channel-mention-warn",
