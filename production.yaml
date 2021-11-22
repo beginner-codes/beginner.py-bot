@@ -56,14 +56,14 @@ resources:
   ds:
     name: Data Science & Machine Learning
     YouTube:
-      Making Friends with ML (This is a must watch for everyone): https://www.youtube.com/watch?v=fgF6XzcK3jw
+      Math For ML (Important to understand the maths behind ML models): https://www.youtube.com/playlist?list=PLD80i8An1OEGZ2tYimemzwC3xqkU0jKUg
       Mazen Ahmed: https://www.youtube.com/channel/UCiFF3AvbzLWdRyRnQMEttqw/videos?view=0&sort=da&flow=grid
       Python Programmer: https://www.youtube.com/c/FlickThrough/featured
       Codebasics: https://www.youtube.com/playlist?list=PLeo1K3hjS3us_ELKYSj_Fth2tIEkdKXvV
       Ken Jee: https://www.youtube.com/playlist?list=PL2zq7klxX5ATPC8RuqCuTDdki3b4NqKQv
     Courses:
       Kaggle Learn: https://www.kaggle.com/learn/overview
-      Google ML Course (Prior knowledge of Python, Pandas, Numpy highly recommended): https://developers.google.com/machine-learning/crash-course
+      Google ML Course (Check prerequisites before starting): https://developers.google.com/machine-learning/crash-course
 
   pentesting:
     name: Pentesting & Ethical Hacking
