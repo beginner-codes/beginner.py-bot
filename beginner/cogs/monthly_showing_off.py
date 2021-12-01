@@ -104,7 +104,7 @@ class MonthlyShowingOffCog(Cog):
         current_date = datetime.today()
         current_month = current_date.month
         current_year = current_date.year
-        last_date = datetime(current_year, current_month + 1, 1, 0, 0, 0)
+        last_date = datetime(current_year, (current_month % 12) + 1, 1, 0, 0, 0)
         return (last_date - current_date).total_seconds()
 
     async def check_invalid_messages(self):
