@@ -1,6 +1,7 @@
 import discord
 from bevy import Injectable
 from datetime import datetime, timedelta
+from functools import cached_property
 from discord import (
     CategoryChannel,
     Embed,
@@ -10,6 +11,7 @@ from discord import (
     utils,
 )
 from typing import Any, Optional, Union
+from pathlib import Path
 import asyncio
 import dippy.labels
 import dippy.client
@@ -58,6 +60,12 @@ class ChannelManager(Injectable):
             "☕": "java",
             "javascript": "javascript",
         }
+
+    @cached_property
+    def disallowed_channel_prefixes(self) -> set[str]:
+        file_path = Path(__file__).parent.parent.parent / "disallowed-prefixes.txt"
+        with open(file_path, "r") as prefix_file:
+            return set(prefix_file.readlines())
 
     def allowed_topic(self, topic: str) -> bool:
         return topic.casefold() in self._topics
@@ -362,15 +370,22 @@ class ChannelManager(Injectable):
         return [channel for channel, _ in sorted(channels, key=lambda item: item[1])]
 
     def _generate_channel_title(self, name: str, topic: str, icon: str = "🙋") -> str:
-        name = self.sluggify(name, sep="")[:3]
+        slug = self.sluggify(name, sep="")
+        prefix = self._get_prefix(slug)
         topic = self.sluggify(topic)
-        return "-".join((f"{icon}{name}", topic))
+        return f"{icon}{prefix}-{topic}"
 
     async def _get_guild_label(self, guild: Guild, label: str) -> Any:
         return await self.labels.get("guild", guild.id, label)
 
     async def _set_guild_label(self, guild: Guild, label: str, value: Any):
         await self.labels.set("guild", guild.id, label, value)
+
+    def _get_prefix(self, slug: str) -> str:
+        prefix = slug[:3]
+        if prefix in self.disallowed_channel_prefixes:
+            prefix = slug[:2]
+        return prefix
 
     def sluggify(self, text: str, *, sep: str = "-") -> str:
         if not text:
