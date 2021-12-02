@@ -65,7 +65,7 @@ class ChannelManager(Injectable):
     def disallowed_channel_prefixes(self) -> set[str]:
         file_path = Path(__file__).parent.parent.parent / "disallowed-prefixes.txt"
         with open(file_path, "r") as prefix_file:
-            return set(prefix_file.readlines())
+            return {line.strip() for line in prefix_file if line.strip()}
 
     def allowed_topic(self, topic: str) -> bool:
         return topic.casefold() in self._topics
