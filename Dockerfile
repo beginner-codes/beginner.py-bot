@@ -16,6 +16,7 @@ RUN mkdir -p /usr/src/app/tmp
 ENV TMPDIR /usr/src/app/tmp
 
 COPY bot.yaml .
+COPY disallowed-prefixes.txt .
 COPY ./extensions ./extensions
 
 CMD ["poetry", "run", "python", "-u", "-m", "dippy", "-c", "bot.yaml"]
