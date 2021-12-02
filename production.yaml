@@ -92,6 +92,7 @@ resources:
     Websites:
       FreeCodeCamp: https://www.freecodecamp.org/
       The Odin Project: https://www.theodinproject.com/
+      Jetbrains Academy: https://hyperskill.org/tracks/5
 
 lang_aliases:
   python: py
