@@ -44,6 +44,8 @@ class HelpRotatorCommandsExtension(dippy.Extension):
             return
 
         await self.manager.archive_channel(message.channel, remove_owner=lock)
+        if lock and (owner_member := message.guild.get_member(owner)):
+            self.manager.clear_claim_attempts(owner_member)
 
     @dippy.Extension.listener("message")
     async def on_message(self, message: Message):

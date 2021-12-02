@@ -1,4 +1,3 @@
-from collections import defaultdict
 from datetime import datetime, timedelta
 from discord import Guild, Member, Message, RawReactionActionEvent, TextChannel, utils
 from extensions.help_channels.channel_manager import ChannelManager
@@ -14,7 +13,6 @@ class HelpRotatorExtension(dippy.Extension):
 
     def __init__(self):
         super().__init__()
-        self._claim_attempts: dict[int, list[datetime]] = defaultdict(list)
         self.client.loop.create_task(self.setup_cleanup())
 
     @dippy.Extension.listener("guild_join")
@@ -61,7 +59,7 @@ class HelpRotatorExtension(dippy.Extension):
         if member.bot:
             return
 
-        self._claim_attempts[member.id].append(datetime.now())
+        self.manager.add_claim_attempt(member)
 
         message = await channel.fetch_message(reaction.message_id)
         if not self._allow_claim_attempt(member):
@@ -147,14 +145,7 @@ class HelpRotatorExtension(dippy.Extension):
         await self.manager.cleanup_help_channels(guild)
 
     def _allow_claim_attempt(self, member: Member) -> bool:
-        now = datetime.now()
-        attempts = 0
-        for attempt in self._claim_attempts[member.id].copy():
-            if attempt < now - timedelta(minutes=30):
-                self._claim_attempts[member.id].remove(attempt)
-            else:
-                attempts += 1
-        return attempts < 2
+        return self.manager.get_claim_attempts(member) < 2
 
     def _setup_cleanup(self, guild: Guild):
         self.log.info(f"Starting channel cleanup for {guild.name}")

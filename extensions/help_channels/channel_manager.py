@@ -1,5 +1,6 @@
 import discord
 from bevy import Injectable
+from collections import defaultdict
 from datetime import datetime, timedelta
 from functools import cached_property
 from discord import (
@@ -60,6 +61,23 @@ class ChannelManager(Injectable):
             "☕": "java",
             "javascript": "javascript",
         }
+        self._claim_attempts: dict[int, list[datetime]] = defaultdict(list)
+
+    def add_claim_attempt(self, member: Member):
+        self._claim_attempts[member.id].append(datetime.now())
+
+    def clear_claim_attempts(self, member: Member):
+        self._claim_attempts[member.id].clear()
+
+    def get_claim_attempts(self, member: Member) -> int:
+        now = datetime.now()
+        attempts = 0
+        for attempt in self._claim_attempts[member.id].copy():
+            if attempt < now - timedelta(minutes=30):
+                self._claim_attempts[member.id].remove(attempt)
+            else:
+                attempts += 1
+        return attempts
 
     @cached_property
     def disallowed_channel_prefixes(self) -> set[str]:
