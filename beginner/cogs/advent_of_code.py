@@ -65,11 +65,11 @@ class AdventOfCode(Cog):
                 ),
                 color=BLUE,
             ).add_field(
-                name="Beginner.py Leaderboard",
+                name="Beginner.codes Leaderboard",
                 value=(
                     "To join our server's leaderboard go [here](https://adventofcode.com/2021/leaderboard/private), "
                     "enter our code in the text box, and then click join.\n\n"
-                    "**Beginner.py Leaderboard Code:** `990847-0adb2be3`"
+                    "**Beginner.codes Leaderboard Code:** `990847-0adb2be3`"
                 ),
             )
         )
