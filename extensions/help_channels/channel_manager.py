@@ -130,12 +130,12 @@ class ChannelManager(Injectable):
         if owner:
             content.insert(0, owner.mention)
             content.append(
-                f"You can reclaim it by reacting with a ✅.\n\nDon't forget to give some kudos to show your "
+                f"You can reclaim it by reacting with a ♻️.\n\nDon't forget to give some kudos to show your "
                 f"appreciation by reacting to the most helpful people with {beginner}, {intermediate}, or {expert}!"
             )
         message = await channel.send(" ".join(content))
         if owner:
-            await message.add_reaction("✅")
+            await message.add_reaction("♻️")
 
     async def cleanup_help_channels(self, guild: Guild):
         categories = await self.get_categories(guild)

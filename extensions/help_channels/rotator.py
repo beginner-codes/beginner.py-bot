@@ -105,7 +105,7 @@ class HelpRotatorExtension(dippy.Extension):
     @dippy.Extension.listener("raw_reaction_add")
     async def on_reaction_add_archive(self, reaction: RawReactionActionEvent):
         emoji = reaction.emoji.name
-        if emoji != "✅":
+        if emoji not in "✅♻️":
             return
 
         channel: TextChannel = self.client.get_channel(reaction.channel_id)
