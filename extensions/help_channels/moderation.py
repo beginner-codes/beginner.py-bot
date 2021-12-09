@@ -37,7 +37,7 @@ class HelpChannelModerationExtension(dippy.Extension):
         if not await self.manager.is_help_channel(message.channel):
             return
 
-        content = str(message.clean_content)
+        content = str(message.content)
         if self.score_bad_words(content.casefold()) >= 1.0:
             await self.send_alert(message, "possibly being aggressive (bad words)")
             return
