@@ -42,7 +42,7 @@ class HelpChannelModerationExtension(dippy.Extension):
             await self.send_alert(message, "possibly being aggressive (bad words)")
             return
 
-        if len(content) > 10 and self.get_caps_ratio(content) >= 0.5:
+        if len(content) > 10 and self.get_caps_ratio(content) >= 0.9:
             await self.send_alert(message, "possibly being aggressive (lots of caps)")
             return
 
