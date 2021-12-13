@@ -27,6 +27,21 @@ class AdventOfCode(Cog):
     def days_till_christmas(self):
         return (self.christmas - self.now).days
 
+    @commands.command(name="aoc")
+    async def toggle_aoc_role(self, ctx: commands.Context):
+        role = nextcord.utils.get(ctx.guild.roles, name="aoc-announcement")
+        if role in ctx.author.roles:
+            await ctx.author.remove_roles(role)
+            action = "removed from"
+        else:
+            await ctx.author.add_roles(role)
+            action = "given"
+
+        await ctx.send(
+            f"🎄 {ctx.author.mention} you've been {action} the Advent of Code announcement role.",
+            delete_after=10,
+        )
+
     async def ready(self):
         if self.now < self.christmas + timedelta(days=1):
             print("🎄🎅☃️ 🤶🎄🤶☃️ 🎅🎄")
