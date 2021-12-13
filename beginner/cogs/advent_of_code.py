@@ -81,14 +81,16 @@ class AdventOfCode(Cog):
                     else "🎄🎅☃️  MERRY CHRISTMAS ☃️ 🎅🎄"
                 ),
                 color=BLUE,
-            ).add_field(
+            )
+            .add_field(
                 name="Beginner.codes Leaderboard",
                 value=(
                     "To join our server's leaderboard go [here](https://adventofcode.com/2021/leaderboard/private), "
                     "enter our code in the text box, and then click join.\n\n"
                     "**Beginner.codes Leaderboard Code:** `990847-0adb2be3`"
                 ),
-            ),
+            )
+            .set_footer(text="Toggle pings for new challenges with the !aoc command"),
         )
 
         await self.get_channel("🎁aoc-solutions").send(
