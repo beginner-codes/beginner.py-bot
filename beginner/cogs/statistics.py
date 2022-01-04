@@ -16,8 +16,8 @@ class StatisticsCog(Cog):
             embed=Embed(
                 title=f"Server Stats",
                 description=(
-                    f"There are currently {self.get_online():,} coders online of "
-                    f"{self.server.member_count - num_bots:,} coders!!!\n\n{self.get_pending():,} have not accepted "
+                    f"There are currently {self.get_online():,} members online of "
+                    f"{self.server.member_count - num_bots:,} members!!!\n\n{self.get_pending():,} have not accepted "
                     f"the rules. Found {num_bots:,} bots."
                 ),
                 color=0x00A35A,
