@@ -172,7 +172,7 @@ class AutoModExtension(dippy.Extension):
 
         if member.id == 335491211039080458:
             wrapped = "\n> ".join(wrap(message.clean_content, 80))
-            self.log.debug(
+            print(
                 f"Member Spam Stats\n"
                 f"- Messages last 5 seconds:  {num_messages_last_five_seconds}\n"
                 f"- Channels last 15 seconds: {num_channels_last_fifteen_seconds}\n"
@@ -186,7 +186,7 @@ class AutoModExtension(dippy.Extension):
         too_many_messages = num_messages_last_five_seconds > 5
         too_many_channels = num_channels_last_fifteen_seconds > 3
         too_many_duplicates = num_duplicate_messages > 1
-        too_many_everyone_mentions = num_everyone_mentions > 1
+        too_many_everyone_mentions = num_everyone_mentions > 0
         too_many_everyone_mentions_with_nitro = num_everyone_mentions_with_nitro > 0
 
         if (
@@ -282,7 +282,7 @@ class AutoModExtension(dippy.Extension):
             if now - timedelta(seconds=15) <= message.created_at:
                 recent_channels.add(message.channel.id)
 
-                content = message.clean_content.casefold()
+                content = message.content.casefold()
                 if "@everyone" in content or "@here" in content:
                     num_everyone_mentions += 1
 
