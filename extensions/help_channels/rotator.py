@@ -46,10 +46,8 @@ class HelpRotatorExtension(dippy.Extension):
     async def on_reaction_add_get_help(self, reaction: RawReactionActionEvent):
         emoji = reaction.emoji.name
         if (
-            emoji not in self.manager.reaction_topics
-            and emoji != "🙋"
-            or reaction.channel_id == 742209536500170812
-        ):
+            emoji not in self.manager.reaction_topics and emoji != "🙋"
+        ) or reaction.channel_id == 742209536500170812:
             return
 
         channel: TextChannel = self.client.get_channel(reaction.channel_id)
