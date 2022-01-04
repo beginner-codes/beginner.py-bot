@@ -8,6 +8,7 @@ from nextcord import Embed, Guild, Member, Message, NotFound, Role, TextChannel,
 from nextcord.errors import NotFound
 from nextcord.webhook import Webhook
 from typing import Optional
+from textwrap import wrap
 import dippy
 import re
 
@@ -15,6 +16,7 @@ import re
 class AutoModExtension(dippy.Extension):
     client: dippy.Client
     help_manager: ChannelManager
+    log: dippy.Logging
 
     def __init__(self):
         super().__init__()
@@ -167,6 +169,19 @@ class AutoModExtension(dippy.Extension):
             num_everyone_mentions,
             num_everyone_mentions_with_nitro,
         ) = self._metrics_on_messages_from_member(member, last_warned)
+
+        if member.id == 335491211039080458:
+            wrapped = "\n> ".join(wrap(message.clean_content, 80))
+            self.log.debug(
+                f"Member Spam Stats\n"
+                f"- Messages last 5 seconds:  {num_messages_last_five_seconds}\n"
+                f"- Channels last 15 seconds: {num_channels_last_fifteen_seconds}\n"
+                f"- Duplicate messages:       {num_duplicate_messages}\n"
+                f"- Everyone mentions:        {num_everyone_mentions}\n"
+                f"- Nitro scams:              {num_everyone_mentions_with_nitro}\n\n"
+                f"Message Content\n"
+                f"> {wrapped}"
+            )
 
         too_many_messages = num_messages_last_five_seconds > 5
         too_many_channels = num_channels_last_fifteen_seconds > 3
