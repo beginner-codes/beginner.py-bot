@@ -43,12 +43,12 @@ class Achievements(UserDict, Injectable):
                     250,
                 ),
                 "CODER": Achievement(
-                    "Coder",
+                    "Veteran Member",
                     (
-                        "Coders are the members who are most active in our community, asking questions, helping "
-                        "others, participating in the fun, doing challenges, etc."
+                        "Veteran Members are the members who are most active in our community, asking questions, "
+                        "helping others, participating in the fun, doing challenges, etc."
                     ),
-                    "You're a Coder! Thanks for being 😎 AWESOME 😎!!!",
+                    "You're a Veteran Member! Thanks for being 😎 AWESOME 😎!!!",
                     "😎",
                     188,  # 4 weeks of daily activity
                 ),
@@ -63,7 +63,7 @@ class Achievements(UserDict, Injectable):
             }
         )
 
-        self.on_award("CODER", self.give_coders_role)
+        self.on_award("CODER", self.give_veteran_members_role)
         self.on_award("MINECRAFTER", self.give_minecraft_role)
 
     async def awarded_achievement(self, member: Member, achievement: Achievement):
@@ -74,14 +74,15 @@ class Achievements(UserDict, Injectable):
     def on_award(self, achievement_key: str, callback: Callable[[Member], Coroutine]):
         self[achievement_key].on_awarded(callback)
 
-    async def give_coders_role(self, member: Member):
-        role = utils.get(member.guild.roles, name="coders")
+    async def give_veteran_members_role(self, member: Member):
+        role = utils.get(member.guild.roles, name="veteran members")
         try:
             await member.add_roles(role)
             await member.remove_roles(utils.get(member.guild.roles, name="member"))
             await self.client.get_channel(851228622832533534).send(
                 f"{member.mention} you're awesome! Thank you for contributing and being such an amazing part of this "
-                f"community! Now that you've unlocked the 😎Coders😎 achievement you have access to this channel!"
+                f"community! Now that you've unlocked the 😎Veteran Member😎 achievement you have access to this"
+                f"channel!"
             )
         except errors.Forbidden:
             pass
