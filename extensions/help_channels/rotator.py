@@ -71,7 +71,8 @@ class HelpRotatorExtension(dippy.Extension):
         )
         if (
             last_claimed
-            and self.manager.get_owner(channel.guild.get_channel(channel_id)) == member
+            and await self.manager.get_owner(channel.guild.get_channel(channel_id))
+            == member
         ):
             last_claimed = datetime.fromisoformat(last_claimed)
             if datetime.utcnow() - last_claimed < timedelta(hours=6):
