@@ -54,57 +54,6 @@ class Admin(Cog):
             await member.remove_roles(role)
 
     @Cog.group()
-    @commands.has_guild_permissions(manage_messages=True)
-    async def silence(self, ctx: nextcord.ext.commands.Context):
-        if ctx.invoked_subcommand:
-            return
-
-        role = self.get_role("coders")
-        permissions = role.permissions
-        permissions.send_messages = False
-        await role.edit(permissions=permissions)
-
-        await ctx.send(
-            embed=nextcord.Embed(
-                description="The server has been silenced. Use `!silence stop` to end the silence.",
-                color=RED,
-                title="Silence Activated",
-            )
-        )
-
-        await self.get_channel("mod-action-log").send(
-            embed=nextcord.Embed(
-                description=f"The server has been silenced by {ctx.author.mention}.",
-                color=RED,
-                title="Silence Activated",
-            )
-        )
-
-    @silence.command()
-    @commands.has_guild_permissions(manage_messages=True)
-    async def stop(self, ctx: nextcord.ext.commands.Context):
-        role = self.get_role("coders")
-        permissions = role.permissions
-        permissions.send_messages = True
-        await role.edit(permissions=permissions)
-
-        await ctx.send(
-            embed=nextcord.Embed(
-                description="The server silence has been stopped.",
-                color=GREEN,
-                title="Silence Deactivated",
-            )
-        )
-
-        await self.get_channel("mod-action-log").send(
-            embed=nextcord.Embed(
-                description=f"The server silence has been stopped by {ctx.author.mention}.",
-                color=GREEN,
-                title="Silence Deactivated",
-            )
-        )
-
-    @Cog.group()
     @commands.has_guild_permissions(manage_channels=True)
     async def channel(self, ctx: nextcord.ext.commands.Context):
         return
