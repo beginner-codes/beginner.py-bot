@@ -458,19 +458,27 @@ class KudosExtension(dippy.Extension):
         ):
             return
 
-        coders_role: Role = utils.get(message.guild.roles, name="coders")
+        veteran_member_role: Role = utils.get(
+            message.guild.roles, name="veteran members"
+        )
         # If the send messages permission could be none, so explicitly check for false
-        coders_overwrites = message.channel.overwrites_for(coders_role)
+        veteran_members_overwrites = message.channel.overwrites_for(veteran_member_role)
         everyone_overwrites = message.channel.overwrites_for(message.guild.default_role)
-        coders_can_view = coders_overwrites.view_channel is not False and (
-            coders_overwrites.view_channel
-            or everyone_overwrites.view_channel is not False
+        veteran_members_can_view = (
+            veteran_members_overwrites.view_channel is not False
+            and (
+                veteran_members_overwrites.view_channel
+                or everyone_overwrites.view_channel is not False
+            )
         )
-        coders_can_send = coders_overwrites.send_messages is not False and (
-            coders_overwrites.send_messages
-            or everyone_overwrites.send_messages is not False
+        veteran_members_can_send = (
+            veteran_members_overwrites.send_messages is not False
+            and (
+                veteran_members_overwrites.send_messages
+                or everyone_overwrites.send_messages is not False
+            )
         )
-        if not coders_can_view or not coders_can_send:
+        if not veteran_members_can_view or not veteran_members_can_send:
             return
 
         last_active_date = await self.manager.get_last_active_date(message.author)
