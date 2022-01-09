@@ -48,6 +48,15 @@ class AutoModExtension(dippy.Extension):
         self.client.loop.create_task(self._scan_for_webhooks(message))
         await self._handle_spamming_violations(message, message.channel, message.author)
 
+    @dippy.Extension.listener("message_edit")
+    async def on_message_edit(self, _, message: Message):
+        content = message.content.casefold()
+        if "@everyone" in content or "@here" in content:
+            await message.channel.send(
+                f"{message.author.mention} please do not mention everyone **(your edited message has been deleted)**"
+            )
+            await message.delete()
+
     async def _scan_for_help_channel_mentions(self, message: Message):
         for channel in message.channel_mentions:
             owner = await self.help_manager.get_owner(channel)
@@ -156,7 +165,7 @@ class AutoModExtension(dippy.Extension):
                 pass  # Don't care, just want it gone
 
     async def _handle_spamming_violations(
-        self, message: Message, channel: TextChannel, member: Member
+        self, message: Message, channel: TextChannel, member: Member, edit: bool = False
     ):
         last_warned = self._warned[member.id] if member.id in self._warned else None
         should_mute = last_warned and datetime.utcnow() - last_warned <= timedelta(
