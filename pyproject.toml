@@ -7,7 +7,6 @@ authors = ["Zech Zimmerman <zechzimm@gmail.com>"]
 [tool.poetry.dependencies]
 python = "^3.8.0"
 peewee = "^3.13"
-psycopg2-binary = "^2.8"
 requests = "^2.22"
 google = "^2.0"
 google-api-python-client = "2.15.0"
@@ -17,9 +16,9 @@ pyyaml = "^5.3.1"
 python-dateutil = "^2.8.1"
 xmltodict = "^0.12.0"
 black = "^20.8b1"
-matplotlib = "^3.4.1"
 nextcord = "^2.0.0-alpha.2"
 pytz = "^2021.1"
+psycopg2-binary = "^2.9.3"
 
 [tool.poetry.dev-dependencies]
 

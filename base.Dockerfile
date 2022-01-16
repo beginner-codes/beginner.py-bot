@@ -1,5 +1,9 @@
-FROM python:3.8-slim-buster
+FROM python:3.10-slim-buster
 MAINTAINER Zech Zimmerman "hi@zech.codes"
+
+RUN apt-get update \
+&& apt-get install gcc -y \
+&& apt-get clean
 
 WORKDIR /usr/src/app
 
