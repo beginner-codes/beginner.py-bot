@@ -52,6 +52,8 @@ class ChannelManager(Injectable):
             "k8s": "📦",
             "rpi": "🥧",
             "raspberry-pi": "🥧",
+            "ml": "🧠",
+            "machine-learning": "🧠",
         }
         self.reaction_topics = {
             "🐍": "python",
