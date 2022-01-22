@@ -53,7 +53,7 @@ class TipsCog(Cog):
         label = self.sanitize_label(unsanitized_label)
         if (
             not ctx.author.guild_permissions.manage_messages
-            and self.get_role("helpers") not in ctx.author.roles
+            and self.get_role("staff") not in ctx.author.roles
         ):
             return
 

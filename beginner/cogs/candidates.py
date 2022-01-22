@@ -9,15 +9,15 @@ class CandidatesCog(Cog):
 
     @Cog.command()
     @commands.has_role("Jedi Council")
-    async def candidate(self, ctx, member: Member, role: str = "helper"):
+    async def candidate(self, ctx, member: Member, role: str = "staff"):
         candidates_channel = self.get_channel(
             self.settings.get("CANDIDATES_CHANNEL", "candidates")
         )
         if candidates_channel.id != ctx.message.channel.id:
             return
 
-        if role.casefold().rstrip("s") not in {"mod", "helper"}:
-            await ctx.send(f"The role must be either 'helper' or 'mod', got '{role}'")
+        if role.casefold().rstrip("s") not in {"mod", "staff"}:
+            await ctx.send(f"The role must be either 'staff' or 'mod', got '{role}'")
             return
 
         await member.add_roles(
@@ -64,14 +64,14 @@ class CandidatesCog(Cog):
             self.settings.get("CANDIDATES_ROLE", "candidate")
         )
         mod_role = self.get_role(self.settings.get("MODERATOR_ROLE", "mods"))
-        helper_role = self.get_role(self.settings.get("HELPER_ROLE", "helpers"))
+        staff_role = self.get_role(self.settings.get("HELPER_ROLE", "staff"))
         council_role = self.get_role(self.settings.get("COUNCIL_ROLE", "Jedi Council"))
         if candidate_role not in member.roles:
             await ctx.send(f"{member.mention} is not a candidate.")
             return
 
-        if role not in {helper_role, mod_role, council_role}:
-            await ctx.send(f"{role.name} is not a valid helper or moderator role.")
+        if role not in {staff_role, mod_role, council_role}:
+            await ctx.send(f"{role.name} is not a valid staff or moderator role.")
             return
 
         await member.remove_roles(candidate_role)
@@ -88,14 +88,14 @@ class CandidatesCog(Cog):
             return
 
         mod_role = self.get_role(self.settings.get("MODERATOR_ROLE", "mods"))
-        helper_role = self.get_role(self.settings.get("HELPER_ROLE", "helpers"))
+        staff_role = self.get_role(self.settings.get("HELPER_ROLE", "staff"))
         council_role = self.get_role(self.settings.get("COUNCIL_ROLE", "Jedi Council"))
         if role not in member.roles:
             await ctx.send(f"{member.mention} does not have the {role.name} role.")
             return
 
-        if role not in {helper_role, mod_role, council_role}:
-            await ctx.send(f"{role.name} is not a valid helper or moderator role.")
+        if role not in {staff_role, mod_role, council_role}:
+            await ctx.send(f"{role.name} is not a valid staff or moderator role.")
             return
 
         await member.remove_roles(role)

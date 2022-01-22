@@ -311,7 +311,7 @@ class Kudos(Cog):
             return 0  # Infinite kudos
         elif self.get_role("mods") in member.roles:
             return 4
-        elif self.get_role("helpers") in member.roles:
+        elif self.get_role("staff") in member.roles:
             return 2
         return 1
 

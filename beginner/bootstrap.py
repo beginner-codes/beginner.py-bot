@@ -103,7 +103,7 @@ def run(client, logger):
 
 
 def setup_logger():
-    """ Configures how logs are printed and sets the log level. """
+    """Configures how logs are printed and sets the log level."""
     log_settings = config.scope_getter("logging")
 
     log_format = log_settings("format")
