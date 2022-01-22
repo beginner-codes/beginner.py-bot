@@ -110,7 +110,9 @@ class ModeratorsExtension(dippy.Extension):
                 name="🙋Volunteer Helpers",
                 value=", ".join(
                     f"`{member.display_name}`"
-                    for member in sorted(helpers[:10], key=lambda m: m.display_name)
+                    for member in sorted(
+                        helpers[:10], key=lambda m: m.display_name.casefold()
+                    )
                     if member not in mods
                 )
                 + (f", & {len(helpers) - 10} others" if len(helpers) > 10 else ""),
