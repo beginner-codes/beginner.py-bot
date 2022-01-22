@@ -109,9 +109,9 @@ class VoiceChatExtension(dippy.Extension):
         return sum(self.is_voice_mod(member) for member in channel.members)
 
     def is_voice_mod(self, member: Member) -> bool:
-        helpers_role = utils.get(member.guild.roles, name="helpers")
+        staff_role = utils.get(member.guild.roles, name="staff")
         mods_role = utils.get(member.guild.roles, name="mods")
-        return helpers_role in member.roles or mods_role in member.roles
+        return staff_role in member.roles or mods_role in member.roles
 
     def get_voice_chat_perms(self) -> PermissionOverwrite:
         channel: VoiceChannel = self.client.get_channel(702221517697581086)

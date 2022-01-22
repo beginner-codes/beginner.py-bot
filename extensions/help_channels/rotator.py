@@ -125,8 +125,8 @@ class HelpRotatorExtension(dippy.Extension):
             await channel.send("User is no longer a member here", delete_after=5)
             return
 
-        helper = utils.get(channel.guild.roles, name="helpers")
-        if member != owner and helper not in member.roles:
+        staff = utils.get(channel.guild.roles, name="staff")
+        if member != owner and staff not in member.roles:
             return
 
         await self.manager.update_archived_channel(channel, owner)

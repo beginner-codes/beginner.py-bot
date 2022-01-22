@@ -86,7 +86,7 @@ class ModSettingsExtension(Extension):
         await message.guild.set_label("mod_role_ids", role_ids)
         await message.channel.send("Removed roles as moderators")
 
-    @Extension.command("!add helper role")
+    @Extension.command("!add staff role")
     async def add_helper_role_command(self, message: Message):
         if not message.author.is_admin():
             return
@@ -97,10 +97,10 @@ class ModSettingsExtension(Extension):
 
         self._helper_roles = None
         await message.guild.set_label("helper_role_ids", role_ids)
-        await message.channel.send("Added roles as helpers")
+        await message.channel.send("Added roles as staff")
 
-    @Extension.command("!remove helper role")
-    async def remove_helper_role_command(self, message: Message):
+    @Extension.command("!remove staff role")
+    async def remove_staff_role_command(self, message: Message):
         if not message.author.is_admin():
             return
 
@@ -110,7 +110,7 @@ class ModSettingsExtension(Extension):
 
         self._helper_roles = None
         await message.guild.set_label("helper_role_ids", role_ids)
-        await message.channel.send("Removed roles as helpers")
+        await message.channel.send("Removed roles as staff")
 
     @Extension.command("!set mute role")
     async def set_mute_role_command(self, message: Message):

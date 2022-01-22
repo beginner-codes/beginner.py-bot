@@ -140,8 +140,8 @@ class KudosManager(Injectable):
             f"member[{member.guild.id}]", member.id, "kudos", default=0
         )
         emoji = await self.get_kudos_emoji(member.guild)
-        helper = utils.get(member.guild.roles, name="helpers")
-        return max(*emoji.values(), kudos) if helper in member.roles else kudos
+        staff = utils.get(member.guild.roles, name="staff")
+        return max(*emoji.values(), kudos) if staff in member.roles else kudos
 
     async def get_lifetime_kudos(self, member: Member, use_default: bool = True) -> int:
         kudos = await self.labels.get(

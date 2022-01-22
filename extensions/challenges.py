@@ -25,15 +25,13 @@ class ChallengesExtension(dippy.Extension):
             await self.kudos.give_kudos(
                 member, 4, f"{member.mention} did the weekday challenge!!!"
             )
-            
+
         if len(message.mentions) > 1:
             await message.channel.send(
                 f"Gave all {len(message.mentions)} people who did the challenge 4 kudos!!!"
             )
         else:
-            await message.channel.send(
-                "Gave 1 person who did the challenge 4 kudos!!!"
-            )
+            await message.channel.send("Gave 1 person who did the challenge 4 kudos!!!")
 
     @dippy.Extension.listener("message")
     async def announce_new_challenge(self, message: Message):

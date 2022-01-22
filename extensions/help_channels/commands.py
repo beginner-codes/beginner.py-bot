@@ -38,9 +38,9 @@ class HelpRotatorCommandsExtension(dippy.Extension):
             and "lock" in message.content.casefold()
         )
 
-        helper = utils.get(message.guild.roles, name="helpers")
+        staff = utils.get(message.guild.roles, name="staff")
         owner = await self.labels.get("text_channel", message.channel.id, "owner")
-        if helper not in message.author.roles and message.author.id != owner:
+        if staff not in message.author.roles and message.author.id != owner:
             return
 
         await self.manager.archive_channel(message.channel, remove_owner=lock)
@@ -71,11 +71,11 @@ class HelpRotatorCommandsExtension(dippy.Extension):
         if channel.category.id != categories["getting-help"]:
             return
 
-        helper = utils.get(guild.roles, name="helpers")
+        staff = utils.get(guild.roles, name="staff")
         mods = utils.get(guild.roles, name="mods")
         member = payload.member or await guild.fetch_member(payload.user_id)
         message = await channel.fetch_message(payload.message_id)
-        if helper not in member.roles and mods not in member.roles:
+        if staff not in member.roles and mods not in member.roles:
             await message.remove_reaction(payload.emoji, member)
             return
 
@@ -102,10 +102,10 @@ class HelpRotatorCommandsExtension(dippy.Extension):
 
         for message in await channel.pins():
             if message.id == payload.message_id:
-                helper = utils.get(guild.roles, name="helpers")
+                staff = utils.get(guild.roles, name="staff")
                 mods = utils.get(guild.roles, name="mods")
                 member = payload.member or await guild.fetch_member(payload.user_id)
-                if helper not in member.roles and mods not in member.roles:
+                if staff not in member.roles and mods not in member.roles:
                     break
 
                 await message.unpin()
@@ -119,8 +119,8 @@ class HelpRotatorCommandsExtension(dippy.Extension):
     @dippy.Extension.command("!claim")
     async def claim(self, message: Message):
         member: Member = message.author
-        helpers = utils.get(message.guild.roles, name="helpers")
-        is_a_helper = helpers in message.author.roles
+        staff = utils.get(message.guild.roles, name="staff")
+        is_a_helper = staff in message.author.roles
         if message.mentions and is_a_helper:
             member = message.mentions[0]
 
@@ -183,8 +183,8 @@ class HelpRotatorCommandsExtension(dippy.Extension):
 
         owner_id = await self.manager.get_owner(message.channel, just_id=True)
 
-        helpers = utils.get(message.guild.roles, name="helpers")
-        is_a_helper = helpers in message.author.roles
+        staff = utils.get(message.guild.roles, name="staff")
+        is_a_helper = staff in message.author.roles
         if not is_a_helper and owner_id != message.author.id:
             return
 
