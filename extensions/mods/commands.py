@@ -15,6 +15,7 @@ from extensions.mods.mod_manager import ModManager
 import dippy
 import dippy.labels
 import re
+import random
 
 
 class ModeratorsExtension(dippy.Extension):
@@ -70,6 +71,8 @@ class ModeratorsExtension(dippy.Extension):
 
     @dippy.Extension.command("!team")
     async def team_command(self, message: Message):
+        helpers = list(utils.get(message.guild.roles, name="helpers").members)
+        random.shuffle(helpers)
         staff = utils.get(message.guild.roles, name="staff").members
         mods = utils.get(message.guild.roles, name="mods").members
         boosters = utils.get(message.guild.roles, name="Discord Boosters!!!").members
@@ -99,6 +102,16 @@ class ModeratorsExtension(dippy.Extension):
                 value=", ".join(
                     f"`{member.display_name}`" for member in staff if member not in mods
                 ),
+                inline=False,
+            )
+            .add_field(
+                name="🙋Volunteer Helpers",
+                value=", ".join(
+                    f"`{member.display_name}`"
+                    for member in sorted(helpers[:10], key=lambda m: m.display_name)
+                    if member not in mods
+                )
+                + (f", & {len(helpers) - 10} others" if len(helpers) > 10 else ""),
                 inline=False,
             )
             .set_thumbnail(url=wolf_wave_emoji.url)
