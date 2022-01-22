@@ -79,7 +79,7 @@ class ModeratorsExtension(dippy.Extension):
             Embed(
                 title="Beginner.py Team",
                 description=(
-                    "Hi! The Beginner.py team is dedicated to maintaining a friendly environment where everyone can "
+                    "Hi! The Beginner.Codes team is dedicated to maintaining a friendly environment where everyone can "
                     "learn."
                 ),
                 color=0x00A35A,
