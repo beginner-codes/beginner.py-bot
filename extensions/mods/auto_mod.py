@@ -295,7 +295,7 @@ class AutoModExtension(dippy.Extension):
                 if "@everyone" in content or "@here" in content:
                     num_everyone_mentions += 1
 
-                    if "nitro" in content:
+                    if "nitro" in content or "gift" in content:
                         num_everyone_mentions_with_nitro += 1
 
             if len(message.content) > 15:
