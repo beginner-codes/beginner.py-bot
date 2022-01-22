@@ -371,16 +371,17 @@ class KudosExtension(dippy.Extension):
 
         achievements = await self.manager.get_achievements(message.author)
 
-        kudos_message = f"{payload.member.mention} gave {message.author.mention} kudos"
         helper_role = utils.get(message.guild.roles, name="helpers")
         multiplier = 1
+        multiplier_message = ""
         if helper_role in message.author.roles and channel.category.id in {
             help_categories.get("getting-help"),
             help_categories.get("help-archive"),
         }:
             multiplier = 2
-            kudos_message += " (2x helper multiplier)"
+            multiplier_message = " (2x helper multiplier)"
 
+        kudos_message = f"{payload.member.mention} gave {message.author.mention} kudos{multiplier_message}"
         await self.manager.give_kudos(
             message.author,
             giving * multiplier,
@@ -396,10 +397,10 @@ class KudosExtension(dippy.Extension):
         if kudos_reply:
             await kudos_reply.delete()
 
-        kudos_message = f"{message.author.mention} has been given {giving * multiplier} kudos from {payload.member.mention}."
+        kudos_message = f"{message.author.mention} has been given {giving * multiplier} kudos{multiplier_message} from {payload.member.mention}."
         if num_members > 0:
             kudos_message = (
-                f"{message.author.mention} has been given {giving * multiplier + kudos_given} kudos from {payload.member.mention} "
+                f"{message.author.mention} has been given {giving * multiplier + kudos_given} kudos{multiplier_message} from {payload.member.mention} "
                 f"and {num_members} other member{'s' * (num_members != 1)}."
             )
 
