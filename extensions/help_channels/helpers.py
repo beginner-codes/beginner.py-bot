@@ -13,7 +13,7 @@ class VolunteerHelperButtons(nextcord.ui.View):
         custom_id="volunteer_to_help",
     )
     async def volunteer_to_help(self, _, interaction: nextcord.Interaction):
-        help_role = nextcord.utils.get(interaction.guild.roles, name="help")
+        help_role = nextcord.utils.get(interaction.guild.roles, name="helpers")
         if help_role not in interaction.user.roles:
             await interaction.user.add_roles(help_role)
             await interaction.response.send_message(
@@ -30,7 +30,7 @@ class VolunteerHelperButtons(nextcord.ui.View):
         custom_id="stop_helping",
     )
     async def stop_helping(self, _, interaction: nextcord.Interaction):
-        help_role = nextcord.utils.get(interaction.guild.roles, name="help")
+        help_role = nextcord.utils.get(interaction.guild.roles, name="helpers")
         if help_role in interaction.user.roles:
             await interaction.user.add_roles(help_role)
             await interaction.response.send_message(
