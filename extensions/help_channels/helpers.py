@@ -32,7 +32,7 @@ class VolunteerHelperButtons(nextcord.ui.View):
     async def stop_helping(self, _, interaction: nextcord.Interaction):
         help_role = nextcord.utils.get(interaction.guild.roles, name="helpers")
         if help_role in interaction.user.roles:
-            await interaction.user.add_roles(help_role)
+            await interaction.user.remove_roles(help_role)
             await interaction.response.send_message(
                 f"{interaction.user.mention} you are now no longer a volunteer helper",
                 ephemeral=True,
