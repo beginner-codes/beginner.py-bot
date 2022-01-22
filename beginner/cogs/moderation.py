@@ -67,7 +67,7 @@ class ModerationCog(Cog):
 
         await ctx.send(message)
 
-    @Cog.command(name="ban")
+    @Cog.command(name="ban", aliases=("boop",))
     @commands.has_guild_permissions(manage_messages=True)
     async def ban(self, ctx, user_detail: str, *, reason=None):
         if not reason:
