@@ -155,10 +155,14 @@ class ChannelManager(Injectable):
             channel, last_active = channels.pop()
             age = (now - last_active) / timedelta(hours=1)
             num = len(channels)
-            if age >= 24 or (age >= 12 and num >= 20) or (age >= 6 and num >= 25):
+            owner = await self.get_owner(channel)
+            if (
+                not owner
+                or age >= 24
+                or (age >= 12 and num >= 20)
+                or (age >= 6 and num >= 25)
+            ):
                 await self.archive_channel(channel)
-            else:
-                break
 
     async def create_new_channel(self, category: CategoryChannel):
         channel = await category.create_text_channel(name="🙋get-help")
