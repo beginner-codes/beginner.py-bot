@@ -55,12 +55,13 @@ class HelpChannelModerationExtension(dippy.Extension):
             return
 
         channel: TextChannel = message.channel_mentions[0]
+        expert_emoji = nextcord.utils.get(message.guild.emojis, name="expert")
         await channel.send(
             embed=Embed(
                 title="Volunteer To Help",
                 description=(
-                    "If you would like to be notified when members need help with their coding questions click the "
-                    "button below."
+                    f"If you would like to be notified when members need help with their coding questions click the "
+                    f"button below. Helpers receive 2x kudos {expert_emoji} in help channels."
                 ),
                 color=0x306998,
             ),
