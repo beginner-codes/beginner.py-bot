@@ -77,7 +77,7 @@ class ModeratorsExtension(dippy.Extension):
         owner = max(mods, key=message.guild.owner.__eq__)
         embed = (
             Embed(
-                title="Beginner.py Team",
+                title="Beginner.Codes Team",
                 description=(
                     "Hi! The Beginner.Codes team is dedicated to maintaining a friendly environment where everyone can "
                     "learn."
