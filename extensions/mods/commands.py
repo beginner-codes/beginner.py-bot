@@ -71,13 +71,15 @@ class ModeratorsExtension(dippy.Extension):
 
     @dippy.Extension.command("!team")
     async def team_command(self, message: Message):
-        helpers = list(utils.get(message.guild.roles, name="helpers").members)
-        random.shuffle(helpers)
-        staff = utils.get(message.guild.roles, name="staff").members
-        mods = utils.get(message.guild.roles, name="mods").members
         boosters = utils.get(message.guild.roles, name="Discord Boosters!!!").members
+        helpers = list(utils.get(message.guild.roles, name="helpers").members)
+        mods = utils.get(message.guild.roles, name="mods").members
+        staff = utils.get(message.guild.roles, name="staff").members
+
+        random.shuffle(helpers)
+
+        owner = message.guild.owner
         wolf_wave_emoji = utils.get(message.guild.emojis, name="wolfwave")
-        owner = max(mods, key=message.guild.owner.__eq__)
         embed = (
             Embed(
                 title="Beginner.Codes Team",
