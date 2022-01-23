@@ -156,19 +156,20 @@ class ChannelManager(Injectable):
         self.log.info(
             f"Checking {len(channels)} channels to find any that need to be archived"
         )
-        while len(channels) > 15:
+        num_channels = len(channels)
+        while num_channels > 15:
             channel, last_active = channels.pop()
             age = (now - last_active) / timedelta(hours=1)
-            num = len(channels)
             owner = await self.get_owner(channel)
             self.log.info(f"Checking if owner is still a member: {owner}")
             if (
                 not owner
                 or age >= 24
-                or (age >= 12 and num >= 20)
-                or (age >= 6 and num >= 25)
+                or (age >= 12 and num_channels >= 20)
+                or (age >= 6 and num_channels >= 25)
             ):
                 await self.archive_channel(channel)
+                num_channels -= 1
 
     async def create_new_channel(self, category: CategoryChannel):
         channel = await category.create_text_channel(name="🙋get-help")
