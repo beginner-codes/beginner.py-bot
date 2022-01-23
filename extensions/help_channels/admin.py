@@ -15,6 +15,7 @@ class HelpRotatorAdminExtension(dippy.Extension):
         if not message.author.guild_permissions.administrator:
             return
 
+        self.log.info("Running help channel cleanup as requested by admin")
         await self.manager.cleanup_help_channels(message.guild)
 
     @dippy.Extension.command("!setup help")
