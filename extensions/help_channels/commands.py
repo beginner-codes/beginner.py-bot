@@ -120,7 +120,8 @@ class HelpRotatorCommandsExtension(dippy.Extension):
     async def claim(self, message: Message):
         member: Member = message.author
         staff = utils.get(message.guild.roles, name="staff")
-        is_a_helper = staff in message.author.roles
+        helper = utils.get(message.guild.roles, name="helpers")
+        is_a_helper = staff in message.author.roles or helper in message.author.roles
         if message.mentions and is_a_helper:
             member = message.mentions[0]
 
