@@ -142,7 +142,7 @@ class DMMonitoringExtension(dippy.Extension):
             return
 
         channel: TextChannel = message.channel_mentions[0]
-        await channel.send_message(
+        await channel.send(
             embed=Embed(
                 title="Topical Roles",
                 description=(
