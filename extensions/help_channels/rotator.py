@@ -136,7 +136,7 @@ class HelpRotatorExtension(dippy.Extension):
         now = datetime.utcnow()
         next_cleanup = (
             now.replace(second=0, microsecond=0)
-            + timedelta(minutes=15 - now.minute % 15 if now.minute % 15 else 15)
+            + timedelta(minutes=5 - now.minute % 5 if now.minute % 5 else 5)
             - now
         )
         self.log.info(
