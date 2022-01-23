@@ -1,3 +1,5 @@
+import logging
+
 import discord
 from bevy import Injectable
 from collections import defaultdict
@@ -64,6 +66,7 @@ class ChannelManager(Injectable):
             "javascript": "javascript",
         }
         self._claim_attempts: dict[int, list[datetime]] = defaultdict(list)
+        self.log.setup_logger(log_level=logging.DEBUG)
 
     def add_claim_attempt(self, member: Member):
         self._claim_attempts[member.id].append(datetime.now())
