@@ -156,6 +156,7 @@ class ChannelManager(Injectable):
             age = (now - last_active) / timedelta(hours=1)
             num = len(channels)
             owner = await self.get_owner(channel)
+            self.log.debug(f"Checking if owner is still a member: {owner}")
             if (
                 not owner
                 or age >= 24
