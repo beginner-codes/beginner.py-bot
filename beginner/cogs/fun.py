@@ -343,7 +343,8 @@ class Fun(Cog):
             "> "
             + (
                 "\n> ".join(
-                    message.content.replace("<", r"\<")
+                    message.content.replace("\\", "\\\\")
+                    .replace("<", r"\<")
                     .replace("> ", r"\> ")
                     .replace("*", r"\*")
                     .replace("_", r"\_")
