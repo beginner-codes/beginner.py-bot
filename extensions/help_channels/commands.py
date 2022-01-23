@@ -16,6 +16,7 @@ class HelpRotatorCommandsExtension(dippy.Extension):
     def __init__(self, *args):
         super().__init__(*args)
         self._topic_limit = 0
+        self._claim_cooldown = {}
 
     @dippy.Extension.command("!done")
     async def done(self, message: Message):
@@ -123,6 +124,15 @@ class HelpRotatorCommandsExtension(dippy.Extension):
         helper = utils.get(message.guild.roles, name="helpers")
         is_a_helper = staff in message.author.roles or helper in message.author.roles
         if message.mentions and is_a_helper:
+            last_claim = self._claim_cooldown.get(member.id, 0)
+            delta = time.time() - last_claim
+            if delta < 300:
+                await message.channel.send(
+                    f"{member.mention} please wait another {300 - delta} seconds before claiming another channel",
+                    delete_after=5,
+                )
+                return
+            self._claim_cooldown[member.id] = time.time()
             member = message.mentions[0]
 
         last_claimed, channel_id = await self.labels.get(
