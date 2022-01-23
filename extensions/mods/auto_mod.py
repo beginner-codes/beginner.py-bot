@@ -1,4 +1,5 @@
 import asyncio
+import os
 
 from extensions.help_channels.channel_manager import ChannelManager
 from aiohttp import ClientSession
@@ -177,10 +178,11 @@ class AutoModExtension(dippy.Extension):
             num_duplicate_messages,
             num_everyone_mentions,
             num_everyone_mentions_with_nitro,
+            num_scam_links,
         ) = self._metrics_on_messages_from_member(member, last_warned)
 
+        wrapped = "\n> ".join(wrap(message.clean_content, 80))
         if member.id == 335491211039080458:
-            wrapped = "\n> ".join(wrap(message.clean_content, 80))
             print(
                 f"Member Spam Stats\n"
                 f"- Messages last 5 seconds:  {num_messages_last_five_seconds}\n"
@@ -188,6 +190,7 @@ class AutoModExtension(dippy.Extension):
                 f"- Duplicate messages:       {num_duplicate_messages}\n"
                 f"- Everyone mentions:        {num_everyone_mentions}\n"
                 f"- Nitro scams:              {num_everyone_mentions_with_nitro}\n\n"
+                f"- Scam links:               {num_scam_links}\n\n"
                 f"Message Content\n"
                 f"> {wrapped}"
             )
@@ -197,6 +200,7 @@ class AutoModExtension(dippy.Extension):
         too_many_duplicates = num_duplicate_messages > 1
         too_many_everyone_mentions = num_everyone_mentions > 0
         too_many_everyone_mentions_with_nitro = num_everyone_mentions_with_nitro > 0
+        too_many_scam_links = num_scam_links > 0
 
         if (
             not too_many_messages
@@ -204,10 +208,13 @@ class AutoModExtension(dippy.Extension):
             and not too_many_duplicates
             and not too_many_everyone_mentions
             and not too_many_everyone_mentions_with_nitro
+            and not too_many_scam_links
         ):
             return
 
-        should_mute = should_mute or too_many_everyone_mentions_with_nitro
+        should_mute = (
+            should_mute or too_many_everyone_mentions_with_nitro or too_many_scam_links
+        )
 
         action_description = []
         if should_mute:
@@ -221,10 +228,8 @@ class AutoModExtension(dippy.Extension):
             if too_many_duplicates:
                 action_description.append("- Sending duplicate messages\n")
             if too_many_everyone_mentions or too_many_everyone_mentions_with_nitro:
-                action_description.append(
-                    "- Spamming mentions to everyone **(your message has been deleted)**\n"
-                )
-            if too_many_everyone_mentions_with_nitro:
+                action_description.append("- Spamming mentions to everyone\n")
+            if too_many_everyone_mentions_with_nitro or too_many_scam_links:
                 action_description.append("- Nitro scamming\n")
 
         else:
@@ -235,10 +240,8 @@ class AutoModExtension(dippy.Extension):
             if too_many_duplicates:
                 action_description.append(" sending duplicate messages")
             if too_many_everyone_mentions or too_many_everyone_mentions_with_nitro:
-                action_description.append(
-                    " mentioning everyone **(your message has been deleted)**"
-                )
-            if too_many_everyone_mentions_with_nitro:
+                action_description.append(" mentioning everyone")
+            if too_many_everyone_mentions_with_nitro or too_many_scam_links:
                 action_description.append(" nitro scamming")
 
             if len(action_description) > 1:
@@ -253,17 +256,33 @@ class AutoModExtension(dippy.Extension):
             await member.add_roles(self.mute_role(member.guild))
             self._muting.remove(member.id)
 
-        if num_everyone_mentions > 0:
+        if (
+            num_everyone_mentions > 0
+            or num_scam_links > 0
+            or num_everyone_mentions_with_nitro > 0
+        ):
             await message.delete()
+            action_description.append("\n**⚠️ Your message has been deleted ⚠️**")
+
+        if num_scam_links > 0:
+            self.client.loop.create_task(
+                self.log_scam_links(self.get_discord_scam_links(message.content))
+            )
 
         m: Message = await channel.send("".join(action_description))
         if should_mute:
             mods: Role = channel.guild.get_role(644390354157568014)
             await self.client.get_channel(728249959098482829).send(
                 f"{mods.mention} please review {member.mention}'s behavior in {channel.mention} {m.jump_url}.\nUse "
-                f"`!unmute` to remove their mute."
+                f"`!unmute` to remove their mute.\n{wrapped}"
             )
         self._warned[member.id] = datetime.utcnow()
+
+    async def log_scam_links(self, links: set[str]):
+        async with ClientSession() as session:
+            webhook = Webhook.from_url(os.getenv("SCAM_LINKS_WEBHOOK"), session=session)
+            for link in links:
+                await webhook.send(link)
 
     def _metrics_on_messages_from_member(
         self, member: Member, oldest: Optional[datetime] = None
@@ -272,6 +291,7 @@ class AutoModExtension(dippy.Extension):
         num_recent_messages = 0
         num_everyone_mentions = 0
         num_everyone_mentions_with_nitro = 0
+        num_scam_links = 0
         recent_channels = set()
         messages_last_minute = set()
 
@@ -292,6 +312,10 @@ class AutoModExtension(dippy.Extension):
                 recent_channels.add(message.channel.id)
 
                 content = message.content.casefold()
+                links = self.get_discord_scam_links(content)
+                if links:
+                    num_scam_links += len(links)
+
                 if "@everyone" in content or "@here" in content:
                     num_everyone_mentions += 1
 
@@ -308,4 +332,12 @@ class AutoModExtension(dippy.Extension):
             num_messages_checked - len(messages_last_minute),
             num_everyone_mentions,
             num_everyone_mentions_with_nitro,
+            num_scam_links,
         )
+
+    def get_discord_scam_links(self, content: str) -> set[str]:
+        return {
+            link
+            for link in re.findall(r"http[s]?://d.+?\.gift/[^\s]+", content.casefold())
+            if not link.startswith("https://discord.gift/")
+        }

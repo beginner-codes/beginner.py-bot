@@ -35,6 +35,11 @@ spec:
               value: "bpydb-pool"
             - name: "DIPPY_DB_ENGINE"
               value: "postgresql+psycopg2"
+            - name: "SCAM_LINKS_WEBHOOK"
+              valueFrom:
+                secretKeyRef:
+                  name: secrets
+                  key: scam_links_webhook
             - name: "DIPPY_DB_PASSWORD"
               valueFrom:
                 secretKeyRef:
