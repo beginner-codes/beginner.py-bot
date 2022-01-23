@@ -128,7 +128,7 @@ class HelpRotatorCommandsExtension(dippy.Extension):
             delta = time.time() - last_claim
             if delta < 300:
                 await message.channel.send(
-                    f"{member.mention} please wait another {300 - delta} seconds before claiming another channel",
+                    f"{member.mention} please wait another {300 - delta:.0f} seconds before claiming another channel",
                     delete_after=5,
                 )
                 return
