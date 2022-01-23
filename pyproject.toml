@@ -19,6 +19,7 @@ black = "^20.8b1"
 nextcord = "^2.0.0-alpha.2"
 pytz = "^2021.1"
 psycopg2-binary = "^2.9.3"
+pydantic = "^1.9.0"
 
 [tool.poetry.dev-dependencies]
 

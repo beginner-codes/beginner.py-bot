@@ -32,6 +32,7 @@ numpy
 operator
 pickle
 pprint
+pydantic
 random
 re
 reprlib
