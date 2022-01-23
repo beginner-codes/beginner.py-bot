@@ -77,7 +77,7 @@ class HelpChannelModerationExtension(dippy.Extension):
                 title="Volunteer To Help",
                 description=(
                     f"If you would like to be notified when members need help with their coding questions click the "
-                    f"button below. You must have 75 kudos to volunteer. Helpers receive 2x kudos {expert_emoji} in "
+                    f"button below. __You must have 75 kudos to volunteer.__ Helpers receive 2x kudos {expert_emoji} in "
                     f"help channels."
                 ),
                 color=0x306998,
