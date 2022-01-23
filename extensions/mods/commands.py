@@ -76,14 +76,18 @@ class ModeratorsExtension(dippy.Extension):
         mods = utils.get(message.guild.roles, name="mods").members
         staff = utils.get(message.guild.roles, name="staff").members
 
-        random.shuffle(helpers)
-
         owner = message.guild.owner
         wolf_wave_emoji = utils.get(message.guild.emojis, name="wolfwave")
 
         show_helpers = helpers
         if len(helpers) > 10:
+            random.shuffle(helpers)
             show_helpers = helpers[:9]
+
+        show_helpers = sorted(show_helpers, key=lambda m: m.display_name.casefold())
+        helper_list = ", ".join(f"`{member.display_name}`" for member in show_helpers)
+        if len(helpers) > 10:
+            helper_list += f", & {len(helpers) - 9} others"
 
         embed = (
             Embed(
@@ -113,14 +117,7 @@ class ModeratorsExtension(dippy.Extension):
             )
             .add_field(
                 name="🙋Volunteer Helpers",
-                value=", ".join(
-                    f"`{member.display_name}`"
-                    for member in sorted(
-                        show_helpers, key=lambda m: m.display_name.casefold()
-                    )
-                    if member not in mods
-                )
-                + (f", & {len(helpers) - 9} others" if len(helpers) > 10 else ""),
+                value=helper_list,
                 inline=False,
             )
             .set_thumbnail(url=wolf_wave_emoji.url)
