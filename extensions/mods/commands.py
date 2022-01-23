@@ -80,6 +80,11 @@ class ModeratorsExtension(dippy.Extension):
 
         owner = message.guild.owner
         wolf_wave_emoji = utils.get(message.guild.emojis, name="wolfwave")
+
+        show_helpers = helpers
+        if len(helpers) > 10:
+            show_helpers = helpers[:9]
+
         embed = (
             Embed(
                 title="Beginner.Codes Team",
@@ -111,11 +116,11 @@ class ModeratorsExtension(dippy.Extension):
                 value=", ".join(
                     f"`{member.display_name}`"
                     for member in sorted(
-                        helpers[:10], key=lambda m: m.display_name.casefold()
+                        show_helpers, key=lambda m: m.display_name.casefold()
                     )
                     if member not in mods
                 )
-                + (f", & {len(helpers) - 10} others" if len(helpers) > 10 else ""),
+                + (f", & {len(helpers) - 9} others" if len(helpers) > 10 else ""),
                 inline=False,
             )
             .set_thumbnail(url=wolf_wave_emoji.url)
