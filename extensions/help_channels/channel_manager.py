@@ -66,7 +66,6 @@ class ChannelManager(Injectable):
             "javascript": "javascript",
         }
         self._claim_attempts: dict[int, list[datetime]] = defaultdict(list)
-        self.log.setup_logger(log_level=logging.DEBUG)
 
     def add_claim_attempt(self, member: Member):
         self._claim_attempts[member.id].append(datetime.now())
@@ -154,7 +153,7 @@ class ChannelManager(Injectable):
 
         now = datetime.utcnow()
         channels = sorted(channels, key=lambda item: item[1], reverse=True)
-        self.log.debug(
+        self.log.info(
             f"Checking {len(channels)} channels to find any that need to be archived"
         )
         while len(channels) > 15:
@@ -162,7 +161,7 @@ class ChannelManager(Injectable):
             age = (now - last_active) / timedelta(hours=1)
             num = len(channels)
             owner = await self.get_owner(channel)
-            self.log.debug(f"Checking if owner is still a member: {owner}")
+            self.log.info(f"Checking if owner is still a member: {owner}")
             if (
                 not owner
                 or age >= 24
