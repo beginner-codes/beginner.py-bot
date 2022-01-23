@@ -132,7 +132,7 @@ class HelpRotatorExtension(dippy.Extension):
         await self.manager.update_archived_channel(channel, owner)
         await (await channel.fetch_message(reaction.message_id)).delete()
 
-    async def guild_cleanup_task(self, guild: Guild):
+    def guild_cleanup_task(self, guild: Guild):
         now = datetime.utcnow()
         next_cleanup = (
             now.replace(second=0, microsecond=0)
@@ -142,14 +142,19 @@ class HelpRotatorExtension(dippy.Extension):
         self.log.info(
             f"Next cleanup for {guild.name} at {(now + next_cleanup).isoformat()}"
         )
-        await asyncio.sleep(next_cleanup.total_seconds())
+
+        self.client.loop.call_later(
+            next_cleanup.total_seconds(), self.do_guild_cleanup, guild
+        )
+
+    def do_guild_cleanup(self, guild):
         self.log.info(f"Cleaning up channels for {guild.name}")
-        self.client.loop.create_task(self.guild_cleanup_task(guild))
-        await self.manager.cleanup_help_channels(guild)
+        self.guild_cleanup_task(guild)
+        self.client.loop.create_task(self.manager.cleanup_help_channels(guild))
 
     def _allow_claim_attempt(self, member: Member) -> bool:
         return self.manager.get_claim_attempts(member) < 2
 
     def _setup_cleanup(self, guild: Guild):
         self.log.info(f"Starting channel cleanup for {guild.name}")
-        self.client.loop.create_task(self.guild_cleanup_task(guild))
+        self.guild_cleanup_task(guild)
