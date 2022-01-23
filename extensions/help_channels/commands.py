@@ -136,9 +136,7 @@ class HelpRotatorCommandsExtension(dippy.Extension):
                 f"topic command when in the channel.\n```\n!topic [topic]\n```"
             )
         else:
-            topic, *_ = re.match(
-                r"!claim (\w.*?\S)?\s*(?:<|$)", message.content
-            ).groups()
+            topic, *_ = re.match(r"!claim.+?([a-z\-]+).*", message.content, re.I)
             if topic:
                 topic = self.manager.sluggify(topic)
 
