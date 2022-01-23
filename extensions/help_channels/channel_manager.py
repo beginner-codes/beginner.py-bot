@@ -151,6 +151,9 @@ class ChannelManager(Injectable):
 
         now = datetime.utcnow()
         channels = sorted(channels, key=lambda item: item[1], reverse=True)
+        self.log.debug(
+            f"Checking {len(channels)} channels to find any that need to be archived"
+        )
         while len(channels) > 15:
             channel, last_active = channels.pop()
             age = (now - last_active) / timedelta(hours=1)
