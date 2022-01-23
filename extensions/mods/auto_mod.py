@@ -274,7 +274,7 @@ class AutoModExtension(dippy.Extension):
             mods: Role = channel.guild.get_role(644390354157568014)
             await self.client.get_channel(728249959098482829).send(
                 f"{mods.mention} please review {member.mention}'s behavior in {channel.mention} {m.jump_url}.\nUse "
-                f"`!unmute` to remove their mute.\n{wrapped}"
+                f"`!unmute` to remove their mute.\nUser's message:\n> {wrapped}"
             )
         self._warned[member.id] = datetime.utcnow()
 
