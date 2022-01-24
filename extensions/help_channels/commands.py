@@ -122,11 +122,12 @@ class HelpRotatorCommandsExtension(dippy.Extension):
         member: Member = message.author
         staff = utils.get(message.guild.roles, name="staff")
         helper = utils.get(message.guild.roles, name="helpers")
-        is_a_helper = staff in message.author.roles or helper in message.author.roles
-        if message.mentions and is_a_helper:
+        is_a_staff = staff in message.author.roles
+        is_a_helper = helper in message.author.roles
+        if message.mentions and (is_a_helper or is_a_staff):
             last_claim = self._claim_cooldown.get(member.id, 0)
             delta = time.time() - last_claim
-            if delta < 300:
+            if delta < 300 and is_a_helper:
                 await message.channel.send(
                     f"{member.mention} please wait another {300 - delta:.0f} seconds before claiming another channel",
                     delete_after=5,
@@ -153,7 +154,7 @@ class HelpRotatorCommandsExtension(dippy.Extension):
             if topic:
                 topic = self.manager.sluggify(topic)
 
-            if topic and not is_a_helper and not self.manager.allowed_topic(topic):
+            if topic and not is_a_staff and not self.manager.allowed_topic(topic):
                 await message.channel.send(
                     "That is not an allowed topic.\nAllowed Topics:\n"
                     + (", ".join(self.manager.allowed_topics())),
