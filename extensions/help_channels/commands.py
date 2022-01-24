@@ -119,6 +119,10 @@ class HelpRotatorCommandsExtension(dippy.Extension):
 
     @dippy.Extension.command("!claim")
     async def claim(self, message: Message):
+        if message.content.casefold() == "!claim list topics":
+            await message.channel.send(", ".join(self.manager.allowed_topics()))
+            return
+
         member: Member = message.author
         staff = utils.get(message.guild.roles, name="staff")
         helper = utils.get(message.guild.roles, name="helpers")
@@ -165,6 +169,7 @@ class HelpRotatorCommandsExtension(dippy.Extension):
             channel = (await self.manager.get_archive_channels(message.guild))[0]
             await self.manager.update_get_help_channel(channel, member, topic)
             action_message = f"{member.mention} {channel.mention} has been claimed for you to ask and discuss your question in."
+
         await message.channel.send(action_message, delete_after=60)
 
     @dippy.Extension.command("!topic")
