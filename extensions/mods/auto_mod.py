@@ -334,7 +334,7 @@ class AutoModExtension(dippy.Extension):
         )
 
     def get_links(self, content: str) -> set[str]:
-        return set(re.findall(r"http[s]?://.+?\..+?/[^\s]+", content.casefold()))
+        return set(re.findall(r"http[s]?://.+?\..+?(?:/[^\s]*|$)", content.casefold()))
 
     def get_discord_scam_links(self, content: str) -> set[str]:
         return {
