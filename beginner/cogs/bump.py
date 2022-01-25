@@ -13,7 +13,9 @@ import pytz
 
 
 class BumpButton(nextcord.ui.View):
-    @nextcord.ui.button(emoji="🔔", style=nextcord.ButtonStyle.blurple, custom_id="BumpButton")
+    @nextcord.ui.button(
+        emoji="🔔", style=nextcord.ButtonStyle.blurple, custom_id="BumpButton"
+    )
     async def button_pressed(self, _, interaction: nextcord.Interaction):
         guild = interaction.guild
         bump_role = nextcord.utils.get(guild.roles, name="Bumpers")
@@ -26,7 +28,9 @@ class BumpButton(nextcord.ui.View):
             await interaction.delete_original_message()
         elif bump_role not in interaction.user.roles:
             await interaction.user.add_roles(bump_role)
-            await interaction.response.send_message(f"{interaction.user.mention} you will be tagged by bump reminders")
+            await interaction.response.send_message(
+                f"{interaction.user.mention} you will be tagged by bump reminders"
+            )
             await asyncio.sleep(7)
             await interaction.delete_original_message()
 
@@ -45,7 +49,9 @@ class Bumping(Cog):
     def log_bump(self, message: str, bumper: nextcord.Member):
         loop = asyncio.get_event_loop()
         loop.create_task(
-            self.get_channel("bump-log").send(f"{datetime.utcnow().isoformat()}: {bumper.display_name}\n> {message}")
+            self.get_channel("bump-log").send(
+                f"{datetime.utcnow().isoformat()}: {bumper.display_name}\n> {message}"
+            )
         )
 
     @property
@@ -80,15 +86,20 @@ class Bumping(Cog):
             .group_by(Points.user_id)
             .filter(
                 Points.point_type == "BUMP",
-                Points.awarded > datetime.utcnow() - timedelta(days=self._bump_score_days),
+                Points.awarded
+                > datetime.utcnow() - timedelta(days=self._bump_score_days),
             )
             .limit(30)
             .tuples()
         )
         message = []
-        for emoji, (user_id, points) in zip(["🥇", "🥈", "🥉"] + ["✨"] * max(len(scores) - 3, 0), scores):
+        for emoji, (user_id, points) in zip(
+            ["🥇", "🥈", "🥉"] + ["✨"] * max(len(scores) - 3, 0), scores
+        ):
             member: nextcord.Member = self.server.get_member(user_id)
-            message.append(f"{emoji} {member.mention if member else '*Unknown*'} **{str(points)}**")
+            message.append(
+                f"{emoji} {member.mention if member else '*Unknown*'} **{str(points)}**"
+            )
 
         await ctx.send(
             embed=nextcord.Embed(
@@ -105,7 +116,8 @@ class Bumping(Cog):
             .order_by(Points.awarded.desc())
             .filter(
                 Points.point_type == "BUMP",
-                Points.awarded > datetime.utcnow() - timedelta(days=self._bump_score_days),
+                Points.awarded
+                > datetime.utcnow() - timedelta(days=self._bump_score_days),
             )
             .tuples()
         )
@@ -158,7 +170,9 @@ class Bumping(Cog):
                                 "I'll monitor the bump bot's status and notify everyone when it comes back online."
                             ),
                             title="Bump Failed - Offline",
-                        ).set_thumbnail(url="https://cdn.discordapp.com/emojis/651959497698574338.png?v=1")
+                        ).set_thumbnail(
+                            url="https://cdn.discordapp.com/emojis/651959497698574338.png?v=1"
+                        )
                     )
                 )
                 self.log_bump("Bot is not online", ctx.author)
@@ -169,7 +183,11 @@ class Bumping(Cog):
 
             next_bump_timer = await self.get_next_bump_timer()
 
-            next_bump = timedelta(seconds=next_bump_timer) if next_bump_timer > 0 else timedelta(hours=2)
+            next_bump = (
+                timedelta(seconds=next_bump_timer)
+                if next_bump_timer > 0
+                else timedelta(hours=2)
+            )
             self.log_bump(
                 f"Reminder set to go off in {':'.join(map(str, divmod(next_bump.total_seconds(), 60)))} (m:s)",
                 ctx.author,
@@ -185,7 +203,11 @@ class Bumping(Cog):
                     ctx.author,
                 )
                 message = f"Server was already bumped. {ctx.author.mention} try again at the next bump reminder."
-            title = f"Thanks {ctx.author.display_name}!" if next_bump.total_seconds() > 7000 else "Already Bumped"
+            title = (
+                f"Thanks {ctx.author.display_name}!"
+                if next_bump.total_seconds() > 7000
+                else "Already Bumped"
+            )
             color = BLUE if next_bump.total_seconds() > 7000 else YELLOW
 
             if next_bump_timer == -1:
@@ -193,15 +215,21 @@ class Bumping(Cog):
                 message = f"Bump did not go through. Try again in a little while."
                 title = f"Bump Did Not Go Through"
                 color = YELLOW
-                thumbnail = "https://cdn.discordapp.com/emojis/651959497698574338.png?v=1"
+                thumbnail = (
+                    "https://cdn.discordapp.com/emojis/651959497698574338.png?v=1"
+                )
 
             next_bump_message = []
             next_bump_hour = int(next_bump.total_seconds() // 3600)
             next_bump_minutes = int(next_bump.total_seconds() // 60 % 60)
             if next_bump_hour > 0:
-                next_bump_message.append(f"{next_bump_hour} hour{'s' if next_bump_hour > 1 else ''}")
+                next_bump_message.append(
+                    f"{next_bump_hour} hour{'s' if next_bump_hour > 1 else ''}"
+                )
             if next_bump_minutes > 0:
-                next_bump_message.append(f"{next_bump_minutes} minute{'s' if next_bump_minutes > 1 else ''}")
+                next_bump_message.append(
+                    f"{next_bump_minutes} minute{'s' if next_bump_minutes > 1 else ''}"
+                )
 
             await ctx.send(
                 embed=(
@@ -282,15 +310,19 @@ class Bumping(Cog):
         king_id = self.get_bump_king_id()
         king = self.server.get_member(king_id)
         role = self.get_role("bump king")
-        channel = self.get_channel(os.environ.get("BUMP_KING_ANNOUNCE_CHANNEL", "🦄off-topic"))
+        channel = self.get_channel(
+            os.environ.get("BUMP_KING_ANNOUNCE_CHANNEL", "💭non-coding-chat")
+        )
         await channel.send(
-            embed=nextcord.Embed(description=f"All hail {king.mention} our new {role.mention}!!!").set_author(
-                name="New Bump King", icon_url=self.server.icon.url
-            )
+            embed=nextcord.Embed(
+                description=f"All hail {king.mention} our new {role.mention}!!!"
+            ).set_author(name="New Bump King", icon_url=self.server.icon.url)
         )
 
     def award_bump_points(self, author_id):
-        bump = Points(awarded=datetime.utcnow(), user_id=author_id, points=1, point_type="BUMP")
+        bump = Points(
+            awarded=datetime.utcnow(), user_id=author_id, points=1, point_type="BUMP"
+        )
         bump.save()
 
     def get_bump_king_id(self):
@@ -300,7 +332,8 @@ class Bumping(Cog):
             .group_by(Points.user_id)
             .filter(
                 Points.point_type == "BUMP",
-                Points.awarded > datetime.utcnow() - timedelta(days=self._bump_score_days),
+                Points.awarded
+                > datetime.utcnow() - timedelta(days=self._bump_score_days),
             )
             .limit(1)
         )
@@ -314,7 +347,8 @@ class Bumping(Cog):
             .group_by(Points.user_id)
             .filter(
                 Points.point_type == "BUMP",
-                Points.awarded > datetime.utcnow() - timedelta(days=self._bump_score_days),
+                Points.awarded
+                > datetime.utcnow() - timedelta(days=self._bump_score_days),
             )
             .limit(5)
         )
@@ -349,7 +383,8 @@ class Bumping(Cog):
         if self.disboard.status == nextcord.Status.online:
             self.log_bump("Sending bump reminder", self.server.me)
             await self.channel.send(
-                f"{self.role.mention} It's been 2hrs since the last bump!\n" f"*Use the command `!d bump` now!*"
+                f"{self.role.mention} It's been 2hrs since the last bump!\n"
+                f"*Use the command `!d bump` now!*"
             )
         else:
             self.log_bump("Bot appears to be offline", self.server.me)
@@ -370,7 +405,9 @@ class Bumping(Cog):
 
     async def get_next_bump_timer(self):
         started_watching = pytz.utc.localize(datetime.utcnow())
-        while pytz.utc.localize(datetime.utcnow()) - started_watching <= timedelta(minutes=1):
+        while pytz.utc.localize(datetime.utcnow()) - started_watching <= timedelta(
+            minutes=1
+        ):
             try:
                 self.log_bump("Looking for bump confirmation", self.server.me)
                 message = await asyncio.wait_for(self._message_queue.get(), 60)
@@ -378,14 +415,22 @@ class Bumping(Cog):
                 break
 
             created = message.created_at
-            time_since_created = started_watching - created if started_watching > created else timedelta()
+            time_since_created = (
+                started_watching - created
+                if started_watching > created
+                else timedelta()
+            )
             if time_since_created >= timedelta(minutes=1):
-                self.log_bump(f"Message is too old {time_since_created}", self.server.me)
+                self.log_bump(
+                    f"Message is too old {time_since_created}", self.server.me
+                )
                 continue
 
             content = message.embeds[0].description
             if ":thumbsup:" in content:
-                next_reminder = int((timedelta(hours=2) - time_since_created).total_seconds())
+                next_reminder = int(
+                    (timedelta(hours=2) - time_since_created).total_seconds()
+                )
                 self.log_bump(f"Next reminder in {next_reminder}", self.server.me)
                 return next_reminder
             else:
@@ -399,7 +444,11 @@ class Bumping(Cog):
                         self.server.me,
                     )
                 else:
-                    next_reminder = int((timedelta(minutes=minutes) - time_since_created).total_seconds())
+                    next_reminder = int(
+                        (
+                            timedelta(minutes=minutes) - time_since_created
+                        ).total_seconds()
+                    )
                     self.log_bump(
                         f"Next reminder in {next_reminder} seconds\n\n> {content}",
                         self.server.me,
