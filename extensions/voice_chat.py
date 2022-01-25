@@ -54,11 +54,12 @@ class VoiceChatExtension(dippy.Extension):
         if not self.is_voice_mod(member):
             return
 
+        perms = self.get_voice_chat_perms()
         num_mods = self.get_num_mods()
         if num_mods:
             changed = await self.enable_streaming()
             status = "🟢 enabled"
-        else:
+        elif perms.stream:
             await self.labels.set(
                 "guild",
                 644299523686006834,
