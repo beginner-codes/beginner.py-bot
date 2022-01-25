@@ -262,7 +262,7 @@ class AutoModExtension(dippy.Extension):
             or num_everyone_mentions_with_nitro > 0
         ):
             self.client.loop.create_task(
-                self.log_scam_links(self.get_links(message.content))
+                self.log_scam_links(self.get_all_sanitized_links(message.content))
             )
             await message.delete()
             action_description.append("\n**⚠️ Your message has been deleted ⚠️**")
