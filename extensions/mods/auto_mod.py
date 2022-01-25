@@ -261,13 +261,11 @@ class AutoModExtension(dippy.Extension):
             or num_scam_links > 0
             or num_everyone_mentions_with_nitro > 0
         ):
+            self.client.loop.create_task(
+                self.log_scam_links(self.get_links(message.content))
+            )
             await message.delete()
             action_description.append("\n**⚠️ Your message has been deleted ⚠️**")
-
-        if num_scam_links > 0:
-            self.client.loop.create_task(
-                self.log_scam_links(self.get_discord_scam_links(message.content))
-            )
 
         m: Message = await channel.send("".join(action_description))
         if should_mute:
@@ -334,6 +332,9 @@ class AutoModExtension(dippy.Extension):
             num_everyone_mentions_with_nitro,
             num_scam_links,
         )
+
+    def get_links(self, content: str) -> set[str]:
+        return set(re.findall(r"http[s]?://.+?\..+?/[^\s]+", content.casefold()))
 
     def get_discord_scam_links(self, content: str) -> set[str]:
         return {
