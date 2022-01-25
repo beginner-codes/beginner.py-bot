@@ -328,7 +328,7 @@ class Bumping(Cog):
     def get_bump_king_id(self):
         scores = (
             Points.select(Points.user_id, peewee.fn.sum(Points.points))
-            .order_by(peewee.fn.sum(Points.points).desc())
+            .order_by(Points.awarded.desc(), peewee.fn.sum(Points.points).desc())
             .group_by(Points.user_id)
             .filter(
                 Points.point_type == "BUMP",
