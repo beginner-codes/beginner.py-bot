@@ -146,11 +146,11 @@ class Bumping(Cog):
         if not action.casefold() == "bump":
             return
 
-        await ctx.send(f"🟢 {ctx.author.display_name} bumped", delete_after=10)
-        self.log_bump(f"Bumped", ctx.author)
         self.logger.info(
             f"{ctx.author} bumped after {time() - self._last_bump_notice:0.3f} seconds"
         )
+        self.log_bump(f"Bumped", ctx.author)
+        await ctx.send(f"🟢 {ctx.author.display_name} bumped", delete_after=10)
 
         async with self._bump_lock:
             if task_scheduled("disboard-bump-reminder"):
