@@ -4,6 +4,7 @@ from beginner.models.points import Points
 from beginner.scheduler import schedule, task_scheduled
 from beginner.tags import tag
 from datetime import datetime, timedelta
+from time import time_ns
 import asyncio
 import nextcord
 import nextcord.ext.commands
@@ -45,6 +46,7 @@ class Bumping(Cog):
         self._bump_lock = asyncio.Lock()
         self._bump_score_days = 7
         self._message_queue = asyncio.Queue()
+        self._last_bump_notice = None
 
     def log_bump(self, message: str, bumper: nextcord.Member):
         loop = asyncio.get_event_loop()
@@ -146,6 +148,9 @@ class Bumping(Cog):
 
         await ctx.send(f"🟢 {ctx.author.display_name} bumped", delete_after=10)
         self.log_bump(f"Bumped", ctx.author)
+        self.logger.info(
+            f"{ctx.author} bumped after {time_ns() - self._last_bump_notice:0.3f}"
+        )
 
         async with self._bump_lock:
             if task_scheduled("disboard-bump-reminder"):
@@ -386,6 +391,7 @@ class Bumping(Cog):
                 f"{self.role.mention} It's been 2hrs since the last bump!\n"
                 f"*Use the command `!d bump` now!*"
             )
+            self._last_bump_notice = time_ns()
         else:
             self.log_bump("Bot appears to be offline", self.server.me)
             await self.channel.send(
