@@ -4,7 +4,7 @@ from beginner.models.points import Points
 from beginner.scheduler import schedule, task_scheduled
 from beginner.tags import tag
 from datetime import datetime, timedelta
-from time import time_ns
+from time import time
 import asyncio
 import nextcord
 import nextcord.ext.commands
@@ -149,7 +149,7 @@ class Bumping(Cog):
         await ctx.send(f"🟢 {ctx.author.display_name} bumped", delete_after=10)
         self.log_bump(f"Bumped", ctx.author)
         self.logger.info(
-            f"{ctx.author} bumped after {time_ns() - self._last_bump_notice:0.3f}"
+            f"{ctx.author} bumped after {time() - self._last_bump_notice:0.3f} seconds"
         )
 
         async with self._bump_lock:
@@ -391,7 +391,7 @@ class Bumping(Cog):
                 f"{self.role.mention} It's been 2hrs since the last bump!\n"
                 f"*Use the command `!d bump` now!*"
             )
-            self._last_bump_notice = time_ns()
+            self._last_bump_notice = time()
         else:
             self.log_bump("Bot appears to be offline", self.server.me)
             await self.channel.send(
