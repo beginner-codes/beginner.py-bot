@@ -143,12 +143,11 @@ class Bumping(Cog):
 
     @Cog.command(name="d", aliases=["D"])
     async def bump_handler(self, ctx: nextcord.ext.commands.Context, action: str):
+        time_since = time() - self._last_bump_notice
         if not action.casefold() == "bump":
             return
 
-        self.logger.info(
-            f"{ctx.author} bumped after {time() - self._last_bump_notice:0.3f} seconds"
-        )
+        self.logger.info(f"{ctx.author} bumped after {time_since:0.3f} seconds")
         self.log_bump(f"Bumped", ctx.author)
         await ctx.send(f"🟢 {ctx.author.display_name} bumped", delete_after=10)
 
