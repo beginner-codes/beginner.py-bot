@@ -129,7 +129,7 @@ class AssignTopicsView(View):
         style=ButtonStyle.grey,
         custom_id="assign_ml",
     )
-    async def assign_java(self, _, interaction: Interaction):
+    async def assign_ml(self, _, interaction: Interaction):
         role = utils.get(interaction.guild.roles, name="ml")
         if role not in interaction.user.roles:
             await interaction.user.add_roles(role)
