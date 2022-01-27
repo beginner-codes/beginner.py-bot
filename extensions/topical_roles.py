@@ -122,6 +122,27 @@ class AssignTopicsView(View):
                 "You've been removed the Java topical role",
                 ephemeral=True,
             )
+            
+    @button(
+        emoji="🧠",
+        label="Machine Learning",
+        style=ButtonStyle.grey,
+        custom_id="assign_ml",
+    )
+    async def assign_ml(self, _, interaction: Interaction):
+        role = utils.get(interaction.guild.roles, name="ml")
+        if role not in interaction.user.roles:
+            await interaction.user.add_roles(role)
+            await interaction.response.send_message(
+                "You've been given the Machine Learning topical role",
+                ephemeral=True,
+            )
+        else:
+            await interaction.user.remove_roles(role)
+            await interaction.response.send_message(
+                "You've been removed the Machine Learning topical role",
+                ephemeral=True,
+            )
 
 
 class DMMonitoringExtension(dippy.Extension):
@@ -146,7 +167,8 @@ class DMMonitoringExtension(dippy.Extension):
             embed=Embed(
                 title="Topical Roles",
                 description=(
-                    f"Select the topics you're interested in, like, or want to learn."
+                    "Select the topics you're interested in, like, or want to learn."
+                    "You may get pinged for useful resources or information related to your selected topics."
                 ),
                 color=0x306998,
             ),
