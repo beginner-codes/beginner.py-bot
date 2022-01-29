@@ -181,7 +181,8 @@ class AutoModExtension(dippy.Extension):
             num_scam_links,
         ) = self._metrics_on_messages_from_member(member, last_warned)
 
-        wrapped = "\n> ".join(wrap(message.clean_content, 80))
+        content = self.escape_links(message.clean_content)
+        wrapped = "\n> ".join(wrap(content, 80))
         if member.id == 335491211039080458:
             print(
                 f"Member Spam Stats\n"
@@ -347,3 +348,6 @@ class AutoModExtension(dippy.Extension):
             for link in re.findall(r"http[s]?://d.+?\.gift/[^\s]+", content.casefold())
             if not link.startswith("https://discord.gift/")
         }
+
+    def escape_links(self, content: str) -> str:
+        return re.sub(r"(http[s]?://)(.+?)(\s|\/|$)", r"\1 \2 \3", content)
