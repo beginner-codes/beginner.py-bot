@@ -17,7 +17,7 @@ from types import ModuleType
 class Module:
     def __init__(self, module, executor):
         self._module = module
-        self.__executor =executor
+        self.__executor = executor
 
     def __getattr__(self, item: str):
         if item.startswith("_"):
@@ -47,7 +47,15 @@ class Numpy(Module):
         super().__init__(__import__("numpy"), executor)
 
     def __getattr__(self, item):
-        if item in {"load", "loads", "loadtxt", "save", "savetxt", "savez", "savez_compressed"}:
+        if item in {
+            "load",
+            "loads",
+            "loadtxt",
+            "save",
+            "savetxt",
+            "savez",
+            "savez_compressed",
+        }:
             raise AttributeError(f"numpy.{item} is disabled")
 
         return super().__getattr__(item)
@@ -104,6 +112,16 @@ class ScriptTimedOut(Exception):
     ...
 
 
+_print = print
+printed = False
+
+
+def print(*args, **kwargs):
+    global printed
+    printed = True
+    _print(*args, **kwargs)
+
+
 class Executer:
     def __init__(self, name_whitelist, dunder_whitelist, import_whitelist):
         self.name_whitelist = name_whitelist
@@ -150,9 +168,7 @@ class Executer:
                 builtins["eval"] = lambda *a, **k: self.exec(*a, runner=eval, **k)
         if "__import__" in builtins:
             builtins["__import__"] = (
-                self.importer
-                if restricted
-                else self.admin_importer
+                self.importer if restricted else self.admin_importer
             )
         builtins["getsizeof"] = sys.getsizeof
         return builtins
@@ -174,11 +190,7 @@ class Executer:
         return name.split(".")[0]
 
     def importer(self, name, *args, **kwargs):
-        special_modules = {
-            "numpy": Numpy,
-            "pickle": Pickle,
-            "io": IO
-        }
+        special_modules = {"numpy": Numpy, "pickle": Pickle, "io": IO}
         if self.imported_module_parser(name) not in self.import_whitelist:
             raise ImportError(f"Module is not whitelisted: {name}")
         if name in special_modules:
@@ -226,7 +238,7 @@ class Executer:
             code_object = compile(code_tree, "<string>", runner.__name__)
             ns_globals = self.generate_globals(restricted)
             result = runner(code_object, ns_globals, ns_globals)
-            if runner == eval:
+            if runner == eval and not printed:
                 print(repr(result))
 
             return result
@@ -274,7 +286,7 @@ class Executer:
                                     and result.__doc__.strip()
                                     else "NO DOCS"
                                 )
-                            else:
+                            elif not printed:
                                 print(repr(result))
                     except MemoryError:
                         sys.stderr.write("MemoryError: Exceeded process memory limits")
