@@ -170,6 +170,8 @@ class Executer:
             builtins["__import__"] = (
                 self.importer if restricted else self.admin_importer
             )
+
+        builtins["print"] = print
         builtins["getsizeof"] = sys.getsizeof
         return builtins
 
@@ -251,10 +253,11 @@ class Executer:
             try:
                 code_tree = ast.parse(code, "<string>", runner.__name__)
             except SyntaxError as excp:
-                msg, (file, line_no, column, line) = excp.args
+                msg, (file, line_no, column, line, start, stop) = excp.args
                 spaces = " " * (column - 1)
+                carets = "^" * (stop - column)
                 sys.stderr.write(
-                    f"Line {line_no}\n{line.rstrip() if line else ''}\n{spaces}^\nSyntaxError: {msg}"
+                    f"Line {line_no}\n{line.rstrip() if line else ''}\n{spaces}{carets}\nSyntaxError: {msg}"
                 )
                 exceptions = True
             else:
