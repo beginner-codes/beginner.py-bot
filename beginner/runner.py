@@ -112,6 +112,16 @@ class ScriptTimedOut(Exception):
     ...
 
 
+_print = print
+printed = False
+
+
+def print(*args, **kwargs):
+    global printed
+    printed = True
+    _print(*args, **kwargs)
+
+
 class Executer:
     def __init__(self, name_whitelist, dunder_whitelist, import_whitelist):
         self.name_whitelist = name_whitelist
@@ -228,7 +238,7 @@ class Executer:
             code_object = compile(code_tree, "<string>", runner.__name__)
             ns_globals = self.generate_globals(restricted)
             result = runner(code_object, ns_globals, ns_globals)
-            if runner == eval:
+            if runner == eval and not printed:
                 print(repr(result))
 
             return result
@@ -277,7 +287,7 @@ class Executer:
                                     and result.__doc__.strip()
                                     else "NO DOCS"
                                 )
-                            else:
+                            elif not printed:
                                 print(repr(result))
                     except MemoryError:
                         sys.stderr.write("MemoryError: Exceeded process memory limits")
