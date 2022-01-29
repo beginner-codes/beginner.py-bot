@@ -163,9 +163,6 @@ class TopicalRolesExtension(dippy.Extension):
             "cpp": "clang",
             "ml": "ml",
         }
-        self.regex = re.compile(
-            r"(?<=^|\s)\$(?:" + "|".join(self.topical_roles) + ")(?=$|\s)"
-        )
 
     @dippy.Extension.listener("ready")
     async def ready(self):
@@ -180,7 +177,11 @@ class TopicalRolesExtension(dippy.Extension):
         if staff_role not in message.author.roles:
             return
 
-        if roles := set(self.regex.findall(message.content)):
+        roles = re.findall(
+            r"(?<=^|\s)\$(?:" + "|".join(self.topical_roles) + ")(?=$|\s)",
+            message.content,
+        )
+        if roles:
             await message.reply(
                 ", ".join(
                     utils.get(
