@@ -122,7 +122,7 @@ class AssignTopicsView(View):
                 "You've been removed the Java topical role",
                 ephemeral=True,
             )
-            
+
     @button(
         emoji="🧠",
         label="Machine Learning",
@@ -152,10 +152,44 @@ class DMMonitoringExtension(dippy.Extension):
     def __init__(self):
         super().__init__()
         self.log_channel = None
+        self.topical_roles = {
+            "python": "python",
+            "py": "python",
+            "javascript": "javascript",
+            "js": "javascript",
+            "webdev": "webdev",
+            "java": "java",
+            "c": "clang",
+            "cpp": "clang",
+            "ml": "ml",
+        }
+        self.regex = re.compile(
+            r"(?<=^|\s)\$(?:" + "|".join(self.topical_roles) + ")(?=$|\s)"
+        )
 
     @dippy.Extension.listener("ready")
     async def ready(self):
         self.client.add_view(AssignTopicsView())
+
+    @dippy.Extension.listener("message")
+    async def scan_for_dollar_mentions(self, message: Message):
+        if not message.guild:
+            return
+
+        staff_role = utils.get(message.guild.roles, name="staff")
+        if staff_role not in message.author.roles:
+            return
+
+        if roles := set(self.regex.findall(message.content)):
+            await message.reply(
+                ", ".join(
+                    utils.get(
+                        message.guild.roles, name=self.topical_roles[mention]
+                    ).mention
+                    for mention in roles
+                ),
+                mention_author=False,
+            )
 
     @dippy.Extension.command("!setup topic assignments")
     async def setup_topic_assignments(self, message: Message):
