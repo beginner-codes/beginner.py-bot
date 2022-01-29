@@ -178,7 +178,7 @@ class TopicalRolesExtension(dippy.Extension):
             return
 
         roles = re.findall(
-            r"(?:\W|^)\$(" + "|".join(self.topical_roles) + ")(?:\W|$)",
+            r"(?:^|(?<=\W))\$(" + "|".join(self.topical_roles) + ")(?:(?=\W)|$)",
             message.content,
         )
         if roles:
