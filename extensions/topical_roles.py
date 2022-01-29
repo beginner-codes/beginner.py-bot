@@ -177,23 +177,21 @@ class TopicalRolesExtension(dippy.Extension):
         if staff_role not in message.author.roles:
             return
 
-        roles = set(
-            sorted(
-                re.findall(
-                    r"(?:^|(?<=\W))\$("
-                    + "|".join(self.topical_roles)
-                    + ")(?:(?=\W)|$)",
-                    message.content,
-                )
+        roles = sorted(
+            re.findall(
+                r"(?:^|(?<=\W))\$(" + "|".join(self.topical_roles) + ")(?:(?=\W)|$)",
+                message.content,
             )
         )
         if roles:
             await message.reply(
                 ", ".join(
-                    utils.get(
-                        message.guild.roles, name=self.topical_roles[mention]
-                    ).mention
-                    for mention in roles
+                    {
+                        utils.get(
+                            message.guild.roles, name=self.topical_roles[mention]
+                        ).mention
+                        for mention in roles
+                    }
                 ),
                 mention_author=False,
             )
