@@ -145,7 +145,7 @@ class AssignTopicsView(View):
             )
 
 
-class DMMonitoringExtension(dippy.Extension):
+class TopicalRolesExtension(dippy.Extension):
     client: dippy.Client
     labels: dippy.labels.storage.StorageInterface
 
