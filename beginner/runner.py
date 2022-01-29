@@ -17,7 +17,7 @@ from types import ModuleType
 class Module:
     def __init__(self, module, executor):
         self._module = module
-        self.__executor =executor
+        self.__executor = executor
 
     def __getattr__(self, item: str):
         if item.startswith("_"):
@@ -47,7 +47,15 @@ class Numpy(Module):
         super().__init__(__import__("numpy"), executor)
 
     def __getattr__(self, item):
-        if item in {"load", "loads", "loadtxt", "save", "savetxt", "savez", "savez_compressed"}:
+        if item in {
+            "load",
+            "loads",
+            "loadtxt",
+            "save",
+            "savetxt",
+            "savez",
+            "savez_compressed",
+        }:
             raise AttributeError(f"numpy.{item} is disabled")
 
         return super().__getattr__(item)
@@ -150,9 +158,7 @@ class Executer:
                 builtins["eval"] = lambda *a, **k: self.exec(*a, runner=eval, **k)
         if "__import__" in builtins:
             builtins["__import__"] = (
-                self.importer
-                if restricted
-                else self.admin_importer
+                self.importer if restricted else self.admin_importer
             )
         builtins["getsizeof"] = sys.getsizeof
         return builtins
@@ -174,11 +180,7 @@ class Executer:
         return name.split(".")[0]
 
     def importer(self, name, *args, **kwargs):
-        special_modules = {
-            "numpy": Numpy,
-            "pickle": Pickle,
-            "io": IO
-        }
+        special_modules = {"numpy": Numpy, "pickle": Pickle, "io": IO}
         if self.imported_module_parser(name) not in self.import_whitelist:
             raise ImportError(f"Module is not whitelisted: {name}")
         if name in special_modules:
@@ -239,10 +241,11 @@ class Executer:
             try:
                 code_tree = ast.parse(code, "<string>", runner.__name__)
             except SyntaxError as excp:
-                msg, (file, line_no, column, line) = excp.args
+                msg, (file, line_no, column, line, start, stop) = excp.args
                 spaces = " " * (column - 1)
+                carets = "^" * (stop - column)
                 sys.stderr.write(
-                    f"Line {line_no}\n{line.rstrip() if line else ''}\n{spaces}^\nSyntaxError: {msg}"
+                    f"Line {line_no}\n{line.rstrip() if line else ''}\n{spaces}{carets}\nSyntaxError: {msg}"
                 )
                 exceptions = True
             else:
