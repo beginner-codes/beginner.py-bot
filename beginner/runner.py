@@ -170,6 +170,8 @@ class Executer:
             builtins["__import__"] = (
                 self.importer if restricted else self.admin_importer
             )
+
+        builtins["print"] = print
         builtins["getsizeof"] = sys.getsizeof
         return builtins
 
