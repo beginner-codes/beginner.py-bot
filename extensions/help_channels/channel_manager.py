@@ -42,6 +42,7 @@ class ChannelManager(Injectable):
             "javascript": "🌎",
             "js": "🌎",
             "php": "🌎",
+            "css": "🌎",
             "web-dev": "🌎",
             "flask": "🐍🌎",
             "django": "🐍🌎",
