@@ -11,7 +11,7 @@ class PrivateChatExtension(dippy.Extension):
         if message.author.bot:
             return
 
-        if message.content[0] == "!":
+        if message.content[0] in "!?=":
             return
 
         await message.delete()
