@@ -103,14 +103,9 @@ class MonthlyShowingOffCog(Cog):
 
     def calculate_time_left(self):
         """Calculate time left for the next challenge"""
-        current_day = datetime.today()
-        next_date = (
-            current_day
-            + relativedelta(months=1)
-            - relativedelta(days=current_day.day - 1)
-            - current_day
-        ).total_seconds()
-        return next_date
+        now = datetime.now()
+        first = now + relativedelta(day=1, months=1) - now
+        return first.total_seconds()
 
     async def check_invalid_messages(self):
         """Will iterate over messages while the bot was offline to make sure no incorrectly formatted messages were sent"""
