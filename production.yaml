@@ -64,6 +64,11 @@ resources:
     Courses:
       Kaggle Learn: https://www.kaggle.com/learn/overview
       Google ML Course (Check prerequisites before starting): https://developers.google.com/machine-learning/crash-course
+    Data Visualisation:
+      Data Visualisation Catalogue: https://datavizcatalogue.com/index.html
+      Which graph to use: https://www.data-to-viz.com/
+      Resource for creating graphs (Python): https://www.python-graph-gallery.com/
+      Resource for creating graphs (R): https://www.r-graph-gallery.com/index.html
 
   pentesting:
     name: Pentesting & Ethical Hacking
