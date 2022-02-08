@@ -38,13 +38,13 @@ def build_tag_set(*tag_objects):
 
 
 def assign_tags(obj: Any, *tags) -> NoReturn:
-    """ Assigns an object the given tags. """
+    """Assigns an object the given tags."""
     for tag in tags:
         __registered_tags__[tag].add(obj)
 
 
 def tag(*tags) -> Callable:
-    """ Decorator that assigns tags to an object. """
+    """Decorator that assigns tags to an object."""
 
     def decorator(obj: Any) -> Any:
         obj.tags = build_tag_set(tags)

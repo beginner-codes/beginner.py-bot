@@ -13,7 +13,7 @@ logger = get_logger(("beginner.py", "scheduler"))
 
 
 def initialize_scheduler(loop=asyncio.get_event_loop()):
-    """ Loads scheduler tasks from the database and schedules them to run. """
+    """Loads scheduler tasks from the database and schedules them to run."""
     for task in Scheduler.select():
         loop.create_task(_schedule(task, pickle.loads(task.payload.encode())))
 
@@ -27,7 +27,7 @@ def schedule(
     no_duplication=False,
     **kwargs,
 ):
-    """ Schedule a task to be run and save it to the database. """
+    """Schedule a task to be run and save it to the database."""
     if no_duplication and task_scheduled(name):
         return False
 
@@ -56,7 +56,7 @@ def task_scheduled(name):
 
 
 async def _schedule(task: Scheduler, payload: Dict):
-    """ Schedules a task and calls the """
+    """Schedules a task and calls the"""
     time = _seconds_until_run(task.when.replace(tzinfo=datetime.utcnow().tzinfo))
     logger.debug(f"Scheduling {task.name} for {task.when} {task.when.tzinfo} - {time}")
     if time > 0:
@@ -74,7 +74,7 @@ def _count_scheduled(name: AnyStr) -> int:
 def _schedule_save(
     name: AnyStr, when: datetime, tags: Set, payload: AnyStr
 ) -> Scheduler:
-    """ Takes task parameters and creates a Scheduler row in the database. """
+    """Takes task parameters and creates a Scheduler row in the database."""
     tag = ",".join(map(str, tags))  # Convert the tag set to a string
     task = Scheduler(name=name, when=when, tag=tag, payload=payload)
     task.save()
@@ -87,7 +87,7 @@ def _seconds_until_run(when: datetime) -> float:
 
 
 async def _trigger_task(task: Scheduler, payload: Any):
-    """ Runs the callbacks tagged for this task and removes the task from the database. """
+    """Runs the callbacks tagged for this task and removes the task from the database."""
     tags = set(task.tag.split(","))
     name = task.name
     task.delete_instance()
@@ -96,7 +96,7 @@ async def _trigger_task(task: Scheduler, payload: Any):
 
 
 async def _run_tags(tags: Set, payload: Dict):
-    """ Runs all callbacks with the appropriate tags. """
+    """Runs all callbacks with the appropriate tags."""
     callbacks = fetch_tags("schedule", tags)
     try:
         for callback in callbacks:
