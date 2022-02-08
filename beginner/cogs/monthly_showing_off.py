@@ -1,3 +1,4 @@
+from calendar import c
 from beginner.logging import get_logger
 from beginner.models.contestants import ContestantInfo
 from nextcord.ext import commands
@@ -5,6 +6,7 @@ from nextcord.ext.commands import Cog, has_permissions
 import nextcord
 import requests
 from datetime import datetime, timedelta
+from dateutil.relativedelta import relativedelta
 import os
 import asyncio
 from urllib.parse import urlparse
@@ -101,11 +103,9 @@ class MonthlyShowingOffCog(Cog):
 
     def calculate_time_left(self):
         """Calculate time left for the next challenge"""
-        current_date = datetime.today()
-        current_month = current_date.month
-        current_year = current_date.year
-        last_date = datetime(current_year, (current_month % 12) + 1, 1, 0, 0, 0)
-        return (last_date - current_date).total_seconds()
+        now = datetime.now()
+        first = now + relativedelta(day=1, months=1) - now
+        return first.total_seconds()
 
     async def check_invalid_messages(self):
         """Will iterate over messages while the bot was offline to make sure no incorrectly formatted messages were sent"""
