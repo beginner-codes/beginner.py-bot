@@ -245,8 +245,8 @@ class ChannelManager(Injectable):
                 name="Categories",
                 value=(
                     (
-                        f"🐍 Python/Discord.py\n{js_emoji} JavaScript/Node.js/Deno\n🌵 C/C++/C#\n🌎 Web Dev/HTML/CSS\n"
-                        f"💾 OS/Docker/Kubernetes\n☕️ Java/Kotlin\n🙋 General Help"
+                        f"🐍 Python/Discord.py\n🌵 C/C++/C#\n🌎 Web Dev/HTML/CSS\n"
+                        f"💾 OS/Docker/Kubernetes\n☕️ Java/Kotlin\n{js_emoji} JavaScript/Node.js/Deno\n🙋 General Help"
                     )
                 ),
             )
