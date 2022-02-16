@@ -268,7 +268,15 @@ class AutoModExtension(dippy.Extension):
             await message.delete()
             action_description.append("\n**⚠️ Your message has been deleted ⚠️**")
 
-        m: Message = await channel.send("".join(action_description))
+        if too_many_everyone_mentions_with_nitro or too_many_scam_links:
+            m: Message = (await channel.history(limit=1).flatten())[0]
+            await channel.send(
+                f"{member.mention} you've been muted for possibly sharing scams.",
+                delete_after=5,
+            )
+        else:
+            m: Message = await channel.send("".join(action_description))
+
         if should_mute:
             mods: Role = channel.guild.get_role(644390354157568014)
             await self.client.get_channel(728249959098482829).send(
