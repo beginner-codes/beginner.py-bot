@@ -311,7 +311,7 @@ class AutoModExtension(dippy.Extension):
                 recent_channels.add(message.channel.id)
 
                 content = message.content.casefold()
-                links = self.get_discord_scam_links(content)
+                links = self.get_scam_links(content)
                 if links:
                     num_scam_links += len(links)
 
@@ -342,10 +342,12 @@ class AutoModExtension(dippy.Extension):
             )
         }
 
-    def get_discord_scam_links(self, content: str) -> set[str]:
+    def get_scam_links(self, content: str) -> set[str]:
         return {
             link
-            for link in re.findall(r"http[s]?://d.+?\.gift/[^\s]+", content.casefold())
+            for link in re.findall(
+                r"http[s]?://(?:d.+?\.gift|t\.me)/[^\s]+", content.casefold()
+            )
             if not link.startswith("https://discord.gift/")
         }
 
