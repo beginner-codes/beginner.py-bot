@@ -164,7 +164,7 @@ class ModerationCog(Cog):
     @Cog.command(name="purge")
     @commands.has_permissions(manage_messages=True)
     async def purge(self, ctx: commands.Context, messages: str, count: int = 0):
-        messages = messages.strip().strip("<>")
+        messages = messages.strip().strip("<>!@")
         messages = int(messages)
         if messages > 1000:
             user_id = messages
