@@ -4,9 +4,48 @@ import nextcord
 import os
 
 
+class ChallengeReminderView(nextcord.ui.View):
+    @nextcord.ui.button(
+        emoji="🔔",
+        style=nextcord.ButtonStyle.blurple,
+        custom_id="ChallengeReminderButton",
+    )
+    async def button_pressed(self, _, interaction: nextcord.Interaction):
+        guild = interaction.guild
+        role = nextcord.utils.get(guild.roles, name="challenges")
+        if role in interaction.user.roles:
+            return
+
+        await interaction.user.add_roles(role)
+        await interaction.response.send_message(
+            f"{interaction.user.mention} you will be tagged for new challenges",
+            delete_after=10,
+            ephemeral=True,
+        )
+
+    @nextcord.ui.button(
+        emoji="🚫",
+        style=nextcord.ButtonStyle.grey,
+        custom_id="StopChallengeReminderButton",
+    )
+    async def button_pressed(self, _, interaction: nextcord.Interaction):
+        guild = interaction.guild
+        role = nextcord.utils.get(guild.roles, name="challenges")
+        if role not in interaction.user.roles:
+            return
+
+        await interaction.user.remove_roles(role)
+        await interaction.response.send_message(
+            f"{interaction.user.mention} you will no longer be tagged for new challenges",
+            delete_after=10,
+            ephemeral=True,
+        )
+
+
 class Challenges(Cog):
     def __init__(self, client):
         super().__init__(client)
+        self.challenge_reminder_added = False
         self.approved_hosts = [
             "gist.github.com",
             "paste.pythonnextcord.com",
@@ -16,11 +55,17 @@ class Challenges(Cog):
         ]
 
     @Cog.listener()
+    async def on_ready(self):
+        if not self.challenge_reminder_added:
+            self.client.add_view(ChallengeReminderView(timeout=None))
+            self.challenge_reminder_added = True
+
+    @Cog.listener()
     async def on_message(self, message):
         await self.challenge_alerts(message)
         await self.challenge_submission_scan(message)
 
-    async def challenge_alerts(self, message):
+    async def challenge_alerts(self, message: nextcord.Message):
         if message.channel != self.get_channel(
             os.environ.get("DAILY_CHALLENGE_CHANNEL", "🏋weekday-challenges")
         ):
@@ -29,7 +74,12 @@ class Challenges(Cog):
         if message.author.bot:
             return
 
-        await message.add_reaction("🔔")
+        role = nextcord.utils.get(message.guild.roles, name="challenges")
+        await message.delete()
+        await message.channel.send(
+            f"**{role.mention}{message.content.removeprefix('**Challenge')}",
+            view=ChallengeReminderView(timeout=None),
+        )
 
     async def challenge_submission_scan(self, message):
         if message.author.bot:
@@ -74,60 +124,6 @@ class Challenges(Cog):
             ),
             delete_after=30,
         )
-
-    @Cog.listener()
-    async def on_raw_reaction_add(self, reaction):
-        if reaction.emoji.name != "🔔":
-            return
-
-        channel = self.get_channel(
-            os.environ.get("DAILY_CHALLENGE_CHANNEL", "🏋weekday-challenges")
-        )
-        if reaction.channel_id != channel.id:
-            return
-
-        member = self.server.get_member(reaction.user_id)
-        if member.bot:
-            return
-
-        if self.get_role("challenges") not in member.roles:
-            await self.add_challenges_role(member, channel)
-        else:
-            await channel.send(
-                f"{member.mention} you're already signed up for new challenge notifications",
-                delete_after=5,
-            )
-
-    async def add_challenges_role(self, member, channel):
-        await member.add_roles(self.get_role("challenges"))
-        await channel.send(
-            f"{member.mention} you will be tagged for new challenges", delete_after=10
-        )
-
-    async def remove_challenges_role(self, member, channel):
-        await member.remove_roles(self.get_role("challenges"))
-        await channel.send(
-            f"{member.mention} you will no longer be tagged for new challenges",
-            delete_after=10,
-        )
-
-    @Cog.listener()
-    async def on_raw_reaction_remove(self, reaction):
-        if reaction.emoji.name != "🔔":
-            return
-
-        channel = self.get_channel(
-            os.environ.get("DAILY_CHALLENGE_CHANNEL", "🏋weekday-challenges")
-        )
-        if reaction.channel_id != channel.id:
-            return
-
-        member = self.server.get_member(reaction.user_id)
-        if member.bot:
-            return
-
-        if self.get_role("challenges") in member.roles:
-            await self.remove_challenges_role(member, channel)
 
     @Cog.command()
     async def codehosts(self, ctx):
