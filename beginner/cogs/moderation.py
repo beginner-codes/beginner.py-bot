@@ -189,9 +189,20 @@ class ModerationCog(Cog):
         )
 
     async def purge_by_user_id(self, ctx, user_id, count):
-        messages = await ctx.message.channel.purge(
-            check=lambda message: message.author.id == user_id, limit=count or 100
-        )
+        limit = count or 100
+
+        def check(message: nextcord.Message):
+            nonlocal limit
+            if limit == 0:
+                return False
+
+            if message.author.id != user_id:
+                return False
+
+            limit -= 1
+            return True
+
+        messages = await ctx.message.channel.purge(check=check)
         await ctx.send(
             f"Deleted {len(messages)} messages sent by that user in this channel",
             delete_after=15,
