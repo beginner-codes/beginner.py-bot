@@ -10,36 +10,36 @@ class ChallengeReminderView(nextcord.ui.View):
         style=nextcord.ButtonStyle.blurple,
         custom_id="ChallengeReminderButton",
     )
-    async def button_pressed(self, _, interaction: nextcord.Interaction):
+    async def add_reminder_role(self, _, interaction: nextcord.Interaction):
         guild = interaction.guild
         role = nextcord.utils.get(guild.roles, name="Challenges")
-        if role in interaction.user.roles:
-            return
-
-        await interaction.user.add_roles(role)
         await interaction.response.send_message(
             f"{interaction.user.mention} you will be tagged for new challenges",
             delete_after=10,
             ephemeral=True,
         )
+        if role in interaction.user.roles:
+            return
+
+        await interaction.user.add_roles(role)
 
     @nextcord.ui.button(
         emoji="🚫",
         style=nextcord.ButtonStyle.grey,
         custom_id="StopChallengeReminderButton",
     )
-    async def button_pressed(self, _, interaction: nextcord.Interaction):
+    async def remove_reminder_role(self, _, interaction: nextcord.Interaction):
         guild = interaction.guild
         role = nextcord.utils.get(guild.roles, name="Challenges")
-        if role not in interaction.user.roles:
-            return
-
-        await interaction.user.remove_roles(role)
         await interaction.response.send_message(
             f"{interaction.user.mention} you will no longer be tagged for new challenges",
             delete_after=10,
             ephemeral=True,
         )
+        if role not in interaction.user.roles:
+            return
+
+        await interaction.user.remove_roles(role)
 
 
 class Challenges(Cog):
