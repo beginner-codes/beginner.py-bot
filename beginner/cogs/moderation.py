@@ -163,10 +163,9 @@ class ModerationCog(Cog):
 
     @Cog.command(name="purge")
     @commands.has_permissions(manage_messages=True)
-    async def purge(self, ctx, messages: str):
+    async def purge(self, ctx, messages: str, count: int = 0):
         if messages.startswith("<"):
-            user_id = re.findall("\d+", messages)
-            count = user_id[1] if len(user_id) == 2 else 0
+            user_id = re.findall(r"\d+", messages)
             if user_id:
                 member = self.server.get_member(int(user_id[0]))
                 if member and member.guild_permissions.manage_messages:
