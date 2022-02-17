@@ -38,6 +38,9 @@ class ChallengesExtension(dippy.Extension):
         if message.channel.id != self.WEEKDAY_CHANNEL_ID:
             return
 
+        if not message.author.bot:
+            return
+
         if not message.content.startswith("**"):
             return
 
