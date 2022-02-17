@@ -163,20 +163,29 @@ class ModerationCog(Cog):
 
     @Cog.command(name="purge")
     @commands.has_permissions(manage_messages=True)
-    async def purge(self, ctx, messages: str, count: int = 0):
-        if messages.startswith("<"):
+    async def purge(self, ctx: commands.Context, messages: str, count: int = 0):
+        if messages.startswith("<") or (messages.isalpha() and int(messages) > 1000):
             user_id = re.findall(r"\d+", messages)
-            if user_id:
-                member = self.server.get_member(int(user_id[0]))
-                if member and member.guild_permissions.manage_messages:
-                    await ctx.send(
-                        "You cannot delete messages from this user", delete_after=15
-                    )
-                    return
-                deleted = await self.purge_by_user_id(ctx, int(user_id[0]), count)
-            else:
-                await ctx.send("Invalid user ID was provided:", messages)
+            if not user_id:
+                await ctx.send(
+                    f"Invalid user ID was provided: {messages}", delete_after=15
+                )
                 return
+
+            member = self.server.get_member(int(user_id[0]))
+            if not (
+                not member
+                or member.bot
+                or not member.guild_permissions.manage_messages
+                or ctx.author.guild_permissions.administrator
+            ):
+                await ctx.send(
+                    "You cannot delete messages from this user", delete_after=15
+                )
+                return
+
+            deleted = await self.purge_by_user_id(ctx, int(user_id[0]), count)
+
         else:
             deleted = await self.purge_by_message_count(ctx, int(messages))
 
