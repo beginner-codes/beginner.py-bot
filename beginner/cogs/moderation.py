@@ -164,15 +164,11 @@ class ModerationCog(Cog):
     @Cog.command(name="purge")
     @commands.has_permissions(manage_messages=True)
     async def purge(self, ctx: commands.Context, messages: str, count: int = 0):
-        if messages.startswith("<") or (messages.isalpha() and int(messages) > 1000):
-            user_id = re.findall(r"\d+", messages)
-            if not user_id:
-                await ctx.send(
-                    f"Invalid user ID was provided: {messages}", delete_after=15
-                )
-                return
-
-            member = self.server.get_member(int(user_id[0]))
+        messages = messages.strip().strip("<>")
+        messages = int(messages)
+        if messages > 1000:
+            user_id = messages
+            member = self.server.get_member(user_id)
             if not (
                 not member
                 or member.bot
@@ -184,10 +180,10 @@ class ModerationCog(Cog):
                 )
                 return
 
-            deleted = await self.purge_by_user_id(ctx, int(user_id[0]), count)
+            deleted = await self.purge_by_user_id(ctx, user_id, count)
 
         else:
-            deleted = await self.purge_by_message_count(ctx, int(messages))
+            deleted = await self.purge_by_message_count(ctx, messages)
 
         await self.log_action(
             "Purge",
@@ -218,7 +214,7 @@ class ModerationCog(Cog):
         )
         return len(messages)
 
-    async def purge_by_message_count(self, ctx, count):
+    async def purge_by_message_count(self, ctx: commands.Context, count):
         messages = await ctx.message.channel.purge(limit=min(100, count + 1))
         await ctx.send(
             f"Deleted {len(messages)} messages in this channel", delete_after=15
