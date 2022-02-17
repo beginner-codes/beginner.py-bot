@@ -15,7 +15,6 @@ class ChallengeReminderView(nextcord.ui.View):
         role = nextcord.utils.get(guild.roles, name="Challenges")
         await interaction.response.send_message(
             f"{interaction.user.mention} you will be tagged for new challenges",
-            delete_after=10,
             ephemeral=True,
         )
         if role in interaction.user.roles:
@@ -33,7 +32,6 @@ class ChallengeReminderView(nextcord.ui.View):
         role = nextcord.utils.get(guild.roles, name="Challenges")
         await interaction.response.send_message(
             f"{interaction.user.mention} you will no longer be tagged for new challenges",
-            delete_after=10,
             ephemeral=True,
         )
         if role not in interaction.user.roles:
