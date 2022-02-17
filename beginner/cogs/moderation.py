@@ -166,6 +166,7 @@ class ModerationCog(Cog):
     async def purge(self, ctx, messages: str):
         if messages.startswith("<"):
             user_id = re.findall("\d+", messages)
+            count = user_id[1] if len(user_id) == 2 else 0
             if user_id:
                 member = self.server.get_member(int(user_id[0]))
                 if member and member.guild_permissions.manage_messages:
@@ -173,7 +174,7 @@ class ModerationCog(Cog):
                         "You cannot delete messages from this user", delete_after=15
                     )
                     return
-                deleted = await self.purge_by_user_id(ctx, int(user_id[0]))
+                deleted = await self.purge_by_user_id(ctx, int(user_id[0]), count)
             else:
                 await ctx.send("Invalid user ID was provided:", messages)
                 return
@@ -188,9 +189,9 @@ class ModerationCog(Cog):
             ctx.message,
         )
 
-    async def purge_by_user_id(self, ctx, user_id):
+    async def purge_by_user_id(self, ctx, user_id, count):
         messages = await ctx.message.channel.purge(
-            check=lambda message: message.author.id == user_id
+            check=lambda message: message.author.id == user_id, limit=count or 100
         )
         await ctx.send(
             f"Deleted {len(messages)} messages sent by that user in this channel",
