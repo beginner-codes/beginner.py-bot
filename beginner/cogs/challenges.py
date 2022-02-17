@@ -12,7 +12,7 @@ class ChallengeReminderView(nextcord.ui.View):
     )
     async def button_pressed(self, _, interaction: nextcord.Interaction):
         guild = interaction.guild
-        role = nextcord.utils.get(guild.roles, name="challenges")
+        role = nextcord.utils.get(guild.roles, name="Challenges")
         if role in interaction.user.roles:
             return
 
@@ -30,7 +30,7 @@ class ChallengeReminderView(nextcord.ui.View):
     )
     async def button_pressed(self, _, interaction: nextcord.Interaction):
         guild = interaction.guild
-        role = nextcord.utils.get(guild.roles, name="challenges")
+        role = nextcord.utils.get(guild.roles, name="Challenges")
         if role not in interaction.user.roles:
             return
 
@@ -74,7 +74,7 @@ class Challenges(Cog):
         if message.author.bot:
             return
 
-        role = nextcord.utils.get(message.guild.roles, name="challenges")
+        role = nextcord.utils.get(message.guild.roles, name="Challenges")
         await message.delete()
         await message.channel.send(
             f"**{role.mention}{message.content.removeprefix('**Challenge')}",
