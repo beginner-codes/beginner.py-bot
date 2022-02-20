@@ -384,7 +384,9 @@ class ModerationCog(Cog):
 
         return False
 
-    def save_action(self, action_type: str, user: Snowflake, mod: Member, **details):
+    def save_action(
+        self, action_type: str, user: nextcord.abc.Snowflake, mod: Member, **details
+    ):
         action = ModAction(
             action_type=action_type,
             user_id=user.id,
