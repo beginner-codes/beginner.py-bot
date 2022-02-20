@@ -1,16 +1,13 @@
-import pytz as pytz
-
 from beginner.cog import Cog, commands
-from beginner.cogs.rules import RulesCog
 from beginner.models.mod_actions import ModAction
 from beginner.scheduler import schedule
-from datetime import timedelta, datetime
-from nextcord import Embed, Message, Member, User, utils
 from beginner.snowflake import Snowflake
 from beginner.tags import tag
-import discord
+from datetime import timedelta, datetime
+from nextcord import Embed, Message, Member, User, utils
 import nextcord
 import pickle
+import pytz as pytz
 import re
 
 
