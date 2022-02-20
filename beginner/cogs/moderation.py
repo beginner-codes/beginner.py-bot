@@ -120,23 +120,11 @@ class ModerationCog(Cog):
 
     @Cog.command(name="kick")
     @commands.has_guild_permissions(manage_messages=True)
-    async def kick(self, ctx, user_detail: str, *, reason=None):
+    async def kick(self, ctx, member: Member, *, reason=None):
         if not reason:
             await ctx.send(
                 "You must provide a reason for the kick. `!kick [@user|1234] reason for kick`"
             )
-            return
-
-        user_id = re.findall("\d+", user_detail)
-        if user_id:
-            user_id = user_id[0]
-        else:
-            await ctx.send("Invalid user ID was provided:", user_detail)
-            return
-
-        member = self.server.get_member(int(user_id))
-        if not member:
-            await ctx.send("No such member found")
             return
 
         if member.guild_permissions.manage_messages:
