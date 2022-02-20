@@ -20,7 +20,7 @@ class HelpRotatorCommandsExtension(dippy.Extension):
 
     @dippy.Extension.command("!close")
     async def close(self, message: Message):
-        await self.done(message)
+        await self.done.handler(message)
 
     @dippy.Extension.command("!done")
     async def done(self, message: Message):
