@@ -263,7 +263,7 @@ class ModerationCog(Cog):
         )
 
     @Cog.command(name="unmute")
-    async def unmute(self, ctx, member: discord.Member):
+    async def unmute(self, ctx, member: Member):
         if not (
             set(ctx.author.roles)
             & {self.get_role("jedi council"), self.get_role("mods")}
