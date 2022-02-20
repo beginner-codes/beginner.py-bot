@@ -18,6 +18,10 @@ class HelpRotatorCommandsExtension(dippy.Extension):
         self._topic_limit = 0
         self._claim_cooldown = {}
 
+    @dippy.Extension.command("!close")
+    async def close(self, message: Message):
+        await self.done(message)
+
     @dippy.Extension.command("!done")
     async def done(self, message: Message):
         category = message.channel.category
