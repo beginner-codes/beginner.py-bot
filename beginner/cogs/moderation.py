@@ -282,14 +282,13 @@ class ModerationCog(Cog):
         )
 
     @Cog.command(name="warn")
-    async def warn(self, ctx, user, *, reason: str):
+    async def warn(self, ctx, member: Member, *, reason: str):
         if not (
             set(ctx.author.roles)
             & {self.get_role("jedi council"), self.get_role("mods")}
         ):
             return
 
-        member = self.server.get_member(self.parse_user_id(user))
         embed = self.build_mod_action_embed(ctx, member, reason, "Mod Warning")
         message = await ctx.send(embed=embed)
 
