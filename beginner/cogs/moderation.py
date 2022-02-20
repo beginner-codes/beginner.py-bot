@@ -6,6 +6,7 @@ from beginner.models.mod_actions import ModAction
 from beginner.scheduler import schedule
 from datetime import timedelta, datetime
 from nextcord import Embed, Message, Member, User, utils
+from beginner.snowflake import Snowflake
 from beginner.tags import tag
 import discord
 import nextcord
@@ -76,38 +77,44 @@ class ModerationCog(Cog):
             )
             return
 
-        user_id = re.findall("\d+", user_detail)
+        user_id = re.findall(r"\d+", user_detail)
         if user_id:
-            user_id = user_id[0]
+            user_id = int(user_id[0])
         else:
             await ctx.send("Invalid user ID was provided:", user_detail)
             return
 
-        member = self.server.get_member(int(user_id))
-        if not member:
-            await ctx.send("No such member found")
+        user = self.client.get_user(user_id)
+        member = self.server.get_member(user_id)
+        if not user:
+            await ctx.send("No such user found")
             return
 
-        if member.guild_permissions.manage_messages:
+        if member and member.guild_permissions.manage_messages:
             await ctx.send("You cannot ban this user", delete_after=15)
             return
 
-        embed = self.build_mod_action_embed(ctx, member, reason, f"You've Been Banned")
+        embed = self.build_mod_action_embed(
+            ctx, member or user, reason, f"You've Been Banned"
+        )
         successfully_dmd = await self.send_dm(
-            member,
+            user,
             embed,
-            description="You've been banned from the Beginner.py server.\n",
+            description="You've been banned from the Beginner.Codes server.\n",
         )
         if not successfully_dmd:
             reason += "\n*Unable to DM user*"
 
-        await self.server.ban(member, reason=reason, delete_message_days=0)
+        snowflake = Snowflake(user_id)
+        await self.server.ban(snowflake, reason=reason, delete_message_days=0)
 
-        await ctx.send(f"{member.display_name} has been banned")
-        await self.log_action("Ban", member, ctx.author, reason, ctx.message)
+        await ctx.send(f"{member or user} has been banned")
+        await self.log_action(
+            "Ban", member or user or "Unknown", ctx.author, reason, ctx.message
+        )
         self.save_action(
             "BAN",
-            member,
+            snowflake,
             ctx.author,
             message=reason,
             reference=ctx.message.id,
@@ -375,7 +382,7 @@ class ModerationCog(Cog):
 
     async def send_dm(
         self,
-        member: Member,
+        member: Member | User | None,
         embed: Embed,
         message: Message = None,
         description: str = "",
@@ -384,13 +391,16 @@ class ModerationCog(Cog):
         if message:
             embed.description += f"[Jump To Conversation]({message.jump_url})"
 
-        try:
-            await member.send(embed=embed)
-            return True
-        except nextcord.errors.Forbidden:
-            return False
+        if member:
+            try:
+                await member.send(embed=embed)
+                return True
+            except nextcord.errors.Forbidden:
+                pass
 
-    def save_action(self, action_type: str, user: Member, mod: Member, **details):
+        return False
+
+    def save_action(self, action_type: str, user: Snowflake, mod: Member, **details):
         action = ModAction(
             action_type=action_type,
             user_id=user.id,
@@ -403,7 +413,7 @@ class ModerationCog(Cog):
     async def log_action(
         self,
         action: str,
-        user: Member,
+        user: Member | User | str | None,
         mod: Member,
         reason: str,
         message: Message,
@@ -417,7 +427,11 @@ class ModerationCog(Cog):
         ).send(
             embed=Embed(
                 description=f"Moderator: {mod.mention}\n"
-                + (f"User: {user.mention}\n" if user else "")
+                + (
+                    f"User: {user if isinstance(user, str) else user.mention}\n"
+                    if user
+                    else ""
+                )
                 + f"Reason: {reason}"
                 + ("\n" if additional_fields else "")
                 + f"{additional_fields}\n\n"
@@ -430,7 +444,7 @@ class ModerationCog(Cog):
         )
 
     def build_mod_action_embed(
-        self, ctx, user: Member, reason: str, title: str
+        self, ctx, user: Member | User, reason: str, title: str
     ) -> Embed:
         embed = Embed(description=reason, color=0xCC2222)
         embed.set_author(name=title, icon_url=self.server.icon.url)
