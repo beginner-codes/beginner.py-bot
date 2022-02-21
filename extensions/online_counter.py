@@ -1,6 +1,5 @@
 from nextcord import Guild, Member, Message, Status, TextChannel
 from datetime import datetime, timedelta
-from typing import Optional
 import dippy
 
 
