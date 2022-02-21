@@ -23,7 +23,7 @@ class OnlineCounterExtension(dippy.Extension):
         num_online = self._count_online_members(message.guild)
         max_online = await message.guild.get_label("max_online", default=0)
         await message.channel.send(
-            f"There are currently {num_online} members online, the most we've ever seen is {max_online}."
+            f"There are currently {num_online} members online, the most we've ever seen was {max_online}."
         )
 
     @dippy.Extension.command("!set max online channel")
