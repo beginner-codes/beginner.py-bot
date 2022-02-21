@@ -4,3 +4,4 @@ labels:
 intents:
   use_defaults: True
   members: True
+  presences: True
