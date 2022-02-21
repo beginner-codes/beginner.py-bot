@@ -1,5 +1,6 @@
 from nextcord import Guild, Member, Message, Status, TextChannel
 from datetime import datetime, timedelta
+from typing import Optional
 import dippy
 
 
@@ -15,16 +16,14 @@ class OnlineCounterExtension(dippy.Extension):
 
         await self._update_max_online(member.guild, num_online)
         if await self._should_broadcast(member.guild):
-            await self._broadcast_new_record(member.guild, num_online)
+            await self._broadcast_record(member.guild, num_online)
 
-    @dippy.Extension.command("!set max online channel")
-    async def set_max_online_broadcast_channel(self, message: Message):
-        if not message.author.guild_permissions.administrator or message.author.bot:
-            return
-
-        await self._set_broadcast_channel(message.channel_mentions[0])
+    @dippy.Extension.command("!online stats")
+    async def show_online_stats(self, message: Message):
+        num_online = self._count_online_members(message.guild)
+        max_online = await message.guild.get_label("max_online", default=0)
         await message.channel.send(
-            f"Max online broadcast channel is set to {message.channel_mentions[0]}"
+            f"There are currently {num_online} members online, the most we've ever seen is {max_online}."
         )
 
     @dippy.Extension.command("!set max online channel")
@@ -37,7 +36,17 @@ class OnlineCounterExtension(dippy.Extension):
             f"Max online broadcast channel is set to {message.channel_mentions[0]}"
         )
 
-    async def _broadcast_new_record(self, guild: Guild, num_online: int):
+    @dippy.Extension.command("!set max online channel")
+    async def set_max_online_broadcast_channel(self, message: Message):
+        if not message.author.guild_permissions.administrator or message.author.bot:
+            return
+
+        await self._set_broadcast_channel(message.channel_mentions[0])
+        await message.channel.send(
+            f"Max online broadcast channel is set to {message.channel_mentions[0]}"
+        )
+
+    async def _broadcast_record(self, guild: Guild, num_online: int):
         channel = await self._get_broadcast_channel(guild)
         await channel.send(
             f"We've just broken the record for most members online! There are now {num_online} members online!!!"
