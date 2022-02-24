@@ -217,7 +217,11 @@ class ModerationCog(Cog):
     async def mute(self, ctx, member: Member, duration, *, reason: str):
         if not (
             set(ctx.author.roles)
-            & {self.get_role("jedi council"), self.get_role("mods")}
+            & {
+                self.get_role("jedi council"),
+                self.get_role("mods"),
+                self.get_role("staff"),
+            }
         ):
             return
 
