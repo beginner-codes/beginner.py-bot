@@ -168,7 +168,11 @@ class AutoModExtension(dippy.Extension):
     async def _handle_spamming_violations(
         self, message: Message, channel: TextChannel, member: Member, edit: bool = False
     ):
-        last_warned = self._warned[member.id] if member.id in self._warned else None
+        last_warned = (
+            self._warned[member.id] + timedelta(seconds=2)
+            if member.id in self._warned
+            else None
+        )
         should_mute = last_warned and datetime.utcnow() - last_warned <= timedelta(
             minutes=2
         )
