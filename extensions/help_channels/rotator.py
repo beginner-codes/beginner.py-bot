@@ -10,7 +10,6 @@ from discord import (
     utils,
 )
 from extensions.help_channels.channel_manager import ChannelManager
-from extensions.help_channels.topic_buttons import create_view
 import dippy.labels
 
 

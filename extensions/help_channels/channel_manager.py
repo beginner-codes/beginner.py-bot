@@ -37,6 +37,7 @@ class ChannelManager(Injectable):
             "python": "🐍",
             "py": "🐍",
             "discord": "🐍",
+            "game_development": "🕹",
             "html": "🌎",
             "javascript": "🌎",
             "js": "🌎",
