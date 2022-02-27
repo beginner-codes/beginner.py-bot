@@ -18,6 +18,23 @@ class HelpRotatorAdminExtension(dippy.Extension):
         self.log.info("Running help channel cleanup as requested by admin")
         await self.manager.cleanup_help_channels(message.guild)
 
+    @dippy.Extension.command("!update help channels")
+    async def update_help_channels(self, message: Message):
+        if not message.author.guild_permissions.administrator:
+            return
+
+        self.log.info("Updating help channels with buttons")
+        categories = await self.manager.get_categories(message.channel.guild)
+        help_category: CategoryChannel = self.client.get_channel(categories["get-help"])
+        for channel in help_category.channels:
+            if "get-help" in channel.name:
+                await self.manager.update_get_help_channel(
+                    channel, message.author, "update", []
+                )
+                await self.manager.archive_channel(channel, True)
+
+        await message.channel.send("DONE")
+
     @dippy.Extension.command("!setup help")
     async def setup_help(self, message: Message):
         if not message.author.guild_permissions.administrator:
