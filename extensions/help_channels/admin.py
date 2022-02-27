@@ -29,7 +29,7 @@ class HelpRotatorAdminExtension(dippy.Extension):
         for channel in help_category.channels:
             if "get-help" in channel.name:
                 await self.manager.update_get_help_channel(
-                    channel, message.author, "update", []
+                    channel, message.author, "python", []
                 )
                 await self.manager.archive_channel(channel, True)
 
