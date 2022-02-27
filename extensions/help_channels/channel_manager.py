@@ -428,6 +428,7 @@ class ChannelManager(Injectable):
             icon.append(self._topics[topic])
 
         if topics:
-            icon.extend(self._topics[self.sluggify(t)] for t in topics)
+            slug = self.sluggify(t)
+            icon.extend(self._topics.get(slug, slug) for t in topics)
 
         return self.sluggify(topic), "".join(icon)
