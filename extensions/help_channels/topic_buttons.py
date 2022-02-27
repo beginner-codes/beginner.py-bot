@@ -35,8 +35,14 @@ languages = [
 
 topics = [
     Topic("Discord Bot", "🤖"),
+    Topic("Django", PartialEmoji(name="django", id=947586083007365171)),
+    Topic("Docker & Kubernetes", "📦"),
+    Topic("Ethical Hacking", "🚨", custom_value="hacking"),
     Topic("Homework", "📓"),
     Topic("Machine Learning", "🧠"),
+    Topic("React", PartialEmoji(name="react", id=947584754461605888)),
+    Topic("OS (Windows)", "🪟"),
+    Topic("OS (Linux/MacOS)", "🖥"),
     Topic("Web Development", PartialEmoji(name="webdev", id=934956458938880050)),
 ]
 
