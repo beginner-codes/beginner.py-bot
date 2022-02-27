@@ -36,13 +36,13 @@ languages = [
 topics = [
     Topic("Discord Bot", "🤖"),
     Topic("Django", PartialEmoji(name="django", id=947586083007365171)),
-    Topic("Docker & Kubernetes", "📦", custom_value="docker"),
+    Topic("Docker and Kubernetes", "📦", custom_value="docker"),
     Topic("Ethical Hacking", "🚨", custom_value="hacking"),
     Topic("Homework", "📓"),
     Topic("Machine Learning", "🧠"),
     Topic("React", PartialEmoji(name="react", id=947584754461605888)),
-    Topic("OS (Windows)", "🪟", custom_value="windows-os"),
-    Topic("OS (Linux/MacOS)", "🖥", custom_value="unix-os"),
+    Topic("Windows", "🪟", custom_value="windows-os"),
+    Topic("Linux/MacOS", "🖥", custom_value="unix-os"),
     Topic("Web Development", PartialEmoji(name="webdev", id=934956458938880050)),
 ]
 
