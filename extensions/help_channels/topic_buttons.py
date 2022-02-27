@@ -28,6 +28,12 @@ class Topic(Option):
 
 languages = [
     Language("C", PartialEmoji(name="clang", id=934951942029979688)),
+    Language(
+        "C#", PartialEmoji(name="c_sharp", id=947603932161667132), custom_value="cs"
+    ),
+    Language(
+        "C++", PartialEmoji(name="cpp", id=947603931519926342), custom_value="cpp"
+    ),
     Language("Java", PartialEmoji(name="java", id=934957425587523624)),
     Language("JavaScript", PartialEmoji(name="javascript", id=908457207597764678)),
     Language("Python", PartialEmoji(name="python", id=934950343614275594)),
