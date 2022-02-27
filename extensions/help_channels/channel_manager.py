@@ -244,20 +244,13 @@ class ChannelManager(Injectable):
         await channel.send(
             view=create_view(),
             embed=Embed(
-                title="Get Help Here",
+                title="Claim Your Own Help Channel",
                 description=(
-                    "React with the topic that most closely fits what you need help with. This will claim the channel "
-                    "and move it to the help area where you can ask your question."
+                    "You can ask your question after you select what programming language or topics (up to 2) you need "
+                    "help with.\n\nOnce you click the 'Claim Channel' button you will be taken to your help channel, "
+                    "**it may take a couple seconds** so be patient."
                 ),
                 color=0x00FF66,
-            ).add_field(
-                name="Categories",
-                value=(
-                    (
-                        f"🐍 Python/Discord.py\n🌵 C/C++/C#\n🌎 Web Dev/HTML/CSS\n"
-                        f"💾 OS/Docker/Kubernetes\n☕️ Java/Kotlin\n{js_emoji} JavaScript/Node.js/Deno\n🙋 General Help"
-                    )
-                ),
             ),
         )
 
