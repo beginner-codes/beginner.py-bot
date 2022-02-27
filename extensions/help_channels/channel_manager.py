@@ -1,9 +1,7 @@
-import logging
-
-import discord
 from bevy import Injectable
 from collections import defaultdict
 from datetime import datetime, timedelta
+from extensions.help_channels.topic_buttons import create_view
 from functools import cached_property
 from discord import (
     CategoryChannel,
@@ -13,11 +11,12 @@ from discord import (
     TextChannel,
     utils,
 )
-from typing import Any, Optional, Union
 from pathlib import Path
+from typing import Any, Optional, Union
 import asyncio
-import dippy.labels
 import dippy.client
+import dippy.labels
+import discord
 import re
 
 
@@ -57,6 +56,7 @@ class ChannelManager(Injectable):
             "raspberry-pi": "🥧",
             "ml": "🧠",
             "machine-learning": "🧠",
+            "machine_learning": "🧠",
         }
         self.reaction_topics = {
             "🐍": "python",
@@ -177,7 +177,7 @@ class ChannelManager(Injectable):
 
     async def get_categories(self, guild: Guild) -> dict[str, int]:
         if not self._categories.get(guild):
-            categories = await self._get_guild_label(guild, "help-categories")
+            categories = await self._get_guild_label(guild, "help-categories", {})
             self._categories[guild] = categories
 
         return self._categories[guild]
@@ -233,7 +233,8 @@ class ChannelManager(Injectable):
         channel = channels[0]
         js_emoji = utils.get(category.guild.emojis, name="javascript")
         await channel.edit(name=f"🙋get-help", category=category, sync_permissions=True)
-        message = await channel.send(
+        await channel.send(
+            view=create_view(),
             embed=Embed(
                 title="Get Help Here",
                 description=(
@@ -249,18 +250,7 @@ class ChannelManager(Injectable):
                         f"💾 OS/Docker/Kubernetes\n☕️ Java/Kotlin\n{js_emoji} JavaScript/Node.js/Deno\n🙋 General Help"
                     )
                 ),
-            )
-        )
-
-        emojis = list(self.reaction_topics)
-        emojis.append("🙋")
-        await asyncio.gather(
-            *(
-                message.add_reaction(
-                    emoji=utils.get(self.client.emojis, name=emoji) or emoji
-                )
-                for emoji in emojis
-            )
+            ),
         )
 
         if len(channels) == 1:
@@ -313,12 +303,15 @@ class ChannelManager(Injectable):
         )
 
     async def update_get_help_channel(
-        self, channel: TextChannel, owner: Member, topic: Optional[str] = None
+        self,
+        channel: TextChannel,
+        owner: Member,
+        language: Optional[str],
+        topics: Optional[list[str]] = None,
     ):
         categories = await self.get_categories(channel.guild)
-        name = self._generate_channel_title(
-            owner.display_name, topic, self._topics.get(topic, "🙋")
-        )
+        topic, icon = self._build_topic(language, topics)
+        name = self._generate_channel_title(owner.display_name, topic, icon)
         helping_category = self.client.get_channel(categories["getting-help"])
         help_category: CategoryChannel = self.client.get_channel(categories["get-help"])
 
@@ -406,8 +399,10 @@ class ChannelManager(Injectable):
         topic = self.sluggify(topic)
         return f"{icon}{prefix}-{topic}"
 
-    async def _get_guild_label(self, guild: Guild, label: str) -> Any:
-        return await self.labels.get("guild", guild.id, label)
+    async def _get_guild_label(
+        self, guild: Guild, label: str, default: Any = None
+    ) -> Any:
+        return await self.labels.get("guild", guild.id, label, default=default)
 
     async def _set_guild_label(self, guild: Guild, label: str, value: Any):
         await self.labels.set("guild", guild.id, label, value)
@@ -424,3 +419,15 @@ class ChannelManager(Injectable):
 
         parts = re.findall(r"[\w\d]+", text.replace("++", "pp").casefold())
         return sep.join(parts)
+
+    def _build_topic(self, language: Optional[str], topics: Optional[list[str]]):
+        topic = "_".join(topics)
+        icon = []
+        if language:
+            topic = self.sluggify(language)
+            icon.append(self._topics[topic])
+
+        if topics:
+            icon.extend(self._topics[self.sluggify(t)] for t in topics)
+
+        return self.sluggify(topic), "".join(icon)

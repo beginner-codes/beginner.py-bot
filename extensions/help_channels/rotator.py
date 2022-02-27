@@ -1,8 +1,48 @@
+from collections import defaultdict
 from datetime import datetime, timedelta
-from discord import Guild, Member, Message, RawReactionActionEvent, TextChannel, utils
+from discord import (
+    Guild,
+    Interaction,
+    Member,
+    Message,
+    RawReactionActionEvent,
+    TextChannel,
+    utils,
+)
 from extensions.help_channels.channel_manager import ChannelManager
-import asyncio
+from extensions.help_channels.topic_buttons import create_view
 import dippy.labels
+
+
+class ChannelClaimTicket:
+    def __init__(self):
+        self.start = datetime.fromtimestamp(0)
+        self._language = None
+        self._topics = None
+
+    @property
+    def language(self):
+        if datetime.now() - self.start > timedelta(minutes=15):
+            self.__init__()
+
+        return self._language
+
+    @language.setter
+    def language(self, value):
+        self.start = datetime.now()
+        self._language = value
+
+    @property
+    def topics(self):
+        if datetime.now() - self.start > timedelta(minutes=15):
+            self.__init__()
+
+        return self._topics
+
+    @topics.setter
+    def topics(self, value):
+        self.start = datetime.now()
+        self._topics = value
 
 
 class HelpRotatorExtension(dippy.Extension):
@@ -14,6 +54,7 @@ class HelpRotatorExtension(dippy.Extension):
     def __init__(self):
         super().__init__()
         self.client.loop.create_task(self.setup_cleanup())
+        self.claiming: dict[int, ChannelClaimTicket] = defaultdict(ChannelClaimTicket)
 
     @dippy.Extension.listener("guild_join")
     async def on_guild_added_setup_cleanup(self, guild: Guild):
@@ -26,6 +67,9 @@ class HelpRotatorExtension(dippy.Extension):
 
     @dippy.Extension.listener("message")
     async def on_message(self, message: Message):
+        if not isinstance(message.channel, TextChannel):
+            return
+
         category = message.channel.category
         if not category or not category.guild:
             return
@@ -42,54 +86,70 @@ class HelpRotatorExtension(dippy.Extension):
 
         await self.manager.update_help_channel(message.channel, message.author)
 
-    @dippy.Extension.listener("raw_reaction_add")
-    async def on_reaction_add_get_help(self, reaction: RawReactionActionEvent):
-        emoji = reaction.emoji.name
-        if (
-            emoji not in self.manager.reaction_topics and emoji != "🙋"
-        ) or reaction.channel_id == 742209536500170812:
+    @dippy.Extension.listener("interaction")
+    async def on_get_help_interaction(self, interaction: Interaction):
+        component_id = interaction.data["custom_id"]
+        if not component_id.startswith("bc.help"):
             return
 
-        channel: TextChannel = self.client.get_channel(reaction.channel_id)
-        categories = await self.manager.get_categories(channel.guild)
-        if channel.category.id != categories["get-help"]:
-            return
+        try:
+            ticket = self.claiming[interaction.user.id]
 
-        member = channel.guild.get_member(
-            reaction.user_id
-        ) or await channel.guild.fetch_member(reaction.user_id)
+            if component_id == "bc.help.language":
+                ticket.language = interaction.data["values"][0]
+
+            elif component_id == "bc.help.topic":
+                ticket.topics = interaction.data["values"]
+
+            elif not ticket.language and not ticket.topics:
+                await interaction.response.send_message(
+                    f"{interaction.user.mention} you must select at least a language, a topic, or both.",
+                    ephemeral=True,
+                )
+
+            elif component_id == "bc.help.claim_button":
+                await self._handle_help_channel_claim(interaction, ticket)
+
+        finally:
+            if not interaction.response.is_done():
+                await interaction.response.defer()
+
+    async def _handle_help_channel_claim(
+        self, interaction: Interaction, ticket: ChannelClaimTicket
+    ):
+        categories = await self.manager.get_categories(interaction.guild)
+        member = interaction.guild.get_member(
+            interaction.user.id
+        ) or await interaction.guild.fetch_member(interaction.user.id)
         if member.bot:
             return
 
         self.manager.add_claim_attempt(member)
 
-        message = await channel.fetch_message(reaction.message_id)
         if not self._allow_claim_attempt(member):
-            await message.remove_reaction(reaction.emoji, member)
+            await interaction.response.send_message(
+                f"{member.mention} Please wait at a little while before attempting to claim a new help channel.",
+                ephemeral=True,
+            )
             return
 
         last_claimed, channel_id = await self.labels.get(
             "user", member.id, "last-claimed-channel", (None, None)
         )
-        if (
-            last_claimed
-            and await self.manager.get_owner(channel.guild.get_channel(channel_id))
-            == member
-        ):
+        last_channel = interaction.guild.get_channel(channel_id)
+        if last_channel and await self.manager.get_owner(last_channel) == member:
             last_claimed = datetime.fromisoformat(last_claimed)
             if datetime.utcnow() - last_claimed < timedelta(hours=6):
-                claimed_channel = channel.guild.get_channel(channel_id)
+                claimed_channel = interaction.guild.get_channel(channel_id)
                 await claimed_channel.send(
                     f"{member.mention} please use this channel for your question.",
                     delete_after=30,
                 )
-                await channel.send(
+                await interaction.response.send_message(
                     f"You've already claimed {claimed_channel.mention}, please use that channel. If you need to change "
                     f"the topic ask a helper.",
-                    delete_after=15,
+                    ephemeral=True,
                 )
-                await message.remove_reaction(reaction.emoji, member)
-                categories = await self.manager.get_categories(channel.guild)
                 if claimed_channel.category.id == categories["help-archive"]:
                     await self.manager.update_archived_channel(claimed_channel, member)
                     await claimed_channel.purge(
@@ -99,10 +159,11 @@ class HelpRotatorExtension(dippy.Extension):
                     )
                 return
 
-        await message.edit(content="*Claiming channel for you, please standby*")
-        await message.clear_reactions()
+        await interaction.message.edit(
+            content="*Claiming channel for you, please standby*"
+        )
         await self.manager.update_get_help_channel(
-            channel, member, self.manager.reaction_topics.get(emoji, "")
+            interaction.channel, member, ticket.language, ticket.topics
         )
 
     @dippy.Extension.listener("raw_reaction_add")
