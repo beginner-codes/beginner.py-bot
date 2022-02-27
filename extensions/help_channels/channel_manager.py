@@ -425,7 +425,7 @@ class ChannelManager(Injectable):
         return sep.join(parts)
 
     def _build_topic(self, language: Optional[str], topics: Optional[list[str]]):
-        topic = "_".join(topics)
+        topic = "_".join(topics) if topics else ""
         icon = []
         if language:
             topic = self.sluggify(language)
