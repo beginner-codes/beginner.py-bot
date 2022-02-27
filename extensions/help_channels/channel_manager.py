@@ -240,7 +240,6 @@ class ChannelManager(Injectable):
     async def setup_help_channel(self, category: CategoryChannel):
         channels = await self.get_archive_channels(category.guild)
         channel = channels[0]
-        js_emoji = utils.get(category.guild.emojis, name="javascript")
         await channel.edit(name=f"🙋get-help", category=category, sync_permissions=True)
         await channel.send(
             view=create_view(),
