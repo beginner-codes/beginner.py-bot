@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 from discord import (
     Guild,
     Interaction,
+    InteractionResponded,
     Member,
     Message,
     RawReactionActionEvent,
@@ -107,7 +108,12 @@ class HelpRotatorExtension(dippy.Extension):
                 )
 
             elif component_id == "bc.help.claim_button":
-                await self._handle_help_channel_claim(interaction, ticket)
+                try:
+                    await interaction.response.defer()
+                except InteractionResponded:
+                    pass
+                else:
+                    await self._handle_help_channel_claim(interaction, ticket)
 
         finally:
             if not interaction.response.is_done():
