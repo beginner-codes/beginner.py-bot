@@ -60,6 +60,8 @@ class ChannelManager(Injectable):
             "machine_learning": "🧠",
             "homework": "📓",
             "discord_bot": "🤖",
+            "windows-os": "🪟",
+            "unix-os": "🖥",
         }
         self.reaction_topics = {
             "🐍": "python",
