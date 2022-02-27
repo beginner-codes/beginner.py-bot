@@ -322,6 +322,8 @@ class ChannelManager(Injectable):
         elif topics:
             topic = ", ".join(topics)
 
+        topic = topic.replace("_", " ").title()
+
         args = {
             "reason": f"Claimed by {owner.display_name} for a question",
             "name": name,
