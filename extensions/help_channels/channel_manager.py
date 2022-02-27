@@ -340,9 +340,9 @@ class ChannelManager(Injectable):
             embed=Embed(
                 title=f"{owner.display_name}#{owner.discriminator} Ask Your Question Here",
                 description=(
-                    "Make sure to be as clear as possible and provide as many details as you can:\n• Code 💻\n• "
-                    "Errors ⚠️\n• Etc.\n*Someone will try to help you when they get a chance.*\n\nOnce you've found "
-                    "the solution use `!done` to close the channel."
+                    "Make sure to be as clear as possible and provide as many details as you can:\n• Show your code 💻"
+                    "\n• Show any errors you've gotten ⚠️\n• Etc.\n*Someone will try to help you when they get a "
+                    "chance.*\n\nOnce you no longer need help use `!done` to close the channel."
                 ),
                 color=0x00FF66,
             ),
