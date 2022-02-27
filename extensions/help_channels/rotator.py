@@ -160,7 +160,7 @@ class HelpRotatorExtension(dippy.Extension):
                 return
 
         await interaction.message.edit(
-            content="*Claiming channel for you, please standby*"
+            content="*Claiming channel for you, please standby*", embeds=[]
         )
         await self.manager.update_get_help_channel(
             interaction.channel, member, ticket.language, ticket.topics
