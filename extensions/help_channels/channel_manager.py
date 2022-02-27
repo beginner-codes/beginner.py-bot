@@ -76,6 +76,9 @@ class ChannelManager(Injectable):
         self._claim_attempts[member.id].clear()
 
     def get_claim_attempts(self, member: Member) -> int:
+        if member.guild_permissions.administrator:
+            return 0
+
         now = datetime.now()
         attempts = 0
         for attempt in self._claim_attempts[member.id].copy():
