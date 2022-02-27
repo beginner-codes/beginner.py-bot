@@ -27,7 +27,7 @@ class HelpRotatorAdminExtension(dippy.Extension):
         categories = await self.manager.get_categories(message.channel.guild)
         help_category: CategoryChannel = self.client.get_channel(categories["get-help"])
         for channel in help_category.channels:
-            if "get-help" in channel.name:
+            if "how" not in channel.name:
                 await self.manager.update_get_help_channel(
                     channel, message.author, "python", []
                 )
