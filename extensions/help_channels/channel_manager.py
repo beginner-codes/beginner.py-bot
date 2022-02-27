@@ -316,10 +316,16 @@ class ChannelManager(Injectable):
         helping_category = self.client.get_channel(categories["getting-help"])
         help_category: CategoryChannel = self.client.get_channel(categories["get-help"])
 
+        topic = language
+        if language and topics:
+            topic = f"{language} - {', '.join(topics)}"
+        elif topics:
+            topic = ", ".join(topics)
+
         args = {
             "reason": f"Claimed by {owner.display_name} for a question",
             "name": name,
-            "topic": f"Helping {owner.display_name} with their question!",
+            "topic": f"Helping {owner.display_name} with {topic}",
             "category": helping_category,
             "sync_permissions": True,
         }
