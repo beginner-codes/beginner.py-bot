@@ -43,6 +43,7 @@ class ChannelManager(Injectable):
             "php": "🌎",
             "css": "🌎",
             "web-dev": "🌎",
+            "web_development": "🌎",
             "flask": "🐍🌎",
             "django": "🐍🌎",
             "fast-api": "🐍🌎",
@@ -428,7 +429,10 @@ class ChannelManager(Injectable):
             icon.append(self._topics[topic])
 
         if topics:
-            slug = self.sluggify(t)
-            icon.extend(self._topics.get(slug, slug) for t in topics)
+            icon.extend(
+                self._topics[slug]
+                for t in topics
+                if (slug := self.sluggify(t)) in self._topics
+            )
 
         return self.sluggify(topic), "".join(icon)
