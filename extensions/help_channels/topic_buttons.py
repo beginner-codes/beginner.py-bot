@@ -36,6 +36,7 @@ languages = [
     ),
     Language("Java", PartialEmoji(name="java", id=934957425587523624)),
     Language("JavaScript", PartialEmoji(name="javascript", id=908457207597764678)),
+    Language("PHP", "🐘"),
     Language("Python", PartialEmoji(name="python", id=934950343614275594)),
 ]
 
