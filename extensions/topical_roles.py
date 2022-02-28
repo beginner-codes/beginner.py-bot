@@ -170,7 +170,7 @@ class TopicalRolesExtension(dippy.Extension):
 
     @dippy.Extension.listener("message")
     async def scan_for_dollar_mentions(self, message: Message):
-        if not message.guild:
+        if not isinstance(message.channel, TextChannel):
             return
 
         staff_role = utils.get(message.guild.roles, name="staff")
