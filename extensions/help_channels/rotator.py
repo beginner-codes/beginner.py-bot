@@ -109,16 +109,20 @@ class HelpRotatorExtension(dippy.Extension):
                 )
 
             elif component_id == "bc.help.claim_button":
-                try:
-                    await interaction.response.defer()
-                except (InteractionResponded, nextcord.errors.HTTPException):
-                    pass
-                else:
-                    await self._handle_help_channel_claim(interaction, ticket)
+                await self._do_ack(interaction.response)
+                await self._handle_help_channel_claim(interaction, ticket)
 
         finally:
-            if not interaction.response.is_done():
-                await interaction.response.defer()
+            await self._do_ack(interaction.response)
+
+    async def _do_ack(self, response: nextcord.InteractionResponse):
+        if response.is_done():
+            return
+
+        try:
+            await response.defer()
+        except (InteractionResponded, nextcord.errors.HTTPException):
+            pass
 
     async def _handle_help_channel_claim(
         self, interaction: Interaction, ticket: ChannelClaimTicket
