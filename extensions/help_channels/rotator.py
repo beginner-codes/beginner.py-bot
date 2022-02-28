@@ -12,6 +12,7 @@ from discord import (
 )
 from extensions.help_channels.channel_manager import ChannelManager
 import dippy.labels
+import nextcord.errors
 
 
 class ChannelClaimTicket:
@@ -110,7 +111,7 @@ class HelpRotatorExtension(dippy.Extension):
             elif component_id == "bc.help.claim_button":
                 try:
                     await interaction.response.defer()
-                except InteractionResponded:
+                except (InteractionResponded, nextcord.errors.HTTPException):
                     pass
                 else:
                     await self._handle_help_channel_claim(interaction, ticket)
