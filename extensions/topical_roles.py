@@ -148,6 +148,7 @@ class AssignTopicsView(View):
 class TopicalRolesExtension(dippy.Extension):
     client: dippy.Client
     labels: dippy.labels.storage.StorageInterface
+    logger: dippy.logging.Logging
 
     def __init__(self):
         super().__init__()
@@ -173,6 +174,9 @@ class TopicalRolesExtension(dippy.Extension):
         if not isinstance(message.channel, TextChannel):
             return
 
+        self.logger.debug(
+            f"{message.author} {message.author.id} {type(message.author)}"
+        )
         staff_role = utils.get(message.guild.roles, name="staff")
         if staff_role not in message.author.roles:
             return
