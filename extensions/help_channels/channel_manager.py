@@ -444,4 +444,4 @@ class ChannelManager(Injectable):
                 if (slug := self.sluggify(t)) in self._topics
             )
 
-        return self.sluggify(topic), "".join(set(icon))
+        return self.sluggify(topic), "".join(icon)
