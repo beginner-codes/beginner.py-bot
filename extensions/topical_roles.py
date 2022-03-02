@@ -1,3 +1,4 @@
+import bevy
 import dippy.labels
 import dippy
 import discord
@@ -148,7 +149,7 @@ class AssignTopicsView(View):
 class TopicalRolesExtension(dippy.Extension):
     client: dippy.Client
     labels: dippy.labels.storage.StorageInterface
-    logger: dippy.logging.Logging
+    log_factory: bevy.Factory[dippy.logging.Logging]
 
     def __init__(self):
         super().__init__()
@@ -164,6 +165,9 @@ class TopicalRolesExtension(dippy.Extension):
             "cpp": "clang",
             "ml": "ml",
         }
+        self.logging = self.log_factory(
+            "TopicalRoles", level=dippy.logging.Logging.DEBUG
+        )
 
     @dippy.Extension.listener("ready")
     async def ready(self):
