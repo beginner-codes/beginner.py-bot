@@ -1,4 +1,3 @@
-import bevy
 import dippy.labels
 import dippy
 import discord
@@ -149,7 +148,6 @@ class AssignTopicsView(View):
 class TopicalRolesExtension(dippy.Extension):
     client: dippy.Client
     labels: dippy.labels.storage.StorageInterface
-    log_factory: bevy.Factory[dippy.logging.Logging]
 
     def __init__(self):
         super().__init__()
@@ -165,9 +163,6 @@ class TopicalRolesExtension(dippy.Extension):
             "cpp": "clang",
             "ml": "ml",
         }
-        self.logger = self.log_factory(
-            "TopicalRoles", level=dippy.logging.Logging.DEBUG
-        )
 
     @dippy.Extension.listener("ready")
     async def ready(self):
@@ -175,12 +170,9 @@ class TopicalRolesExtension(dippy.Extension):
 
     @dippy.Extension.listener("message")
     async def scan_for_dollar_mentions(self, message: Message):
-        if not isinstance(message.channel, TextChannel):
+        if not isinstance(message.channel, TextChannel) or message.author.bot:
             return
 
-        self.logger.debug(
-            f"{message.author} {message.author.id} {type(message.author)}"
-        )
         staff_role = utils.get(message.guild.roles, name="staff")
         if staff_role not in message.author.roles:
             return
