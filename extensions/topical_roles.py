@@ -165,7 +165,7 @@ class TopicalRolesExtension(dippy.Extension):
             "cpp": "clang",
             "ml": "ml",
         }
-        self.logging = self.log_factory(
+        self.logger = self.log_factory(
             "TopicalRoles", level=dippy.logging.Logging.DEBUG
         )
 
