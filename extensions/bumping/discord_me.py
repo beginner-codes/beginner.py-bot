@@ -3,13 +3,13 @@ import asyncio
 from datetime import datetime, timedelta
 
 
-class BumpReminderExtension(dippy.Extension):
+class DiscordMeBumpReminderExtension(dippy.Extension):
     client: dippy.Client
     log: dippy.logging.Logging
 
     def __init__(self):
         super().__init__()
-        self.log.info("Bump reminder setting up")
+        self.log.info("Discord.me bump reminder setting up")
         self.client.loop.create_task(self.schedule_next())
 
     async def send_reminder(self):
