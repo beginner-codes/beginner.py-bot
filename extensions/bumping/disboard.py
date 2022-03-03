@@ -42,7 +42,10 @@ class DisboardBumpReminderExtension(dippy.Extension):
 
     def __init__(self):
         super().__init__()
-        self._timer: Optional[CallLaterFuture] = None
+        self._timer: Optional[CallLaterFuture] = CallLaterFuture(
+            self._now(), lambda: None
+        )
+        self._timer.cancel()
 
     @property
     def bump_channel(self) -> TextChannel:
@@ -66,17 +69,22 @@ class DisboardBumpReminderExtension(dippy.Extension):
         if message.channel != self.bump_channel:
             return
 
-        if message.author.id not in {self.disboard.id, self.client.user.id}:
-            await message.delete()
+        if message.author.id == self.client.user.id and self._timer.done():
             return
 
-        await self._handle_disboard_message(message)
+        if message.author.id == self.disboard.id:
+            await self._handle_disboard_message(message)
+            return
+
+        await message.delete()
 
     async def _handle_disboard_message(self, message: Message):
         bumper_id = self._get_bumper_id_from_message(message)
         if not bumper_id:
+            await message.delete()
             return
 
+        await self._clean_channel(message)
         if not self._timer or self._timer.done():
             self._schedule_reminder(message.created_at + timedelta(hours=2))
 
@@ -117,7 +125,16 @@ class DisboardBumpReminderExtension(dippy.Extension):
         self._timer = CallLaterFuture(when, self._send_bump_reminder)
 
     async def _send_bump_reminder(self):
-        await self.bump_channel.purge(limit=1)
+        await self._clean_channel()
         await self.bump_channel.send(
             f"{self.bumper_role.mention} It's been 2hrs since the last bump!\n*Use the `/bump` command now!*"
         )
+
+    async def _clean_channel(self, ignore: Optional[Message] = None):
+        def check(message: Message):
+            if ignore and message.id == ignore.id:
+                return False
+
+            return self._now() - message.created_at < timedelta(hours=3)
+
+        await self.bump_channel.purge(check=check)
