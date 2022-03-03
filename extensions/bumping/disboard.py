@@ -97,7 +97,7 @@ class DisboardBumpReminderExtension(dippy.Extension):
                 if bumper_id:
                     return message.created_at
 
-        return datetime.fromtimestamp(0, tz=timezone.utc)
+        return self._now()
 
     def _get_bumper_id_from_message(self, message: Message) -> Optional[int]:
         if not message.embeds:
