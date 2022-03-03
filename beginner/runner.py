@@ -289,7 +289,7 @@ class Executer:
                                     and result.__doc__.strip()
                                     else "NO DOCS"
                                 )
-                            elif not printed or result is not None:
+                            elif result is not None:
                                 print(repr(result))
                     except MemoryError:
                         sys.stderr.write("MemoryError: Exceeded process memory limits")
