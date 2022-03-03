@@ -66,7 +66,10 @@ class DisboardBumpReminderExtension(dippy.Extension):
         if message.channel != self.bump_channel:
             return
 
-        if message.author is not self.disboard:
+        if (
+            message.author is not self.disboard
+            or message.author.id != self.client.user.id
+        ):
             await message.delete()
             return
 
