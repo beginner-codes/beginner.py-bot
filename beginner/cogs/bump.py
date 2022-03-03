@@ -47,6 +47,24 @@ class Bumping(Cog):
             self.client.add_view(BumpButton(timeout=None))
             self.bump_button_added = True
 
+    @commands.command()
+    async def create_explanation_message(self, ctx: commands.Context):
+        if not ctx.author.guild_permissions.administrator:
+            return
+
+        await self.client.get_channel(702178352395583498).send(
+            embed=nextcord.Embed(
+                title="Beginner.Codes Bump Squad",
+                description=(
+                    f"To help us stay at the top of Disboard join the *Bump Squad* by hitting the button to be notified"
+                    f" when it's time to bump. Hit the button again at anytime to turn off the bump reminder "
+                    f"notifications."
+                ),
+                color=0x306998,
+            ),
+            view=BumpButton(timeout=None),
+        )
+
 
 def setup(client):
     client.add_cog(Bumping(client))
