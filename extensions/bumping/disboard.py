@@ -113,7 +113,7 @@ class DisboardBumpReminderExtension(dippy.Extension):
         if self._timer and not self._timer.done():
             self._timer.cancel()
 
-        self.log.debug(f"Scheduling next Disboard reminder for {when.isoformat()}")
+        self.log.info(f"Scheduling next Disboard reminder for {when.isoformat()}")
         self._timer = CallLaterFuture(when, self._send_bump_reminder)
 
     async def _send_bump_reminder(self):
