@@ -44,7 +44,7 @@ class ChannelManager(Injectable):
             "php": "🐘",
             "css": "🎨",
             "web-dev": "🕸",
-            "web_development": "🕸",
+            "webdev": "🕸",
             "flask": "🕸",
             "django": "🕸",
             "fast-api": "🕸",
