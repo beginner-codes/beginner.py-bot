@@ -1,9 +1,12 @@
 from datetime import datetime, timedelta, timezone
 from inspect import isawaitable
-from nextcord import Member, Message, Role, TextChannel
+from nextcord import Guild, Member, Message, Role, TextChannel
 from typing import Any, Callable, Coroutine, cast, Optional
+import ast
 import asyncio
+import base64
 import dippy
+import gzip
 import re
 
 
@@ -85,8 +88,29 @@ class DisboardBumpReminderExtension(dippy.Extension):
             return
 
         await self._clean_channel(message)
+        await self._award_bump_point(message.guild.get_member(bumper_id))
         if not self._timer or self._timer.done():
             self._schedule_reminder(message.created_at + timedelta(hours=2))
+
+    async def _award_bump_point(self, member: Member):
+        bumps = await self._get_bumps(member.guild)
+        bumps = self._cleanup_bumps(bumps)
+        bumps.insert(0, (member.id, int(self._now().timestamp())))
+        await self._set_bumps(member.guild, bumps)
+
+    async def _get_bumps(self, guild: Guild) -> list[tuple[int, int]]:
+        raw_bumps: str = await guild.get_label("bumps", default="")
+        if not raw_bumps:
+            return []
+
+        return ast.literal_eval(gzip.decompress(base64.b64decode(raw_bumps.encode())).decode())
+
+    async def _set_bumps(self, guild: Guild, bumps: list[tuple[int, int]]) -> list[tuple[int, int]]:
+        await guild.set_label("bumps", base64.b64encode(gzip.compress(str(bumps).encode())).decode())
+
+    def _cleanup_bumps(self, bumps: list[tuple[int, int]]) -> list[tuple[int, int]]:
+        oldest = (self._now() - timedelta(days=7)).timestamp()
+        return [bump for bump in bumps if bump[1] <= oldest]
 
     async def _setup_reminders(self):
         last_success = await self._find_last_bump_success()
