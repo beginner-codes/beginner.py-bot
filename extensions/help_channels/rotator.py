@@ -108,8 +108,7 @@ class HelpRotatorExtension(dippy.Extension):
                     ephemeral=True,
                 )
 
-            elif component_id == "bc.help.claim_button":
-                await self._do_ack(interaction.response)
+            elif component_id == "bc.help.claim_button": 
                 await self._handle_help_channel_claim(interaction, ticket)
 
         finally:
