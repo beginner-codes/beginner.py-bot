@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta, timezone
 from inspect import isawaitable
-from nextcord import Guild, Member, Message, Role, TextChannel
+from nextcord import Embed, Guild, Member, Message, Role, TextChannel
 from typing import Any, Callable, Coroutine, cast, Optional
 import ast
 import asyncio
@@ -81,6 +81,28 @@ class DisboardBumpReminderExtension(dippy.Extension):
 
         await message.delete()
 
+    @dippy.Extension.command("!bumpers")
+    async def list_bumpers_command(self, message: Message):
+        bumps = await self._get_bumps(message.guild)
+        content = ["**Most Recent**"]
+        day_group = 0
+        for index, bump in enumerate(bumps, start=1):
+            member = message.guild.get_member(bump[0]) or "*UNKNOWN*"
+            when = datetime.fromtimestamp(bump[1])
+            days_ago = (self._now() - when) // timedelta(days=1)
+            if days_ago != day_group:
+                content.append(f"\n**{days_ago * 24} Ago**")
+
+            content.append(f"{index:>2}. <t:{bump[1]}:t> {member}")
+
+        await message.channel.send(
+            embeds=[
+                Embed(
+                    color=0xBBBB00, title="👊 Bump List", description="\n".join(content)
+                )
+            ]
+        )
+
     async def _handle_disboard_message(self, message: Message):
         bumper_id = self._get_bumper_id_from_message(message)
         if not bumper_id:
@@ -103,10 +125,16 @@ class DisboardBumpReminderExtension(dippy.Extension):
         if not raw_bumps:
             return []
 
-        return ast.literal_eval(gzip.decompress(base64.b64decode(raw_bumps.encode())).decode())
+        return ast.literal_eval(
+            gzip.decompress(base64.b64decode(raw_bumps.encode())).decode()
+        )
 
-    async def _set_bumps(self, guild: Guild, bumps: list[tuple[int, int]]) -> list[tuple[int, int]]:
-        await guild.set_label("bumps", base64.b64encode(gzip.compress(str(bumps).encode())).decode())
+    async def _set_bumps(
+        self, guild: Guild, bumps: list[tuple[int, int]]
+    ) -> list[tuple[int, int]]:
+        await guild.set_label(
+            "bumps", base64.b64encode(gzip.compress(str(bumps).encode())).decode()
+        )
 
     def _cleanup_bumps(self, bumps: list[tuple[int, int]]) -> list[tuple[int, int]]:
         oldest = (self._now() - timedelta(days=7)).timestamp()
