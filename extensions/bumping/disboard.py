@@ -117,17 +117,21 @@ class DisboardBumpReminderExtension(dippy.Extension):
     async def _award_bump_point(self, member: Member):
         bumps = await self._get_bumps(member.guild)
         bumps = self._cleanup_bumps(bumps)
+        self.log.info(f"Cleaned bumps: {bumps!r}")
         bumps.insert(0, (member.id, int(self._now().timestamp())))
         await self._set_bumps(member.guild, bumps)
 
     async def _get_bumps(self, guild: Guild) -> list[tuple[int, int]]:
         raw_bumps: str = await guild.get_label("bumps", default="")
+        self.log.info(f"Raw bumps: {raw_bumps!r}")
         if not raw_bumps:
             return []
 
-        return ast.literal_eval(
+        bumps = ast.literal_eval(
             gzip.decompress(base64.b64decode(raw_bumps.encode())).decode()
         )
+        self.log.info(f"Bumps: {bumps!r}")
+        return bumps
 
     async def _set_bumps(
         self, guild: Guild, bumps: list[tuple[int, int]]
