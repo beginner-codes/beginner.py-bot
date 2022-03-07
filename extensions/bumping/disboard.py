@@ -142,7 +142,7 @@ class DisboardBumpReminderExtension(dippy.Extension):
 
     def _cleanup_bumps(self, bumps: list[tuple[int, int]]) -> list[tuple[int, int]]:
         oldest = (self._now() - timedelta(days=7)).timestamp()
-        return [bump for bump in bumps if bump[1] <= oldest]
+        return [bump for bump in bumps if bump[1] >= oldest]
 
     async def _setup_reminders(self):
         last_success = await self._find_last_bump_success()
