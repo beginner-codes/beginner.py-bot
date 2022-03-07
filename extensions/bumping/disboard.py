@@ -98,7 +98,7 @@ class DisboardBumpReminderExtension(dippy.Extension):
         await message.channel.send(
             embeds=[
                 Embed(
-                    color=0xBBBB00, title="👊 Bump List", description="\n".join(content)
+                    color=0xDDBB00, title="👊 Bump List", description="\n".join(content)
                 )
             ]
         )
