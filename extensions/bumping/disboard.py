@@ -81,14 +81,14 @@ class DisboardBumpReminderExtension(dippy.Extension):
 
         await message.delete()
 
-    @dippy.Extension.command("!bumpers")
+    @dippy.Extension.command("!bumps")
     async def list_bumpers_command(self, message: Message):
         bumps = await self._get_bumps(message.guild)
         content = ["**Most Recent**"]
         day_group = 0
         for index, bump in enumerate(bumps, start=1):
             member = message.guild.get_member(bump[0]) or "*UNKNOWN*"
-            when = datetime.fromtimestamp(bump[1])
+            when = datetime.fromtimestamp(bump[1], tz=timezone.utc)
             days_ago = (self._now() - when) // timedelta(days=1)
             if days_ago != day_group:
                 content.append(f"\n**{days_ago * 24} Ago**")
