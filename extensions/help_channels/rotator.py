@@ -103,12 +103,15 @@ class HelpRotatorExtension(dippy.Extension):
                 ticket.topics = interaction.data["values"]
 
             elif not ticket.language and not ticket.topics:
-                await interaction.response.send_message(
-                    f"{interaction.user.mention} you must select at least a language, a topic, or both.",
-                    ephemeral=True,
-                )
+                try:
+                    await interaction.response.send_message(
+                        f"{interaction.user.mention} you must select at least a language, a topic, or both.",
+                        ephemeral=True,
+                    )
+                except nextcord.errors.HTTPException:
+                    pass
 
-            elif component_id == "bc.help.claim_button": 
+            elif component_id == "bc.help.claim_button":
                 await self._handle_help_channel_claim(interaction, ticket)
 
         finally:
