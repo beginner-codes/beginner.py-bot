@@ -23,27 +23,34 @@ class ChannelClaimTicket:
 
     @property
     def language(self):
-        if datetime.now() - self.start > timedelta(minutes=15):
-            self.__init__()
-
         return self._language
 
     @language.setter
     def language(self, value):
+        self.refresh()
         self.start = datetime.now()
         self._language = value
 
     @property
     def topics(self):
-        if datetime.now() - self.start > timedelta(minutes=15):
-            self.__init__()
-
         return self._topics
 
     @topics.setter
     def topics(self, value):
+        self.refresh()
         self.start = datetime.now()
         self._topics = value
+
+    def stale(self):
+        return (datetime.now() - self.start) > timedelta(minutes=15)
+
+    def empty(self):
+        return not self.language and not self.topics
+
+    def refresh(self):
+        if self.stale():
+            self._language = None
+            self._topics = None
 
 
 class HelpRotatorExtension(dippy.Extension):
@@ -102,7 +109,7 @@ class HelpRotatorExtension(dippy.Extension):
             elif component_id == "bc.help.topic":
                 ticket.topics = interaction.data["values"]
 
-            elif not ticket.language and not ticket.topics:
+            elif ticket.empty():
                 try:
                     await interaction.response.send_message(
                         f"{interaction.user.mention} you must select at least a language, a topic, or both.",
