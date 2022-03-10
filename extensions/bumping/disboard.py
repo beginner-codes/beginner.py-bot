@@ -90,8 +90,10 @@ class DisboardBumpReminderExtension(dippy.Extension):
         content = []
         for index, (user_id, num_bumps) in enumerate(leaderboard.items()):
             award = awards.get(index, "✨")
-            user = self.client.get_user(user_id) or "*UNKNOWN*"
-            content.append(f"{award} {user.mention} {num_bumps}")
+            user = self.client.get_user(user_id)
+            content.append(
+                f"{award} {user.mention if user else '*UNKNOWN*'} {num_bumps}"
+            )
 
         await message.channel.send(
             embeds=[
