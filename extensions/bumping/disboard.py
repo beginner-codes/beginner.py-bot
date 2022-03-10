@@ -82,10 +82,17 @@ class DisboardBumpReminderExtension(dippy.Extension):
 
         await message.delete()
 
+    @dippy.Extension.command("!update bump king")
+    async def show_bumpers_leaderboard_command(self, message: Message):
+        if not message.author.guild_permissions.administrator:
+            return
+
+        bumps = await self._get_bumps(message.guild)
+        await self._update_bump_king((0, 0), bumps, message.guild)
+
     @dippy.Extension.command("!bumpers")
     async def show_bumpers_leaderboard_command(self, message: Message):
-        bumps = await self._get_bumps(message.guild)
-        leaderboard = Counter(user_id for user_id, _ in bumps)
+        leaderboard = await self._get_leaderboard(message)
         awards = {0: "🥇", 1: "🥈", 2: "🥉"}
         content = []
         for index, (user_id, num_bumps) in enumerate(leaderboard.most_common()):
@@ -141,10 +148,55 @@ class DisboardBumpReminderExtension(dippy.Extension):
 
     async def _award_bump_point(self, member: Member):
         bumps = await self._get_bumps(member.guild)
+        current_king = self._compute_leaderboard(bumps).most_common().pop(0)
+
         bumps = self._cleanup_bumps(bumps)
-        self.log.info(f"Cleaned bumps: {bumps!r}")
         bumps.insert(0, (member.id, int(self._now().timestamp())))
         await self._set_bumps(member.guild, bumps)
+
+        await self._update_bump_king(current_king, bumps, member.guild)
+
+    async def _update_bump_king(
+        self, current_king: tuple[int, int], bumps: list[tuple[int, int]], guild: Guild
+    ):
+        leaderboard = self._compute_leaderboard(bumps)
+        updated_king = leaderboard.most_common().pop(0)
+        if current_king[0] == updated_king[0]:
+            return
+
+        member = guild.get_member(updated_king[0])
+        if not member:
+            return
+
+        next_highest = leaderboard.most_common().pop(1)
+        if next_highest[1] == updated_king[1] and not self._bumped_more_recently(
+            updated_king[0], next_highest[0], bumps
+        ):
+            return
+
+        role = guild.get_role(715584554861330465)
+        await asyncio.gather(
+            *(m.remove_role(role) for m in role.members if m.id != member.id),
+            member.add_roles(role),
+            guild.get_channel(876944510200991756).send(
+                embeds=[
+                    Embed(
+                        color=0xFFCC00,
+                        title="👑 All Hail The Bump King 👊",
+                        description=f"All hail our new 🍕 Bump King 🍕 {member.mention}!!!",
+                    )
+                ]
+            ),
+        )
+
+    def _bumped_more_recently(self, this_user_id, than_user_id, bumps):
+        for user_id, _ in bumps:
+            if user_id == this_user_id:
+                break
+            elif user_id == than_user_id:
+                return False
+
+        return True
 
     async def _get_bumps(self, guild: Guild) -> list[tuple[int, int]]:
         raw_bumps: str = await guild.get_label("bumps", default="")
@@ -168,6 +220,13 @@ class DisboardBumpReminderExtension(dippy.Extension):
     def _cleanup_bumps(self, bumps: list[tuple[int, int]]) -> list[tuple[int, int]]:
         oldest = (self._now() - timedelta(days=7)).timestamp()
         return [bump for bump in bumps if bump[1] >= oldest]
+
+    async def _get_leaderboard(self, message: Message):
+        bumps = await self._get_bumps(message.guild)
+        return self._compute_leaderboard(bumps)
+
+    def _compute_leaderboard(self, bumps):
+        return Counter(user_id for user_id, _ in bumps)
 
     async def _setup_reminders(self):
         last_success = await self._find_last_bump_success()
