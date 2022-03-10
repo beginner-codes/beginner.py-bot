@@ -1,3 +1,4 @@
+from collections import Counter
 from datetime import datetime, timedelta, timezone
 from inspect import isawaitable
 from nextcord import Embed, Guild, Member, Message, Role, TextChannel
@@ -80,6 +81,27 @@ class DisboardBumpReminderExtension(dippy.Extension):
             return
 
         await message.delete()
+
+    @dippy.Extension.command("!bumpers")
+    async def show_bumpers_leaderboard_command(self, message: Message):
+        bumps = await self._get_bumps(message.guild)
+        leaderboard = Counter(user_id for _, user_id in bumps)
+        awards = {0: "🥇", 1: "🥈", 2: "🥉"}
+        content = []
+        for index, (user_id, num_bumps) in enumerate(leaderboard.items()):
+            award = awards.get(index, "✨")
+            user = self.client.get_user(user_id) or "*UNKNOWN*"
+            content.append(f"{award} {user.mention} {num_bumps}")
+
+        await message.channel.send(
+            embeds=[
+                Embed(
+                    color=0xFFCC00,
+                    title="🏆 Bumping Leaderboard 🏆",
+                    description="\n".join(content),
+                )
+            ]
+        )
 
     @dippy.Extension.command("!bumps")
     async def list_bumpers_command(self, message: Message):
