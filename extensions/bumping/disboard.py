@@ -176,7 +176,7 @@ class DisboardBumpReminderExtension(dippy.Extension):
 
         role = guild.get_role(715584554861330465)
         await asyncio.gather(
-            *(m.remove_role(role) for m in role.members if m.id != member.id),
+            *(m.remove_roles(role) for m in role.members if m.id != member.id),
             member.add_roles(role),
             guild.get_channel(876944510200991756).send(
                 embeds=[
