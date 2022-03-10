@@ -183,7 +183,10 @@ class DisboardBumpReminderExtension(dippy.Extension):
                     Embed(
                         color=0xFFCC00,
                         title="👑 All Hail The Bump King 👊",
-                        description=f"All hail our new 🍕 Bump King 🍕 {member.mention}!!!",
+                        description=(
+                            f"All hail {member.mention}, our new 🍕 *Bump King* 🍕!!!\n\n*Any who is valiant enough may "
+                            f"someday become our Bump King! All one must do is bump the server more than any other!*"
+                        ),
                     )
                 ]
             ),
