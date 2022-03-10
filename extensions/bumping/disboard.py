@@ -92,7 +92,7 @@ class DisboardBumpReminderExtension(dippy.Extension):
             days_ago = (self._now() - when) // timedelta(days=1)
             if days_ago != day_group:
                 day_group = days_ago
-                content.append(f"\n**{days_ago * 24} Ago**")
+                content.append(f"\n**{days_ago * 24} Hours Ago**")
 
             content.append(f"{index:>2}. <t:{bump[1]}:t> {member}")
 
