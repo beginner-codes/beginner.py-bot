@@ -85,7 +85,7 @@ class DisboardBumpReminderExtension(dippy.Extension):
     @dippy.Extension.command("!bumpers")
     async def show_bumpers_leaderboard_command(self, message: Message):
         bumps = await self._get_bumps(message.guild)
-        leaderboard = Counter(user_id for _, user_id in bumps)
+        leaderboard = Counter(user_id for user_id, _ in bumps)
         awards = {0: "🥇", 1: "🥈", 2: "🥉"}
         content = []
         for index, (user_id, num_bumps) in enumerate(leaderboard.items()):
