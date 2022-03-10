@@ -83,7 +83,7 @@ class DisboardBumpReminderExtension(dippy.Extension):
         await message.delete()
 
     @dippy.Extension.command("!update bump king")
-    async def show_bumpers_leaderboard_command(self, message: Message):
+    async def update_bump_king_admin_command(self, message: Message):
         if not message.author.guild_permissions.administrator:
             return
 
