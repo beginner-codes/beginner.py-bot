@@ -88,7 +88,7 @@ class DisboardBumpReminderExtension(dippy.Extension):
         leaderboard = Counter(user_id for user_id, _ in bumps)
         awards = {0: "🥇", 1: "🥈", 2: "🥉"}
         content = []
-        for index, (user_id, num_bumps) in enumerate(leaderboard.items()):
+        for index, (user_id, num_bumps) in enumerate(leaderboard.most_common()):
             award = awards.get(index, "✨")
             user = self.client.get_user(user_id)
             content.append(
