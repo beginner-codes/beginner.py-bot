@@ -51,6 +51,7 @@ topics = [
     Topic("React", PartialEmoji(name="react", id=947584730319179826)),
     Topic("Windows", "🪟", custom_value="windows-os"),
     Topic("Linux/MacOS", "🖥", custom_value="unix-os"),
+    Topic("Code Editor/IDE", "📝", custom_value="editor"),
     Topic(
         "Web Development",
         PartialEmoji(name="webdev", id=934956458938880050),

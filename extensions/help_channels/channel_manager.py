@@ -63,6 +63,7 @@ class ChannelManager(Injectable):
             "discord_bot": "🤖",
             "windows-os": "💻",
             "unix-os": "🖥",
+            "editor": "📝",
         }
         self._claim_attempts: dict[int, list[datetime]] = defaultdict(list)
 
