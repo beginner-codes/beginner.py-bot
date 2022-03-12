@@ -399,7 +399,7 @@ class ChannelManager(Injectable):
         slug = self.sluggify(name, sep="")
         prefix = self._get_prefix(slug)
         topic = self.sluggify(topic)
-        return f"{icon}{prefix}-{topic}"
+        return f"{icon}helping-{prefix}"
 
     async def _get_guild_label(
         self, guild: Guild, label: str, default: Any = None
