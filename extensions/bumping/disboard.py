@@ -284,6 +284,6 @@ class DisboardBumpReminderExtension(dippy.Extension):
             if ignore and message.id == ignore.id:
                 return False
 
-            return self._now() - message.created_at < timedelta(hours=3)
+            return self._now() - message.created_at < timedelta(days=1)
 
         await self.bump_channel.purge(check=check)
