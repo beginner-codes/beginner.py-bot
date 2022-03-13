@@ -136,7 +136,9 @@ class DisboardBumpReminderExtension(dippy.Extension):
         )
 
     async def _handle_disboard_message(self, message: Message):
+        self.log.info(f"DISBOARD MESSAGE {message.content!r}")
         bumper_id = self._get_bumper_id_from_message(message)
+        self.log.info(f"BUMPER ID {bumper_id!r}")
         if not bumper_id:
             await message.delete()
             return
