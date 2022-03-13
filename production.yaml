@@ -99,6 +99,21 @@ resources:
       The Odin Project: https://www.theodinproject.com/
       Jetbrains Academy: https://hyperskill.org/tracks/5
 
+  js:
+    name: JavaScript
+    Documentation:
+      JavaScript MDN: https://developer.mozilla.org/en-US/docs/Web/JavaScript
+      The First Steps: https://developer.mozilla.org/en-US/docs/Learn/JavaScript/First_steps
+    Tutorials:
+      JavaScript.info: https://javascript.info/
+      30 Best Practices: https://code.tutsplus.com/tutorials/24-javascript-best-practices-for-beginners--net-5399
+      40 Beginner Projects: https://www.freecodecamp.org/news/javascript-projects-for-beginners/
+      14 Best JavaScript Books: https://www.guru99.com/javascript-books.html
+    Other:
+      16 Debugging Tips: https://raygun.com/learn/javascript-debugging-tips
+      Best IDEs for JavaScript: https://dev.to/theme_selection/what-is-the-best-ide-for-javascript-development-in-2021-1pmn
+      10+ Best JavaScript Frameworks: https://technostacks.com/blog/best-javascript-frameworks    
+
 lang_aliases:
   python: py
   python3: py
@@ -115,3 +130,4 @@ lang_aliases:
   ethical hacking: cybersecurity
   capture the flag: cybersecurity
   ctf: cybersecurity
+  javascript: js
