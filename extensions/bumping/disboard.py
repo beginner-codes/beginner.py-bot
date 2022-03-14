@@ -71,14 +71,14 @@ class DisboardBumpReminderExtension(dippy.Extension):
 
     @dippy.Extension.listener("message")
     async def on_message(self, message: Message):
+        if message.author.id == self.disboard.id:
+            await self._handle_disboard_message(message)
+            return
+
         if message.channel != self.bump_channel:
             return
 
         if message.author.id == self.client.user.id and self._timer.done():
-            return
-
-        if message.author.id == self.disboard.id:
-            await self._handle_disboard_message(message)
             return
 
         await message.delete()
@@ -144,7 +144,7 @@ class DisboardBumpReminderExtension(dippy.Extension):
         )
         bumper_id = await self._get_bumper_id_from_message(message)
         self.log.info(f"BUMPER ID {bumper_id!r}")
-        if not bumper_id:
+        if not bumper_id and message.channel == self.bump_channel:
             await message.delete()
             return
 
