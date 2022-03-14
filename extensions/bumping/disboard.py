@@ -148,7 +148,7 @@ class DisboardBumpReminderExtension(dippy.Extension):
             return
 
         await self._clean_channel(message)
-        await self._award_bump_point(message.guild.get_member(bumper_id))
+        # await self._award_bump_point(message.guild.get_member(bumper_id))
         if not self._timer or self._timer.done():
             self._schedule_reminder(message.created_at + timedelta(hours=2))
 
@@ -257,11 +257,11 @@ class DisboardBumpReminderExtension(dippy.Extension):
         if not message.embeds:
             return
 
-        match = re.search(r"^<@(\d+)> Bump done!", message.embeds[0].description)
+        match = re.search(r"^Bump done!", message.embeds[0].description)
         if not match:
             return
 
-        return int(match.groups()[0])
+        return 1
 
     def _now(self) -> datetime:
         return datetime.now(tz=timezone.utc)
