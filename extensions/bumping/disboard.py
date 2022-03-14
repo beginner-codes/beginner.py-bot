@@ -142,7 +142,7 @@ class DisboardBumpReminderExtension(dippy.Extension):
         self.log.info(
             f"DISBOARD EMBEDS {f'{nl}----{nl}'.join(f'||{embed.title}||{embed.description}' for embed in message.embeds)}"
         )
-        bumper_id = self._get_bumper_id_from_message(message)
+        bumper_id = await self._get_bumper_id_from_message(message)
         self.log.info(f"BUMPER ID {bumper_id!r}")
         if not bumper_id:
             await message.delete()
@@ -248,13 +248,13 @@ class DisboardBumpReminderExtension(dippy.Extension):
     async def _find_last_bump_success(self) -> datetime:
         async for message in self.bump_channel.history():
             if message.author == self.disboard:
-                bumper_id = self._get_bumper_id_from_message(message)
+                bumper_id = await self._get_bumper_id_from_message(message)
                 if bumper_id:
                     return message.created_at
 
         return self._now()
 
-    def _get_bumper_id_from_message(self, message: Message) -> Optional[int]:
+    async def _get_bumper_id_from_message(self, message: Message) -> Optional[int]:
         if not message.embeds:
             return
 
