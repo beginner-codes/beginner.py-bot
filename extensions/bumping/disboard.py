@@ -150,8 +150,7 @@ class DisboardBumpReminderExtension(dippy.Extension):
 
         await self._clean_channel(message)
         await self._award_bump_point(message.guild.get_member(bumper_id))
-        if not self._timer or self._timer.done():
-            self._schedule_reminder(message.created_at + timedelta(hours=2))
+        self._schedule_reminder(message.created_at + timedelta(hours=2))
 
     async def _award_bump_point(self, member: Member):
         bumps = await self._get_bumps(member.guild)
