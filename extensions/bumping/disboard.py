@@ -9,6 +9,7 @@ import base64
 import dippy
 import gzip
 import re
+import aiohttp
 
 
 class CallLaterFuture(asyncio.Future):
@@ -148,7 +149,7 @@ class DisboardBumpReminderExtension(dippy.Extension):
             return
 
         await self._clean_channel(message)
-        # await self._award_bump_point(message.guild.get_member(bumper_id))
+        await self._award_bump_point(message.guild.get_member(bumper_id))
         if not self._timer or self._timer.done():
             self._schedule_reminder(message.created_at + timedelta(hours=2))
 
@@ -257,11 +258,15 @@ class DisboardBumpReminderExtension(dippy.Extension):
         if not message.embeds:
             return
 
-        match = re.search(r"^Bump done!", message.embeds[0].description)
-        if not match:
+        if "bump done!" not in message.embeds[0].description.casefold():
             return
 
-        return 1
+        url = f"https://discord.com/api/v9/channels/{message.channel.id}/messages/{message.id}"
+        headers = {"Authorization": f"Bot {self.client.http.token}"}
+        async with aiohttp.ClientSession(headers=headers) as session:
+            async with session.get(url) as response:
+                data = await response.json()
+                return int(data["interaction"]["user"]["id"])
 
     def _now(self) -> datetime:
         return datetime.now(tz=timezone.utc)
