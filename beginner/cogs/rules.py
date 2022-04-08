@@ -49,7 +49,7 @@ class RulesCog(Cog):
                 "description": (
                     "This community has members with an incredible diversity of opinions, experiences, and skill "
                     "levels. Be aware and understanding. Your opinions aren’t more important than anyone else’s. "
-                    "*Strong options* are great, just *hold them weakly.* You’ll learn more and others will be more "
+                    "*Strong opinions* are great, just *hold them weakly.* You’ll learn more and others will be more "
                     "willing to hear you out.\n\n__Trolling people who are learning as well as unhelpful behavior in "
                     "help channels will not be permitted.__"
                 ),
