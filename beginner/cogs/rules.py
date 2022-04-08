@@ -12,17 +12,21 @@ class RulesCog(Cog):
     def __init__(self, client: nextcord.Client):
         super().__init__(client)
         self.message_fields = {
-            "No DMing others or asking others DM you": {
+            "Keep Discussion On the Server": {
                 "description": (
-                    "A lot of scammers use DMs as a way to propagate dangerous code. So to ensure the safety of our "
-                    "members and to ensure the highest quality of help we do not permit anyone to ask members to DM."
+                    "Don’t DM members, don’t ask members about DMing. We have help channels if you want an "
+                    "uninterrupted space to discuss your questions. This helps ensure you get quality help, that no "
+                    "one is getting scammed, and that no one is getting unsolicited questions.\n\n*If you ever need to "
+                    "speak with the mod team, tag the mods & let us know you need to talk. We will pull you into a "
+                    "private channel.*"
                 ),
                 "labels": ("dm", "dming", "pm"),
             },
-            "No solicitation": {
+            "No Soliciting or Propositioning": {
                 "description": (
-                    "This is a beginner server not a job board. We're here to learn not find unnecessary products/tools"
-                    "/services. *If you share an affiliate link be up front about that.*"
+                    "This isn’t a job board. We do not allow the exchange of money. We do not do work for people. "
+                    "We’re here to help you understand the code you’re writing, that is all. We’re all volunteers with "
+                    "real lives."
                 ),
                 "labels": (
                     "solicitation",
@@ -34,27 +38,50 @@ class RulesCog(Cog):
                     "job",
                 ),
             },
-            "No discussion of anything that violates laws or any ToS": {
+            "Keep It Legal": {
                 "description": (
-                    "We cannot judge your intent. As such we do not allow discussion of anything that could be in "
-                    "violation of laws or the terms of service/use for any product or service. If there isn't official "
-                    "documentation on how to do something you're not likely going to find much help here."
+                    "No discussion is allowed of anything that breaks the law or violates the terms of service for a "
+                    "product or service. You don’t need to do either to learn. This covers account creation bots, scam "
+                    "bots, purchase automation bots, DDoS, RATs, etc."
                 ),
                 "labels": ("tos", "hacker", "illegal", "hack", "hacking"),
             },
-            "No unreadable display names or inappropriate names/avatars": {
+            "Be Understanding, Respectful, & Helpful": {
                 "description": (
-                    "Your display name should be readable (not invisible or illegible), reasonably inoffensive, and "
-                    "should not contain any words or phrases that could be consider rude or that may look/sound like "
-                    "something that is.\n\nYour avatar image/PFP should be reasonably inoffensive."
+                    "This community has members with an incredible diversity of opinions, experiences, and skill "
+                    "levels. Be aware and understanding. Your opinions aren’t more important than anyone else’s. "
+                    "*Strong options* are great, just *hold them weakly.* You’ll learn more and others will be more "
+                    "willing to hear you out.\n\n__Trolling people who are learning as well as unhelpful behavior in "
+                    "help channels will not be permitted.__"
                 ),
-                "labels": ("nickname", "avatar", "name", "pfp", "username"),
+                "labels": (
+                    "understanding",
+                    "respectful",
+                    "helpful",
+                    "trolling",
+                    "helping",
+                    "learning",
+                ),
             },
-            "No Harassment, NSFW content, flaming/trolling, or bigotry": {
+            "Academic Honesty": {
                 "description": (
-                    "It should go without saying: flaming, trolling, spamming, and harassing, along with racism and "
-                    "bigotry of any kind towards any group or individual is strictly prohibited and will be dealt with "
-                    "appropriately."
+                    "We will help you understand your homework, we will help you figure out the solution, __we will "
+                    "not give you the answers__. For tests and quizzes we can help you with your studying, we can only "
+                    "give you vague nudges in the right direction on quizzes, __we will not help with tests__."
+                ),
+                "labels": (
+                    "academics",
+                    "honesty",
+                    "homework",
+                    "quizzes",
+                    "tests",
+                    "school",
+                ),
+            }
+            "Keep It Civil & Decent": {
+                "description": (
+                    "No *harassment, NSFW content, flaming, trolling,* or *bigotry* will be tolerated. This includes "
+                    "derogatory remarks towards or statements objectifying anyone (on the server or not)."
                 ),
                 "labels": (
                     "nsfw",
@@ -65,12 +92,21 @@ class RulesCog(Cog):
                     "racism",
                 ),
             },
-            "Finally": {
+            "Display Names & PFPs Should be Appropriate": {
+                "description": (
+                    "Your username should be readable, should not be promotional, and should not violate Rule 4. Your "
+                    "PFP should be reasonably appropriate (no NSFW content, nothing objectionable, nothing "
+                    "promotional)."
+                ),
+                "labels": ("nickname", "avatar", "name", "pfp", "username"),
+            },
+            "Use English Only": {
                 "description": (
                     "To ensure everyone can participate and that the server staff can foster an environment amenable "
-                    "to growth and learning, please only use __English__. Be kind, courteous, and understanding."
+                    "to growth and learning, please only use __English__. If you cannot reasonably communicate in "
+                    "English you may be removed from the server."
                 ),
-                "labels": ("finally",),
+                "labels": ("english",),
             },
         }
 
