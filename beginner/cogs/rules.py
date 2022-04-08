@@ -50,8 +50,7 @@ class RulesCog(Cog):
                     "This community has members with an incredible diversity of opinions, experiences, and skill "
                     "levels. Be aware and understanding. Your opinions aren’t more important than anyone else’s. "
                     "*Strong opinions* are great, just *hold them weakly.* You’ll learn more and others will be more "
-                    "willing to hear you out.\n\n__Trolling people who are learning as well as unhelpful behavior in "
-                    "help channels will not be permitted.__"
+                    "willing to hear you out."
                 ),
                 "labels": (
                     "understanding",
@@ -80,7 +79,8 @@ class RulesCog(Cog):
             "Keep It Civil & Decent": {
                 "description": (
                     "No *harassment, NSFW content, flaming, trolling,* or *bigotry* will be tolerated. This includes "
-                    "derogatory remarks towards or statements objectifying anyone (on the server or not)."
+                    "derogatory remarks towards or statements objectifying anyone (on the server or not).\n\n__Trolling"
+                    " people who are learning as well as unhelpful behavior in help channels will not be permitted.__"
                 ),
                 "labels": (
                     "nsfw",
@@ -89,6 +89,8 @@ class RulesCog(Cog):
                     "bigotry",
                     "harassing",
                     "racism",
+                    "derogatory",
+                    "objectification",
                 ),
             },
             "Display Names & PFPs Should be Appropriate": {
