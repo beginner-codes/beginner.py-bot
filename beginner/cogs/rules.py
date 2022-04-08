@@ -93,8 +93,8 @@ class RulesCog(Cog):
             },
             "Display Names & PFPs Should be Appropriate": {
                 "description": (
-                    "Your username should be readable, should not be promotional, and should not violate Rule 4. Your "
-                    "PFP should be reasonably appropriate (no NSFW content, nothing objectionable, nothing "
+                    "Your username should be readable, should not be promotional, and should not violate the previous "
+                    "rule. Your PFP should be reasonably appropriate (no NSFW content, nothing objectionable, nothing "
                     "promotional)."
                 ),
                 "labels": ("nickname", "avatar", "name", "pfp", "username"),
