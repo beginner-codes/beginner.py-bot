@@ -84,7 +84,7 @@ class ModManager(Injectable):
         await guild.set_label("locked_down", True)
         await self.start_alert(guild)
         await channel.send(
-            f"Locked the server for {member_role}",
+            f"🚨 Locked the server for {member_role} 🚨",
             allowed_mentions=AllowedMentions(roles=False, everyone=False),
         )
 
