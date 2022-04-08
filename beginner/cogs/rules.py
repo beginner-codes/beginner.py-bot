@@ -1,6 +1,5 @@
 from beginner.cog import Cog, commands
 from beginner.colors import *
-from beginner.models.messages import Message, MessageTypes
 from datetime import datetime
 from nextcord import Embed
 import re
