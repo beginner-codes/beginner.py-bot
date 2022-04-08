@@ -93,6 +93,14 @@ class RulesCog(Cog):
                     "objectification",
                 ),
             },
+            "Spam & Getting Help": {
+                "description": (
+                    "To help keep the server organized & avoid confusion, please keep coding questions out of "
+                    "discussion channels. Do not spam multiple channels with your questions, do not direct people to "
+                    "your help channel, and please abide by directions given by the server staff."
+                ),
+                "labels": ("help", "spam", "questions", "confusion"),
+            },
             "Display Names & PFPs Should be Appropriate": {
                 "description": (
                     "Your username should be readable, should not be promotional, and should not violate the previous "
