@@ -74,6 +74,8 @@ class RulesCog(Cog):
                     "quizzes",
                     "tests",
                     "school",
+                    "cheating",
+                    "dishonest",
                 ),
             },
             "Keep It Civil & Decent": {
