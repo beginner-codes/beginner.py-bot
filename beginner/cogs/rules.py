@@ -137,7 +137,7 @@ class RulesCog(Cog):
         embed = Embed(
             title=title,
             description=message,
-            timestamp=datetime(2020, 8, 31, 0, 0, 0, 0, pytz.timezone("US/Eastern")),
+            timestamp=datetime.now().astimezone(pytz.timezone("US/Eastern")),
             color=BLUE,
         )
         embed.set_footer(text=admin.name, icon_url=admin.avatar.url)
