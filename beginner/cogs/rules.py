@@ -77,7 +77,7 @@ class RulesCog(Cog):
                     "tests",
                     "school",
                 ),
-            }
+            },
             "Keep It Civil & Decent": {
                 "description": (
                     "No *harassment, NSFW content, flaming, trolling,* or *bigotry* will be tolerated. This includes "
