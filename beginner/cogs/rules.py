@@ -113,7 +113,7 @@ class RulesCog(Cog):
     @commands.has_guild_permissions(manage_channels=True)
     async def update_rules_message(self, ctx, *, reason: str):
         rules: nextcord.TextChannel = nextcord.utils.get(
-            self.server.channels, name="rules"
+            self.server.channels, name="👮rules"
         )
         messages = await rules.history(limit=1, oldest_first=True).flatten()
         if messages:
