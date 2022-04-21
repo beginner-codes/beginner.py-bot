@@ -36,6 +36,11 @@ class RulesCog(Cog):
                     "ad",
                     "jobs",
                     "job",
+                    "promotion",
+                    "promoting",
+                    "ads",
+                    "self-promotion",
+                    "self promotion",
                 ),
             },
             "Keep It Legal": {
