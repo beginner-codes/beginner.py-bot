@@ -168,7 +168,7 @@ class RulesCog(Cog):
         return embed
 
     @Cog.command(name="rule")
-    async def show_rule(self, ctx, label=None, *_):
+    async def show_rule(self, ctx, *, label=None):
         rule = self.get_rule(label, fuzzy=True)
         if rule:
             await ctx.send(embed=self.build_rule_embed(rule))
