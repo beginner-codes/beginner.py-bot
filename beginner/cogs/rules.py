@@ -21,11 +21,12 @@ class RulesCog(Cog):
                 ),
                 "labels": ("dm", "dming", "pm"),
             },
-            "No Soliciting or Propositioning": {
+            "No Soliciting, Propositioning, or Promoting": {
                 "description": (
-                    "This isn’t a job board. We do not allow the exchange of money. We do not do work for people. "
-                    "We’re here to help you understand the code you’re writing, that is all. We’re all volunteers with "
-                    "real lives."
+                    "This isn’t a job board. This is not a place for promotions of your stuff. We do not allow the "
+                    "exchange of money. We do not do work for people. **We’re here to help you understand the code "
+                    "you’re writing, that is all.**\n\n*If you have something you think we'd like to promote talk to "
+                    "the mods.*"
                 ),
                 "labels": (
                     "solicitation",
