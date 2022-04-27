@@ -28,5 +28,5 @@ class MemberCounterExtension(dippy.Extension):
         channel = self.client.get_channel(968972011407826954)
         guild = channel.guild
         members = sum(not member.bot for member in guild.default_role.members)
-        await channel.edit(name=f"📊Members: {members}")
+        await channel.edit(name=f"📊Members: {members:,}")
 
