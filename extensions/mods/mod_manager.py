@@ -45,7 +45,7 @@ class ModManager(Injectable):
         if (await self.alert_active(guild)) >= 0:
             return
 
-        now = datetime.now().astimezone(timezone.utc).replace(second=0, microsecond=0)
+        now = datetime.now().astimezone(timezone.utc) - timedelta(seconds=30)
         await guild.set_label("alert_started", now.isoformat())
 
     async def mass_ban(self, guild: Guild, start: datetime, end: datetime) -> int:
@@ -84,7 +84,7 @@ class ModManager(Injectable):
         await guild.set_label("locked_down", True)
         await self.start_alert(guild)
         await channel.send(
-            f"Locked the server for {member_role}",
+            f"🚨 Locked the server for {member_role} 🚨",
             allowed_mentions=AllowedMentions(roles=False, everyone=False),
         )
 

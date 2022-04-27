@@ -52,6 +52,7 @@ class DisboardBumpReminderExtension(dippy.Extension):
         )
         self._timer.cancel()
         self.waiting = False
+        self.initialized = False
 
     @property
     def bump_channel(self) -> TextChannel:
@@ -67,8 +68,12 @@ class DisboardBumpReminderExtension(dippy.Extension):
 
     @dippy.Extension.listener("ready")
     async def on_ready(self):
+        if self.initialized:
+            return
+
         self.log.info("Disboard bump reminder setting up")
         await self._setup_reminders()
+        self.initialized = True
 
     @dippy.Extension.listener("message")
     async def on_message(self, message: Message):
