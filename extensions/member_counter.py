@@ -4,10 +4,15 @@ import dippy
 class MemberCounterExtension(dippy.Extension):
     client: dippy.Client
 
+    def __init__(self):
+        super().__init__()
+        self._running = False
+
     @dippy.Extension.listener("ready")
     async def on_ready(self):
-        self.events.off("ready", self.on_ready.handler)
-        self._update_member_counter()
+        if not self._running:
+            self._update_member_counter()
+            self._running = True
 
     def _update_member_counter(self):
         self._schedule_update()
