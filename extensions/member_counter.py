@@ -6,7 +6,7 @@ class MemberCounterExtension(dippy.Extension):
 
     @dippy.Extension.listener("ready")
     async def on_ready(self):
-        self.events.off("ready", self.on_ready)
+        self.events.off("ready", self.on_ready.handler)
         self._update_member_counter()
 
     def _update_member_counter(self):
