@@ -409,8 +409,7 @@ class Fun(Cog):
         await embed_to_edit.edit(embed=embed)
 
     @Cog.command(name="make-time-tag")
-    async def make_time_tag(self, ctx, time: str, timezone: str):
-        timezone = pytz.timezone(timezone)
+    async def make_time_tag(self, ctx, time: str):
         time = time.upper()
         if time.index(":") <= 2:
             time = f"0{time}"
@@ -418,10 +417,17 @@ class Fun(Cog):
         if not time.endswith("M"):
             time += "PM"
 
-        dt = datetime.strptime(time, "%I:%M%p").replace(tzinfo=timezone)
+        time = datetime.strptime(time, "%I:%M%p")
+        dt = datetime.now().replace(
+            hour=time.hour,
+            minute=time.minute,
+            second=0,
+            microsecond=0,
+            tzinfo=pytz.timezone("EST"),
+        )
         utc = dt.astimezone(pytz.utc)
         await ctx.message.reply(
-            f"<t:{utc.timestamp()}:t>\n```\n<t:{utc.timestamp()}:t>\n```"
+            f"<t:{int(utc.timestamp())}:t>\n```\n<t:{utc.timestamp()}:t>\n```"
         )
 
 
