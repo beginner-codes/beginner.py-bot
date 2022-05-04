@@ -7,6 +7,8 @@ import math
 import re
 import random
 import socket
+from datetime import datetime
+import pytz
 
 
 class Fun(Cog):
@@ -405,6 +407,20 @@ class Fun(Cog):
             )
 
         await embed_to_edit.edit(embed=embed)
+
+    @Cog.command(name="make-time-tag")
+    async def make_time_tag(self, ctx, time: str, timezone: str):
+        timezone = pytz.timezone(timezone)
+        if time.index(":") <= 2:
+            time = f"0{time}"
+
+        if not time.upper().endswith("M"):
+            time += "PM"
+
+        dt = datetime.strptime("%I:%M%p", time).replace(tzinfo=timezone)
+        await ctx.message.reply(
+            f"<t:{dt.astimezone(pytz.utc).timestamp()}:t>\n```\n<t:{dt.astimezone(pytz.utc).timestamp()}:t>\n```"
+        )
 
 
 def setup(client):
