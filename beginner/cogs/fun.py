@@ -411,7 +411,7 @@ class Fun(Cog):
     @Cog.command(name="make-time-tag")
     async def make_time_tag(self, ctx, time: str, timezone: str):
         timezone = pytz.timezone(timezone)
-        time.upper()()
+        time = time.upper()
         if time.index(":") <= 2:
             time = f"0{time}"
 
