@@ -9,6 +9,7 @@ import random
 import socket
 from datetime import datetime
 import pytz
+import pendulum
 
 
 class Fun(Cog):
@@ -423,10 +424,11 @@ class Fun(Cog):
             minute=time.minute,
             second=0,
             microsecond=0,
+            tzinfo=pendulum.timezone("America/New_York"),
         )
-        utc = dt.astimezone(pytz.utc)
+        utc = dt.astimezone(pendulum.timezone("UTC"))
         await ctx.message.reply(
-            f"<t:{int(utc.timestamp())}:t>\n```\n<t:{utc.timestamp()}:t>\n```"
+            f"<t:{int(utc.timestamp())}:t>\n```\n<t:{int(utc.timestamp())}:t>\n```"
         )
 
 
