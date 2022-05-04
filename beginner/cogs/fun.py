@@ -423,7 +423,6 @@ class Fun(Cog):
             minute=time.minute,
             second=0,
             microsecond=0,
-            tzinfo=pytz.timezone("EST"),
         )
         utc = dt.astimezone(pytz.utc)
         await ctx.message.reply(
