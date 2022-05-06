@@ -223,7 +223,7 @@ class KudosExtension(dippy.Extension):
         found = False
         for index, (member, member_kudos) in zip(indexes, leaders.items()):
             name = member.display_name if member else "*Old Member*"
-            entry = f"{index} {name} has {member_kudos} kudos"
+            entry = f"{index} {name} has {member_kudos:,} kudos"
             if member == lookup_member:
                 entry = f"**{entry}**"
                 found = True
