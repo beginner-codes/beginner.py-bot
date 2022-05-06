@@ -106,7 +106,7 @@ class DisboardBumpReminderExtension(dippy.Extension):
             award = awards.get(index, "✨")
             user = self.client.get_user(user_id)
             content.append(
-                f"{award} {user.mention if user else '*UNKNOWN*'} {num_bumps}"
+                f"{award} {user.display_name if user else '*UNKNOWN*'} has done {num_bumps} bumps"
             )
 
         await message.channel.send(
