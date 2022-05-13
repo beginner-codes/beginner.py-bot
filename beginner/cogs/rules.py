@@ -30,6 +30,7 @@ class RulesCog(Cog):
                 ),
                 "labels": (
                     "solicitation",
+                    "soliciting",
                     "advert",
                     "advertising",
                     "ads",
