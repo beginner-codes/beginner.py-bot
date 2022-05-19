@@ -235,7 +235,7 @@ class KudosExtension(dippy.Extension):
                 leaderboard.append("...")
 
             leaderboard.append(
-                f"**{index + 1}. {lookup_member.display_name} has {leaders[lookup_member]} kudos**"
+                f"**{index + 1}. {lookup_member.display_name} has {leaders[lookup_member]:,} kudos**"
             )
 
         await message.channel.send(
