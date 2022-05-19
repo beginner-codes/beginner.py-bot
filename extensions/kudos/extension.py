@@ -231,8 +231,11 @@ class KudosExtension(dippy.Extension):
 
         if not found:
             index = list(leaders).index(lookup_member)
+            if index > 10:
+                leaderboard.append("...")
+
             leaderboard.append(
-                f"...\n**{index + 1}. {lookup_member.display_name} has {leaders[lookup_member]} kudos**"
+                f"**{index + 1}. {lookup_member.display_name} has {leaders[lookup_member]} kudos**"
             )
 
         await message.channel.send(
