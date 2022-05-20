@@ -76,7 +76,7 @@ def create_view() -> View:
     view.add_item(
         Select(
             custom_id="bc.help.topic",
-            placeholder="Select a help category",
+            placeholder="Select a help category (optional)",
             max_values=2,
             row=2,
             options=[
