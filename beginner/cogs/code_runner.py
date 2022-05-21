@@ -127,6 +127,7 @@ class CodeRunner(Cog):
             reaction.emoji.name in self._delete_emojis
             and reaction.member in message.mentions
             and message.author == self.client.user
+            and "Exception Raised" in message.embeds[0].title
         ):
             await message.delete()
 
