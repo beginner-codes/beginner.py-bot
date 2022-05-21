@@ -123,9 +123,12 @@ class CodeRunner(Cog):
         elif reaction.emoji.name in self._formatting_emojis:
             await self._black_formatting(message, message.content, reaction.member)
 
-        elif reaction.emoji.name in self._delete_emojis and reaction.member in message.mentions:
+        elif (
+            reaction.emoji.name in self._delete_emojis
+            and reaction.member in message.mentions
+            and message.author == self.client.user
+        ):
             await message.delete()
-
 
     async def _exec(
         self,
