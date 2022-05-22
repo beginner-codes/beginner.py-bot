@@ -39,6 +39,7 @@ koq
 kox
 kum
 kyk
+kys
 mad
 ngr
 nut
