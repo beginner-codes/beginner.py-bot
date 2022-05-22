@@ -7,6 +7,9 @@ import math
 import re
 import random
 import socket
+from datetime import datetime
+import pytz
+import pendulum
 
 
 class Fun(Cog):
@@ -405,6 +408,28 @@ class Fun(Cog):
             )
 
         await embed_to_edit.edit(embed=embed)
+
+    @Cog.command(name="make-time-tag")
+    async def make_time_tag(self, ctx, time: str):
+        time = time.upper()
+        if time.index(":") <= 2:
+            time = f"0{time}"
+
+        if not time.endswith("M"):
+            time += "PM"
+
+        time = datetime.strptime(time, "%I:%M%p")
+        dt = datetime.now().replace(
+            hour=time.hour,
+            minute=time.minute,
+            second=0,
+            microsecond=0,
+            tzinfo=pendulum.timezone("America/New_York"),
+        )
+        utc = dt.astimezone(pendulum.timezone("UTC"))
+        await ctx.message.reply(
+            f"<t:{int(utc.timestamp())}:t>\n```\n<t:{int(utc.timestamp())}:t>\n```"
+        )
 
 
 def setup(client):
