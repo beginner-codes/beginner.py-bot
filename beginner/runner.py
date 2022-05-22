@@ -12,6 +12,10 @@ import traceback
 import uuid
 import hashlib
 from types import ModuleType
+import os
+
+
+os.environ = {}
 
 
 class Module:
