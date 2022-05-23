@@ -19,6 +19,7 @@ class CodeRunner(Cog):
         self._exec_rate_limit = {}
         self._code_runner_emojis = "▶️⏯"
         self._formatting_emojis = "✏️📝"
+        self._delete_emojis = "🗑️"
 
     @Cog.command()
     async def dis(self, ctx, *, content=""):
@@ -96,7 +97,7 @@ class CodeRunner(Cog):
     async def on_raw_reaction_add(self, reaction: nextcord.RawReactionActionEvent):
         if (
             reaction.emoji.name
-            not in self._code_runner_emojis + self._formatting_emojis
+            not in self._code_runner_emojis + self._formatting_emojis + self._delete_emojis
         ):
             return
 
@@ -121,6 +122,14 @@ class CodeRunner(Cog):
 
         elif reaction.emoji.name in self._formatting_emojis:
             await self._black_formatting(message, message.content, reaction.member)
+
+        elif (
+            reaction.emoji.name in self._delete_emojis
+            and reaction.member in message.mentions
+            and message.author == self.client.user
+            and "Exception Raised" in message.embeds[0].title
+        ):
+            await message.delete()
 
     async def _exec(
         self,
