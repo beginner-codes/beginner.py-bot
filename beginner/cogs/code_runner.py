@@ -95,6 +95,7 @@ class CodeRunner(Cog):
 
     @Cog.listener()
     async def on_raw_reaction_add(self, reaction: nextcord.RawReactionActionEvent):
+        self.logger.info(reaction.emoji.name)
         if reaction.emoji.name not in {
             *self._code_runner_emojis,
             *self._formatting_emojis,
