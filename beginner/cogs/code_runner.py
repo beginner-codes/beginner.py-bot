@@ -17,9 +17,9 @@ class CodeRunner(Cog):
     def __init__(self, client):
         super().__init__(client)
         self._exec_rate_limit = {}
-        self._code_runner_emojis = "▶️⏯"
-        self._formatting_emojis = "✏️📝"
-        self._delete_emojis = "🗑️"
+        self._code_runner_emojis = {"▶️", "⏯"}
+        self._formatting_emojis = {"✏️", "📝"}
+        self._delete_emojis = {"🗑️"}
 
     @Cog.command()
     async def dis(self, ctx, *, content=""):
@@ -95,18 +95,18 @@ class CodeRunner(Cog):
 
     @Cog.listener()
     async def on_raw_reaction_add(self, reaction: nextcord.RawReactionActionEvent):
-        if reaction.emoji.name not in {
-            *self._code_runner_emojis,
-            *self._formatting_emojis,
-            *self._delete_emojis,
-        }:
+        if (
+            reaction.emoji.name
+            not in self._code_runner_emojis
+            | self._formatting_emojis
+            | self._delete_emojis
+        ):
             return
 
         now = datetime.utcnow()
         delta = now - self._exec_rate_limit.get(reaction.message_id, now)
         channel: nextcord.TextChannel = self.client.get_channel(reaction.channel_id)
         message = await channel.fetch_message(reaction.message_id)
-        self.logger.debug(f"{delta=}")
         if timedelta(seconds=0) < delta < timedelta(minutes=2):
             await message.remove_reaction(reaction.emoji, reaction.member)
             return
