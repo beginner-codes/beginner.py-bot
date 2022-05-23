@@ -95,10 +95,11 @@ class CodeRunner(Cog):
 
     @Cog.listener()
     async def on_raw_reaction_add(self, reaction: nextcord.RawReactionActionEvent):
-        if (
-            reaction.emoji.name
-            not in self._code_runner_emojis + self._formatting_emojis + self._delete_emojis
-        ):
+        if reaction.emoji.name not in {
+            *self._code_runner_emojis,
+            *self._formatting_emojis,
+            *self._delete_emojis,
+        }:
             return
 
         now = datetime.utcnow()
