@@ -131,6 +131,11 @@ class CodeRunner(Cog):
             and "Exception Raised" in message.embeds[0].title
         ):
             await message.delete()
+        else:
+            self.logger.info(
+                f">>> {reaction.emoji.name=} {member=} {message.author.id=} {self.client.user.id=} "
+                f"{message.embeds[0].title=}"
+            )
 
     async def _exec(
         self,
