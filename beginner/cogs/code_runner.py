@@ -95,9 +95,6 @@ class CodeRunner(Cog):
 
     @Cog.listener()
     async def on_raw_reaction_add(self, reaction: nextcord.RawReactionActionEvent):
-        self.logger.info(
-            f"{reaction.emoji.name=} {reaction.emoji.name in self._delete_emojis}"
-        )
         if reaction.emoji.name not in {
             *self._code_runner_emojis,
             *self._formatting_emojis,
@@ -119,6 +116,7 @@ class CodeRunner(Cog):
 
         self._exec_rate_limit[reaction.message_id] = now
 
+        self.logger.info(f"Deleting? {reaction.emoji.name in self._delete_emojis}")
         if reaction.emoji.name in self._code_runner_emojis and self.settings.get(
             "EXEC_ENABLED", False
         ):
@@ -133,6 +131,7 @@ class CodeRunner(Cog):
             and message.author.id == self.client.user.id
             and "Exception Raised" in message.embeds[0].title
         ):
+            self.logger.debug(f"User {member} deleted an exec exception message")
             await message.delete()
         else:
             self.logger.info(
