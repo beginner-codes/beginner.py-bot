@@ -92,7 +92,7 @@ def run(client, logger):
     if not token or len(token.strip()) != 59:
         message = (
             f"Got token: {repr(token)}\n"
-            f"Please set a token in your environment as DISCORD_TOKEN or in your developement.yaml file under 'bot' "
+            f"Please set a token in your environment as DISCORD_TOKEN or in your development.yaml file under 'bot' "
             f"with the key 'token'."
         )
         raise InvalidToken(message)
