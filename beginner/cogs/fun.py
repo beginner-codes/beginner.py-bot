@@ -331,6 +331,34 @@ class Fun(Cog):
             rr = bool(re.findall("|".join(phrases), source, re.MULTILINE))
             await ctx.send("👎" if rr else "👍", reference=ctx.message)
 
+    @Cog.listener()
+    async def on_raw_reaction_add(self, reaction):
+        import requests
+        import re
+
+        if reaction.emoji.name != "❓":
+            return
+
+        channel: nextcord.TextChannel = self.server.get_channel(reaction.channel_id)
+        message: nextcord.Message = await channel.fetch_message(reaction.message_id)
+        
+        urls = re.findall('(?:(?:https?|ftp):\/\/)?[\w/\-?=%.]+\.[\w/\-&?=%.]+', message.content)
+
+        for url in urls:
+            try:
+                source = str(requests.get(url).content).lower()
+            except:
+                await channel.send(f"Can't read content 💥: <{url}>")
+            else:
+                phrases = [
+                    "rickroll",
+                    "rick roll",
+                    "rick astley",
+                    "never gonna give you up",
+                ]
+                rr = bool(re.findall("|".join(phrases), source, re.MULTILINE))
+                await channel.send(f"This is a Rickroll 👎: <{url}>" if rr else f"Not a Rickroll 👍: <{url}>")
+
     @Cog.command()
     async def reveal(self, ctx):
         if not ctx.message.reference:
