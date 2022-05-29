@@ -9,7 +9,19 @@ import random
 import socket
 from datetime import datetime
 import pendulum
-from functools import cache
+
+
+def async_cache(coroutine):
+    cache = {}
+
+    async def run(*args, **kwargs):
+        key = (args, kwargs)
+        if key not in cache:
+            cache[key] = await coroutine(*args, **kwargs)
+
+        return cache[key]
+
+    return run
 
 
 class Fun(Cog):
@@ -346,7 +358,7 @@ class Fun(Cog):
 
         await channel.send(f"No Rickrolls found 👍")
 
-    @cache
+    @async_cache
     async def _is_url_rickroll(self, url: str) -> bool:
         async with aiohttp.ClientSession() as session:
             async with session.get(url) as response:
