@@ -1,6 +1,6 @@
 from bevy import Injectable
 from collections import defaultdict
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from extensions.help_channels.topic_buttons import create_view
 from functools import cached_property
 from discord import (
@@ -312,7 +312,7 @@ class ChannelManager(Injectable):
             owner.display_name,
             icon,
             staff in owner.roles or booster in owner.roles,
-            datetime.utcnow() - owner.joined_at <= timedelta(days=2)
+            datetime.utcnow().astimezone(timezone.utc) - owner.joined_at <= timedelta(days=2)
         )
         helping_category = self.client.get_channel(categories["getting-help"])
         help_category: CategoryChannel = self.client.get_channel(categories["get-help"])
