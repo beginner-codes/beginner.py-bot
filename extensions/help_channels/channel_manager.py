@@ -412,7 +412,7 @@ class ChannelManager(Injectable):
 
         extra = []
         if new:
-            extra.append("☘️")
+            extra.append("🌱")
 
         if vip:
             extra.append("✨")
