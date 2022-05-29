@@ -316,7 +316,8 @@ class Fun(Cog):
     async def is_rick_roll(self, ctx, url):
         try:
             rr = await self._is_url_rickroll(url)
-        except:
+        except Exception as e:
+            self.logger.exception("Failed to check a URL for Rickrolls")
             await ctx.send("Couldn't load url 💥", reference=ctx.message)
         else:
             await ctx.send("It's a Rickroll 👎" if rr else "It's not a rickroll 👍", reference=ctx.message)
@@ -336,8 +337,8 @@ class Fun(Cog):
         for url in urls:
             try:
                 rr = self._is_url_rickroll(url)
-            except:
-                pass
+            except Exception as e:
+                self.logger.exception("Failed to check a URL for Rickrolls")
             else:
                 if rr:
                     await channel.send(f"This is a Rickroll 👎: <{url}>")
