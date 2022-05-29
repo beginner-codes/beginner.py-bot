@@ -310,9 +310,9 @@ class ChannelManager(Injectable):
         )
         name = self._generate_channel_title(
             owner.display_name,
-            topic,
             icon,
             staff in owner.roles or booster in owner.roles,
+            datetime.utcnow() - owner.joined_at <= timedelta(days=2)
         )
         helping_category = self.client.get_channel(categories["getting-help"])
         help_category: CategoryChannel = self.client.get_channel(categories["get-help"])
@@ -405,13 +405,19 @@ class ChannelManager(Injectable):
         return [channel for channel, _ in sorted(channels, key=lambda item: item[1])]
 
     def _generate_channel_title(
-        self, name: str, topic: str, icon: str = "🙋", vip: bool = False
+        self, name: str, icon: str = "🙋", vip: bool = False, new: bool = False
     ) -> str:
         slug = self.sluggify(name, sep="")
         prefix = self._get_prefix(slug)
-        topic = self.sluggify(topic)
-        extra = "✨" if vip else ""
-        return f"{icon}helping-{prefix}{extra}"
+
+        extra = []
+        if new:
+            extra.append("☘️")
+
+        if vip:
+            extra.append("✨")
+
+        return f"{icon}helping-{prefix}{''.join(extra)}"
 
     async def _get_guild_label(
         self, guild: Guild, label: str, default: Any = None
