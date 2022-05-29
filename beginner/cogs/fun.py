@@ -8,8 +8,8 @@ import re
 import random
 import socket
 from datetime import datetime
-import pytz
 import pendulum
+from functools import cache
 
 
 class Fun(Cog):
@@ -314,50 +314,52 @@ class Fun(Cog):
 
     @Cog.command(aliases=["isrickroll", "isrr"])
     async def is_rick_roll(self, ctx, url):
-        import requests
-        import re
-
         try:
-            source = str(requests.get(url).content).lower()
+            rr = await self._is_url_rickroll(url)
         except:
-            await ctx.send("💥", reference=ctx.message)
+            await ctx.send("Couldn't load url 💥", reference=ctx.message)
         else:
-            phrases = [
-                "rickroll",
-                "rick roll",
-                "rick astley",
-                "never gonna give you up",
-            ]
-            rr = bool(re.findall("|".join(phrases), source, re.MULTILINE))
-            await ctx.send("👎" if rr else "👍", reference=ctx.message)
+            await ctx.send("It's a Rickroll 👎" if rr else "It's not a rickroll 👍", reference=ctx.message)
 
     @Cog.listener()
     async def on_raw_reaction_add(self, reaction):
-        import requests
-        import re
-
         if reaction.emoji.name != "❓":
             return
 
         channel: nextcord.TextChannel = self.server.get_channel(reaction.channel_id)
         message: nextcord.Message = await channel.fetch_message(reaction.message_id)
         
-        urls = re.findall('(?:(?:https?|ftp):\/\/)?[\w/\-?=%.]+\.[\w/\-&?=%.]+', message.content)
+        urls = re.findall(r"(?:(?:https?|ftp)://)?[\w/\-?=%.]+\.[\w/\-&?=%.]+", message.content)
+        if not urls:
+            return
 
         for url in urls:
             try:
-                source = str(requests.get(url).content).lower()
+                rr = self._is_url_rickroll(url)
             except:
-                await channel.send(f"Can't read content 💥: <{url}>")
+                pass
             else:
-                phrases = [
-                    "rickroll",
-                    "rick roll",
-                    "rick astley",
-                    "never gonna give you up",
-                ]
-                rr = bool(re.findall("|".join(phrases), source, re.MULTILINE))
-                await channel.send(f"This is a Rickroll 👎: <{url}>" if rr else f"Not a Rickroll 👍: <{url}>")
+                if rr:
+                    await channel.send(f"This is a Rickroll 👎: <{url}>")
+                    return
+
+        await channel.send(f"No Rickrolls found 👍")
+
+    @cache
+    async def _is_url_rickroll(self, url: str) -> bool:
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url) as response:
+                content = await response.read()
+                return self._does_content_contain_rickroll(content.decode())
+
+    def _does_content_contain_rickroll(self, content: str) -> bool:
+        phrases = [
+            "rickroll",
+            "rick roll",
+            "rick astley",
+            "never gonna give you up",
+        ]
+        return bool(re.findall("|".join(phrases), content.lower(), re.MULTILINE))
 
     @Cog.command()
     async def reveal(self, ctx):
