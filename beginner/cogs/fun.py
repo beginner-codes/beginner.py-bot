@@ -14,12 +14,11 @@ import pendulum
 def async_cache(coroutine):
     cache = {}
 
-    async def run(*args, **kwargs):
-        key = (args, kwargs)
-        if key not in cache:
-            cache[key] = await coroutine(*args, **kwargs)
+    async def run(*args):
+        if args not in cache:
+            cache[args] = await coroutine(*args)
 
-        return cache[key]
+        return cache[args]
 
     return run
 
