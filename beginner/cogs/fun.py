@@ -346,6 +346,8 @@ class Fun(Cog):
             return
 
         for url in urls:
+            if "http" not in url:
+                url = "http://" + url
             try:
                 rr = await self._is_url_rickroll(url)
             except Exception as e:
