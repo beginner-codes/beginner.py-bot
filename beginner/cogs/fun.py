@@ -354,7 +354,7 @@ class Fun(Cog):
                 self.logger.exception("Failed to check a URL for Rickrolls")
                 await channel.send("Couldn't load url 💥")
             else:
-                message_response = f"This is a Rickroll 👎: <{url}>" if rr else f"No Rickrolls found 👍"
+                message_response = f"This is a Rickroll 👎: <{url}>" if rr else f"No Rickrolls found 👍: <{url}>"
                 await channel.send(message_response)
 
 
