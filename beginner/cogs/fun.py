@@ -24,6 +24,27 @@ def async_cache(coroutine):
 
 
 class Fun(Cog):
+    def __init__(self, client):
+        super().__init__(client)
+        
+        # List of rickroll links that the bot cannot detect.
+        self.rickroll_blocklist = [
+            "https://www.tenor.com/view/spoiler-gif-24641133",
+        ]
+        
+        # Add different URL variations of the link to the rickroll blocklist.
+        for blocked_url in self.rickroll_blocklist:
+            domain = re.compile(r"https?://(www\.)?").sub("", blocked_url)
+            url_variations = [
+	            f"http://{domain}",
+    	        f"https://{domain}",
+	            f"http://www.{domain}",
+	            f"https://www.{domain}",
+	        ]
+            for variation in url_variations:
+                if variation not in self.rickroll_blocklist:
+                    self.rickroll_blocklist.append(variation)
+                    
     @Cog.command()
     async def stack(self, ctx, v: str = "", *, instructions):
         class InvalidInstruction(Exception):
@@ -360,6 +381,9 @@ class Fun(Cog):
 
     @async_cache
     async def _is_url_rickroll(self, url: str) -> bool:
+        if url in self.rickroll_blocklist:
+            return True
+        
         async with aiohttp.ClientSession() as session:
             async with session.get(url) as response:
                 content = await response.read()
