@@ -26,6 +26,7 @@ def async_cache(coroutine):
 class Fun(Cog):
     def __init__(self, client):
         super().__init__(client)
+        self._rickroll_rate_limits = {}
         
         # List of rickroll links that the bot cannot detect.
         self.rickroll_blocklist = [
@@ -361,6 +362,16 @@ class Fun(Cog):
 
         channel: nextcord.TextChannel = self.server.get_channel(reaction.channel_id)
         message: nextcord.Message = await channel.fetch_message(reaction.message_id)
+        
+        now = datetime.utcnow()
+        rate_limits = {reaction.user_id: 1, reaction.message_id: 3}
+        for limit in rate_limits:
+            print(limit)
+            delta = now - self._rickroll_rate_limits.get(limit, now)
+            if timedelta(seconds=0) < delta < timedelta(minutes=rate_limits[limit]):
+                await message.remove_reaction(reaction.emoji, reaction.member)
+                return
+            self._rickroll_rate_limits[limit] = now
         
         urls = re.findall(r"(?:(?:https?|ftp)://)?[\w/\-?=%.]+\.[\w/\-&?=%.]+", message.content)
         if not urls:
