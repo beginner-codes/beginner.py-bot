@@ -190,7 +190,7 @@ class AutoModExtension(dippy.Extension):
 
         our_invites = {invite.code.casefold() for invite in await message.guild.invites()}
         for invite in invites:
-            *_, invite_code = str(invite).split("/")
+            *_, invite_code = invite.split("/")
             if invite_code not in our_invites:
                 break
         else:
