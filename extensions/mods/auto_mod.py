@@ -1,6 +1,8 @@
 import asyncio
 import os
 
+import nextcord
+
 from extensions.help_channels.channel_manager import ChannelManager
 from aiohttp import ClientSession
 from collections import deque
@@ -47,6 +49,7 @@ class AutoModExtension(dippy.Extension):
 
         self._message_buffer.appendleft(message)
         self.client.loop.create_task(self._scan_for_webhooks(message))
+        self.client.loop.create_task(self._scan_for_discord_invites(message))
         await self._handle_spamming_violations(message, message.channel, message.author)
 
     @dippy.Extension.listener("message_edit")
@@ -164,6 +167,50 @@ class AutoModExtension(dippy.Extension):
                 await hook.delete()
             except NotFound:
                 pass  # Don't care, just want it gone
+
+    async def _scan_for_discord_invites(self, message: Message):
+        if message.author.bot:
+            return
+
+        # Allow discord invite links in the private chat channel category
+        if message.channel.category.id == 833078627935322152:
+            return
+
+        # Allow staff to share invite links in any channel
+        if self.client.get_channel(720663441966366850).permissions_for(message.author).send_messages:
+            return
+
+        # Allow anyone with the manage messages perms to share invite links
+        if message.channel.permissions_for(message.author).manage_messages:
+            return
+
+        invites = re.findall(r"discord.gg/[a-z0-9]{8,}", message.content.lower())
+        if not invites:
+            return
+
+        await message.reply(
+            embeds=[
+                nextcord.Embed(
+                    description=(
+                        f"❌ {message.author.mention} you are not allowed to share Discord invites in this channel."
+                    ),
+                    color=0xaa00000
+                )
+            ],
+            mention_author=True
+        )
+        await message.delete()
+        await self.client.get_channel(719311864479219813).send(
+            embeds=[
+                nextcord.Embed(
+                    description=(
+                        f"{message.author} sent {len(invites)} Discord invite{'s' if len(invites) > 1 else ''} in "
+                        f"{message.channel.mention}."
+                    ),
+                    color=0xaaaa00
+                )
+            ]
+        )
 
     async def _handle_spamming_violations(
         self, message: Message, channel: TextChannel, member: Member, edit: bool = False
