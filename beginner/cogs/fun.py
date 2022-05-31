@@ -37,7 +37,7 @@ class Fun(Cog):
             domain = re.compile(r"https?://(www\.)?").sub("", blocked_url)
             url_variations = [
 	            f"http://{domain}",
-    	        f"https://{domain}",
+    	            f"https://{domain}",
 	            f"http://www.{domain}",
 	            f"https://www.{domain}",
 	        ]
