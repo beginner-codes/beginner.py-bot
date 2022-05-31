@@ -366,7 +366,6 @@ class Fun(Cog):
         now = datetime.utcnow()
         rate_limits = {reaction.user_id: 1, reaction.message_id: 3}
         for limit in rate_limits:
-            print(limit)
             delta = now - self._rickroll_rate_limits.get(limit, now)
             if timedelta(seconds=0) < delta < timedelta(minutes=rate_limits[limit]):
                 await message.remove_reaction(reaction.emoji, reaction.member)
