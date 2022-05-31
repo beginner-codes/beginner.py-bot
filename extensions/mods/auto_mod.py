@@ -203,6 +203,7 @@ class AutoModExtension(dippy.Extension):
         finally:
             await message.delete()
 
+        formatted_links = "\n- ".join(invites)
         await self.client.get_channel(719311864479219813).send(
             embeds=[
                 nextcord.Embed(
@@ -210,8 +211,8 @@ class AutoModExtension(dippy.Extension):
                         f"{message.author} sent {len(invites)} Discord invite{'s' if len(invites) > 1 else ''} in "
                         f"{message.channel.mention}."
                     ),
-                    color=0xaaaa00
-                )
+                    color=0xccaa00
+                ).add_field(name="Links", value=f"- {formatted_links}")
             ]
         )
 
