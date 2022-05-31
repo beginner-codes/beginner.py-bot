@@ -194,7 +194,7 @@ class AutoModExtension(dippy.Extension):
                     description=(
                         f"❌ {message.author.mention} you are not allowed to share Discord invites in this channel."
                     ),
-                    color=0xaa00000
+                    color=0xaa0000
                 )
             ],
             mention_author=True
