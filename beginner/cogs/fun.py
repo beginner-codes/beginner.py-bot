@@ -28,23 +28,26 @@ class Fun(Cog):
         super().__init__(client)
         self._rickroll_rate_limits = {}
         
-        # List of rickroll links that the bot cannot detect.
-        self.rickroll_blocklist = [
+        # Rickroll links that the bot cannot detect
+        rr_blocklist = [
             "https://www.tenor.com/view/spoiler-gif-24641133",
         ]
-        
+
         # Add different URL variations of the link to the rickroll blocklist.
-        for blocked_url in self.rickroll_blocklist:
-            domain = re.compile(r"https?://(www\.)?").sub("", blocked_url)
-            url_variations = [
-	            f"http://{domain}",
-    	            f"https://{domain}",
-	            f"http://www.{domain}",
-	            f"https://www.{domain}",
-	        ]
-            for variation in url_variations:
-                if variation not in self.rickroll_blocklist:
-                    self.rickroll_blocklist.append(variation)
+        url_variations = [
+            f"http://",
+            f"https://",
+            f"http://www.",
+            f"https://www.",
+        ]
+
+        url_pattern = r"https?://(www\.)?"
+
+        self.rickroll_blocklist = [
+            f"{scheme}{re.compile(url_pattern).sub('', url)}"
+            for url in rr_blocklist      
+            for scheme in url_variations
+        ]
                     
     @Cog.command()
     async def stack(self, ctx, v: str = "", *, instructions):
