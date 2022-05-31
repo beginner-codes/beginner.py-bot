@@ -188,18 +188,21 @@ class AutoModExtension(dippy.Extension):
         if not invites:
             return
 
-        await message.reply(
-            embeds=[
-                nextcord.Embed(
-                    description=(
-                        f"❌ {message.author.mention} you are not allowed to share Discord invites in this channel."
-                    ),
-                    color=0xaa0000
-                )
-            ],
-            mention_author=True
-        )
-        await message.delete()
+        try:
+            await message.reply(
+                embeds=[
+                    nextcord.Embed(
+                        description=(
+                            f"❌ {message.author.mention} you are not allowed to share Discord invites in this channel."
+                        ),
+                        color=0xaa0000
+                    )
+                ],
+                mention_author=True
+            )
+        finally:
+            await message.delete()
+
         await self.client.get_channel(719311864479219813).send(
             embeds=[
                 nextcord.Embed(
