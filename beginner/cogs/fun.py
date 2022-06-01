@@ -33,21 +33,11 @@ class Fun(Cog):
             "https://www.tenor.com/view/spoiler-gif-24641133",
         ]
 
-        # Add different URL variations of the link to the rickroll blocklist.
-        url_variations = [
-            f"http://",
-            f"https://",
-            f"http://www.",
-            f"https://www.",
-        ]
-
-        url_pattern = r"https?://(www\.)?"
-
-        self.rickroll_blocklist = [
-            f"{scheme}{re.compile(url_pattern).sub('', url)}"
-            for url in rr_blocklist      
-            for scheme in url_variations
-        ]
+        scheme_subdomain_pattern = r"https?://(www\.)?"
+        
+        self.rickroll_blocklist = {
+            re.compile(scheme_subdomain_pattern).sub("", url) for url in rr_blocklist
+        }
                     
     @Cog.command()
     async def stack(self, ctx, v: str = "", *, instructions):
@@ -366,36 +356,51 @@ class Fun(Cog):
         channel: nextcord.TextChannel = self.server.get_channel(reaction.channel_id)
         message: nextcord.Message = await channel.fetch_message(reaction.message_id)
         
-        now = datetime.utcnow()
-        rate_limits = {reaction.user_id: 1, reaction.message_id: 3}
-        for limit in rate_limits:
-            delta = now - self._rickroll_rate_limits.get(limit, now)
-            if timedelta(seconds=0) < delta < timedelta(minutes=rate_limits[limit]):
-                await message.remove_reaction(reaction.emoji, reaction.member)
-                return
-            self._rickroll_rate_limits[limit] = now
+        if (self._is_rickroll_rate_limited(reaction.user_id, 1)) or (
+            self._is_rickroll_rate_limited(reaction.message_id, 3)
+        ):
+            await message.remove_reaction(reaction.emoji, reaction.member)
+            return
+
         
-        urls = re.findall(r"(?:(?:https?|ftp)://)?[\w/\-?=%.]+\.[\w/\-&?=%.]+", message.content)
+        urls = re.findall(
+            r"(?:(?:https?|ftp)://)?[\w/\-?=%.]+\.[\w/\-&?=%.]+", message.content
+        )
         if not urls:
             return
 
         for url in urls:
-            if "http" not in url:
-                url = "http://" + url
             try:
                 rr = await self._is_url_rickroll(url)
             except Exception as e:
                 self.logger.exception("Failed to check a URL for Rickrolls")
                 await channel.send("Couldn't load url 💥")
             else:
-                message_response = f"This is a Rickroll 👎: <{url}>" if rr else f"No Rickrolls found 👍: <{url}>"
+                message_response = (
+                    f"This is a Rickroll 👎: <{url}>"
+                    if rr
+                    else f"No Rickrolls found 👍: <{url}>"
+                )
                 await channel.send(message_response)
 
+    def _is_rickroll_rate_limited(self, limiter: str, time: int) -> bool:
+        now = datetime.utcnow()
+        delta = now - self._rickroll_rate_limits.get(limiter, now)
+        if timedelta(seconds=0) < delta < timedelta(minutes=time):
+            return True
 
+        self._rickroll_rate_limits[limiter] = now
+        return False
+    
     @async_cache
     async def _is_url_rickroll(self, url: str) -> bool:
-        if url in self.rickroll_blocklist:
+        scheme_subdomain_pattern = r"https?://(www\.)?"
+        domain = re.compile(scheme_subdomain_pattern).sub("", url)
+        if domain in self.rickroll_blocklist:
             return True
+
+        if "http" not in url:
+            url = "http://" + url
         
         async with aiohttp.ClientSession() as session:
             async with session.get(url) as response:
