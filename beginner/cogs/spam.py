@@ -120,7 +120,6 @@ class SpamCog(Cog):
             embed.title = f"{message.author.display_name} Uploaded Some Code"
             embed.description = user_message
             files = {}
-            name = None
             for attachment in allowed:
                 content = (await attachment.read()).decode()
                 if len(content) < 1000:
@@ -128,17 +127,17 @@ class SpamCog(Cog):
                     embed.add_field(
                         name=f"Attachment: {attachment.filename}",
                         value=f"```{self.file_types.get(file_type, '')}\n{content}\n```",
+                        inline=False
                     )
                 else:
-                    if not name:
-                        name = attachment.filename
                     files[attachment.filename] = content
 
             if files:
                 gist = self.upload_files(files)
                 embed.add_field(
-                    name="Uploaded the file to a Gist",
-                    value=f"[{name}]({gist})",
+                    name="Uploaded these files to a Gist",
+                    value="\n".join(f"[{name}]({gist}#{name})" for name in files) + f"\n\n**[View The Gist]({gist})**",
+                    inline=False
                 )
 
             embed.set_thumbnail(
