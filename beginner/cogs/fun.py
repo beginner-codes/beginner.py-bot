@@ -340,13 +340,15 @@ class Fun(Cog):
 
     @Cog.command(aliases=["isrickroll", "isrr"])
     async def is_rick_roll(self, ctx, url):
+        response = "Couldn't load url 💥"
         try:
             rr = await self._is_url_rickroll(url)
         except Exception as e:
             self.logger.exception("Failed to check a URL for Rickrolls")
-            await ctx.send("Couldn't load url 💥", reference=ctx.message)
         else:
-            await ctx.send("It's a Rickroll 👎" if rr else "It's not a rickroll 👍", reference=ctx.message)
+            response = "It's a Rickroll 👎" if rr else "It's not a Rickroll 👍"
+        finally:
+            await ctx.send(response, reference=ctx.message)
 
     @Cog.listener()
     async def on_raw_reaction_add(self, reaction):
@@ -369,19 +371,23 @@ class Fun(Cog):
         if not urls:
             return
 
+        failed = 0
         for url in urls:
             try:
                 rr = await self._is_url_rickroll(url)
             except Exception as e:
                 self.logger.exception("Failed to check a URL for Rickrolls")
-                await channel.send("Couldn't load url 💥", reference=message)
+                failed += 1
             else:
-                message_response = (
-                    f"This is a Rickroll 👎: <{url}>"
-                    if rr
-                    else f"No Rickrolls found 👍: <{url}>"
-                )
-                await channel.send(message_response, reference=message)
+                if rr:
+                    response = f"This is a Rickroll 👎: <{url}>"
+                    break
+        else:
+            response = "No Rickrolls found 👍" if failed < len(urls) else f"Couldn't load url{'s' if len(urls) > 1 else ''} 💥"
+
+        await channel.send(message_response, reference=message)
+
+         
 
     def _is_rickroll_rate_limited(self, limiter: str, time: int) -> bool:
         now = datetime.utcnow()
