@@ -137,7 +137,7 @@ class SpamCog(Cog):
                 embed.add_field(
                     name="Uploaded these files to a Gist",
                     value="\n".join(
-                        f"[{self.escape_markdown(name)}]({gist}#file-{name})"
+                        f"[{self.escape_markdown(name)}]({gist}#file-{self.escape_github_file_name(name)})"
                         for name in files
                     ) + f"\n\n**[View The Gist]({gist})**",
                     inline=False
@@ -187,6 +187,9 @@ class SpamCog(Cog):
 
     def escape_markdown(self, string):
         return re.sub(r"([_*|])", r"\\\g<1>", string)
+
+    def escape_github_file_name(self, string):
+        return re.sub(r"[^a-z0-9_]+", "-", string)
 
     def categorize_attachments(self, message):
         allowed = []
