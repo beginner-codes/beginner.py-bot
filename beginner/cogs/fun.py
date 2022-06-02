@@ -22,13 +22,19 @@ def async_cache(coroutine):
 
     return run
 
-def normalize_url(coroutine):
-    async def normalize(self, url):
-        uri_pattern = re.compile(r"(?:https?://)?(?:www\.)?(.+)")
-        normalized_url = uri_pattern.search(url).group(1)
-        return await coroutine(self, normalized_url)
+
+def url_normalization(coroutine):
+    async def normalize(obj, url):
+        return await coroutine(obj, normalize_url(url))
 
     return normalize
+
+
+def normalize_url(url: str) -> str:
+    uri_pattern = re.compile(r"(?:https?://)?(?:www\.)?(.+)")
+    normalized_url = uri_pattern.search(url).group(1)
+    return normalized_url
+
 
 class Fun(Cog):
     def __init__(self, client):
@@ -39,8 +45,8 @@ class Fun(Cog):
         rr_blocklist = [
             "https://www.tenor.com/view/spoiler-gif-24641133",
         ]
-        
-        self.rickroll_blocklist = {}
+
+        self.rickroll_blocklist = {normalize_url(url) for url in rr_blocklist}
 
     @Cog.command()
     async def stack(self, ctx, v: str = "", *, instructions):
@@ -403,7 +409,7 @@ class Fun(Cog):
         return False
 
     @async_cache
-    @normalize_url
+    @url_normalization
     async def _is_url_rickroll(self, url: str) -> bool:
         if url in self.rickroll_blocklist:
             return True
