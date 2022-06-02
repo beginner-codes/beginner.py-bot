@@ -126,7 +126,11 @@ class SpamCog(Cog):
                     file_type = os.path.splitext(attachment.filename)[1].casefold()
                     embed.add_field(
                         name=f"Attachment: {self.escape_markdown(attachment.filename)}",
-                        value=f"```{self.file_types.get(file_type, '')}\n{content}\n```",
+                        value=(
+                            f"```{self.file_types.get(file_type, '')}\n{content}\n```"
+                            if content else
+                            "*FILE IS EMPTY*"
+                        ),
                         inline=False
                     )
                 else:
