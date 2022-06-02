@@ -33,12 +33,10 @@ class Fun(Cog):
             "https://www.tenor.com/view/spoiler-gif-24641133",
         ]
 
-        self.scheme_subdomain_pattern = re.compile(r"https?://(www\.)?")
-        
         self.rickroll_blocklist = {
-            self.scheme_subdomain_pattern.sub("", url) for url in rr_blocklist
+            self._normalize_url(url) for url in rr_blocklist
         }
-                    
+    
     @Cog.command()
     async def stack(self, ctx, v: str = "", *, instructions):
         class InvalidInstruction(Exception):
@@ -342,7 +340,7 @@ class Fun(Cog):
     async def is_rick_roll(self, ctx, url):
         response = "Couldn't load url 💥"
         try:
-            rr = await self._is_url_rickroll(url)
+            rr = await self._is_url_rickroll(self._normalize_url(url))
         except Exception as e:
             self.logger.exception("Failed to check a URL for Rickrolls")
         else:
@@ -364,7 +362,6 @@ class Fun(Cog):
             await message.remove_reaction(reaction.emoji, reaction.member)
             return
 
-        
         urls = re.findall(
             r"(?:(?:https?|ftp)://)?[\w/\-?=%.]+\.[\w/\-&?=%.]+", message.content
         )
@@ -374,7 +371,7 @@ class Fun(Cog):
         failed = 0
         for url in urls:
             try:
-                rr = await self._is_url_rickroll(url)
+                rr = await self._is_url_rickroll(self._normalize_url(url))
             except Exception as e:
                 self.logger.exception("Failed to check a URL for Rickrolls")
                 failed += 1
@@ -383,11 +380,13 @@ class Fun(Cog):
                     response = f"This is a Rickroll 👎: <{url}>"
                     break
         else:
-            response = "No Rickrolls found 👍" if failed < len(urls) else f"Couldn't load url{'s' if len(urls) > 1 else ''} 💥"
+            response = (
+                "No Rickrolls found 👍"
+                if failed < len(urls)
+                else f"Couldn't load url{'s' if len(urls) > 1 else ''} 💥"
+            )
 
         await channel.send(response, reference=message)
-
-         
 
     def _is_rickroll_rate_limited(self, limiter: str, time: int) -> bool:
         now = datetime.utcnow()
@@ -398,15 +397,18 @@ class Fun(Cog):
         self._rickroll_rate_limits[limiter] = now
         return False
     
+    def _normalize_url(self, url: str) -> str:
+        uri_pattern = re.compile(r"(?:https?://)?(?:www\.)?(.+)")
+        normalized_url = uri_pattern.search(url).group(1)
+        return normalized_url
+
     @async_cache
     async def _is_url_rickroll(self, url: str) -> bool:
-        domain = self.scheme_subdomain_pattern.sub("", url)
-        if domain in self.rickroll_blocklist:
+        if url in self.rickroll_blocklist:
             return True
 
-        if "http" not in url:
-            url = "http://" + url
-        
+        url = "http://" + url
+
         async with aiohttp.ClientSession() as session:
             async with session.get(url) as response:
                 content = await response.read()
