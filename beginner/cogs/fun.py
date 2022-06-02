@@ -7,7 +7,7 @@ import math
 import re
 import random
 import socket
-from datetime import datetime
+from datetime import datetime, timedelta
 import pendulum
 
 
@@ -385,7 +385,7 @@ class Fun(Cog):
         else:
             response = "No Rickrolls found 👍" if failed < len(urls) else f"Couldn't load url{'s' if len(urls) > 1 else ''} 💥"
 
-        await channel.send(message_response, reference=message)
+        await channel.send(response, reference=message)
 
          
 
