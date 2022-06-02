@@ -22,21 +22,26 @@ def async_cache(coroutine):
 
     return run
 
+def normalize_url(coroutine):
+    async def normalize(self, url):
+        uri_pattern = re.compile(r"(?:https?://)?(?:www\.)?(.+)")
+        normalized_url = uri_pattern.search(url).group(1)
+        return await coroutine(self, normalized_url)
+
+    return normalize
 
 class Fun(Cog):
     def __init__(self, client):
         super().__init__(client)
         self._rickroll_rate_limits = {}
-        
+
         # Rickroll links that the bot cannot detect
         rr_blocklist = [
             "https://www.tenor.com/view/spoiler-gif-24641133",
         ]
+        
+        self.rickroll_blocklist = {}
 
-        self.rickroll_blocklist = {
-            self._normalize_url(url) for url in rr_blocklist
-        }
-    
     @Cog.command()
     async def stack(self, ctx, v: str = "", *, instructions):
         class InvalidInstruction(Exception):
@@ -340,7 +345,7 @@ class Fun(Cog):
     async def is_rick_roll(self, ctx, url):
         response = "Couldn't load url 💥"
         try:
-            rr = await self._is_url_rickroll(self._normalize_url(url))
+            rr = await self._is_url_rickroll(url)
         except Exception as e:
             self.logger.exception("Failed to check a URL for Rickrolls")
         else:
@@ -355,7 +360,7 @@ class Fun(Cog):
 
         channel: nextcord.TextChannel = self.server.get_channel(reaction.channel_id)
         message: nextcord.Message = await channel.fetch_message(reaction.message_id)
-        
+
         if (self._is_rickroll_rate_limited(reaction.user_id, 1)) or (
             self._is_rickroll_rate_limited(reaction.message_id, 3)
         ):
@@ -371,7 +376,7 @@ class Fun(Cog):
         failed = 0
         for url in urls:
             try:
-                rr = await self._is_url_rickroll(self._normalize_url(url))
+                rr = await self._is_url_rickroll(url)
             except Exception as e:
                 self.logger.exception("Failed to check a URL for Rickrolls")
                 failed += 1
@@ -396,13 +401,9 @@ class Fun(Cog):
 
         self._rickroll_rate_limits[limiter] = now
         return False
-    
-    def _normalize_url(self, url: str) -> str:
-        uri_pattern = re.compile(r"(?:https?://)?(?:www\.)?(.+)")
-        normalized_url = uri_pattern.search(url).group(1)
-        return normalized_url
 
     @async_cache
+    @normalize_url
     async def _is_url_rickroll(self, url: str) -> bool:
         if url in self.rickroll_blocklist:
             return True
