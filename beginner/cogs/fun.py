@@ -374,14 +374,14 @@ class Fun(Cog):
                 rr = await self._is_url_rickroll(url)
             except Exception as e:
                 self.logger.exception("Failed to check a URL for Rickrolls")
-                await channel.send("Couldn't load url 💥")
+                await channel.send("Couldn't load url 💥", reference=message)
             else:
                 message_response = (
                     f"This is a Rickroll 👎: <{url}>"
                     if rr
                     else f"No Rickrolls found 👍: <{url}>"
                 )
-                await channel.send(message_response)
+                await channel.send(message_response, reference=message)
 
     def _is_rickroll_rate_limited(self, limiter: str, time: int) -> bool:
         now = datetime.utcnow()
