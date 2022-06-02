@@ -125,7 +125,7 @@ class SpamCog(Cog):
                 if len(content) < 1000:
                     file_type = os.path.splitext(attachment.filename)[1].casefold()
                     embed.add_field(
-                        name=f"Attachment: {attachment.filename}",
+                        name=f"Attachment: {self.escape_markdown(attachment.filename)}",
                         value=f"```{self.file_types.get(file_type, '')}\n{content}\n```",
                         inline=False
                     )
@@ -136,7 +136,10 @@ class SpamCog(Cog):
                 gist = self.upload_files(files)
                 embed.add_field(
                     name="Uploaded these files to a Gist",
-                    value="\n".join(f"[{name}]({gist}#{name})" for name in files) + f"\n\n**[View The Gist]({gist})**",
+                    value="\n".join(
+                        f"[{self.escape_markdown(name)}]({gist}#file-{name})"
+                        for name in files
+                    ) + f"\n\n**[View The Gist]({gist})**",
                     inline=False
                 )
 
@@ -181,6 +184,9 @@ class SpamCog(Cog):
             pass
 
         await message.channel.send(message.author.mention, embed=embed)
+
+    def escape_markdown(self, string):
+        return re.sub(r"([_*|])", r"\\\g<1>", string)
 
     def categorize_attachments(self, message):
         allowed = []
