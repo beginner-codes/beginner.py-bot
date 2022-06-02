@@ -33,10 +33,10 @@ class Fun(Cog):
             "https://www.tenor.com/view/spoiler-gif-24641133",
         ]
 
-        scheme_subdomain_pattern = r"https?://(www\.)?"
+        self.scheme_subdomain_pattern = re.compile(r"https?://(www\.)?")
         
         self.rickroll_blocklist = {
-            re.compile(scheme_subdomain_pattern).sub("", url) for url in rr_blocklist
+            self.scheme_subdomain_pattern.sub("", url) for url in rr_blocklist
         }
                     
     @Cog.command()
@@ -394,8 +394,7 @@ class Fun(Cog):
     
     @async_cache
     async def _is_url_rickroll(self, url: str) -> bool:
-        scheme_subdomain_pattern = r"https?://(www\.)?"
-        domain = re.compile(scheme_subdomain_pattern).sub("", url)
+        domain = self.scheme_subdomain_pattern.sub("", url)
         if domain in self.rickroll_blocklist:
             return True
 
