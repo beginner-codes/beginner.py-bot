@@ -352,8 +352,12 @@ class Fun(Cog):
         if (self._is_rickroll_rate_limited(ctx.author.id, 1)) or (
             self._is_rickroll_rate_limited(ctx.message.id, 3)
         ):
+            wait_message = await ctx.send(
+                "Please wait before calling this command again.", reference=ctx.message
+            )
+            await wait_message.delete(delay=2)
             return
-        
+
         response = "Couldn't load url 💥"
         try:
             rr = await self._is_url_rickroll(url)
