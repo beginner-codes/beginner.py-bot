@@ -376,16 +376,23 @@ class Fun(Cog):
         channel: nextcord.TextChannel = self.server.get_channel(reaction.channel_id)
         message: nextcord.Message = await channel.fetch_message(reaction.message_id)
 
+        urls = re.findall(
+            r"(?:(?:https?|ftp)://)?[\w/\-?=%.]+\.[\w/\-&?=%.]+", message.content
+        )
+
+        if not urls:
+            await self._send_temp_error_message(channel, "No URLs found!", message)
+            return
+        elif len(urls) > 5:
+            await self._send_temp_error_message(
+                channel, "Exceeded maximum number of URLs!", message
+            )
+            return
+
         if (self._is_rickroll_rate_limited(reaction.user_id, 1)) or (
             self._is_rickroll_rate_limited(reaction.message_id, 3)
         ):
             await message.remove_reaction(reaction.emoji, reaction.member)
-            return
-
-        urls = re.findall(
-            r"(?:(?:https?|ftp)://)?[\w/\-?=%.]+\.[\w/\-&?=%.]+", message.content
-        )
-        if not urls:
             return
 
         failed = 0
@@ -407,6 +414,12 @@ class Fun(Cog):
             )
 
         await channel.send(response, reference=message)
+
+    async def _send_temp_error_message(
+        self, channel: nextcord.TextChannel, error_msg: str, ref_msg: nextcord.Message
+    ):
+        error_message = await channel.send(error_msg, reference=ref_msg)
+        await error_message.delete(delay=2)
 
     def _is_rickroll_rate_limited(self, limiter: str, time: int) -> bool:
         now = datetime.utcnow()
