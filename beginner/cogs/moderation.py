@@ -345,7 +345,7 @@ class ModerationCog(Cog):
                 action_items.append(
                     f"**{action.action_type:6} {action.datetime:%d/%m/%Y}**\n{msg}{link}"
                 )
-            message += f"<@{member.id}>'s Mod History\n" + "("\n".join(action_items))
+            message += f"<@{member.id}>'s Mod History\n" + ("\n".join(action_items))
 
         how_long_ago_msg = "*NO LONGER A MEMBER*"
         if not isinstance(member, Snowflake):
