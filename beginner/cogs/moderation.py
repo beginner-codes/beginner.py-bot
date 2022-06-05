@@ -336,7 +336,7 @@ class ModerationCog(Cog):
             message = f"Here are some details about <@{member.id}>"
             title = f"Who is {member}"
         elif len(history):
-            action_items = []
+            action_items = [f"<@{member.id}>'s Mod History"]
             for action in history:
                 details = pickle.loads(action.details.encode())
                 msg = details.get("message", "*No message*")
@@ -345,7 +345,7 @@ class ModerationCog(Cog):
                 action_items.append(
                     f"**{action.action_type:6} {action.datetime:%d/%m/%Y}**\n{msg}{link}"
                 )
-            message += f"<@{member.id}>'s Mod History\n" + ("\n".join(action_items))
+            message = "\n".join(action_items)
 
         how_long_ago_msg = "*NO LONGER A MEMBER*"
         if not isinstance(member, Snowflake):
