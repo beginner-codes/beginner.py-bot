@@ -7,7 +7,7 @@ import math
 import re
 import random
 import socket
-from datetime import datetime
+from datetime import datetime, timedelta
 import pendulum
 
 
@@ -23,7 +23,31 @@ def async_cache(coroutine):
     return run
 
 
+def url_normalization(coroutine):
+    async def normalize(obj, url):
+        return await coroutine(obj, normalize_url(url))
+
+    return normalize
+
+
+def normalize_url(url: str) -> str:
+    uri_pattern = re.compile(r"(?:https?://)?(?:www\.)?(.+)")
+    normalized_url = uri_pattern.search(url).group(1)
+    return normalized_url
+
+
 class Fun(Cog):
+    def __init__(self, client):
+        super().__init__(client)
+        self._rickroll_rate_limits = {}
+
+        # Rickroll links that the bot cannot detect
+        rr_blocklist = [
+            "https://www.tenor.com/view/spoiler-gif-24641133",
+        ]
+
+        self.rickroll_blocklist = {normalize_url(url) for url in rr_blocklist}
+
     @Cog.command()
     async def stack(self, ctx, v: str = "", *, instructions):
         class InvalidInstruction(Exception):
@@ -325,13 +349,24 @@ class Fun(Cog):
 
     @Cog.command(aliases=["isrickroll", "isrr"])
     async def is_rick_roll(self, ctx, url):
+        if (self._is_rickroll_rate_limited(ctx.author.id, 1)) or (
+            self._is_rickroll_rate_limited(ctx.message.id, 3)
+        ):
+            wait_message = await ctx.send(
+                "Please wait before calling this command again.", reference=ctx.message
+            )
+            await wait_message.delete(delay=2)
+            return
+
+        response = "Couldn't load url 💥"
         try:
             rr = await self._is_url_rickroll(url)
         except Exception as e:
             self.logger.exception("Failed to check a URL for Rickrolls")
-            await ctx.send("Couldn't load url 💥", reference=ctx.message)
         else:
-            await ctx.send("It's a Rickroll 👎" if rr else "It's not a rickroll 👍", reference=ctx.message)
+            response = "It's a Rickroll 👎" if rr else "It's not a Rickroll 👍"
+        finally:
+            await ctx.send(response, reference=ctx.message)
 
     @Cog.listener()
     async def on_raw_reaction_add(self, reaction):
@@ -340,25 +375,69 @@ class Fun(Cog):
 
         channel: nextcord.TextChannel = self.server.get_channel(reaction.channel_id)
         message: nextcord.Message = await channel.fetch_message(reaction.message_id)
-        
-        urls = re.findall(r"(?:(?:https?|ftp)://)?[\w/\-?=%.]+\.[\w/\-&?=%.]+", message.content)
+
+        urls = re.findall(
+            r"(?:(?:https?|ftp)://)?[\w/\-?=%.]+\.[\w/\-&?=%.]+", message.content
+        )
+
         if not urls:
+            await self._send_temp_error_message(channel, "No URLs found!", message)
+            return
+        elif len(urls) > 5:
+            await self._send_temp_error_message(
+                channel, "Exceeded maximum number of URLs!", message
+            )
             return
 
+        if (self._is_rickroll_rate_limited(reaction.user_id, 1)) or (
+            self._is_rickroll_rate_limited(reaction.message_id, 3)
+        ):
+            await message.remove_reaction(reaction.emoji, reaction.member)
+            return
+
+        failed = 0
         for url in urls:
             try:
-                rr = self._is_url_rickroll(url)
+                rr = await self._is_url_rickroll(url)
             except Exception as e:
                 self.logger.exception("Failed to check a URL for Rickrolls")
+                failed += 1
             else:
                 if rr:
-                    await channel.send(f"This is a Rickroll 👎: <{url}>")
-                    return
+                    response = f"This is a Rickroll 👎: <{url}>"
+                    break
+        else:
+            response = (
+                "No Rickrolls found 👍"
+                if failed < len(urls)
+                else f"Couldn't load url{'s' if len(urls) > 1 else ''} 💥"
+            )
 
-        await channel.send(f"No Rickrolls found 👍")
+        await channel.send(response, reference=message)
+
+    async def _send_temp_error_message(
+        self, channel: nextcord.TextChannel, error_msg: str, ref_msg: nextcord.Message
+    ):
+        error_message = await channel.send(error_msg, reference=ref_msg)
+        await error_message.delete(delay=2)
+
+    def _is_rickroll_rate_limited(self, limiter: str, time: int) -> bool:
+        now = datetime.utcnow()
+        delta = now - self._rickroll_rate_limits.get(limiter, now)
+        if timedelta(seconds=0) < delta < timedelta(minutes=time):
+            return True
+
+        self._rickroll_rate_limits[limiter] = now
+        return False
 
     @async_cache
+    @url_normalization
     async def _is_url_rickroll(self, url: str) -> bool:
+        if url in self.rickroll_blocklist:
+            return True
+
+        url = "http://" + url
+
         async with aiohttp.ClientSession() as session:
             async with session.get(url) as response:
                 content = await response.read()
