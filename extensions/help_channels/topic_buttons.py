@@ -46,6 +46,8 @@ topics = [
     Topic("Django", PartialEmoji(name="django", id=947586026786938880)),
     Topic("Docker and Kubernetes", "📦", custom_value="docker"),
     Topic("Ethical Hacking", "🚨", custom_value="hacking"),
+    Topic("FastAPI", "🏎", custom_value="fast-api"),
+    Topic("Flask", "🏺"),
     Topic("Game Development", "🕹"),
     Topic("Homework", "📓"),
     Topic("Machine Learning", "🧠"),
