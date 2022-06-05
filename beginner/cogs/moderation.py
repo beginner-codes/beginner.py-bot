@@ -286,7 +286,7 @@ class ModerationCog(Cog):
         )
 
     @Cog.command(name="warn")
-    async def warn(self, ctx, member: Member, *, reason: str):
+    async def warn(self, ctx, member: User, *, reason: str):
         if not (
             set(ctx.author.roles)
             & {self.get_role("jedi council"), self.get_role("mods")}
