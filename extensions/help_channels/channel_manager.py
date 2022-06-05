@@ -50,7 +50,7 @@ class ChannelManager(Injectable):
             "flask": "🏺",
             "django": "🎸",
             "fast-api": "🏎",
-            "react": "⚾️",
+            "react": "⚛️",
             "hacking": "🚨",
             "os": "💾",
             "docker": "📦",
