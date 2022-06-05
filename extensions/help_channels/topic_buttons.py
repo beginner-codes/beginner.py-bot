@@ -38,6 +38,7 @@ languages = [
     Language("JavaScript", PartialEmoji(name="javascript", id=908457207597764678)),
     Language("PHP", "🐘"),
     Language("Python", PartialEmoji(name="python", id=934950343614275594)),
+    Language("TypeScript", PartialEmoji(name="typescript", id=982974090400923689)),
 ]
 
 topics = [
