@@ -286,7 +286,9 @@ class ModerationCog(Cog):
         )
 
     @Cog.command(name="warn")
-    async def warn(self, ctx, member: User, *, reason: str):
+    async def warn(self, ctx, member: str, *, reason: str):
+        member_id = int(re.findall("\d+", member).pop())
+        member = ctx.guild.get_member(member_id)
         if not (
             set(ctx.author.roles)
             & {self.get_role("jedi council"), self.get_role("mods")}
@@ -301,14 +303,14 @@ class ModerationCog(Cog):
             embed,
             ctx.message,
             "You've received a moderator warning on the Beginner.py server.",
-        )
+        ) if member else False
         if not successfully_dmd:
             reason += "\n*Unable to DM user*"
 
         await self.log_action("WARN", member, ctx.author, reason, message)
         self.save_action(
             "WARN",
-            member,
+            member if member else Snowflake(id=member_id),
             ctx.author,
             message=reason,
             reference=message.id,
