@@ -318,20 +318,22 @@ class ModerationCog(Cog):
         )
 
     @Cog.command(aliases=("whois",))
-    async def history(self, ctx, member: Member):
+    async def history(self, ctx, member: str):
+        member_id = int(re.findall(r"\d+", member).pop())
+        member = ctx.guild.get_member(member_id) or Snowflake(id=member_id)
         history = list(
             ModAction.select()
             .limit(50)
             .order_by(ModAction.datetime.desc())
             .where(ModAction.user_id == member.id)
         )
-        message = f"{member.mention} has no mod action history."
+        message = f"<@{member.id}> has no mod action history."
         title = f"Mod History for {member}"
         if (
             ctx.invoked_with.casefold() == "whois"
             or not ctx.author.guild_permissions.manage_messages
         ):
-            message = f"Here are some details about {member.mention}"
+            message = f"Here are some details about <@{member.id}>"
             title = f"Who is {member}"
         elif len(history):
             action_items = []
@@ -343,16 +345,18 @@ class ModerationCog(Cog):
                 action_items.append(
                     f"**{action.action_type:6} {action.datetime:%d/%m/%Y}**\n{msg}{link}"
                 )
-            message = "\n".join(action_items)
+            message += f"<@{member.id}>'s Mod History\n" + "("\n".join(action_items))
 
-        how_long_ago = pytz.utc.localize(datetime.utcnow()) - member.joined_at
-        how_long_ago_msg = "Just now"
-        if how_long_ago > timedelta(days=1):
-            how_long_ago_msg = f"{how_long_ago // timedelta(days=1)} days ago"
-        elif how_long_ago > timedelta(hours=1):
-            how_long_ago_msg = f"{how_long_ago // timedelta(hours=1)} hours ago"
-        elif how_long_ago > timedelta(minutes=5):
-            how_long_ago_msg = f"{how_long_ago // timedelta(minutes=1)} minutes ago"
+        how_long_ago_msg = "*NO LONGER A MEMBER*"
+        if not isinstance(member, Snowflake):
+            how_long_ago = pytz.utc.localize(datetime.utcnow()) - member.joined_at
+            how_long_ago_msg = "Just now"
+            if how_long_ago > timedelta(days=1):
+                how_long_ago_msg = f"{how_long_ago // timedelta(days=1)} days ago"
+            elif how_long_ago > timedelta(hours=1):
+                how_long_ago_msg = f"{how_long_ago // timedelta(hours=1)} hours ago"
+            elif how_long_ago > timedelta(minutes=5):
+                how_long_ago_msg = f"{how_long_ago // timedelta(minutes=1)} minutes ago"
 
         await ctx.send(
             embed=Embed(
@@ -365,7 +369,7 @@ class ModerationCog(Cog):
             .add_field(
                 name="Are They Sus?",
                 value="🚨 Yes 🚨"
-                if utils.get(ctx.guild.roles, name="🚨sus🚨") in member.roles
+                if not hasattr(member, "roles") or utils.get(ctx.guild.roles, name="🚨sus🚨") in member.roles
                 else "No, they cool 😎",
             )
         )
