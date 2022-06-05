@@ -177,7 +177,11 @@ class AutoModExtension(dippy.Extension):
             return
 
         # Allow staff to share invite links in any channel
-        if self.client.get_channel(720663441966366850).permissions_for(message.author).send_messages:
+        if (
+            self.client.get_channel(720663441966366850)
+            .permissions_for(message.author)
+            .send_messages
+        ):
             return
 
         # Allow anyone with the manage messages perms to share invite links
@@ -188,7 +192,9 @@ class AutoModExtension(dippy.Extension):
         if not invites:
             return
 
-        our_invites = {invite.code.casefold() for invite in await message.guild.invites()}
+        our_invites = {
+            invite.code.casefold() for invite in await message.guild.invites()
+        }
         for invite in invites:
             *_, invite_code = invite.split("/")
             if invite_code not in our_invites:
@@ -204,10 +210,10 @@ class AutoModExtension(dippy.Extension):
                         description=(
                             f"❌ {message.author.mention} you are not allowed to share Discord invites in this channel."
                         ),
-                        color=0xaa0000
+                        color=0xAA0000,
                     )
                 ],
-                mention_author=True
+                mention_author=True,
             )
         finally:
             await message.delete()
@@ -220,7 +226,7 @@ class AutoModExtension(dippy.Extension):
                         f"{message.author} sent {len(invites)} Discord invite{'s' if len(invites) > 1 else ''} in "
                         f"{message.channel.mention}."
                     ),
-                    color=0xccaa00
+                    color=0xCCAA00,
                 ).add_field(name="Links", value=f"- {formatted_links}")
             ]
         )

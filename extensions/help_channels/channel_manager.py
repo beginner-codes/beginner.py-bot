@@ -314,7 +314,8 @@ class ChannelManager(Injectable):
             owner.display_name,
             icon,
             staff in owner.roles or booster in owner.roles,
-            datetime.utcnow().astimezone(timezone.utc) - owner.joined_at <= timedelta(days=2)
+            datetime.utcnow().astimezone(timezone.utc) - owner.joined_at
+            <= timedelta(days=2),
         )
         helping_category = self.client.get_channel(categories["getting-help"])
         help_category: CategoryChannel = self.client.get_channel(categories["get-help"])
