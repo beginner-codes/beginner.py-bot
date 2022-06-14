@@ -72,6 +72,7 @@ class ModeratorsExtension(dippy.Extension):
     @dippy.Extension.command("!team")
     async def team_command(self, message: Message):
         boosters = utils.get(message.guild.roles, name="Discord Boosters!!!").members
+        premium_members = utils.get(message.guild.roles, name="Premium Members")
         helpers = list(utils.get(message.guild.roles, name="helpers").members)
         mods = utils.get(message.guild.roles, name="mods").members
         staff = utils.get(message.guild.roles, name="staff").members
@@ -126,6 +127,15 @@ class ModeratorsExtension(dippy.Extension):
             embed.add_field(
                 name="✨Discord Boosters!!!",
                 value=", ".join(f"`{booster.display_name}`" for booster in boosters),
+                inline=False,
+            )
+        if premium_members:
+            embed.add_field(
+                name="✨Premium Members",
+                value=", ".join(
+                    f"`{premium_member.display_name}`"
+                    for premium_member in premium_members
+                ),
                 inline=False,
             )
         await message.reply(embed=embed)
