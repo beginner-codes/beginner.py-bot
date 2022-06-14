@@ -307,13 +307,17 @@ class ChannelManager(Injectable):
     ):
         categories = await self.get_categories(channel.guild)
         topic, icon = self._build_topic(language, topics)
-        staff, booster = utils.get(channel.guild.roles, name="staff"), utils.get(
-            channel.guild.roles, name="Discord Boosters!!!"
+        staff, booster, premium_member = (
+            utils.get(channel.guild.roles, name="staff"),
+            utils.get(channel.guild.roles, name="Discord Boosters!!!"),
+            utils.get(channel.guild.roles, name="Premium Members"),
         )
         name = self._generate_channel_title(
             owner.display_name,
             icon,
-            staff in owner.roles or booster in owner.roles,
+            staff in owner.roles
+            or booster in owner.roles
+            or premium_member in owner.roles,
             datetime.utcnow().astimezone(timezone.utc) - owner.joined_at
             <= timedelta(days=2),
         )
