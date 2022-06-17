@@ -145,12 +145,12 @@ class BuddyCog(Cog):
         await ctx.channel.edit(name=f"{ctx.channel.name}-archive")
         await ctx.channel.send("🗂 This channel has been archived")
 
-    @Cog.slash_command(
-        name="look-for-buddy",
-        description="Look for a buddy",
-    )
-    async def look_for_buddy(self, interaction: nextcord.Interaction):
-        await interaction.response.send_modal(LookForBuddy())
+    #@Cog.slash_command(
+    #    name="look-for-buddy",
+    #    description="Look for a buddy",
+    #)
+    #async def look_for_buddy(self, interaction: nextcord.Interaction):
+    #    await interaction.response.send_modal(LookForBuddy())
 
 
 class LookForBuddy(nextcord.ui.Modal):
@@ -161,7 +161,7 @@ class LookForBuddy(nextcord.ui.Modal):
         )
 
         self.looking_for_buddy_channel_id = int(
-            os.environ.get("LOOKING_FOR_BUDDY_CHANNEL_ID", 976817137243241866)
+            os.environ.get("LOOKING_FOR_BUDDY_CHANNEL_ID", 987390245207150663)
         )
 
         self.pl_options = {
