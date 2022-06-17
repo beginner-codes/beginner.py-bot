@@ -75,18 +75,24 @@ class BuddyCog(Cog):
 
         if not category or ctx.channel.category.name != category:
             return
+
+        if not isinstance(ctx.channel, nextcord.Thread):
+            return
         
         await ctx.channel.remove_user(member)
 
 
     @Cog.command("add")
     @commands.has_permissions(kick_members=True)
-    async def remove_buddy(self, ctx: nextcord.ext.commands.Context, member: nextcord.Member):
+    async def add_buddy(self, ctx: nextcord.ext.commands.Context, member: nextcord.Member):
         category = await self.get_buddy_chat_category()
 
         if not category or ctx.channel.category.name != category:
             return
-        
+
+        if not isinstance(ctx.channel, nextcord.Thread):
+            return
+
         await ctx.channel.add_user(member)
 
 
@@ -96,6 +102,9 @@ class BuddyCog(Cog):
         category = await self.get_buddy_chat_category()
 
         if not category or ctx.channel.category.name != category:
+            return
+
+        if not isinstance(ctx.channel, nextcord.Thread):
             return
         
         await ctx.channel.edit(name=name)
@@ -109,6 +118,9 @@ class BuddyCog(Cog):
         if not category or ctx.channel.category.name != category:
             return
 
+        if not isinstance(ctx.channel, nextcord.Thread):
+            return
+
         await ctx.channel.delete()
 
 
@@ -118,6 +130,9 @@ class BuddyCog(Cog):
         category = await self.get_buddy_chat_category()
 
         if not category or ctx.channel.category.name != category:
+            return
+
+        if not isinstance(ctx.channel, nextcord.Thread):
             return
 
         members = await ctx.channel.fetch_members()
