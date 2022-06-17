@@ -1,3 +1,4 @@
+from unicodedata import category
 import nextcord
 from nextcord.ext import commands
 
@@ -6,15 +7,6 @@ from beginner.models.settings import Settings
 
 
 class BuddyCog(Cog):
-#    def __init__(self, client):
-#        super().__init__(client)
-
-    @Cog.listener()
-    async def on_ready(self):
-        category = await self.get_buddy_chat_category()
-        print(type(category))
-        print(category)
-
 
     @Cog.command("set-buddychat-category")
     @commands.has_permissions(kick_members=True)
@@ -108,6 +100,33 @@ class BuddyCog(Cog):
             return
         
         await ctx.channel.edit(name=name)
+
+    
+    @Cog.command("close")
+    @commands.has_permissions(kick_members=True)
+    async def close_buddy_chat(self, ctx: nextcord.ext.commands.Context):
+        category = await self.get_buddy_chat_category()
+
+        if not category or ctx.channel.category.name != category:
+            return
+
+        await ctx.channel.delete()
+
+
+    @Cog.command("archive")
+    @commands.has_permissions(kick_members=True)
+    async def archive_buddy_chat(self, ctx: nextcord.ext.commands.Context):
+        category = await self.get_buddy_chat_category()
+
+        if not category or ctx.channel.category.name != category:
+            return
+
+        members = await ctx.channel.fetch_members()
+        for member in members:
+            await ctx.channel.remove_user(member)
+
+        await ctx.channel.edit(name=f"{ctx.channel.name}-archive")
+        await ctx.channel.send("🗂 This channel has been archived")
 
 
 def setup(client):
