@@ -6,7 +6,6 @@ from beginner.models.settings import Settings
 
 
 class BuddyCog(Cog):
-
     @Cog.command("set-buddychat-category")
     @commands.has_permissions(kick_members=True)
     async def set_buddy_chat_category_command(
@@ -15,12 +14,10 @@ class BuddyCog(Cog):
         if not category:
             await ctx.send(f"Couldn't find a category named {category!r}.")
             return
-    
+
         await self.set_buddy_chat_category(category)
 
-        await ctx.send(
-            f"Set {category} as the buddy chat category."
-        )
+        await ctx.send(f"Set {category} as the buddy chat category.")
 
     async def set_buddy_chat_category(self, category: nextcord.CategoryChannel):
         buddy_category = Settings(
@@ -33,10 +30,14 @@ class BuddyCog(Cog):
         category = Settings.select().where(Settings.name == "BUDDY_CATEGORY").get()
         return category.value
 
-
     @Cog.command("buddy")
     @commands.has_permissions(kick_members=True)
-    async def create_buddy_chat(self, ctx: nextcord.ext.commands.Context, name: str, members: commands.Greedy[nextcord.Member]):
+    async def create_buddy_chat(
+        self,
+        ctx: nextcord.ext.commands.Context,
+        name: str,
+        members: commands.Greedy[nextcord.Member],
+    ):
         category = await self.get_buddy_chat_category()
 
         if not category or ctx.channel.category.name != category:
@@ -62,15 +63,16 @@ class BuddyCog(Cog):
                     "- Implemenent a new feature in your project.\n"
                     "- Spent at least two hours a day programming.\n"
                 ),
-                color=0x00FF66
+                color=0x00FF66,
             )
         )
         await welcome_msg.pin()
-    
 
     @Cog.command("remove")
     @commands.has_permissions(kick_members=True)
-    async def remove_buddy(self, ctx: nextcord.ext.commands.Context, member: nextcord.Member):
+    async def remove_buddy(
+        self, ctx: nextcord.ext.commands.Context, member: nextcord.Member
+    ):
         category = await self.get_buddy_chat_category()
 
         if not category or ctx.channel.category.name != category:
@@ -78,13 +80,14 @@ class BuddyCog(Cog):
 
         if not isinstance(ctx.channel, nextcord.Thread):
             return
-        
-        await ctx.channel.remove_user(member)
 
+        await ctx.channel.remove_user(member)
 
     @Cog.command("add")
     @commands.has_permissions(kick_members=True)
-    async def add_buddy(self, ctx: nextcord.ext.commands.Context, member: nextcord.Member):
+    async def add_buddy(
+        self, ctx: nextcord.ext.commands.Context, member: nextcord.Member
+    ):
         category = await self.get_buddy_chat_category()
 
         if not category or ctx.channel.category.name != category:
@@ -94,7 +97,6 @@ class BuddyCog(Cog):
             return
 
         await ctx.channel.add_user(member)
-
 
     @Cog.command("rename")
     @commands.has_permissions(kick_members=True)
@@ -106,10 +108,9 @@ class BuddyCog(Cog):
 
         if not isinstance(ctx.channel, nextcord.Thread):
             return
-        
+
         await ctx.channel.edit(name=name)
 
-    
     @Cog.command("close")
     @commands.has_permissions(kick_members=True)
     async def close_buddy_chat(self, ctx: nextcord.ext.commands.Context):
@@ -122,7 +123,6 @@ class BuddyCog(Cog):
             return
 
         await ctx.channel.delete()
-
 
     @Cog.command("archive")
     @commands.has_permissions(kick_members=True)
