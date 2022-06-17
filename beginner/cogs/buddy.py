@@ -1,3 +1,4 @@
+from unicodedata import category
 from discord import Member
 from beginner.cogs.settings import Settings
 import nextcord
@@ -50,7 +51,7 @@ class BuddyCog(Cog):
     async def create_buddy_chat(self, ctx: nextcord.ext.commands.Context, name: str, members: commands.Greedy[nextcord.Member]):
         category = await self.get_buddy_chat_category()
 
-        if not category or ctx.channel.category == category:
+        if not category or ctx.channel.category.name != category:
             return
 
         thread = await ctx.channel.create_thread(name=name)
@@ -77,6 +78,28 @@ class BuddyCog(Cog):
             )
         )
         await welcome_msg.pin()
+    
+
+    @Cog.command("remove")
+    @commands.has_permissions(kick_members=True)
+    async def remove_buddy(self, ctx: nextcord.ext.commands.Context, member: nextcord.Member):
+        category = await self.get_buddy_chat_category()
+
+        if not category or ctx.channel.category.name != category:
+            return
+        
+        await ctx.channel.remove_user(member)
+
+
+    @Cog.command("add")
+    @commands.has_permissions(kick_members=True)
+    async def remove_buddy(self, ctx: nextcord.ext.commands.Context, member: nextcord.Member):
+        category = await self.get_buddy_chat_category()
+
+        if not category or ctx.channel.category.name != category:
+            return
+        
+        await ctx.channel.add_user(member)
 
 
 def setup(client):
