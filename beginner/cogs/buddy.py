@@ -1,6 +1,3 @@
-from unicodedata import category
-from discord import Member
-from beginner.cogs.settings import Settings
 import nextcord
 from nextcord.ext import commands
 
