@@ -5,6 +5,7 @@ from beginner.cog import Cog
 from beginner.models.settings import Settings
 
 from datetime import datetime
+import os
 
 
 class BuddyCog(Cog):
@@ -159,6 +160,10 @@ class LookForBuddy(nextcord.ui.Modal):
             timeout=None,
         )
 
+        self.looking_for_buddy_channel_id = int(
+            os.environ.get("LOOKING_FOR_BUDDY_CHANNEL_ID", 976817137243241866)
+        )
+
         self.pl_options = {
             "Python": "🐍",
             "Javascript": "🤖",
@@ -247,7 +252,11 @@ class LookForBuddy(nextcord.ui.Modal):
         embed.set_author(name=interaction.user, icon_url=interaction.user.avatar)
         embed.set_thumbnail(url=interaction.user.avatar)
 
-        await interaction.send(embed=embed)
+        looking_for_buddy_channel = interaction.guild.get_channel(
+            self.looking_for_buddy_channel_id
+        )
+        await looking_for_buddy_channel.send(embed=embed)
+        await interaction.send(f"Your buddy form has been submitted to {looking_for_buddy_channel.mention}.", ephemeral=True)
 
 
 def setup(client):
