@@ -155,7 +155,7 @@ class BuddyCog(Cog):
 class LookForBuddy(nextcord.ui.Modal):
     def __init__(self):
         super().__init__(
-            title="Look For Buddy",
+            title="Looking For Buddy",
             timeout=None,
         )
 
