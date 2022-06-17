@@ -102,5 +102,16 @@ class BuddyCog(Cog):
         await ctx.channel.add_user(member)
 
 
+    @Cog.command("rename")
+    @commands.has_permissions(kick_members=True)
+    async def rename_buddy_chat(self, ctx: nextcord.ext.commands.Context, *, name: str):
+        category = await self.get_buddy_chat_category()
+
+        if not category or ctx.channel.category.name != category:
+            return
+        
+        await ctx.channel.edit(name=name)
+
+
 def setup(client):
     client.add_cog(BuddyCog(client))
