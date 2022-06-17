@@ -256,7 +256,10 @@ class LookForBuddy(nextcord.ui.Modal):
             self.looking_for_buddy_channel_id
         )
         await looking_for_buddy_channel.send(embed=embed)
-        await interaction.send(f"Your buddy form has been submitted to {looking_for_buddy_channel.mention}.", ephemeral=True)
+        await interaction.send(
+            f"Your buddy form has been submitted to {looking_for_buddy_channel.mention}.",
+            ephemeral=True,
+        )
 
 
 def setup(client):
