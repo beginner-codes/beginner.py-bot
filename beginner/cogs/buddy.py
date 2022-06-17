@@ -4,6 +4,8 @@ from nextcord.ext import commands
 from beginner.cog import Cog
 from beginner.models.settings import Settings
 
+from datetime import datetime
+
 
 class BuddyCog(Cog):
     @Cog.command("set-buddychat-category")
@@ -141,6 +143,111 @@ class BuddyCog(Cog):
 
         await ctx.channel.edit(name=f"{ctx.channel.name}-archive")
         await ctx.channel.send("🗂 This channel has been archived")
+
+    @Cog.slash_command(
+        name="look-for-buddy",
+        description="Look for a buddy",
+    )
+    async def look_for_buddy(self, interaction: nextcord.Interaction):
+        await interaction.response.send_modal(LookForBuddy())
+
+
+class LookForBuddy(nextcord.ui.Modal):
+    def __init__(self):
+        super().__init__(
+            title="Look For Buddy",
+            timeout=None,
+        )
+
+        self.pl_options = {
+            "Python": "🐍",
+            "Javascript": "🤖",
+            "C": "🤖",
+            "Java": "🤖",
+        }
+        self.programming_languages = nextcord.ui.Select(
+            placeholder="Programming Languages",
+            options=[
+                nextcord.SelectOption(label=name, emoji=emoji)
+                for name, emoji in self.pl_options.items()
+            ],
+            min_values=1,
+            max_values=len(self.pl_options),
+        )
+        self.add_item(self.programming_languages)
+
+        self.current_projects = nextcord.ui.TextInput(
+            label="Current Projects",
+            style=nextcord.TextInputStyle.paragraph,
+            placeholder="Simple website",
+            max_length=150,
+        )
+        self.add_item(self.current_projects)
+
+        tz_options = [
+            nextcord.SelectOption(label=f"UTC{'+' if i>=0 else ''}{i}")
+            for i in range(-11, 12)
+        ]
+        self.timezone = nextcord.ui.Select(placeholder="Timezone", options=tz_options)
+        self.add_item(self.timezone)
+
+        # The number of choices in select options is limited to a max of 25.
+        # https://discord.com/developers/docs/interactions/message-components#select-menu-object-select-menu-structure
+        age_options = [nextcord.SelectOption(label=str(i)) for i in range(13, 37)] + [
+            nextcord.SelectOption(label="37+")
+        ]
+        self.age_range = nextcord.ui.Select(
+            placeholder="Age Range (Optional)",
+            options=age_options,
+            min_values=0,
+            max_values=2,
+        )
+        self.add_item(self.age_range)
+
+        self.looking_for = nextcord.ui.TextInput(
+            label="Looking For:",
+            style=nextcord.TextInputStyle.paragraph,
+            placeholder="Accountability and somebody to share ideas with",
+            max_length=50,
+        )
+        self.add_item(self.looking_for)
+
+    async def callback(self, interaction: nextcord.Interaction):
+        embed = nextcord.Embed(
+            title=self.title,
+            timestamp=datetime.now(),
+        )
+        embed.add_field(name="Username:", value=interaction.user.mention, inline=False)
+        embed.add_field(
+            name="Programming Languages",
+            value="\n".join(
+                [f"{self.pl_options[i]} {i}" for i in self.programming_languages.values]
+            ),
+            inline=False,
+        )
+        embed.add_field(
+            name="Current Projects:",
+            value=f"```{self.current_projects.value}```",
+            inline=False,
+        )
+        embed.add_field(name="Timezone:", value=self.timezone.values[0], inline=True)
+
+        if self.age_range.values:
+            embed.add_field(
+                name="Age Range:",
+                value="-".join(i for i in self.age_range.values)
+                if len(self.age_range.values) > 1
+                else self.age_range.values[0],
+                inline=True,
+            )
+
+        embed.add_field(
+            name="Looking for:", value=f"```{self.looking_for.value}```", inline=False
+        )
+        embed.set_author(name=interaction.user, icon_url=interaction.user.avatar)
+        embed.set_thumbnail(url=interaction.user.avatar)
+
+        await interaction.send(embed=embed)
 
 
 def setup(client):
