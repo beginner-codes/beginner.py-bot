@@ -199,7 +199,7 @@ class SpamCog(Cog):
     def categorize_attachments(self, message):
         allowed = []
         disallowed = []
-        allowed_extensions = {".gif", ".png", ".jpeg", ".jpg", ".bmp", ".webp", ".heic"}
+        allowed_extensions = {".gif", ".png", ".jpeg", ".jpg", ".bmp", ".webp"}
         if (
             isinstance(message.channel, TextChannel)
             and message.channel.category_id != 829826215997210644
