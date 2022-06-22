@@ -128,10 +128,10 @@ class SpamCog(Cog):
                         name=f"Attachment: {self.escape_markdown(attachment.filename)}",
                         value=(
                             f"```{self.file_types.get(file_type, '')}\n{content}\n```"
-                            if content else
-                            "*FILE IS EMPTY*"
+                            if content
+                            else "*FILE IS EMPTY*"
                         ),
-                        inline=False
+                        inline=False,
                     )
                 else:
                     files[attachment.filename] = content
@@ -143,8 +143,9 @@ class SpamCog(Cog):
                     value="\n".join(
                         f"[{self.escape_markdown(name)}]({gist}#file-{self.escape_github_file_name(name)})"
                         for name in files
-                    ) + f"\n\n**[View The Gist]({gist})**",
-                    inline=False
+                    )
+                    + f"\n\n**[View The Gist]({gist})**",
+                    inline=False,
                 )
 
             embed.set_thumbnail(
@@ -198,7 +199,7 @@ class SpamCog(Cog):
     def categorize_attachments(self, message):
         allowed = []
         disallowed = []
-        allowed_extensions = {".gif", ".png", ".jpeg", ".jpg", ".bmp", ".webp"}
+        allowed_extensions = {".gif", ".png", ".jpeg", ".jpg", ".bmp", ".webp", ".heic"}
         if (
             isinstance(message.channel, TextChannel)
             and message.channel.category_id != 829826215997210644
