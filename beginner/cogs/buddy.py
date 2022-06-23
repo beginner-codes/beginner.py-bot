@@ -189,12 +189,23 @@ class LookForBuddy(nextcord.ui.Modal):
         )
         self.add_item(self.current_projects)
 
-        tz_options = [
-            nextcord.SelectOption(label=f"UTC{'+' if i>=0 else ''}{i}")
-            for i in range(-11, 12)
-        ]
-        self.timezone = nextcord.ui.Select(placeholder="Timezone", options=tz_options)
-        self.add_item(self.timezone)
+        self.region_options = {
+            "North America": "🌎",
+            "South America": "🌎",
+            "Europe": "🌍",
+            "Africa": "🌍",
+            "Central Asia": "🌏",
+            "East Asia": "🌏",
+            "Oceania": "🌏",
+        }
+        self.region = nextcord.ui.Select(
+            placeholder="Region",
+            options=[
+                nextcord.SelectOption(label=name, emoji=emoji)
+                for name, emoji in self.region_options.items()
+            ],
+        )
+        self.add_item(self.region)
 
         # The number of choices in select options is limited to a max of 25.
         # https://discord.com/developers/docs/interactions/message-components#select-menu-object-select-menu-structure
@@ -224,7 +235,7 @@ class LookForBuddy(nextcord.ui.Modal):
         )
         embed.add_field(name="Username:", value=interaction.user.mention, inline=False)
         embed.add_field(
-            name="Programming Languages",
+            name="Programming Languages:",
             value="\n".join(
                 [f"{self.pl_options[i]} {i}" for i in self.programming_languages.values]
             ),
@@ -235,7 +246,12 @@ class LookForBuddy(nextcord.ui.Modal):
             value=f"```{self.current_projects.value}```",
             inline=False,
         )
-        embed.add_field(name="Timezone:", value=self.timezone.values[0], inline=True)
+        user_region = self.region.values[0]
+        embed.add_field(
+            name="Region:",
+            value=f"{self.region_options[user_region]} {user_region}",
+            inline=True,
+        )
 
         if self.age_range.values:
             embed.add_field(
