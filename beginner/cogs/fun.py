@@ -452,6 +452,31 @@ class Fun(Cog):
         ]
         return bool(re.findall("|".join(phrases), content.lower(), re.MULTILINE))
 
+    @Cog.command(name="cht.sh")
+    async def chtsh(self, ctx, language: str, topic: str | None = None):
+        url = f"https://cht.sh/{language}"
+        title = f"Cheat Sheet: {language.title()}"
+        if topic:
+            url += f"/{topic}"
+            title += f" - {topic.title()}"
+
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url) as response:
+                content = (await response.read()).decode()
+
+        await ctx.message.reply(
+            embeds=[
+                nextcord.Embed(
+                    color=0x4477DD,
+                    title=title,
+                    description=(
+                        content if len(content) <= 1000 else content[:997] + "..."
+                    ),
+                    url=url,
+                ).set_footer(text=url)
+            ]
+        )
+
     @Cog.command()
     async def reveal(self, ctx):
         if not ctx.message.reference:
