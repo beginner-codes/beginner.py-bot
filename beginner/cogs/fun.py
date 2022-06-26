@@ -471,8 +471,12 @@ class Fun(Cog):
                 nextcord.Embed(
                     color=0x4477DD,
                     title=title,
-                    description=(
-                        content if len(content) <= 1000 else content[:997] + "..."
+                    description="\n".join(
+                        (
+                            "```",
+                            content if len(content) <= 992 else content[:989] + "...",
+                            "```",
+                        )
                     ),
                     url=url,
                 ).set_footer(text=url)
