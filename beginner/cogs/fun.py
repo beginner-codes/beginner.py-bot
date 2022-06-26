@@ -454,6 +454,7 @@ class Fun(Cog):
 
     @Cog.command(name="cht.sh")
     async def chtsh(self, ctx, language: str, topic: str | None = None):
+        language = language.lstrip("/")
         url = f"https://cht.sh/{language}"
         title = f"Cheat Sheet: {language.title()}"
         if topic:
