@@ -460,6 +460,8 @@ class Fun(Cog):
             url += f"/{topic}"
             title += f" - {topic.title()}"
 
+        url += "?qT"
+
         async with aiohttp.ClientSession() as session:
             async with session.get(url) as response:
                 content = (await response.read()).decode()
