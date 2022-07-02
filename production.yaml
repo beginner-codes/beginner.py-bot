@@ -9,6 +9,7 @@ cogs:
   beginner_cog:
     enabled: true
     from: beginner.beginner
+  buddy: true
   bump: true
   candidates: true
   challenges: true
