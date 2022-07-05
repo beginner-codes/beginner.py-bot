@@ -3,13 +3,23 @@ from typing import Any, AnyStr, Optional
 import pickle
 
 
-class NOT_SET:
+class NOT_SET_TYPE:
+    def __init__(self, name="NOT_SET"):
+        self.name = name
+
+    def __bool__(self):
+        return False
+
+    def __eq__(self, other):
+        return False
+
     def __repr__(self):
-        return f"<{self.__class__.__name__} at 0x{id(self)}>"
+        return f"<{self.name} at 0x{id(self)}>"
 
 
 class Settings:
-    NOT_SET = NOT_SET()
+    NOT_SET = NOT_SET_TYPE()
+    ERROR = NOT_SET_TYPE("ERROR")
 
     def _get(self, name: AnyStr) -> Any:
         result = SettingsModel.select(SettingsModel.value).where(
@@ -20,7 +30,7 @@ class Settings:
             try:
                 value = pickle.loads(result.scalar().encode())
             except pickle.UnpicklingError:
-                SettingsModel.delete().where(SettingsModel.name == name)
+                return Settings.ERROR
 
         return value
 
@@ -35,9 +45,15 @@ class Settings:
 
     def all(self):
         return {
-            row.name: pickle.loads(row.value.encode())
+            row.name: self._load_pickle(row.value)
             for row in SettingsModel.select().distinct()
         }
+
+    def _load_pickle(self, data):
+        try:
+            return pickle.loads(data.encode())
+        except pickle.UnpicklingError:
+            return "FAILED TO UNPICKLE"
 
     def get(self, name: AnyStr, default: Optional[Any] = None) -> Any:
         return default if (value := self._get(name)) is Settings.NOT_SET else value
