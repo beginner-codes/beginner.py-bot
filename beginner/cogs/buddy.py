@@ -216,7 +216,7 @@ class LookForBuddy(nextcord.ui.Modal):
             nextcord.SelectOption(label="37+")
         ]
         self.age_range = nextcord.ui.Select(
-            placeholder="Age Range (Optional)",
+            placeholder="Age Range (Optional) - Select min and max",
             options=age_options,
             min_values=0,
             max_values=2,
