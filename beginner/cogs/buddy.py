@@ -23,15 +23,10 @@ class BuddyCog(Cog):
         await ctx.send(f"Set {category} as the buddy chat category.")
 
     async def set_buddy_chat_category(self, category: nextcord.CategoryChannel):
-        buddy_category = Settings(
-            name="BUDDY_CATEGORY",
-            value=category,
-        )
-        buddy_category.save()
+        self.settings["BUDDY_CATEGORY"] = category.id
 
-    async def get_buddy_chat_category(self) -> str:
-        category = Settings.select().where(Settings.name == "BUDDY_CATEGORY").get()
-        return category.value
+    async def get_buddy_chat_category(self) -> int:
+        return self.settings["BUDDY_CATEGORY"]
 
     @Cog.command("buddy")
     @commands.has_permissions(kick_members=True)
@@ -43,7 +38,7 @@ class BuddyCog(Cog):
     ):
         category = await self.get_buddy_chat_category()
 
-        if not category or ctx.channel.category.name != category:
+        if not category or ctx.channel.category.id != category:
             return
 
         thread = await ctx.channel.create_thread(name=name)
@@ -78,7 +73,7 @@ class BuddyCog(Cog):
     ):
         category = await self.get_buddy_chat_category()
 
-        if not category or ctx.channel.category.name != category:
+        if not category or ctx.channel.category.id != category:
             return
 
         if not isinstance(ctx.channel, nextcord.Thread):
@@ -93,7 +88,7 @@ class BuddyCog(Cog):
     ):
         category = await self.get_buddy_chat_category()
 
-        if not category or ctx.channel.category.name != category:
+        if not category or ctx.channel.category.id != category:
             return
 
         if not isinstance(ctx.channel, nextcord.Thread):
@@ -106,7 +101,7 @@ class BuddyCog(Cog):
     async def rename_buddy_chat(self, ctx: nextcord.ext.commands.Context, *, name: str):
         category = await self.get_buddy_chat_category()
 
-        if not category or ctx.channel.category.name != category:
+        if not category or ctx.channel.category.id != category:
             return
 
         if not isinstance(ctx.channel, nextcord.Thread):
@@ -119,7 +114,7 @@ class BuddyCog(Cog):
     async def close_buddy_chat(self, ctx: nextcord.ext.commands.Context):
         category = await self.get_buddy_chat_category()
 
-        if not category or ctx.channel.category.name != category:
+        if not category or ctx.channel.category.id != category:
             return
 
         if not isinstance(ctx.channel, nextcord.Thread):
@@ -132,7 +127,7 @@ class BuddyCog(Cog):
     async def archive_buddy_chat(self, ctx: nextcord.ext.commands.Context):
         category = await self.get_buddy_chat_category()
 
-        if not category or ctx.channel.category.name != category:
+        if not category or ctx.channel.category.id != category:
             return
 
         if not isinstance(ctx.channel, nextcord.Thread):
