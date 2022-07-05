@@ -227,7 +227,7 @@ class LookForBuddy(nextcord.ui.Modal):
             label="Looking For:",
             style=nextcord.TextInputStyle.paragraph,
             placeholder="Accountability and somebody to share ideas with",
-            max_length=50,
+            max_length=150,
         )
         self.add_item(self.looking_for)
 
