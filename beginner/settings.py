@@ -18,7 +18,7 @@ class Settings:
         value = Settings.NOT_SET
         if result.count():
             try:
-                value = pickle.loads(result.scalar().decode())
+                value = pickle.loads(result.scalar().encode())
             except pickle.UnpicklingError:
                 SettingsModel.delete().where(SettingsModel.name == name)
 
