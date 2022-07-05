@@ -15,11 +15,14 @@ class Settings:
         result = SettingsModel.select(SettingsModel.value).where(
             SettingsModel.name == name
         )
-        return (
-            pickle.loads(result.scalar().encode())
-            if result.count()
-            else Settings.NOT_SET
-        )
+        try:
+            return (
+                pickle.loads(result.scalar().encode())
+                if result.count()
+                else Settings.NOT_SET
+            )
+        except pickle.UnpicklingError:
+            return Settings.NOT_SET
 
     def _set(self, name: AnyStr, value: Any):
         pickled = pickle.dumps(value, 0)
