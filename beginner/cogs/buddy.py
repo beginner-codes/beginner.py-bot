@@ -312,7 +312,8 @@ class BuddyFormView(nextcord.ui.View):
         self.user_id = user_id
 
     async def reset_post(self, message: nextcord.Message):
-        await message.edit("")
+        buddy_embed = message.embeds[0]
+        await message.edit(embed=buddy_embed)
         await message.clear_reaction("✅")
         await message.clear_reaction("❌")
     
@@ -347,11 +348,16 @@ class BuddyFormView(nextcord.ui.View):
         custom_id="BuddyBumpButton",
     )
     async def bump_buddy_form(self, _, interaction: nextcord.Interaction):
-        await interaction.message.edit(
-            f"{interaction.user.mention} **Do you confirm that you want to bump this post?**\n"
+        buddy_embed = interaction.message.embeds[0]
+        
+        confirm_embed = nextcord.Embed(
+            title="Do you confirm that you want to bump this post?",
+            description=f"{interaction.user.mention} "
             f"React with ✅ for yes or ❌ for no.\n"
-            f"It will cost you {BUMP_COST} kudos."
+            f"It will cost you {BUMP_COST} kudos.",
         )
+
+        await interaction.message.edit(embeds=[buddy_embed, confirm_embed])
         await interaction.message.add_reaction("✅")
         await interaction.message.add_reaction("❌")
 
