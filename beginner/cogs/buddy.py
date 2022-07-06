@@ -216,7 +216,7 @@ class LookForBuddy(nextcord.ui.Modal):
             nextcord.SelectOption(label="37+")
         ]
         self.age_range = nextcord.ui.Select(
-            placeholder="Age Range (Optional)",
+            placeholder="Age Range (Optional) - Select min and max",
             options=age_options,
             min_values=0,
             max_values=2,
@@ -227,7 +227,7 @@ class LookForBuddy(nextcord.ui.Modal):
             label="Looking For:",
             style=nextcord.TextInputStyle.paragraph,
             placeholder="Accountability and somebody to share ideas with",
-            max_length=50,
+            max_length=150,
         )
         self.add_item(self.looking_for)
 
