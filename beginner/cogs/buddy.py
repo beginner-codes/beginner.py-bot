@@ -357,6 +357,22 @@ class BuddyFormView(nextcord.ui.View):
             delete_after=4,
         )
 
+    @nextcord.ui.button(
+        emoji="🗑️",
+        style=nextcord.ButtonStyle.red,
+        label="Delete",
+        custom_id="DeleteBuddyPost",
+    )
+    async def delete_buddy_post(self, _, interaction: nextcord.Interaction):
+        if interaction.user.id != self.user_id:
+            return
+
+        await interaction.message.delete()
+        await interaction.response.send_message(
+            f"{interaction.user.mention}, your post has been deleted.",
+            ephemeral=True,
+        )
+
 
 def setup(client):
     client.add_cog(BuddyCog(client))
