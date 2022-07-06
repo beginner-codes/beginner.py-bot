@@ -351,7 +351,7 @@ class BuddyFormView(nextcord.ui.View):
         )
 
         bumped_user = interaction.client.get_user(self.user_id)
-        is_self_bump = bumped_user == interaction.user
+        is_self_bump = (bumped_user == interaction.user)
         await interaction.channel.send(
             f"""{interaction.user.mention}, you bumped {[bumped_user.mention, "your"][is_self_bump]}{"'s" * (not is_self_bump)} buddy submission!""",
             delete_after=4,
