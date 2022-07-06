@@ -5,11 +5,27 @@ from nextcord.ext import commands
 from beginner.cog import Cog
 from beginner.models.settings import Settings
 
-from datetime import datetime
+from datetime import datetime, timedelta
 import os
+
+bump_rate_limits = {}
+BUMP_RATE_COOLDOWN = 24
 
 
 class BuddyCog(Cog):
+    def __init__(self, client):
+        super().__init__(client)
+        self.buddy_view_added = False
+        # Replace with your own user id or any user id that's already been used before to submit a buddy form
+        self.buddy_form_user_id = 111111111111111111
+
+    @Cog.listener()
+    async def on_ready(self):
+        await super().on_ready()
+        if not self.buddy_view_added:
+            self.client.add_view(BuddyFormView(self.buddy_form_user_id))
+            self.buddy_view_added = True
+
     @Cog.command("set-buddychat-category")
     @commands.has_permissions(kick_members=True)
     async def set_buddy_chat_category_command(
@@ -287,10 +303,58 @@ class LookForBuddy(nextcord.ui.Modal):
         looking_for_buddy_channel = interaction.guild.get_channel(
             self.looking_for_buddy_channel_id
         )
-        await looking_for_buddy_channel.send(embed=embed)
+        await looking_for_buddy_channel.send(
+            embed=embed, view=BuddyFormView(interaction.user.id)
+        )
         await interaction.send(
             f"Your buddy form has been submitted to {looking_for_buddy_channel.mention}.",
             ephemeral=True,
+        )
+
+
+class BuddyFormView(nextcord.ui.View):
+    def __init__(self, user_id) -> None:
+        super().__init__(timeout=None)
+        self.user_id = user_id
+
+    @nextcord.ui.button(
+        emoji=PartialEmoji(name="beginner~1", id=669941641292808202),
+        style=nextcord.ButtonStyle.blurple,
+        label="Bump",
+        custom_id="BuddyBumpButton",
+    )
+    async def bump_buddy_form(self, _, interaction: nextcord.Interaction):
+        now = datetime.utcnow()
+        delta = now - bump_rate_limits.get(interaction.user.id, now)
+        if timedelta(hours=0) < delta < timedelta(hours=BUMP_RATE_COOLDOWN):
+            await interaction.response.send_message(
+                f"{interaction.user.mention}, you can only bump once a day! You have {BUMP_RATE_COOLDOWN-(delta.seconds//(60*60))} hour(s) left.",
+                ephemeral=True,
+            )
+            return
+        bump_rate_limits[interaction.user.id] = now
+
+        await interaction.message.delete()
+        embed = interaction.message.embeds[0]
+        if not embed.footer.text:
+            embed.set_footer(
+                text=f"Bumped 1 time by {interaction.user.display_name}.",
+            )
+        else:
+            footer_text = embed.footer.text.split()
+            bump_count = int(footer_text[1])
+            embed.set_footer(
+                text=f"Bumped {bump_count + 1} times, most recently by {interaction.user.display_name}.",
+            )
+        await interaction.channel.send(
+            embed=embed, view=BuddyFormView(interaction.user.id)
+        )
+
+        bumped_user = interaction.client.get_user(self.user_id)
+        is_self_bump = bumped_user == interaction.user
+        await interaction.channel.send(
+            f"""{interaction.user.mention}, you bumped {[bumped_user.mention, "your"][is_self_bump]}{"'s" * (not is_self_bump)} buddy submission!""",
+            delete_after=4,
         )
 
 
