@@ -266,7 +266,7 @@ class LookForBuddy(nextcord.ui.Modal):
         if self.age_range.values:
             embed.add_field(
                 name="Age Range:",
-                value="-".join(i for i in self.age_range.values)
+                value="-".join(i for i in sorted(self.age_range.values))
                 if len(self.age_range.values) > 1
                 else self.age_range.values[0],
                 inline=True,
