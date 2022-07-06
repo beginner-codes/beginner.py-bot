@@ -178,6 +178,7 @@ class LookForBuddy(nextcord.ui.Modal):
             "Java": PartialEmoji(name="java", id=934957425587523624),
             "PHP": "🐘",
             "GDScript": "🕹️",
+            "Other": "🧑‍💻",
         }
         self.programming_languages = nextcord.ui.Select(
             placeholder="Programming Languages",
