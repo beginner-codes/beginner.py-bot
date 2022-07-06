@@ -1,4 +1,5 @@
 import nextcord
+from nextcord import PartialEmoji
 from nextcord.ext import commands
 
 from beginner.cog import Cog
@@ -168,10 +169,14 @@ class LookForBuddy(nextcord.ui.Modal):
         )
 
         self.pl_options = {
-            "Python": "🐍",
-            "Javascript": "🤖",
-            "C": "🤖",
-            "Java": "🤖",
+            "Python": PartialEmoji(name="python", id=934950343614275594),
+            "Javascript": PartialEmoji(name="javascript", id=908457207597764678),
+            "TypeScript": PartialEmoji(name="typescript", id=982974090400923689),
+            "C": PartialEmoji(name="clang", id=934951942029979688),
+            "C#": PartialEmoji(name="c_sharp", id=947603932161667132),
+            "C++": PartialEmoji(name="cpp", id=947603931519926342),
+            "Java": PartialEmoji(name="java", id=934957425587523624),
+            "PHP": "🐘",
         }
         self.programming_languages = nextcord.ui.Select(
             placeholder="Programming Languages",
