@@ -314,9 +314,7 @@ class BuddyFormView(nextcord.ui.View):
     async def reset_post(self, message: nextcord.Message):
         buddy_embed = message.embeds[0]
         await message.edit(embed=buddy_embed)
-        await message.clear_reaction("✅")
-        await message.clear_reaction("❌")
-    
+
     async def bump_post(self, interaction: nextcord.Interaction):
         await interaction.message.delete()
         embed = interaction.message.embeds[0]
@@ -335,70 +333,46 @@ class BuddyFormView(nextcord.ui.View):
         )
 
         bumped_user = interaction.client.get_user(self.user_id)
-        is_self_bump = (bumped_user == interaction.user)
-        await interaction.channel.send(
-            f"""✅ {interaction.user.mention}, you've paid {BUMP_COST} kudos to bump {[bumped_user.mention, "your"][is_self_bump]}{"'s" * (not is_self_bump)} buddy submission!""",
-            delete_after=8,
-        )
+        is_self_bump = bumped_user == interaction.user
 
     @nextcord.ui.button(
-        emoji=PartialEmoji(name="beginner~1", id=669941641292808202),
+        emoji=PartialEmoji(name="expert", id=669941420454576131),
         style=nextcord.ButtonStyle.blurple,
         label="Bump",
         custom_id="BuddyBumpButton",
     )
     async def bump_buddy_form(self, _, interaction: nextcord.Interaction):
         buddy_embed = interaction.message.embeds[0]
-        
+
         confirm_embed = nextcord.Embed(
-            title="Do you confirm that you want to bump this post?",
+            title="🟠 Bumping post...",
             description=f"{interaction.user.mention} "
-            f"React with ✅ for yes or ❌ for no.\n"
-            f"It will cost you {BUMP_COST} kudos.",
+            f"is requesting to bump this post.\n"
+            f"This action will cost you {BUMP_COST} kudos.",
         )
-
+        
         await interaction.message.edit(embeds=[buddy_embed, confirm_embed])
-        await interaction.message.add_reaction("✅")
-        await interaction.message.add_reaction("❌")
 
-        def check_reactions(payload):
+        def check_message(m):
             return (
-                payload.message_id == interaction.message.id
-                and payload.emoji.name in "✅❌"
-                and payload.user_id == interaction.user.id
+                "🟢 Success: Post bumped!"
+                and interaction.user.mention in m.embeds[0].description
+                and m.channel == interaction.channel
+                and m.author.bot
             )
 
         try:
-            reaction = await interaction.client.wait_for(
-                "raw_reaction_add", check=check_reactions, timeout=15
+            bump_allowed = await interaction.client.wait_for(
+                "message", check=check_message, timeout=4
             )
         except asyncio.TimeoutError:
             await self.reset_post(interaction.message)
         else:
-            if reaction.emoji.name == "✅":
-                await interaction.channel.send(
-                    f"🟠 {interaction.user.mention} is requesting to pay {BUMP_COST} kudos to bump...",
-                    delete_after=2,
-                )
-
-                def check_message(m):
-                    return (
-                        "🟢"
-                        and interaction.user.mention in m.content
-                        and m.channel == interaction.channel
-                        and m.author.bot
-                    )
-
-                bump_allowed = await interaction.client.wait_for(
-                    "message", check=check_message, timeout=2
-                )
-                if "🟢" not in bump_allowed.content:
-                    await self.reset_post(interaction.message)
-                else:
-                    await self.bump_post(interaction)
-
-            else:
+            if "🟢" not in bump_allowed.embeds[0].title:
                 await self.reset_post(interaction.message)
+            else:
+                await self.bump_post(interaction)
+
 
     @nextcord.ui.button(
         emoji="🗑️",
