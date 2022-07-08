@@ -338,9 +338,6 @@ class BuddyFormView(nextcord.ui.View):
             embed=embed, view=BuddyFormView(interaction.user.id)
         )
 
-        bumped_user = interaction.client.get_user(self.user_id)
-        is_self_bump = bumped_user == interaction.user
-
     @nextcord.ui.button(
         emoji=PartialEmoji(name="expert", id=669941420454576131),
         style=nextcord.ButtonStyle.blurple,
