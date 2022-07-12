@@ -147,7 +147,8 @@ class BuddyCog(Cog):
     )
     async def look_for_buddy(self, interaction: nextcord.Interaction):
         buddy_role = nextcord.utils.get(interaction.guild.roles, name="buddy")
-        if buddy_role not in interaction.user.roles:
+        member = self.server.get_member(interaction.user.id)
+        if not member or buddy_role not in member.roles:
             await interaction.send(
                 "Sorry! You require the buddy achievement role to use this feature.",
                 ephemeral=True,
