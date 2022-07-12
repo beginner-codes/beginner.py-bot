@@ -146,7 +146,7 @@ class BuddyCog(Cog):
         description="Look for a buddy",
     )
     async def look_for_buddy(self, interaction: nextcord.Interaction):
-        buddy_role = nextcord.utils.get(interaction.guild.roles, name="buddy")
+        buddy_role = nextcord.utils.get(self.server.roles, name="buddy")
         member = self.server.get_member(interaction.user.id)
         if not member or buddy_role not in member.roles:
             await interaction.send(
