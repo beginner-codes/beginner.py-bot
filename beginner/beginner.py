@@ -30,7 +30,7 @@ class BeginnerCog(Cog):
             await wh.send(
                 embed=Embed(
                     title="🛑Error Encountered",
-                    description=f"{error}\n\nCommand: {ctx.command.qualified_name!r}",
+                    description=f"{error}\n\nCommand: {ctx.command and ctx.command.qualified_name or ctx!r}",
                     color=0xFF8800,
                 )
             )
