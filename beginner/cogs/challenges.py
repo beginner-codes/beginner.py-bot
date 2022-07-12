@@ -85,7 +85,8 @@ class Challenges(Cog):
             return
 
         if (
-            not message.channel.topic
+            not hasattr(message.channel, "topic")
+            or not message.channel.topic
             or "challenge submissions" not in message.channel.topic.casefold()
         ):
             return
