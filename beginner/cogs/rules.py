@@ -63,7 +63,6 @@ class RulesCog(Cog):
                     "understanding",
                     "respectful",
                     "helpful",
-                    "trolling",
                     "helping",
                     "learning",
                 ),

@@ -1,4 +1,5 @@
 import nextcord
+from nextcord import PartialEmoji
 from nextcord.ext import commands
 
 from beginner.cog import Cog
@@ -23,15 +24,10 @@ class BuddyCog(Cog):
         await ctx.send(f"Set {category} as the buddy chat category.")
 
     async def set_buddy_chat_category(self, category: nextcord.CategoryChannel):
-        buddy_category = Settings(
-            name="BUDDY_CATEGORY",
-            value=category,
-        )
-        buddy_category.save()
+        self.settings["BUDDY_CATEGORY"] = category.id
 
-    async def get_buddy_chat_category(self) -> str:
-        category = Settings.select().where(Settings.name == "BUDDY_CATEGORY").get()
-        return category.value
+    async def get_buddy_chat_category(self) -> int:
+        return self.settings["BUDDY_CATEGORY"]
 
     @Cog.command("buddy")
     @commands.has_permissions(kick_members=True)
@@ -43,7 +39,7 @@ class BuddyCog(Cog):
     ):
         category = await self.get_buddy_chat_category()
 
-        if not category or ctx.channel.category.name != category:
+        if not category or ctx.channel.category.id != category:
             return
 
         thread = await ctx.channel.create_thread(name=name)
@@ -78,7 +74,7 @@ class BuddyCog(Cog):
     ):
         category = await self.get_buddy_chat_category()
 
-        if not category or ctx.channel.category.name != category:
+        if not category or ctx.channel.category.id != category:
             return
 
         if not isinstance(ctx.channel, nextcord.Thread):
@@ -93,7 +89,7 @@ class BuddyCog(Cog):
     ):
         category = await self.get_buddy_chat_category()
 
-        if not category or ctx.channel.category.name != category:
+        if not category or ctx.channel.category.id != category:
             return
 
         if not isinstance(ctx.channel, nextcord.Thread):
@@ -106,7 +102,7 @@ class BuddyCog(Cog):
     async def rename_buddy_chat(self, ctx: nextcord.ext.commands.Context, *, name: str):
         category = await self.get_buddy_chat_category()
 
-        if not category or ctx.channel.category.name != category:
+        if not category or ctx.channel.category.id != category:
             return
 
         if not isinstance(ctx.channel, nextcord.Thread):
@@ -119,7 +115,7 @@ class BuddyCog(Cog):
     async def close_buddy_chat(self, ctx: nextcord.ext.commands.Context):
         category = await self.get_buddy_chat_category()
 
-        if not category or ctx.channel.category.name != category:
+        if not category or ctx.channel.category.id != category:
             return
 
         if not isinstance(ctx.channel, nextcord.Thread):
@@ -132,7 +128,7 @@ class BuddyCog(Cog):
     async def archive_buddy_chat(self, ctx: nextcord.ext.commands.Context):
         category = await self.get_buddy_chat_category()
 
-        if not category or ctx.channel.category.name != category:
+        if not category or ctx.channel.category.id != category:
             return
 
         if not isinstance(ctx.channel, nextcord.Thread):
@@ -150,6 +146,14 @@ class BuddyCog(Cog):
         description="Look for a buddy",
     )
     async def look_for_buddy(self, interaction: nextcord.Interaction):
+        buddy_role = nextcord.utils.get(interaction.guild.roles, name="buddy")
+        if buddy_role not in interaction.user.roles:
+            await interaction.send(
+                "Sorry! You require the buddy achievement role to use this feature.",
+                ephemeral=True,
+            )
+            return
+
         await interaction.response.send_modal(LookForBuddy())
 
 
@@ -165,10 +169,16 @@ class LookForBuddy(nextcord.ui.Modal):
         )
 
         self.pl_options = {
-            "Python": "🐍",
-            "Javascript": "🤖",
-            "C": "🤖",
-            "Java": "🤖",
+            "Python": PartialEmoji(name="python", id=934950343614275594),
+            "Javascript": PartialEmoji(name="javascript", id=908457207597764678),
+            "TypeScript": PartialEmoji(name="typescript", id=982974090400923689),
+            "C": PartialEmoji(name="clang", id=934951942029979688),
+            "C#": PartialEmoji(name="c_sharp", id=947603932161667132),
+            "C++": PartialEmoji(name="cpp", id=947603931519926342),
+            "Java": PartialEmoji(name="java", id=934957425587523624),
+            "PHP": "🐘",
+            "GDScript": "🕹️",
+            "Other": "🧑‍💻",
         }
         self.programming_languages = nextcord.ui.Select(
             placeholder="Programming Languages",
@@ -213,7 +223,7 @@ class LookForBuddy(nextcord.ui.Modal):
             nextcord.SelectOption(label="37+")
         ]
         self.age_range = nextcord.ui.Select(
-            placeholder="Age Range (Optional)",
+            placeholder="Age Range (Optional) - Select min and max",
             options=age_options,
             min_values=0,
             max_values=2,
@@ -224,7 +234,7 @@ class LookForBuddy(nextcord.ui.Modal):
             label="Looking For:",
             style=nextcord.TextInputStyle.paragraph,
             placeholder="Accountability and somebody to share ideas with",
-            max_length=50,
+            max_length=150,
         )
         self.add_item(self.looking_for)
 

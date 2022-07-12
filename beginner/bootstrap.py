@@ -48,6 +48,7 @@ def create_bot(logger) -> nextcord.ext.commands.Bot:
     intents = nextcord.Intents.default()
     intents.members = True
     intents.presences = True
+    intents.message_content = True
 
     logger.debug(f"Creating bot with prefix '{bot_settings('prefix')}'")
     client = nextcord.ext.commands.Bot(
