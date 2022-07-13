@@ -24,7 +24,7 @@ class BeginnerCog(Cog):
         async with ClientSession() as session:
             wh = Webhook.partial(
                 882811369353793576,
-                "TfQ5nVjRhwnxkMqYA-WLOfA6mv9-SG3TZjWLZkM_9f5jKEif23pbAXCZQLpwhKvSfxQp",
+                self.settings.get("_ERROR_WEBHOOK_URL"),
                 session=session,
             )
             await wh.send(
