@@ -21,6 +21,9 @@ class BeginnerCog(Cog):
 
     @Cog.listener()
     async def on_command_error(self, ctx: commands.Context, error):
+        raise error
+
+    async def _send_error_to_webhook(self, error: Exception, ctx: commands.Context):
         async with ClientSession() as session:
             wh = Webhook.partial(
                 882811369353793576,
@@ -34,7 +37,6 @@ class BeginnerCog(Cog):
                     color=0xFF8800,
                 )
             )
-        raise error
 
     @Cog.listener()
     async def on_message(self, message: nextcord.Message):
