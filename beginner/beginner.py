@@ -21,6 +21,13 @@ class BeginnerCog(Cog):
 
     @Cog.listener()
     async def on_command_error(self, ctx: commands.Context, error):
+        match error:
+            case commands.errors.CommandNotFound():
+                return
+
+            case _:
+                await self._send_error_to_webhook(error, ctx)
+
         raise error
 
     async def _send_error_to_webhook(self, error: Exception, ctx: commands.Context):
