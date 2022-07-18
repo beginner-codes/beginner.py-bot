@@ -335,17 +335,28 @@ class BuddyFormView(nextcord.ui.View):
     async def bump_post(self, interaction: nextcord.Interaction):
         await interaction.message.delete()
         embed = interaction.message.embeds[0]
-        icon_url = "https://cdn.discordapp.com/emojis/669941641292808202.webp?size=44&quality=lossless"
+        icon_urls = {
+            "one star": "https://cdn.discordapp.com/emojis/669941641292808202.webp?size=44&quality=lossless",
+            "two stars": "https://cdn.discordapp.com/emojis/669942506833575936.webp?size=44&quality=lossless",
+            "three stars": "https://cdn.discordapp.com/emojis/669941420454576131.webp?size=44&quality=lossless",
+        }
         if not embed.footer.text:
             embed.set_footer(
                 text=f"Bumped 1 time by {interaction.user.display_name}.",
-                icon_url=icon_url,
+                icon_url=icon_urls["one star"],
             )
         else:
             footer_text = embed.footer.text.split()
-            bump_count = int(footer_text[1])
+            new_bump_count = int(footer_text[1]) + 1
+            icon_url = (
+                icon_urls["three stars"]
+                if new_bump_count >= 3
+                else icon_urls["two stars"]
+                if new_bump_count >= 2
+                else icon_urls["one star"]
+            )
             embed.set_footer(
-                text=f"Bumped {bump_count + 1} times, most recently by {interaction.user.display_name}.",
+                text=f"Bumped {new_bump_count} times, most recently by {interaction.user.display_name}.",
                 icon_url=icon_url,
             )
         await interaction.channel.send(
