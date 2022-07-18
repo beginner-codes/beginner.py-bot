@@ -188,14 +188,23 @@ class BuddyCog(Cog):
 
 
 class LookForBuddy(nextcord.ui.Modal):
-    def __init__(self, editing_post=False):
+    def __init__(
+        self,
+        former_post={
+            "programming_languages": None,
+            "current_projects": None,
+            "region": None,
+            "age_range": None,
+            "looking_for": None,
+        },
+    ):
         super().__init__(
             title="Looking For Buddy"
             + TESTING_MODE * " (\N{ROBOT FACE} TESTING MODE ENABLED \N{ROBOT FACE})",
             timeout=None,
         )
 
-        self.editing_post = editing_post
+        self.editing_post = any(True for value in former_post.values() if value)
 
         self.looking_for_buddy_channel_id = int(
             os.environ.get(
@@ -220,7 +229,15 @@ class LookForBuddy(nextcord.ui.Modal):
             placeholder="Programming Languages",
             options=[
                 nextcord.SelectOption(
-                    label=name, emoji=emoji, default=True if TESTING_MODE else False
+                    label=name,
+                    emoji=emoji,
+                    default=True
+                    if (
+                        self.editing_post
+                        and name in former_post["programming_languages"]
+                    )
+                    or (TESTING_MODE and not self.editing_post)
+                    else False,
                 )
                 for name, emoji in self.pl_options.items()
             ],
@@ -234,7 +251,11 @@ class LookForBuddy(nextcord.ui.Modal):
             style=nextcord.TextInputStyle.paragraph,
             placeholder="Simple website",
             max_length=150,
-            default_value="Testing" if TESTING_MODE else None,
+            default_value=former_post["current_projects"]
+            if self.editing_post
+            else "Testing"
+            if (TESTING_MODE and not self.editing_post)
+            else None,
         )
         self.add_item(self.current_projects)
 
@@ -253,7 +274,14 @@ class LookForBuddy(nextcord.ui.Modal):
                 nextcord.SelectOption(
                     label=name,
                     emoji=emoji,
-                    default=True if TESTING_MODE and name == "North America" else False,
+                    default=True
+                    if (self.editing_post and name in former_post["region"])
+                    or (
+                        TESTING_MODE
+                        and not self.editing_post
+                        and name == "North America"
+                    )
+                    else False,
                 )
                 for name, emoji in self.region_options.items()
             ],
@@ -264,11 +292,29 @@ class LookForBuddy(nextcord.ui.Modal):
         # https://discord.com/developers/docs/interactions/message-components#select-menu-object-select-menu-structure
         age_options = [
             nextcord.SelectOption(
-                label=str(i), default=True if TESTING_MODE and i == 13 else False
+                label=str(i),
+                default=True
+                if (
+                    self.editing_post
+                    and former_post["age_range"]
+                    and str(i) in former_post["age_range"]
+                )
+                or (TESTING_MODE and not self.editing_post and i == 13)
+                else False,
             )
             for i in range(13, 37)
         ] + [
-            nextcord.SelectOption(label="37+", default=True if TESTING_MODE else False)
+            nextcord.SelectOption(
+                label="37+",
+                default=True
+                if (
+                    self.editing_post
+                    and former_post["age_range"]
+                    and "37+" in former_post["age_range"]
+                )
+                or (TESTING_MODE and not self.editing_post)
+                else False,
+            )
         ]
         self.age_range = nextcord.ui.Select(
             placeholder="Age Range (Optional) - Select min and max",
@@ -283,7 +329,11 @@ class LookForBuddy(nextcord.ui.Modal):
             style=nextcord.TextInputStyle.paragraph,
             placeholder="Accountability and somebody to share ideas with",
             max_length=150,
-            default_value="Testing" if TESTING_MODE else None,
+            default_value=former_post["looking_for"]
+            if self.editing_post
+            else "Testing"
+            if (TESTING_MODE and not self.editing_post)
+            else None,
         )
         self.add_item(self.looking_for)
 
@@ -315,7 +365,7 @@ class LookForBuddy(nextcord.ui.Modal):
         if self.age_range.values:
             embed.add_field(
                 name="Age Range:",
-                value="-".join(i for i in self.age_range.values)
+                value="-".join(i for i in sorted(self.age_range.values))
                 if len(self.age_range.values) > 1
                 else self.age_range.values[0],
                 inline=True,
@@ -436,8 +486,28 @@ class BuddyFormView(nextcord.ui.View):
             return
 
         buddy_embed = interaction.message.embeds[0]
-        print(buddy_embed.fields)
-        modal = LookForBuddy(editing_post=True)
+        age_range = None  # optional field in buddy modal
+        for embed_proxy in buddy_embed.fields:
+            name = embed_proxy.name.lower()
+            if "programming languages" in name:
+                programming_languages = embed_proxy.value
+            elif "current projects" in name:
+                current_projects = embed_proxy.value.strip("`")
+            elif "region" in name:
+                region = embed_proxy.value
+            elif "age range" in name:
+                age_range = embed_proxy.value
+            elif "looking for" in name:
+                looking_for = embed_proxy.value.strip("`")
+
+        former_post = {
+            "programming_languages": programming_languages,
+            "current_projects": current_projects,
+            "region": region,
+            "age_range": age_range,
+            "looking_for": looking_for,
+        }
+        modal = LookForBuddy(former_post=former_post)
         await interaction.response.send_modal(modal)
 
     @nextcord.ui.button(
