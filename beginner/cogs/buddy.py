@@ -9,15 +9,21 @@ from datetime import datetime
 import os
 import asyncio
 
+# Replace with your own user id or any user id that's already been used before to submit a buddy form
+BUDDY_FORM_USER_ID = 111111111111111111
+# Kudos cost for bumping a buddy post
 BUMP_COST = 10
+# Set to True if you are in testing mode
+TESTING_MODE = False
+# Set to ID of testing buddy channel
+TESTING_BUDDY_CHANNEL_ID = 999999999999999999
 
 
 class BuddyCog(Cog):
     def __init__(self, client):
         super().__init__(client)
         self.buddy_view_added = False
-        # Replace with your own user id or any user id that's already been used before to submit a buddy form
-        self.buddy_form_user_id = 111111111111111111
+        self.buddy_form_user_id = BUDDY_FORM_USER_ID
 
     @Cog.listener()
     async def on_ready(self):
@@ -181,7 +187,10 @@ class LookForBuddy(nextcord.ui.Modal):
         )
 
         self.looking_for_buddy_channel_id = int(
-            os.environ.get("LOOKING_FOR_BUDDY_CHANNEL_ID", 987390245207150663)
+            os.environ.get(
+                "LOOKING_FOR_BUDDY_CHANNEL_ID",
+                TESTING_BUDDY_CHANNEL_ID if TESTING_MODE else 987390245207150663,
+            )
         )
 
         self.pl_options = {
@@ -212,6 +221,7 @@ class LookForBuddy(nextcord.ui.Modal):
             style=nextcord.TextInputStyle.paragraph,
             placeholder="Simple website",
             max_length=150,
+            default_value="Testing" if TESTING_MODE else None,
         )
         self.add_item(self.current_projects)
 
@@ -251,6 +261,7 @@ class LookForBuddy(nextcord.ui.Modal):
             style=nextcord.TextInputStyle.paragraph,
             placeholder="Accountability and somebody to share ideas with",
             max_length=150,
+            default_value="Testing" if TESTING_MODE else None,
         )
         self.add_item(self.looking_for)
 
@@ -350,7 +361,7 @@ class BuddyFormView(nextcord.ui.View):
             f"is requesting to bump this post.\n"
             f"This action will cost you {BUMP_COST} kudos.",
         )
-        
+
         await interaction.message.edit(embeds=[buddy_embed, confirm_embed])
 
         def check_message(m):
@@ -372,7 +383,6 @@ class BuddyFormView(nextcord.ui.View):
                 await self.reset_post(interaction.message)
             else:
                 await self.bump_post(interaction)
-
 
     @nextcord.ui.button(
         emoji="🗑️",
