@@ -9,6 +9,8 @@ from datetime import datetime
 import os
 import asyncio
 
+from unicodedata import name
+
 # Replace with your own user id or any user id that's already been used before to submit a buddy form
 BUDDY_FORM_USER_ID = 111111111111111111
 # Kudos cost for bumping a buddy post
@@ -180,11 +182,14 @@ class BuddyCog(Cog):
 
 
 class LookForBuddy(nextcord.ui.Modal):
-    def __init__(self):
+    def __init__(self, editing_post=False):
         super().__init__(
-            title="Looking For Buddy",
+            title="Looking For Buddy"
+            + TESTING_MODE * " (\N{ROBOT FACE} TESTING MODE ENABLED \N{ROBOT FACE})",
             timeout=None,
         )
+
+        self.editing_post = editing_post
 
         self.looking_for_buddy_channel_id = int(
             os.environ.get(
@@ -208,7 +213,9 @@ class LookForBuddy(nextcord.ui.Modal):
         self.programming_languages = nextcord.ui.Select(
             placeholder="Programming Languages",
             options=[
-                nextcord.SelectOption(label=name, emoji=emoji)
+                nextcord.SelectOption(
+                    label=name, emoji=emoji, default=True if TESTING_MODE else False
+                )
                 for name, emoji in self.pl_options.items()
             ],
             min_values=1,
@@ -237,7 +244,11 @@ class LookForBuddy(nextcord.ui.Modal):
         self.region = nextcord.ui.Select(
             placeholder="Region",
             options=[
-                nextcord.SelectOption(label=name, emoji=emoji)
+                nextcord.SelectOption(
+                    label=name,
+                    emoji=emoji,
+                    default=True if TESTING_MODE and name == "North America" else False,
+                )
                 for name, emoji in self.region_options.items()
             ],
         )
@@ -245,8 +256,13 @@ class LookForBuddy(nextcord.ui.Modal):
 
         # The number of choices in select options is limited to a max of 25.
         # https://discord.com/developers/docs/interactions/message-components#select-menu-object-select-menu-structure
-        age_options = [nextcord.SelectOption(label=str(i)) for i in range(13, 37)] + [
-            nextcord.SelectOption(label="37+")
+        age_options = [
+            nextcord.SelectOption(
+                label=str(i), default=True if TESTING_MODE and i == 13 else False
+            )
+            for i in range(13, 37)
+        ] + [
+            nextcord.SelectOption(label="37+", default=True if TESTING_MODE else False)
         ]
         self.age_range = nextcord.ui.Select(
             placeholder="Age Range (Optional) - Select min and max",
@@ -305,16 +321,24 @@ class LookForBuddy(nextcord.ui.Modal):
         embed.set_author(name=interaction.user, icon_url=interaction.user.avatar)
         embed.set_thumbnail(url=interaction.user.avatar)
 
-        looking_for_buddy_channel = interaction.guild.get_channel(
-            self.looking_for_buddy_channel_id
-        )
-        await looking_for_buddy_channel.send(
-            embed=embed, view=BuddyFormView(interaction.user.id)
-        )
-        await interaction.send(
-            f"Your buddy form has been submitted to {looking_for_buddy_channel.mention}.",
-            ephemeral=True,
-        )
+        if self.editing_post:
+            await interaction.message.edit(embed=embed)
+
+            await interaction.response.send_message(
+                f"{interaction.user.mention}, your post has been edited!",
+                ephemeral=True,
+            )
+        else:
+            looking_for_buddy_channel = interaction.guild.get_channel(
+                self.looking_for_buddy_channel_id
+            )
+            await looking_for_buddy_channel.send(
+                embed=embed, view=BuddyFormView(interaction.user.id)
+            )
+            await interaction.send(
+                f"Your buddy form has been submitted to {looking_for_buddy_channel.mention}.",
+                ephemeral=True,
+            )
 
 
 class BuddyFormView(nextcord.ui.View):
@@ -394,6 +418,21 @@ class BuddyFormView(nextcord.ui.View):
                 await self.reset_post(interaction.message)
             else:
                 await self.bump_post(interaction)
+
+    @nextcord.ui.button(
+        emoji="\N{memo}",
+        style=nextcord.ButtonStyle.secondary,
+        label="Edit Your Post",
+        custom_id="EditBuddyPost",
+    )
+    async def edit_buddy_post(self, _, interaction: nextcord.Interaction):
+        if interaction.user.id != self.user_id:
+            return
+
+        buddy_embed = interaction.message.embeds[0]
+        print(buddy_embed.fields)
+        modal = LookForBuddy(editing_post=True)
+        await interaction.response.send_modal(modal)
 
     @nextcord.ui.button(
         emoji="🗑️",
