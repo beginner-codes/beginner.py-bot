@@ -366,7 +366,7 @@ class BuddyFormView(nextcord.ui.View):
     @nextcord.ui.button(
         emoji=PartialEmoji(name="expert", id=669941420454576131),
         style=nextcord.ButtonStyle.blurple,
-        label="Bump",
+        label=f"Bump (Costs {BUMP_COST} kudos)",
         custom_id="BuddyBumpButton",
     )
     async def bump_buddy_form(self, _, interaction: nextcord.Interaction):
