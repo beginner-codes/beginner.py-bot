@@ -57,6 +57,7 @@ resources:
   ds:
     name: Data Science & Machine Learning
     YouTube:
+      Statquest DS Roadmap (Important to understand the maths behind ML models): https://app.learney.me/maps/StatQuest
       Math For ML (Important to understand the maths behind ML models): https://www.youtube.com/playlist?list=PLD80i8An1OEGZ2tYimemzwC3xqkU0jKUg
       Mazen Ahmed: https://www.youtube.com/channel/UCiFF3AvbzLWdRyRnQMEttqw/videos?view=0&sort=da&flow=grid
       Python Programmer: https://www.youtube.com/c/FlickThrough/featured
