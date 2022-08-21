@@ -90,7 +90,7 @@ def run(client, logger):
     logger.debug("Looking for token")
 
     token = _get_token()
-    if not token or len(token.strip()) != 59:
+    if not token:
         message = (
             f"Got token: {repr(token)}\n"
             f"Please set a token in your environment as DISCORD_TOKEN or in your development.yaml file under 'bot' "
