@@ -115,6 +115,33 @@ resources:
       16 Debugging Tips: https://raygun.com/learn/javascript-debugging-tips
       Best IDEs for JavaScript: https://dev.to/theme_selection/what-is-the-best-ide-for-javascript-development-in-2021-1pmn
       10+ Best JavaScript Frameworks: https://technostacks.com/blog/best-javascript-frameworks    
+      Eloquent Javascript Book: https://eloquentjavascript.net/
+
+  html:
+    name: HTML
+    YouTube:
+      Bro Code: https://www.youtube.com/watch?v=HD13eq_Pmp8
+      FreeCodeCamp.org: https://www.youtube.com/playlist?list=PLWKjhJtqVAbnSe1qUNMG7AbPmjIG54u88
+      W3schools.com: https://www.youtube.com/c/w3schools/videos
+    Books:
+      Cool Basic Ideas: https://www.makeuseof.com/tag/7-cool-html-effects-that-anyone-can-add-to-their-website-nb/
+    Websites:
+      Real Html (Basics Tutorials): https://www.w3schools.com/html/
+      Tests and cool examples: https://codepen.io/
+
+  flutter:
+    name: Flutter & Dart
+    Youtube: 
+      Flutter Mentor: https://www.youtube.com/c/FlutterMentor
+      Flutter Mapp: https://www.youtube.com/c/FlutterMapp
+    Documentation: 
+      Official Docs: https://docs.flutter.dev/
+    Books: 
+      Dart Apprentice: https://www.raywenderlich.com/books/dart-apprentice/v1.1
+      Dart Data Structures and Algorithms: https://www.raywenderlich.com/books/data-structures-algorithms-in-dart/v1.0
+      Flutter Apprentice: https://www.raywenderlich.com/books/flutter-apprentice/v1.0.ea2
+    Other:
+      DartPad: https://dartpad.dev/
 
 lang_aliases:
   python: py
@@ -133,3 +160,5 @@ lang_aliases:
   capture the flag: cybersecurity
   ctf: cybersecurity
   javascript: js
+  dart: flutter
+  
