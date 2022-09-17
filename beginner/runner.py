@@ -13,9 +13,34 @@ import uuid
 import hashlib
 from types import ModuleType
 import os
+from collections import UserDict
 
 
 os.environ = {}
+
+
+class SafeDictView(UserDict):
+    def __init__(self, vars_, name_whitelist, dunder_whitelist, import_whitelist):
+        super().__init__(**vars_)
+        self.__name_whitelist = name_whitelist
+        self.__dunder_whitelist = dunder_whitelist
+        self.__import_whitelist = import_whitelist
+
+    def __getitem__(self, item):
+        value = super().__getitem__(item)
+        if item in self.__dunder_whitelist:
+            return value
+
+        if (
+            isinstance(value, ModuleType)
+            and value.__name__ not in self.__import_whitelist
+        ):
+            raise NameError(f"{value.__name__} is not a whitelisted module")
+
+        if item.startswith("_"):
+            raise NameError("Accessing protected names through vars is prohibited")
+
+        return value
 
 
 class Module:
@@ -170,6 +195,8 @@ class Executer:
                 builtins["exec"] = lambda *a, **k: self.exec(*a, runner=exec, **k)
             if "eval" in builtins:
                 builtins["eval"] = lambda *a, **k: self.exec(*a, runner=eval, **k)
+            if "vars" in builtins:
+                builtins["vars"] = self.vars
         if "__import__" in builtins:
             builtins["__import__"] = (
                 self.importer if restricted else self.admin_importer
@@ -191,6 +218,14 @@ class Executer:
         if name not in self.name_whitelist | self.dunder_whitelist:
             raise NameError(f"'{name}' is not a whitelisted name")
         return getattr(obj, name, *args, **kwargs)
+
+    def vars(self, *args, **kwargs):
+        return SafeDictView(
+            vars(*args, **kwargs),
+            self.name_whitelist,
+            self.dunder_whitelist,
+            self.import_whitelist,
+        )
 
     def imported_module_parser(self, name):
         return name.split(".")[0]
