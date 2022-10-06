@@ -298,12 +298,16 @@ class ModerationCog(Cog):
         embed = self.build_mod_action_embed(ctx, member, reason, "Mod Warning")
         message = await ctx.send(embed=embed)
 
-        successfully_dmd = await self.send_dm(
-            member,
-            embed,
-            ctx.message,
-            "You've received a moderator warning on the Beginner.py server.",
-        ) if member else False
+        successfully_dmd = (
+            await self.send_dm(
+                member,
+                embed,
+                ctx.message,
+                "You've received a moderator warning on the Beginner.py server.",
+            )
+            if member
+            else False
+        )
         if not successfully_dmd:
             reason += "\n*Unable to DM user*"
 
@@ -369,7 +373,8 @@ class ModerationCog(Cog):
             .add_field(
                 name="Are They Sus?",
                 value="🚨 Yes 🚨"
-                if not hasattr(member, "roles") or utils.get(ctx.guild.roles, name="🚨sus🚨") in member.roles
+                if not hasattr(member, "roles")
+                or utils.get(ctx.guild.roles, name="🚨sus🚨") in member.roles
                 else "No, they cool 😎",
             )
         )
@@ -442,7 +447,7 @@ class ModerationCog(Cog):
     def build_mod_action_embed(
         self, ctx, user: Member | User, reason: str, title: str
     ) -> Embed:
-        embed = Embed(description=reason, color=0xCC2222)
+        embed = Embed(description=f"{user.mention} {reason}", color=0xCC2222)
         embed.set_author(name=title, icon_url=self.server.icon.url)
         embed.set_footer(text=ctx.author.display_name, icon_url=ctx.author.avatar.url)
         return embed
