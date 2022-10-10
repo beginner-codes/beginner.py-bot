@@ -373,7 +373,8 @@ class Fun(Cog):
         if message.author.id != 789635082717364224:  # Ello
             return
 
-        if "zuck" not in message.content.casefold():
+        normalized = message.content.casefold()
+        if "zuck" not in normalized and "mark" not in normalized:
             return
 
         await message.reply(
