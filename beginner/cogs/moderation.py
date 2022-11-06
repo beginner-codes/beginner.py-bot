@@ -373,8 +373,7 @@ class ModerationCog(Cog):
                 color=0xFFE873,
             )
             .add_field(name="Joined", value=how_long_ago_msg)
-            .add_field(name="User ID", value=str(member.id))
-            .add_field(name="Accepted the Rules", value=rules_status)
+            .add_field(name="Accepted Rules", value=rules_status)
             .add_field(
                 name="Are They Sus?",
                 value="🚨 Yes 🚨"
@@ -382,6 +381,7 @@ class ModerationCog(Cog):
                 or utils.get(ctx.guild.roles, name="🚨sus🚨") in member.roles
                 else "No, they cool 😎",
             )
+            .add_field(name="User ID", value=str(member.id))
         )
 
     async def send_dm(
