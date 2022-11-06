@@ -324,7 +324,7 @@ class ModerationCog(Cog):
     @Cog.command(aliases=("whois",))
     async def history(self, ctx, member: str):
         member_id = int(re.findall(r"\d+", member).pop())
-        member = ctx.guild.get_member(member_id) or Snowflake(id=member_id)
+        member: Member = ctx.guild.get_member(member_id) or Snowflake(id=member_id)
         history = list(
             ModAction.select()
             .limit(50)
@@ -362,6 +362,10 @@ class ModerationCog(Cog):
             elif how_long_ago > timedelta(minutes=5):
                 how_long_ago_msg = f"{how_long_ago // timedelta(minutes=1)} minutes ago"
 
+        rules_status = "*Not A Member*"
+        if hasattr(member, "pending"):
+            rules_status = "No" if member.pending else "Yes"
+
         await ctx.send(
             embed=Embed(
                 title=title,
@@ -370,6 +374,7 @@ class ModerationCog(Cog):
             )
             .add_field(name="Joined", value=how_long_ago_msg)
             .add_field(name="User ID", value=str(member.id))
+            .add_field(name="Accepted the Rules", value=rules_status)
             .add_field(
                 name="Are They Sus?",
                 value="🚨 Yes 🚨"
