@@ -2,7 +2,7 @@ import re
 
 from beginner.cog import Cog
 from beginner.colors import *
-from nextcord import Embed, TextChannel
+from nextcord import Embed, TextChannel, Message
 from nextcord.ext import commands
 from functools import cached_property
 from typing import Optional, Set
@@ -51,7 +51,7 @@ class SpamCog(Cog):
         return set(channel.name for channel in self.get_category("Staff").text_channels)
 
     @Cog.command(name="delete-gist")
-    @commands.has_guild_permissions(manage_messages=True)
+    @commands.has_any_role(720655282115706892, 644390354157568014)
     async def delete_gist(self, ctx, gist_url: str):
         deleted = await self.delete_gist_by_url(gist_url)
         message = "The Gist has been deleted"
@@ -84,7 +84,7 @@ class SpamCog(Cog):
             message.delete(),
         )
 
-    async def attachment_filter(self, message):
+    async def attachment_filter(self, message: Message):
         """When a message is sent by normal users ensure it doesn't have any non-image attachments. Delete it and send
         a mod message if it does."""
         if message.author.bot:
@@ -97,6 +97,7 @@ class SpamCog(Cog):
             if message.channel.name.lower() in self.admin_channels:
                 return
 
+            mod_role = message.guild
             if message.channel.permissions_for(message.author).manage_messages:
                 return
 
