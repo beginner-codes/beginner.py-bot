@@ -44,14 +44,18 @@ class AdventOfCode(Cog):
 
     async def ready(self):
         if self.now.month != self.christmas.month:
-            days = self.christmas - self.now - timedelta(days=25)
+            days = (self.christmas - self.now - timedelta(days=25)).days
             self.logger.debug(f"It's not December, another {days} days")
             return
 
-        if self.now < self.christmas + timedelta(days=1):
-            self.logger.debug("🎄🎅☃️ 🤶🎄🤶☃️ 🎅🎄")
-            self.logger.debug(self.days_till_christmas, "days until Christmas!!!")
-            self.schedule_next_challenge_announcement()
+        if self.now > self.christmas:
+            days = (self.now - self.christmas).days
+            self.logger.debug(f"Christmas was {days} ago")
+            return
+
+        self.logger.debug("🎄🎅☃️ 🤶🎄🤶☃️ 🎅🎄")
+        self.logger.debug(self.days_till_christmas, "days until Christmas!!!")
+        self.schedule_next_challenge_announcement()
 
     def schedule_next_challenge_announcement(self):
         if self.days_till_christmas:
