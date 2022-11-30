@@ -9,14 +9,20 @@ import os
 
 
 class BeginnerCog(Cog):
+    def __init__(self, client):
+        super().__init__(client)
+        self.__loaded = False
+
     @commands.Cog.listener()
     async def on_ready(self):
         self.logger.debug("Cog ready")
         initialize_scheduler(loop=self.client.loop)
 
         if not BeginnerCog.is_dev_env():
+            message = "restarted" if self.__loaded else "is online"
+            self.__loaded = True
             await self.get_channel("🤖bot-dev").send(
-                f"Bot back online! Image Version: {os.environ.get('BOT_IMAGE_VERSION', 'NOT SET')}"
+                f"Bot {message}! Image Version: {os.environ.get('BOT_IMAGE_VERSION', 'NOT SET')}"
             )
 
     @Cog.listener()
