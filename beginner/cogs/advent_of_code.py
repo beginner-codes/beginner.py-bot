@@ -20,7 +20,7 @@ class AdventOfCode(Cog):
     @property
     def christmas(self):
         return datetime(
-            2021, 12, 25, 0, 0, 0, tzinfo=dateutil.tz.gettz("America/New_York")
+            self.now.year, 12, 25, 0, 0, 0, tzinfo=dateutil.tz.gettz("America/New_York")
         )
 
     @property
@@ -43,6 +43,9 @@ class AdventOfCode(Cog):
         )
 
     async def ready(self):
+        if self.now.month != self.christmas.month:
+            return
+
         if self.now < self.christmas + timedelta(days=1):
             print("🎄🎅☃️ 🤶🎄🤶☃️ 🎅🎄")
             print(self.days_till_christmas, "days until Christmas!!!")
@@ -51,7 +54,7 @@ class AdventOfCode(Cog):
     def schedule_next_challenge_announcement(self):
         if self.days_till_christmas:
             schedule(
-                "beginnerpy-advent-of-code-2021",
+                "beginnerpy-advent-of-code",
                 self.now + timedelta(days=1, minutes=1) - self.raw_now,
                 self.send_daily_link,
                 no_duplication=True,
@@ -70,7 +73,7 @@ class AdventOfCode(Cog):
             embed=nextcord.Embed(
                 description=(
                     f"**Here's the [{self.now.day}{suffixes.get(self.now.day, 'th')} challenge]"
-                    f"(https://adventofcode.com/2021/day/{self.now.day})!!!**\n\n"
+                    f"(https://adventofcode.com/{self.now.year}/day/{self.now.day})!!!**\n\n"
                     f"Show off (spoiler tag please) & discuss in {show_off.mention}!!! Get help in {help_1.mention} or "
                     f"{help_2.mention}.\n\n"
                     f"**Good luck!!!**"
@@ -85,9 +88,10 @@ class AdventOfCode(Cog):
             .add_field(
                 name="Beginner.codes Leaderboard",
                 value=(
-                    "To join our server's leaderboard go [here](https://adventofcode.com/2021/leaderboard/private), "
-                    "enter our code in the text box, and then click join.\n\n"
-                    "**Beginner.codes Leaderboard Code:** `990847-0adb2be3`"
+                    f"To join our server's leaderboard go "
+                    f"[here](https://adventofcode.com/{self.now.year}/leaderboard/private), "
+                    f"enter our code in the text box, and then click join.\n\n"
+                    f"**Beginner.codes Leaderboard Code:** `990847-0adb2be3`"
                 ),
             )
             .set_footer(text="Toggle pings for new challenges with the !aoc command"),
