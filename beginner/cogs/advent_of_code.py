@@ -54,7 +54,7 @@ class AdventOfCode(Cog):
             return
 
         self.logger.debug("🎄🎅☃️ 🤶🎄🤶☃️ 🎅🎄")
-        self.logger.debug(self.days_till_christmas, "days until Christmas!!!")
+        self.logger.debug(f"{self.days_till_christmas} days until Christmas!!!")
         self.schedule_next_challenge_announcement()
 
     def schedule_next_challenge_announcement(self):
