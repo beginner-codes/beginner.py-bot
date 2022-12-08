@@ -1,4 +1,4 @@
-FROM python:3.10-slim-buster
+FROM python:3.11-slim-buster
 MAINTAINER Zech Zimmerman "hi@zech.codes"
 
 RUN apt-get update \
