@@ -45,14 +45,19 @@ class SafeDictView(UserDict):
 
 class Module:
     def __init__(self, module, executor):
-        self._module = module
+        self.str = str(module)
+        self.repr = repr(module)
+        self.dir = dir(module)
+        self.name = module.__name__
+
         self.__executor = executor
+        self.__get_attr = lambda item: getattr(module, item)
 
     def __getattr__(self, item: str):
         if item.startswith("_"):
-            raise AttributeError(f"{self._module.__name__}.{item} is disabled")
+            raise AttributeError(f"{self.name}.{item} is disabled")
 
-        attr = getattr(self._module, item)
+        attr = self.__get_attr(item)
         if isinstance(attr, ModuleType):
             if attr.__name__ not in self.__executor.import_whitelist:
                 raise RuntimeError(f"{attr.__name__} is not an enabled module")
@@ -62,13 +67,13 @@ class Module:
         return attr
 
     def __repr__(self):
-        return repr(self._module)
+        return self.repr
 
     def __str__(self):
-        return str(self._module)
+        return self.str
 
     def __dir__(self):
-        return dir(self._module)
+        return self.dir
 
 
 class Numpy(Module):
