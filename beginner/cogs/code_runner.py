@@ -127,9 +127,13 @@ class CodeRunner(Cog):
 
         elif (
             reaction.emoji.name in self._delete_emojis
-            and reaction.member in message.mentions
+            and member in message.mentions
             and message.author.id == self.client.user.id
-            and reaction.member != self.client.user
+            and (
+                "Exception Raised" in message.embeds[0].title # checks if !eval or !exec or !_exec_brainfuck raise an error
+                or "Exec - No Code" in message.embeds[0].title # checks if !_exec couldn't find a code block
+                or "Formatting - Invalid Input" in message.embeds[0].title # checks if !_black_formatting raises invalid input error
+            )
         ):
             await message.delete()
 
@@ -280,28 +284,34 @@ class CodeRunner(Cog):
 
         title = "✅ Formatting - Success"
         color = BLUE
-
+        err = None
+        
         try:
             formatted_code = f"py\n{black.format_file_contents(code, mode=black.FileMode(), fast=True)}\n"
         except black.NothingChanged:
             title = "✅ Formatting - Nothing Changed"
             color = BLUE
             formatted_code = "Code already formatted correctly."
+            err = False
         except black.InvalidInput as e:
             title = "❌ Formatting - Invalid Input"
             color = YELLOW
             formatted_code = f"\n{e}\n"
+            err = True
 
-        await message.channel.send(
-            content="" if member is None else member.mention,
-            embed=nextcord.Embed(
-                title=title, description=f"```{formatted_code}```", color=color
-            ),
-            reference=message,
-            allowed_mentions=nextcord.AllowedMentions(
-                replied_user=member is None, users=[member] if member else False
-            ),
-        )
+        msg = await message.channel.send(
+                content="" if member is None else member.mention,
+                embed=nextcord.Embed(
+                    title=title, description=f"```{formatted_code}```", color=color
+                ),
+                reference=message,
+                allowed_mentions=nextcord.AllowedMentions(
+                    replied_user=member is None, users=[member] if member else False
+                ),
+            )
+           
+        if err:
+            await msg.add_reaction(self._delete_reactions[0])
 
     async def code_runner(
         self, mode: str, code: str, user_input: str = "", restricted=True
