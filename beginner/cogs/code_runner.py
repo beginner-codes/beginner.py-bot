@@ -168,6 +168,8 @@ class CodeRunner(Cog):
         restricted = not member.guild_permissions.manage_messages
         if not restricted:
             title += " (Super User 🦸)"
+        else:
+            return
 
         if user_input:
             code, *_ = re.match(
