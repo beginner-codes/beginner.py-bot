@@ -337,6 +337,9 @@ class CodeRunner(Cog):
             )
             return
 
+        if not ctx.author.guild_permissions.manage_messages:
+            return
+
         code = re.sub(r"^\s*(```(python|py)|`?)\s*|\s*(```|`)\s*$", "", content)
         title = "✅ Eval - Success"
         color = BLUE
