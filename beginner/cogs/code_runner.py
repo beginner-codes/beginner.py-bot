@@ -174,6 +174,15 @@ class CodeRunner(Cog):
         if not restricted:
             title += " (Super User 🦸)"
         else:
+            await ctx.send(
+                embeds=[
+                    nextcord.Embed(
+                        title="Staff only command",
+                        description="The exec command is currently only available to the server staff.",
+                        color=nextcord.Color.red(),
+                    )
+                ]
+            )
             return
 
         if user_input:
@@ -354,6 +363,15 @@ class CodeRunner(Cog):
             return
 
         if not ctx.author.guild_permissions.manage_messages:
+            await ctx.send(
+                embeds=[
+                    nextcord.Embed(
+                        title="Staff only command",
+                        description="The eval command is currently only available to the server staff.",
+                        color=nextcord.Color.red(),
+                    )
+                ]
+            )
             return
 
         code = re.sub(r"^\s*(```(python|py)|`?)\s*|\s*(```|`)\s*$", "", content)
