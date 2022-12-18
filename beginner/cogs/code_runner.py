@@ -173,8 +173,8 @@ class CodeRunner(Cog):
         restricted = not member.guild_permissions.manage_messages
         if not restricted:
             title += " (Super User 🦸)"
-        else:
-            await ctx.send(
+        elif message.guild.get_role(720655282115706892) not in member.roles:
+            await message.channel.send(
                 embeds=[
                     nextcord.Embed(
                         title="Staff only command",
@@ -362,7 +362,7 @@ class CodeRunner(Cog):
             )
             return
 
-        if not ctx.author.guild_permissions.manage_messages:
+        if ctx.guild.get_role(720655282115706892) not in ctx.author.roles:
             await ctx.send(
                 embeds=[
                     nextcord.Embed(
