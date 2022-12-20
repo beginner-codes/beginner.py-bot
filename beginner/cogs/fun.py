@@ -369,20 +369,6 @@ class Fun(Cog):
             await ctx.send(response, reference=ctx.message)
 
     @Cog.listener()
-    async def on_message(self, message: nextcord.Message):
-        if message.author.id != 789635082717364224:  # Ello
-            return
-
-        normalized = message.content.casefold()
-        if "zuck" not in normalized and "mark" not in normalized:
-            return
-
-        await message.reply(
-            embeds=[nextcord.Embed().set_image(url="https://i.imgur.com/BKrCT8p.jpeg")],
-            mention_author=True,
-        )
-
-    @Cog.listener()
     async def on_raw_reaction_add(self, reaction):
         if reaction.emoji.name != "❓":
             return
