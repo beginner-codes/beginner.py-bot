@@ -4,6 +4,11 @@ import nextcord.ext.commands
 import logging
 from beginner.models import set_database, PostgresqlDatabase, SqliteDatabase
 
+import os
+import pprint
+
+pprint.pprint(dict(os.environ))
+
 
 def connect_db(logger):
     logger.info(f"Attempting to connect the DB")
