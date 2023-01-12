@@ -4,7 +4,6 @@ on:
       - master
 
 jobs:
-
   build:
     name: Build, push, and deploy
     runs-on: ubuntu-latest
@@ -36,10 +35,10 @@ jobs:
         token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
 
     - name: Save DigitalOcean kubeconfig
-      run: doctl kubernetes cluster kubeconfig save personal-kubernetes
+      run: doctl kubernetes cluster kubeconfig save production-hosting
 
     - name: Deploy to DigitalOcean Kubernetes
-      run: kubectl apply -f $GITHUB_WORKSPACE/manifests/bot.yaml -n bpy
+      run: kubectl apply -f $GITHUB_WORKSPACE/manifests/bot.yaml -n bc-bots
 
     - name: Verify deployment
-      run: kubectl rollout status deployment/beginner-py-bot -n bpy
+      run: kubectl rollout status deployment/beginner-py-bot -n bc-bots
