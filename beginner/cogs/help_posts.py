@@ -6,9 +6,11 @@ from datetime import timedelta
 import ast
 import nextcord
 import nextcord.ext.commands
+import time
 
 
 HELP_INSTRUCTIONS_POST_ID = 1065670718337069127
+cooldown: dict[int, int] = {}
 
 
 class HelpPosts(Cog):
@@ -21,10 +23,14 @@ class HelpPosts(Cog):
             return
 
         await message.delete()
-        await message.channel.send(
-            f"{message.author.mention} your message has been deleted. Please read the instructions above.",
-            delete_after=10,
-        )
+
+        now = int(time.time())
+        if now - cooldown.get(message.author.id, 0) >= 60:
+            await message.channel.send(
+                f"{message.author.mention} your message has been deleted. Please read the instructions above.",
+                delete_after=10,
+            )
+            cooldown[message.author.id] = now
 
 
 def setup(client):
