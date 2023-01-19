@@ -130,9 +130,18 @@ class CodeRunner(Cog):
             and member in message.mentions
             and message.author.id == self.client.user.id
             and (
-                "Exception Raised" in message.embeds[0].title # checks if !eval or !exec or !_exec_brainfuck raise an error
-                or "Exec - No Code" in message.embeds[0].title # checks if !_exec couldn't find a code block
-                or "Formatting - Invalid Input" in message.embeds[0].title # checks if !_black_formatting raises invalid input error
+                "Exception Raised"
+                in message.embeds[
+                    0
+                ].title  # checks if !eval or !exec or !_exec_brainfuck raise an error
+                or "Exec - No Code"
+                in message.embeds[
+                    0
+                ].title  # checks if !_exec couldn't find a code block
+                or "Formatting - Invalid Input"
+                in message.embeds[
+                    0
+                ].title  # checks if !_black_formatting raises invalid input error
             )
         ):
             await message.delete()
@@ -150,20 +159,20 @@ class CodeRunner(Cog):
             or content.rfind("```") <= 0
         ):
             msg = await message.channel.send(
-                    content="" if member is None else member.mention,
-                    embed=nextcord.Embed(
-                        title="Exec - No Code",
-                        description=(
-                            "\n**NO PYTHON CODE BLOCK FOUND**\n\nThe command format is as follows:\n\n"
-                            "\n!exec \\`\\`\\`py\nYOUR CODE HERE\n\\`\\`\\`\n"
-                        ),
-                        color=RED,
+                content="" if member is None else member.mention,
+                embed=nextcord.Embed(
+                    title="Exec - No Code",
+                    description=(
+                        "\n**NO PYTHON CODE BLOCK FOUND**\n\nThe command format is as follows:\n\n"
+                        "\n!exec \\`\\`\\`py\nYOUR CODE HERE\n\\`\\`\\`\n"
                     ),
-                    reference=message,
-                    allowed_mentions=nextcord.AllowedMentions(
-                        replied_user=member is None, users=[member] if member else False
-                    ),
-                )
+                    color=RED,
+                ),
+                reference=message,
+                allowed_mentions=nextcord.AllowedMentions(
+                    replied_user=member is None, users=[member] if member else False
+                ),
+            )
             await msg.add_reactions(self._delete_reactions[0])
             return
 
@@ -231,15 +240,15 @@ class CodeRunner(Cog):
         if "https://xkcd.com/353/" in old_out:
             embed.set_image(url="https://imgs.xkcd.com/comics/python.png")
         msg = await message.channel.send(
-                content="" if member is None else member.mention,
-                embed=embed,
-                reference=message,
-                allowed_mentions=nextcord.AllowedMentions(
-                    replied_user=member is None,
-                    users=[member] if member else False,
-                    roles=[],
-                ),
-            )
+            content="" if member is None else member.mention,
+            embed=embed,
+            reference=message,
+            allowed_mentions=nextcord.AllowedMentions(
+                replied_user=member is None,
+                users=[member] if member else False,
+                roles=[],
+            ),
+        )
         if err:
             await msg.add_reaction(self._delete_reactions[0])
 
@@ -269,15 +278,14 @@ class CodeRunner(Cog):
         if len(out) > 1000:
             out = out[:497] + "\n.\n.\n.\n" + out[-504:]
         msg = await message.channel.send(
-                embed=nextcord.Embed(
-                    title=title, description=f"```\n{out}\n```", color=color
-                ),
-                reference=message,
-                allowed_mentions=nextcord.AllowedMentions(replied_user=True),
-            )
+            embed=nextcord.Embed(
+                title=title, description=f"```\n{out}\n```", color=color
+            ),
+            reference=message,
+            allowed_mentions=nextcord.AllowedMentions(replied_user=True),
+        )
         if err:
             await msg.add_reaction(self._delete_reactions[0])
-            
 
     async def _black_formatting(
         self, message: nextcord.Message, content: str, member: nextcord.Member = None
@@ -296,7 +304,7 @@ class CodeRunner(Cog):
         title = "✅ Formatting - Success"
         color = BLUE
         err = None
-        
+
         try:
             formatted_code = f"py\n{black.format_file_contents(code, mode=black.FileMode(), fast=True)}\n"
         except black.NothingChanged:
@@ -311,16 +319,16 @@ class CodeRunner(Cog):
             err = True
 
         msg = await message.channel.send(
-                content="" if member is None else member.mention,
-                embed=nextcord.Embed(
-                    title=title, description=f"```{formatted_code}```", color=color
-                ),
-                reference=message,
-                allowed_mentions=nextcord.AllowedMentions(
-                    replied_user=member is None, users=[member] if member else False
-                ),
-            )
-           
+            content="" if member is None else member.mention,
+            embed=nextcord.Embed(
+                title=title, description=f"```{formatted_code}```", color=color
+            ),
+            reference=message,
+            allowed_mentions=nextcord.AllowedMentions(
+                replied_user=member is None, users=[member] if member else False
+            ),
+        )
+
         if err:
             await msg.add_reaction(self._delete_reactions[0])
 
@@ -389,14 +397,14 @@ class CodeRunner(Cog):
             output = err
 
         msg = await ctx.send(
-                embed=nextcord.Embed(
-                    title=title,
-                    description=f"{code_message.strip()}\n{output}\n```",
-                    color=color,
-                ).set_footer(text=f"Completed in {duration:0.4f} milliseconds"),
-                reference=ctx.message,
-                mention_author=True,
-            )
+            embed=nextcord.Embed(
+                title=title,
+                description=f"{code_message.strip()}\n{output}\n```",
+                color=color,
+            ).set_footer(text=f"Completed in {duration:0.4f} milliseconds"),
+            reference=ctx.message,
+            mention_author=True,
+        )
         if err:
             await msg.add_reaction(self._delete_reactions[0])
 
