@@ -17,7 +17,7 @@ cogs:
   fun: true
   google: true
   help: true
-  help_rotator: false
+  help_posts: true
   kudos: true
   moderation: true
   monthly_showing_off: true
