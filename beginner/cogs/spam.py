@@ -97,7 +97,6 @@ class SpamCog(Cog):
             if message.channel.name.lower() in self.admin_channels:
                 return
 
-            mod_role = message.guild
             if message.channel.permissions_for(message.author).manage_messages:
                 return
 
