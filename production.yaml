@@ -142,6 +142,28 @@ resources:
       Flutter Apprentice: https://www.raywenderlich.com/books/flutter-apprentice/v1.0.ea2
     Other:
       DartPad: https://dartpad.dev/
+  
+  rust:
+    name: Rust Development
+    YouTube:
+      Tech With Tim: https://www.youtube.com/@TechWithTim
+      Let's Get Rusty: https://www.youtube.com/@letsgetrusty
+    Books:
+      The Book: https://doc.rust-lang.org/book/
+      Tools: https://www.rust-lang.org/tools
+    
+  kotlin:
+    name: Kotlin & Android
+    YouTube:
+      Crash Course: https://www.youtube.com/watch?v=F9UC9DY-vIU
+      FreeCodeCamp: https://www.youtube.com/@freecodecamp
+      Android Course: https://www.youtube.com/watch?v=BBWyXo-3JGQ
+    Docs & Books:
+      Kotlin Docs: https://kotlinlang.org/docs/home.html
+      Android With Kotlin: https://developer.android.com/kotlin
+    Other:
+      Get Started: https://www.jetbrains.com/help/idea/get-started-with-kotlin.html
+    
 
 lang_aliases:
   python: py
@@ -161,4 +183,11 @@ lang_aliases:
   ctf: cybersecurity
   javascript: js
   dart: flutter
+  rs: rust
+  rustlang: rust
+  kt: kotlin
+  kts: kotlin
+  mobile: kotlin
+  android: kotlin
+  
   
