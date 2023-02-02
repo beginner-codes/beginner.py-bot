@@ -12,7 +12,7 @@ class Admin(Cog):
     @Cog.command()
     async def sus(self, ctx: nextcord.ext.commands.Context):
         members = [ctx.author]
-        if ctx.author.guild_permissions.manage_messages:
+        if ctx.author.guild_permissions.view_guild_insights:
             members = ctx.message.mentions
 
         role = nextcord.utils.get(ctx.guild.roles, name="🚨sus🚨")
