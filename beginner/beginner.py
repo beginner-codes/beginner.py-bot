@@ -38,8 +38,7 @@ class BeginnerCog(Cog):
 
     async def _send_error_to_webhook(self, error: Exception, ctx: commands.Context):
         async with ClientSession() as session:
-            wh = Webhook.partial(
-                882811369353793576,
+            wh = Webhook.from_url(
                 self.settings.get("_ERROR_WEBHOOK_URL"),
                 session=session,
             )
