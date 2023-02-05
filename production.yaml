@@ -187,7 +187,5 @@ lang_aliases:
   rustlang: rust
   kt: kotlin
   kts: kotlin
-  mobile: kotlin
-  android: kotlin
   
   
