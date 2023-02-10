@@ -111,11 +111,16 @@ class BuddyCog(Cog):
         await ctx.channel.edit(name=name)
 
     @Cog.command("close")
-    @commands.has_permissions(kick_members=True)
     async def close_buddy_chat(self, ctx: nextcord.ext.commands.Context):
         category = await self.get_buddy_chat_category()
 
         if not category or ctx.channel.category.id != category:
+            await ctx.send(
+                "You can use the `/close` slash command to close a help post."
+            )
+            return
+
+        if not ctx.channel.permissions_for(ctx.author).kick_members:
             return
 
         if not isinstance(ctx.channel, nextcord.Thread):
