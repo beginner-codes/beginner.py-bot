@@ -164,6 +164,18 @@ resources:
     Other:
       Get Started: https://www.jetbrains.com/help/idea/get-started-with-kotlin.html
     
+  java:
+    name: Java
+    YouTube:
+      Coding With John: https://www.youtube.com/@CodingWithJohn
+    Documentation:
+      Oracle - Java Platform SE: https://docs.oracle.com/en/java/javase/
+      Oracle - Getting Started With NetBeans: https://www.oracle.com/java/technologies/netbeans-part1.html
+    Websites:
+      Baeldung: https://www.baeldung.com/
+      Tutorialspoint - Java Tutorial: https://www.tutorialspoint.com/java/index.htm
+    Other:
+      JDoodle Online Java Compiler: https://www.jdoodle.com/online-java-compiler/
 
 lang_aliases:
   python: py
