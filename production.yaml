@@ -171,6 +171,8 @@ resources:
     Documentation:
       Oracle - Java Platform SE: https://docs.oracle.com/en/java/javase/
       Oracle - Getting Started With NetBeans: https://www.oracle.com/java/technologies/netbeans-part1.html
+      Oracle - Creating a GUI With Swing: https://docs.oracle.com/javase/tutorial/uiswing/index.html
+      Oracle - The Java Tutorials: https://docs.oracle.com/javase/tutorial/
     Websites:
       Baeldung: https://www.baeldung.com/
       Tutorialspoint - Java Tutorial: https://www.tutorialspoint.com/java/index.htm
