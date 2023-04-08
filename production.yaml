@@ -178,6 +178,17 @@ resources:
       Tutorialspoint - Java Tutorial: https://www.tutorialspoint.com/java/index.htm
     Other:
       JDoodle Online Java Compiler: https://www.jdoodle.com/online-java-compiler/
+      
+  cpp:
+    name: C++
+    YouTube:
+      The Cherno: https://www.youtube.com/playlist?list=PLlrATfBNZ98dudnM48yfGUldqGD0S4FFb
+    Docs:
+      C++ Core Guidelines: https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines
+      C++ Patterns: https://cpppatterns.com/
+    Projects:
+      Project Based Learning: https://github.com/practical-tutorials/project-based-learning#cc
+    
 
 lang_aliases:
   python: py
@@ -201,5 +212,6 @@ lang_aliases:
   rustlang: rust
   kt: kotlin
   kts: kotlin
+  c++: cpp
   
   
