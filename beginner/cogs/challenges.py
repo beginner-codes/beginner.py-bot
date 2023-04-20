@@ -72,12 +72,15 @@ class Challenges(Cog):
         if message.author.bot:
             return
 
+        if not message.content.startswith("# Challenge"):
+            return
+
         role = nextcord.utils.get(message.guild.roles, name="Challenges")
-        await message.delete()
         announcement = await message.channel.send(
-            f"**{role.mention}{message.content.removeprefix('**Challenge')}",
+            f"# {role.mention}{message.content.removeprefix('# Challenge')}",
             view=ChallengeReminderView(timeout=None),
         )
+        await message.delete()
         await announcement.publish()
 
     async def challenge_submission_scan(self, message):
