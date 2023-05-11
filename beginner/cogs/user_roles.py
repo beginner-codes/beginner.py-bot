@@ -24,13 +24,15 @@ class UserRolesCog(Cog):
 
     @Cog.listener()
     async def on_raw_reaction_add(self, reaction):
-        member = self.server.get_member(reaction.user_id)
         message = await self.get_message()
-
-        if member.bot:
+        if reaction.message_id != message.id:
             return
 
-        if reaction.message_id != message.id:
+        member = self.server.get_member(reaction.user_id)
+        if not member:
+            member = await self.server.fetch_member(reaction.user_id)
+
+        if not member or member.bot:
             return
 
         if reaction.emoji.name not in self.reactions_to_roles:
