@@ -7,7 +7,7 @@ authors = ["Zech Zimmerman <zechzimm@gmail.com>"]
 [tool.poetry.dependencies]
 python = "^3.8.0"
 peewee = "^3.13"
-requests = "^2.22"
+requests = "^2.31"
 google = "^2.0"
 google-api-python-client = "2.15.0"
 numpy = "^1.19.0"
