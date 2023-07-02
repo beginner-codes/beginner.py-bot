@@ -46,8 +46,9 @@ resources:
   py:
     name: Python
     YouTube:
+      Harvard University CS50 Python Course: https://www.youtube.com/watch?v=nLRL_NcnK-4
       Corey Schafer: https://www.youtube.com/c/Coreyms/playlists
-      Mosh: https://www.youtube.com/playlist?list=PLTjRvDozrdlxj5wgH4qkvwSOdHLOCx10f
+      Mosh: https://www.youtube.com/watch?v=_uQrJ0TkZlc
       FreeCodeCamp: https://www.youtube.com/playlist?list=PLWKjhJtqVAbnqBxcdjVGgT3uVR10bzTEB
     Books:
       Automate the Boring Stuff with Python: https://automatetheboringstuff.com/2e/chapter0/
