@@ -67,11 +67,15 @@ resources:
     Courses:
       Kaggle Learn: https://www.kaggle.com/learn/overview
       Google ML Course (Check prerequisites before starting): https://developers.google.com/machine-learning/crash-course
+    Books:
+      Introduction to Statistical Learning (Choose R or Python): https://www.statlearning.com/
+      Hands-On Machine Learning with Scikit-Learn, Keras, and TensorFlow (Not free): https://www.oreilly.com/library/view/hands-on-machine-learning/9781098125967/
     Data Visualisation:
       Data Visualisation Catalogue: https://datavizcatalogue.com/index.html
       Which graph to use: https://www.data-to-viz.com/
       Resource for creating graphs (Python): https://www.python-graph-gallery.com/
       Resource for creating graphs (R): https://www.r-graph-gallery.com/index.html
+      Colorwise (Not free): https://www.oreilly.com/library/view/colorwise/9781492097839/
 
   pentesting:
     name: Pentesting & Ethical Hacking
