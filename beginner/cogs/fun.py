@@ -582,7 +582,7 @@ class Fun(Cog):
             f"<t:{int(utc.timestamp())}:t>\n```\n<t:{int(utc.timestamp())}:t>\n```"
         )
 
-    @Cog.listener()
+    @Cog.listener("on_message")
     async def delete_see_sharp_jokes(self, message):
         if message.author.bot:
             return

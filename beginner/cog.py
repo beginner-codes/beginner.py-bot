@@ -4,10 +4,19 @@ from beginner.logging import get_logger
 from beginner.settings import Settings
 from beginner.tags import TaggableMeta
 from nextcord.ext import commands
-from nextcord import TextChannel, Client, Guild, Emoji, CategoryChannel, Role, slash_command
+from nextcord import (
+    TextChannel,
+    Client,
+    Guild,
+    Emoji,
+    CategoryChannel,
+    Role,
+    slash_command,
+)
 from typing import Any, AnyStr, Coroutine, List, Optional
 import json
 import os.path
+
 
 class Cog(commands.Cog, metaclass=TaggableMeta):
     def __init__(self, client: Client):
@@ -83,7 +92,6 @@ class Cog(commands.Cog, metaclass=TaggableMeta):
     @staticmethod
     def slash_command(*args, **kwargs) -> slash_command:
         return slash_command(*args, **kwargs)
-
 
 
 class AdvancedCommand:
