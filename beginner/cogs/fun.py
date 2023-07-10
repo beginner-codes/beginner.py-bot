@@ -582,6 +582,23 @@ class Fun(Cog):
             f"<t:{int(utc.timestamp())}:t>\n```\n<t:{int(utc.timestamp())}:t>\n```"
         )
 
+    @cog.listener()
+    async def delete_see_sharp_jokes(self, message: Message):
+        if message.author.bot:
+            return
+
+        matches = re.match(
+            r"(c+[a@4]+n+'*[t7]+|c+[a@4]+n+[o0]+[t7]+)\s*([s$]+e+\s*[s$]+h+[a@4]+r*p+|c+\s*[s$]+h+[a@4]+r+p+|c+\s*#+)",
+            "",
+            message.content.casefold(),
+        )
+        if matches:
+            await message.delete()
+            await message.channel.send(
+                f"{message.author.mention} please refrain from making C# jokes.",
+                delete_after=10,
+            )
+
 
 def setup(client):
     client.add_cog(Fun(client))
