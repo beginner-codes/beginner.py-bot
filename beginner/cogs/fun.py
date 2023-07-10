@@ -587,7 +587,7 @@ class Fun(Cog):
         if message.author.bot:
             return
 
-        matches = re.match(
+        matches = re.search(
             r"(c+[a@4]+n+'*[t7]+|c+[a@4]+n+[o0]+[t7]+)\s*([s$]+e+\s*[s$]+h+[a@4]+r*p+|c+\s*[s$]+h+[a@4]+r+p+|c+\s*#+)",
             "",
             message.content.casefold(),
