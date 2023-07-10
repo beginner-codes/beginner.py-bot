@@ -582,13 +582,14 @@ class Fun(Cog):
             f"<t:{int(utc.timestamp())}:t>\n```\n<t:{int(utc.timestamp())}:t>\n```"
         )
 
-    @Cog.listener("on_message")
+    @Cog.listener()
     async def delete_see_sharp_jokes(self, message):
         if message.author.bot:
             return
 
-        matches = re.search(
+        matches = re.match(
             r"(c+[a@4]+n+'*[t7]+|c+[a@4]+n+[o0]+[t7]+)\s*([s$]+e+\s*[s$]+h+[a@4]+r*p+|c+\s*[s$]+h+[a@4]+r+p+|c+\s*#+)",
+            "",
             message.content.casefold(),
         )
         if matches:
