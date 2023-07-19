@@ -19,7 +19,7 @@ class CodeRunner(Cog):
         self._exec_rate_limit = {}
         self._code_runner_emojis = {"▶️", "⏯"}
         self._formatting_emojis = {"✏️", "📝"}
-        self._delete_emojis = {"🗑️"}
+        self._delete_emojis = ("🗑️",)
 
     @Cog.command()
     async def dis(self, ctx, *, content=""):
