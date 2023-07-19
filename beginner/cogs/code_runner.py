@@ -173,7 +173,7 @@ class CodeRunner(Cog):
                     replied_user=member is None, users=[member] if member else False
                 ),
             )
-            await msg.add_reactions(self._delete_reactions[0])
+            await msg.add_reactions(self._delete_emojis[0])
             return
 
         title = "✅ Exec - Success"
@@ -250,7 +250,7 @@ class CodeRunner(Cog):
             ),
         )
         if err:
-            await msg.add_reaction(self._delete_reactions[0])
+            await msg.add_reaction(self._delete_emojis[0])
 
     async def _exec_brainfuck(self, message: nextcord.Message, content: str):
         title = "✅ Exec Brainfuck - Success"
@@ -285,7 +285,7 @@ class CodeRunner(Cog):
             allowed_mentions=nextcord.AllowedMentions(replied_user=True),
         )
         if err:
-            await msg.add_reaction(self._delete_reactions[0])
+            await msg.add_reaction(self._delete_emojis[0])
 
     async def _black_formatting(
         self, message: nextcord.Message, content: str, member: nextcord.Member = None
@@ -330,7 +330,7 @@ class CodeRunner(Cog):
         )
 
         if err:
-            await msg.add_reaction(self._delete_reactions[0])
+            await msg.add_reaction(self._delete_emojis[0])
 
     async def code_runner(
         self, mode: str, code: str, user_input: str = "", restricted=True
@@ -406,7 +406,7 @@ class CodeRunner(Cog):
             mention_author=True,
         )
         if err:
-            await msg.add_reaction(self._delete_reactions[0])
+            await msg.add_reaction(self._delete_emojis[0])
 
     @Cog.command()
     async def docs(self, ctx, *, content):
