@@ -20,7 +20,6 @@ class CodeRunner(Cog):
         self._code_runner_emojis = {"▶️", "⏯"}
         self._formatting_emojis = {"✏️", "📝"}
         self._delete_emojis = ("🗑️",)
-        self._delete_emojis_set = set(self._delete_emojis)
 
     @Cog.command()
     async def dis(self, ctx, *, content=""):
@@ -100,7 +99,7 @@ class CodeRunner(Cog):
             reaction.emoji.name
             not in self._code_runner_emojis
             | self._formatting_emojis
-            | self._delete_emojis_set
+            | self._delete_emojis
         ):
             return
 
@@ -127,7 +126,7 @@ class CodeRunner(Cog):
             await self._black_formatting(message, message.content, reaction.member)
 
         elif (
-            reaction.emoji.name in self._delete_emojis_set
+            reaction.emoji.name in self._delete_emojis
             and member in message.mentions
             and message.author.id == self.client.user.id
             and (
