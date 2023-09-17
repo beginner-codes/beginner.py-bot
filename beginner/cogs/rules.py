@@ -135,12 +135,18 @@ class RulesCog(Cog):
         )
         messages = await rules.history(limit=1, oldest_first=True).flatten()
         if messages:
+            rules_content = []
+            for title, rule_metadata in self.message_fields.items():
+                rules_content.append(f"## {title}")
+                rules_content.append(rule_metadata["description"])
+
             await messages[0].edit(
-                embed=self.build_rule_message_embed(
-                    "Rules, Guidlines, & Conduct",
-                    (
+                content="\n".join(
+                    [
+                        "# Rules, Guidlines, & Conduct\n"
                         "Welcome!!! We're happy to have you! Please give these rules and guidelines a quick read!"
-                    ),
+                        * rules_content
+                    ]
                 ),
                 allowed_mentions=nextcord.AllowedMentions(
                     everyone=False, users=False, roles=False
