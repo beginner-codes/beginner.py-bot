@@ -143,9 +143,9 @@ class RulesCog(Cog):
             await messages[0].edit(
                 content="\n".join(
                     [
-                        "# Rules, Guidlines, & Conduct\n"
-                        "Welcome!!! We're happy to have you! Please give these rules and guidelines a quick read!"
-                        * rules_content
+                        "# Rules, Guidlines, & Conduct\n",
+                        "Welcome!!! We're happy to have you! Please give these rules and guidelines a quick read!",
+                        *rules_content,
                     ]
                 ),
                 allowed_mentions=nextcord.AllowedMentions(
