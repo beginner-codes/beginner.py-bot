@@ -11,22 +11,19 @@ class RulesCog(Cog):
     def __init__(self, client: nextcord.Client):
         super().__init__(client)
         self.message_fields = {
-            "Keep Discussion On the Server": {
+            "Direct Messages": {
                 "description": (
-                    "Don’t DM members, don’t ask members about DMing. We have help channels if you want an "
-                    "uninterrupted space to discuss your questions. This helps ensure you get quality help, that no "
-                    "one is getting scammed, and that no one is getting unsolicited questions.\n\n*If you ever need to "
-                    "speak with the mod team, tag the mods & let us know you need to talk. We will pull you into a "
-                    "private channel.*"
+                    "Please keep discussion on the server. It helps you get responses more quickly from more people & "
+                    "with more viewpoints. It also helps protect you from scammers. \n\n*We recommend disabling DM's "
+                    "from all public servers.*"
                 ),
                 "labels": ("dm", "dming", "pm"),
             },
-            "No Soliciting, Propositioning, or Promoting": {
+            "Promotion": {
                 "description": (
-                    "This isn’t a job board. This is not a place for promotions of your stuff. We do not allow the "
-                    "exchange of money. We do not do work for people. **We’re here to help you understand the code "
-                    "you’re writing, that is all.**\n\n*If you have something you think we'd like to promote talk to "
-                    "the mods.*"
+                    "We're not a job board & do not allow the exchange of money. We also ask that you keep self-"
+                    "promotion to a minimum.\n\n*If you have something you think we'd like to promote talk to the "
+                    "mods.*"
                 ),
                 "labels": (
                     "solicitation",
@@ -44,20 +41,19 @@ class RulesCog(Cog):
                     "self promotion",
                 ),
             },
-            "Keep It Legal": {
+            "Laws & TOS's": {
                 "description": (
-                    "No discussion is allowed of anything that breaks the law or violates the terms of service for a "
-                    "product or service. You don’t need to do either to learn. This covers account creation bots, scam "
-                    "bots, purchase automation bots, DDoS, RATs, etc."
+                    "Discussion of anything that breaks the law or violates a TOS is not allowed. This includes account"
+                    " creation bots, scam bots, purchase automation bots, DDoS, RATs, etc."
                 ),
                 "labels": ("tos", "hacker", "illegal", "hack", "hacking"),
             },
-            "Be Understanding, Respectful, & Helpful": {
+            "Acceptable Behavior": {
                 "description": (
-                    "This community has members with an incredible diversity of opinions, experiences, and skill "
-                    "levels. Be aware and understanding. Your opinions aren’t more important than anyone else’s. "
-                    "*Strong opinions* are great, just *hold them weakly.* You’ll learn more and others will be more "
-                    "willing to hear you out."
+                    "Our members have an incredible diversity of opinions, experiences, & skill levels. Be kind & "
+                    "understanding. Your opinions aren’t more important than anyone else’s. Hold your opinions weakly, "
+                    "you’ll learn more.\n\nWe do not tolerate *harassment, NSFW content, flaming, trolling, & bigotry*."
+                    " This includes derogatory remarks towards or statements objectifying anyone."
                 ),
                 "labels": (
                     "understanding",
@@ -65,13 +61,20 @@ class RulesCog(Cog):
                     "helpful",
                     "helping",
                     "learning",
+                    "nsfw",
+                    "trolling",
+                    "harassment",
+                    "bigotry",
+                    "harassing",
+                    "racism",
+                    "derogatory",
+                    "objectification",
                 ),
             },
             "Academic Honesty": {
                 "description": (
-                    "We will help you understand your homework, we will help you figure out the solution, __we will "
-                    "not give you the answers__. For tests and quizzes we can help you with your studying, we can only "
-                    "give you vague nudges in the right direction on quizzes, __we will not help with tests__."
+                    "You may ask for help with homework but asking others to help on tests/quizzes or to do your "
+                    "coursework for you is not allowed."
                 ),
                 "labels": (
                     "academics",
@@ -84,42 +87,23 @@ class RulesCog(Cog):
                     "dishonest",
                 ),
             },
-            "Keep It Civil & Decent": {
+            "Getting Help": {
                 "description": (
-                    "No *harassment, NSFW content, flaming, trolling,* or *bigotry* will be tolerated. This includes "
-                    "derogatory remarks towards or statements objectifying anyone (on the server or not).\n\n__Trolling"
-                    " people who are learning as well as unhelpful behavior in help channels will not be permitted.__"
-                ),
-                "labels": (
-                    "nsfw",
-                    "trolling",
-                    "harassment",
-                    "bigotry",
-                    "harassing",
-                    "racism",
-                    "derogatory",
-                    "objectification",
-                ),
-            },
-            "Spam & Getting Help": {
-                "description": (
-                    "To help keep the server organized & avoid confusion, please keep coding questions out of "
-                    "discussion channels. Do not spam multiple channels with your questions, do not direct people to "
-                    "your help channel, and please abide by directions given by the server staff."
+                    "To keep the server organized, please keep coding questions out of discussion channels. Do not spam"
+                    " multiple channels with your questions, & do not direct people to your help channel."
                 ),
                 "labels": ("help", "spam", "questions", "confusion"),
             },
-            "Display Names & PFPs Should be Appropriate": {
+            "Display Names & PFPs": {
                 "description": (
-                    "Your username should be readable, should not be promotional, and should not violate the previous "
-                    "rule. Your PFP should be reasonably appropriate (no NSFW content, nothing objectionable, nothing "
-                    "promotional)."
+                    "Your display name should be readable, not promotional, & should not violate the other rules. Your "
+                    "PFP should be reasonably appropriate."
                 ),
                 "labels": ("nickname", "avatar", "name", "pfp", "username"),
             },
-            "Use English Only": {
+            "Use English": {
                 "description": (
-                    "To ensure everyone can participate and that the server staff can foster an environment amenable "
+                    "To ensure everyone can participate & that the server staff can foster an environment amenable "
                     "to growth and learning, please only use __English__. If you cannot reasonably communicate in "
                     "English you may be removed from the server."
                 ),
@@ -136,15 +120,15 @@ class RulesCog(Cog):
         messages = await rules.history(limit=1, oldest_first=True).flatten()
         if messages:
             rules_content = []
-            for title, rule_metadata in self.message_fields.items():
+            for title, rule_metadata in sorted(self.message_fields.items()):
                 rules_content.append(f"## {title}")
                 rules_content.append(rule_metadata["description"])
 
             await messages[0].edit(
                 content="\n".join(
                     [
-                        "# Rules, Guidlines, & Conduct\n",
-                        "Welcome!!! We're happy to have you! Please give these rules and guidelines a quick read!",
+                        "# Rules & Conduct\n",
+                        "Welcome!!! Please give these rules & guidelines a quick read.",
                         *rules_content,
                     ]
                 ),
