@@ -1,6 +1,6 @@
 bot:
   prefix: "!"
-  status: "for '!help' to show you all commands"
+  status: "for new mod mail"
   guild_id: 644299523686006834
 
 cogs:
