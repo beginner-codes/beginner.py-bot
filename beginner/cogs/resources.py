@@ -23,7 +23,7 @@ class ResourcesCog(Cog):
                 name="Topics",
                 value="\n".join(
                     f"{topic['name']}: `!r {tag}`"
-                    for tag, topic in get_scope("resources").items()
+                    for tag, topic in get_scope("resources")
                 ),
                 inline=False,
             )
