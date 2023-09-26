@@ -43,7 +43,7 @@ logging:
   level: DEBUG
 
 resources:
-  py:
+  python:
     name: Python
     YouTube:
       Harvard University CS50 Python Course: https://www.youtube.com/watch?v=nLRL_NcnK-4
@@ -55,7 +55,7 @@ resources:
     Websites:
       Real Python (Basics Tutorials): https://realpython.com/tutorials/basics/
 
-  ds:
+  data_science:
     name: Data Science & Machine Learning
     YouTube:
       Statquest DS Roadmap (Important to understand the maths behind ML models): https://app.learney.me/maps/StatQuest
@@ -106,7 +106,7 @@ resources:
       The Odin Project: https://www.theodinproject.com/
       Jetbrains Academy: https://hyperskill.org/tracks/5
 
-  js:
+  javascript:
     name: JavaScript
     Documentation:
       JavaScript MDN: https://developer.mozilla.org/en-US/docs/Web/JavaScript
@@ -196,22 +196,22 @@ resources:
     
 
 lang_aliases:
-  python: py
-  python3: py
-  python2: py
-  datascience: ds
-  data science: ds
-  data: ds
-  ai: ds
-  ml: ds
-  machinelearning: ds
-  machine learning: ds
+  py: python
+  python3: python
+  python2: python
+  datascience: data_science
+  ds: data_science
+  data: data_science
+  ai: data_science
+  ml: data_science
+  machinelearning: data_science
+  machine learning: data_science
   hacking: pentesting
   ethical-hacking: cybersecurity
   ethical hacking: cybersecurity
   capture the flag: cybersecurity
   ctf: cybersecurity
-  javascript: js
+  js: javascript
   dart: flutter
   rs: rust
   rustlang: rust
