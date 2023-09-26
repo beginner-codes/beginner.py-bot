@@ -31,25 +31,32 @@ class ResourcesCog(Cog):
             await ctx.send(embed=embed)
             return
 
+        topic_tag = get_setting(
+            search_tag.casefold(), scope="lang_aliases", default=search_tag.casefold()
         )
-        lang = get_setting(lang_code, scope="resources")
+        topic = get_setting(topic_tag, scope="resources")
 
-        if not lang:
-            await ctx.send(f"Could not find any resources for `{lang_code}`")
+        if not topic:
+            await ctx.send(f"Could not find any resources for `{topic_tag}`")
             return
 
         embed = nextcord.Embed(
-            title=f"Helpful {lang['name']} Resources",
+            title=f"Helpful {topic['name']} Resources",
             description="Here are some resources you may find helpful.",
             color=YELLOW,
         )
 
         for title, resources in (
-            section for section in lang.items() if section[0] != "name"
+            section for section in topic.items() if section[0] != "name"
         ):
             embed.add_field(
                 name=title,
-                value="\n".join(f"[{name}]({url})" for name, url in resources.items()),
+                value="\n".join(
+                    f"[{name}]({setting})"
+                    if isinstance(setting, str)
+                    else f"> **{name}**\n> {setting['message']}"
+                    for name, setting in resources.items()
+                ),
                 inline=False,
             )
 
