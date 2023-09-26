@@ -1,16 +1,36 @@
 from __future__ import annotations
 from nextcord.ext.commands import Context
 from beginner.cog import Cog
-from beginner.config import get_setting
+from beginner.config import get_setting, get_scope
 from beginner.colors import *
 import nextcord
 
 
 class ResourcesCog(Cog):
     @Cog.command(aliases=("r", "resource"))
-    async def resources(self, ctx: Context, *, lang_name: str = "py"):
-        lang_code = get_setting(
-            lang_name.casefold(), scope="lang_aliases", default=lang_name.casefold()
+    async def resources(self, ctx: Context, *, search_tag: str = "__all__"):
+        if topic_tag == "__all__":
+            embed = nextcord.Embed(
+                title="Helpful Resources",
+                description=(
+                    f"{ctx.author.mention} here are all the topics we currently have resources for."
+                    f"Use the `{ctx.prefix}resources <topic>` command to get resources for a specific topic."
+                ),
+                color=YELLOW,
+            )
+
+            embed.add_field(
+                name="Topics",
+                value="\n".join(
+                    f"{topic['name']}: `!r {tag}`"
+                    for tag, topic in get_scope("resources").items()
+                ),
+                inline=False,
+            )
+
+            await ctx.send(embed=embed)
+            return
+
         )
         lang = get_setting(lang_code, scope="resources")
 
