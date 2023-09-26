@@ -9,7 +9,7 @@ import nextcord
 class ResourcesCog(Cog):
     @Cog.command(aliases=("r", "resource"))
     async def resources(self, ctx: Context, *, search_tag: str = "__all__"):
-        if topic_tag == "__all__":
+        if search_tag == "__all__":
             embed = nextcord.Embed(
                 title="Helpful Resources",
                 description=(
