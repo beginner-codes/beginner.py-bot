@@ -52,8 +52,12 @@ resources:
       FreeCodeCamp: https://www.youtube.com/playlist?list=PLWKjhJtqVAbnqBxcdjVGgT3uVR10bzTEB
     Books:
       Automate the Boring Stuff with Python: https://automatetheboringstuff.com/2e/chapter0/
-    Websites:
-      Real Python (Basics Tutorials): https://realpython.com/tutorials/basics/
+    Real Python Website:
+      Installing Python: https://realpython.com/installing-python/
+      Interacting With Python: https://realpython.com/interacting-with-python/
+      Basics Tutorials: https://realpython.com/tutorials/basics/
+      Using Real Python:
+        message: At the bottom of each Real Python article, there are links to the next article that you should probably check out. It's a useful way to continue your learning journey.
 
   data_science:
     name: Data Science & Machine Learning
@@ -98,7 +102,7 @@ resources:
       Hack The Box: https://www.hackthebox.eu/
       PicoCTF: https://picoctf.org/
       CTF101 Database: https://ctf101.org/
-      
+
   webdev:
     name: Web Development
     Websites:
@@ -119,7 +123,7 @@ resources:
     Other:
       16 Debugging Tips: https://raygun.com/learn/javascript-debugging-tips
       Best IDEs for JavaScript: https://dev.to/theme_selection/what-is-the-best-ide-for-javascript-development-in-2021-1pmn
-      10+ Best JavaScript Frameworks: https://technostacks.com/blog/best-javascript-frameworks    
+      10+ Best JavaScript Frameworks: https://technostacks.com/blog/best-javascript-frameworks
       Eloquent Javascript Book: https://eloquentjavascript.net/
 
   html:
@@ -136,18 +140,18 @@ resources:
 
   flutter:
     name: Flutter & Dart
-    Youtube: 
+    Youtube:
       Flutter Mentor: https://www.youtube.com/c/FlutterMentor
       Flutter Mapp: https://www.youtube.com/c/FlutterMapp
-    Documentation: 
+    Documentation:
       Official Docs: https://docs.flutter.dev/
-    Books: 
+    Books:
       Dart Apprentice: https://www.raywenderlich.com/books/dart-apprentice/v1.1
       Dart Data Structures and Algorithms: https://www.raywenderlich.com/books/data-structures-algorithms-in-dart/v1.0
       Flutter Apprentice: https://www.raywenderlich.com/books/flutter-apprentice/v1.0.ea2
     Other:
       DartPad: https://dartpad.dev/
-  
+
   rust:
     name: Rust Development
     YouTube:
@@ -156,7 +160,7 @@ resources:
     Books:
       The Book: https://doc.rust-lang.org/book/
       Tools: https://www.rust-lang.org/tools
-    
+
   kotlin:
     name: Kotlin & Android
     YouTube:
@@ -168,7 +172,7 @@ resources:
       Android With Kotlin: https://developer.android.com/kotlin
     Other:
       Get Started: https://www.jetbrains.com/help/idea/get-started-with-kotlin.html
-    
+
   java:
     name: Java
     YouTube:
@@ -183,7 +187,7 @@ resources:
       Tutorialspoint - Java Tutorial: https://www.tutorialspoint.com/java/index.htm
     Other:
       JDoodle Online Java Compiler: https://www.jdoodle.com/online-java-compiler/
-      
+
   cpp:
     name: C++
     YouTube:
@@ -193,7 +197,7 @@ resources:
       C++ Patterns: https://cpppatterns.com/
     Projects:
       Project Based Learning: https://github.com/practical-tutorials/project-based-learning#cc
-    
+
 
 lang_aliases:
   py: python
