@@ -198,6 +198,66 @@ resources:
     Projects:
       Project Based Learning: https://github.com/practical-tutorials/project-based-learning#cc
 
+  reverse_engineering:
+      name: Reverse Engineering
+      Disassemblers:
+        Ghidra: https://github.com/NationalSecurityAgency/ghidra
+        x64dbg: https://github.com/x64dbg/x64dbg
+        dnSpy: https://github.com/dnSpyEx/dnSpy
+        IDA Free: https://hex-rays.com/ida-free/
+        Cutter: https://github.com/rizinorg/cutter
+      Disassembler Addons:
+        x64dbg Plugin Manager: https://github.com/horsicq/x64dbg-Plugin-Manager
+        ScyllaHide: https://github.com/x64dbg/ScyllaHide
+        Swiss Army Knife: https://github.com/Nukem9/SwissArmyKnife
+        Ghidra Scripts: https://github.com/ghidraninja/ghidra_scripts
+      File and Executable Analysis:
+        ImHex: https://github.com/WerWolv/ImHex
+        Detect It Easy: https://github.com/horsicq/Detect-It-Easy/
+        Explorer Suite: https://ntcore.com/?page_id=388
+      Executable Triaging and Analysis:
+        Tria.ge: https://tria.ge/
+        Any.run: https://any.run/
+        Falcon Sandbox: https://www.hybrid-analysis.com/
+
+  privacy:
+    name: Privacy and Ad Blocking
+    Ad Blockers:
+      Adnauseam: https://adnauseam.io/
+      uBlock Origin: https://ublockorigin.com/
+    Browser Addons:
+      DecentralEyes: https://decentraleyes.org/
+      PrivacyBadger: https://privacybadger.org/
+      Ghostery: https://www.ghostery.com/
+      HTTPS Everywhere: https://www.eff.org/https-everywhere
+      WebGL Fingerprint Defender: https://mybrowseraddon.com/webgl-defender.html
+      WebRTC Control: https://mybrowseraddon.com/webrtc-control.html
+      DisconnectMe: https://disconnect.me/
+      RefControl: https://addons.mozilla.org/en-US/firefox/addon/refcontrol/
+      SmartReferer: https://addons.mozilla.org/en-US/firefox/addon/smart-referer/
+      CertificatePatrol: http://patrol.psyced.org/
+      RequestPolicy: https://www.requestpolicy.com/
+      NoScript: https://noscript.net/
+      ScriptSafe: https://chrome.google.com/webstore/detail/scriptsafe/oiigbmnaadbkfbmpbfijlflahbdbdgdf
+    File Encryption:
+      VeraCrypt: https://www.veracrypt.fr/code/VeraCrypt/
+      GPG: https://www.gnupg.org/
+      GPGTools: https://gpgtools.org/
+    Data Removal and Protection:
+      Darik's Boot and Nuke: https://dban.org/
+      PeerBlock IP Blocker: https://www.peerblock.com/
+    Data Surveillance Blocking:
+      Prism-Break: https://prism-break.org/en/
+      PrivacyTools.io: https://www.privacytools.io/
+    No-Track Search Engines:
+      DuckDuckGo: https://duckduckgo.com/
+      StartPage: https://www.startpage.com/
+      Yacy: https://yacy.net/
+      SearX Instances: https://searx.space/
+    Secure OS'es and Live Disks:
+      TAILS: https://tails.boum.org/
+      Qubes OS: https://www.qubes-os.org/
+      Whonix: https://www.whonix.org/
 
 lang_aliases:
   py: python
@@ -215,6 +275,10 @@ lang_aliases:
   ethical hacking: cybersecurity
   capture the flag: cybersecurity
   ctf: cybersecurity
+  file_analysis: reverse_engineering
+  file analysis: reverse_engineering
+  malware_analysis: reverse_engineering
+  malware analysis: reverse_engineering
   js: javascript
   dart: flutter
   rs: rust
@@ -222,5 +286,8 @@ lang_aliases:
   kt: kotlin
   kts: kotlin
   c++: cpp
-  
-  
+  adblocker: privacy
+  ad_blocker: privacy
+  ad blocker: privacy
+  encryption: privacy
+  security: privacy
