@@ -23,7 +23,9 @@ class ResourcesCog(Cog):
                 name="Topics",
                 value="\n".join(
                     f"{topic['name']}: `!r {tag}`"
-                    for tag, topic in get_scope("resources")
+                    for tag, topic in sorted(
+                        get_scope("resources"), key=lambda i: i[1]["name"]
+                    )
                 ),
                 inline=False,
             )
