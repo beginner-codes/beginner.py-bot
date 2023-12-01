@@ -71,8 +71,7 @@ class AdventOfCode(Cog):
         role = nextcord.utils.get(self.server.roles, name="aoc-announcement")
         channel = self.get_channel("🎅aoc-announcements")
         show_off = self.get_channel("⛄aoc-discussion")
-        help_1 = self.get_channel("🤶advent-of-code-help")
-        help_2 = self.get_channel("🎄advent-of-code-help")
+        help_channel = self.get_channel("🎄advent-of-code-help")
         suffixes = {1: "st", 21: "st", 2: "nd", 22: "nd", 3: "rd", 23: "rd"}
         await channel.send(
             content=role.mention,
@@ -80,8 +79,8 @@ class AdventOfCode(Cog):
                 description=(
                     f"**Here's the [{self.now.day}{suffixes.get(self.now.day, 'th')} challenge]"
                     f"(https://adventofcode.com/{self.now.year}/day/{self.now.day})!!!**\n\n"
-                    f"Show off (spoiler tag please) & discuss in {show_off.mention}!!! Get help in {help_1.mention} or "
-                    f"{help_2.mention}.\n\n"
+                    f"Show off (spoiler tag please) & discuss in {show_off.mention}!!! Get help in "
+                    f"{help_channel.mention}.\n\n"
                     f"**Good luck!!!**"
                 ),
                 title=(
