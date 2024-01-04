@@ -1,16 +1,20 @@
+import os
+
 from beginner.cog import Cog
 from beginner.colors import *
 from beginner.brainfuck_runner import BrainfuckInterpreter
 from datetime import datetime, timedelta
-from typing import Tuple
+from typing import Tuple, Literal
 import asyncio
 import black
 import dis
 import nextcord
+from nextcord.ext.commands import Context
 import io
 import json
 import pathlib
 import re
+import boto3
 
 
 class CodeRunner(Cog):
@@ -21,6 +25,67 @@ class CodeRunner(Cog):
         self._formatting_emojis = {"✏️", "📝"}
         self._delete_emojis = ("🗑️",)
         self._delete_emojis_set = set(self._delete_emojis)
+
+        self._lang_aliases = {
+            "py": "python",
+        }
+
+        self._runners = {
+            "python": self._run_python,
+        }
+
+    @Cog.command()
+    async def run(self, ctx: Context, message: str):
+        match re.search(
+            r"```([a-zA-Z0-9_]+)\n((?:.|\n)+?)```(?:\n((?:.|\n)+))?", message
+        ):
+            case None:
+                title = "Error: Code Not Formatted Properly"
+                description = (
+                    "The command format is as follows:\n\n"
+                    "!run \\`\\`\\`lang\nYOUR CODE HERE\n\\`\\`\\`\n"
+                )
+                color = RED
+            case matches:
+                lang, code, stdin = matches.groups()
+                lang_name = self._lang_aliases.get(l := lang.casefold(), l)
+                match self._runners.get(lang_name):
+                    case None:
+                        title = "Error: Unsupported Language"
+                        description = f"The Beginner.Codes bot cannot currently run code for `{lang}`."
+                        color = RED
+                    case runner:
+                        stdout, exception = await runner.run(code, stdin)
+                        if exception:
+                            title = f"Error: Code Raised an Exception!"
+                            description = f"```\n{stdout}\n\n{exception}\n```"
+                            color = RED
+                        else:
+                            title = f"Successfully Ran"
+                            description = f"```\n{stdout}\n```"
+                            color = GREEN
+
+        await ctx.send(
+            embed=nextcord.Embed(
+                title=title,
+                description=description,
+                color=color,
+            ),
+            reference=ctx.message,
+        )
+
+    async def _run_python(self, code: str, stdin: str) -> tuple[str, Literal[""] | str]:
+        session = boto3.Session(
+            aws_access_key_id=os.environ.get("BEGINNER_PYTHON_RUNNER_ACCESS_KEY"),
+            aws_secret_access_key=os.environ.get("BEGINNER_PYTHON_RUNNER_SECRET_KEY"),
+        )
+        client = session.client("lambda", region_name="ca-central-1")
+        response = client.invoke(
+            FunctionName="CodeRunner",
+            Payload=json.dumps({"code": code}),
+        )
+        payload = response["Payload"].read().decode()
+        return payload["result"], payload["exception"] if payload["exception"] else ""
 
     @Cog.command()
     async def dis(self, ctx, *, content=""):
