@@ -56,7 +56,7 @@ class CodeRunner(Cog):
                         description = f"The Beginner.Codes bot cannot currently run code for `{lang}`."
                         color = RED
                     case runner:
-                        stdout, exception = await runner.run(code, stdin)
+                        stdout, exception = await runner(code, stdin)
                         if exception:
                             title = f"Error: Code Raised an Exception!"
                             description = f"```\n{stdout}\n\n{exception}\n```"
