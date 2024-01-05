@@ -58,7 +58,7 @@ class CodeRunner(Cog):
                     case runner:
                         stdout, exception = await runner(code, stdin)
                         if exception:
-                            title = f"Error: Code Raised an Exception!"
+                            title = f"Error: Code Raised an Exception"
                             description = f"```\n{stdout}\n\n{exception}\n```"
                             color = RED
                         else:
