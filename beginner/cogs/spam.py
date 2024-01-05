@@ -44,6 +44,7 @@ class SpamCog(Cog):
         ".yml": "yaml",
         ".txt": "",
         ".dockerfile": "dockerfile",
+        ".dat": "dat",
     }
 
     @cached_property
