@@ -85,7 +85,7 @@ class CodeRunner(Cog):
             FunctionName="CodeRunner",
             Payload=json.dumps({"code": code}),
         )
-        payload = response["Payload"].read().decode()
+        payload = json.loads(response["Payload"].read().decode())
         return payload["result"], payload["exception"] if payload["exception"] else ""
 
     @Cog.command()
