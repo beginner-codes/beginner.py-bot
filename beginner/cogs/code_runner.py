@@ -53,7 +53,7 @@ class CodeRunner(Cog):
                 match self._runners.get(lang_name):
                     case None:
                         title = "Error: Unsupported Language"
-                        description = f"The Beginner.Codes bot cannot currently run code for `{lang}`."
+                        description = f"The Beginner.Codes bot cannot currently run `{lang}` code."
                         color = RED
                     case runner:
                         stdout, exception = await runner(code, stdin)
