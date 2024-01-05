@@ -86,7 +86,13 @@ class CodeRunner(Cog):
             Payload=json.dumps({"code": code}),
         )
         payload = json.loads(response["Payload"].read().decode())
-        return payload["result"], payload["exception"] if payload["exception"] else ""
+        exception = ""
+        if payload["excetpion"]:
+            exception = (
+                f"{payload['exception']['type']}: {payload['exception']['args'][0]}"
+            )
+
+        return payload["result"], exception
 
     @Cog.command()
     async def dis(self, ctx, *, content=""):
