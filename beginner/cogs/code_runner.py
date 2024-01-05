@@ -35,7 +35,7 @@ class CodeRunner(Cog):
         }
 
     @Cog.command()
-    async def run(self, ctx: Context, message: str):
+    async def run(self, ctx: Context, *message: str):
         match re.search(
             r"```([a-zA-Z0-9_]+)\n((?:.|\n)+?)```(?:\n((?:.|\n)+))?", message
         ):
