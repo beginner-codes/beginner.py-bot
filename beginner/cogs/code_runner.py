@@ -25,7 +25,7 @@ class CodeRunner(Cog):
         self._formatting_emojis = {"✏️", "📝"}
         self._delete_emojis = ("🗑️",)
         self._delete_emojis_set = set(self._delete_emojis)
-        self.aws_error_key = "errorMessage"
+        self._aws_error_key = "errorMessage"
 
         self._lang_aliases = {
             "py": "python",
@@ -39,7 +39,7 @@ class CodeRunner(Cog):
             aws_access_key_id=os.environ.get("BEGINNER_PYTHON_RUNNER_ACCESS_KEY"),
             aws_secret_access_key=os.environ.get("BEGINNER_PYTHON_RUNNER_SECRET_KEY"),
         )
-        self.client = session.client("lambda", region_name="ca-central-1")
+        self._lambda_client = session.client("lambda", region_name="ca-central-1")
 
     @Cog.command()
     async def run(self, ctx: Context):
@@ -83,14 +83,14 @@ class CodeRunner(Cog):
         )
 
     async def _run_python(self, code: str, stdin: str) -> tuple[str, Literal[""] | str]:
-        response = self.client.invoke(
+        response = self._lambda_client.invoke(
             FunctionName="CodeRunner",
             Payload=json.dumps({"code": code, "stdin": stdin}),
         )
         payload = json.loads(response["Payload"].read().decode())
 
-        if self.aws_error_key in payload:
-            return "", payload[self.aws_error_key]
+        if self._aws_error_key in payload:
+            return "", payload[self._aws_error_key]
 
         exception = ""
         if payload["exception"]:
