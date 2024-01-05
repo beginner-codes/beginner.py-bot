@@ -35,9 +35,10 @@ class CodeRunner(Cog):
         }
 
     @Cog.command()
-    async def run(self, ctx: Context, *message: str):
+    async def run(self, ctx: Context):
         match re.search(
-            r"```([a-zA-Z0-9_]+)\n((?:.|\n)+?)```(?:\n((?:.|\n)+))?", message
+            r"```([a-zA-Z0-9_]+)\n((?:.|\n)+?)```(?:\n((?:.|\n)+))?",
+            ctx.message.content,
         ):
             case None:
                 title = "Error: Code Not Formatted Properly"
