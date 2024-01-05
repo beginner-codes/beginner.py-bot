@@ -87,7 +87,7 @@ class CodeRunner(Cog):
         )
         payload = json.loads(response["Payload"].read().decode())
         exception = ""
-        if payload["excetpion"]:
+        if payload["exception"]:
             exception = (
                 f"{payload['exception']['type']}: {payload['exception']['args'][0]}"
             )
