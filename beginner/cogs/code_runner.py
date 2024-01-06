@@ -74,15 +74,19 @@ class CodeRunner(Cog):
                         description = f"The Beginner.Codes bot cannot currently run `{lang}` code."
                         color = RED
                     case runner:
+                        log_files = [
+                            nextcord.File(io.BytesIO(code.encode()), f"code.{lang}")
+                        ]
+                        if stdin.trim():
+                            log_files.append(
+                                nextcord.File(io.BytesIO(stdin.encode()), "stdin.txt")
+                            )
+
                         await ctx.guild.get_channel(CODE_RUNNING_LOG_CHANNEL_ID).send(
                             content=f"{ctx.author.mention} ({ctx.author.display_name} - {ctx.author.id}) in {ctx.channel.mention}",
-                            files=[
-                                nextcord.File(
-                                    io.BytesIO(code.encode()), f"code.{lang}"
-                                ),
-                                nextcord.File(io.BytesIO(stdin.encode()), "stdin.txt"),
-                            ],
+                            files=log_files,
                         )
+
                         stdout, exception = await runner(code, stdin)
                         if exception:
                             title = f"Error: Code Raised an Exception"
