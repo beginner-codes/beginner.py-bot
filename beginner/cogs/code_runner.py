@@ -22,6 +22,8 @@ import pathlib
 import re
 import boto3
 
+CODE_RUNNING_LOG_CHANNEL_ID = 1193007835332747404
+
 
 class CodeRunner(Cog):
     def __init__(self, client):
@@ -72,6 +74,13 @@ class CodeRunner(Cog):
                         description = f"The Beginner.Codes bot cannot currently run `{lang}` code."
                         color = RED
                     case runner:
+                        await ctx.guild.get_channel(CODE_RUNNING_LOG_CHANNEL_ID).send(
+                            content=f"{ctx.author.mention} ({ctx.author.display_name} - {ctx.author.id}) in {ctx.channel.mention}",
+                            files=[
+                                nextcord.File(code, f"code.{lang}"),
+                                nextcord.File(stdin, "stdin.txt"),
+                            ],
+                        )
                         stdout, exception = await runner(code, stdin)
                         if exception:
                             title = f"Error: Code Raised an Exception"
