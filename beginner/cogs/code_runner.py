@@ -77,8 +77,10 @@ class CodeRunner(Cog):
                         await ctx.guild.get_channel(CODE_RUNNING_LOG_CHANNEL_ID).send(
                             content=f"{ctx.author.mention} ({ctx.author.display_name} - {ctx.author.id}) in {ctx.channel.mention}",
                             files=[
-                                nextcord.File(code, f"code.{lang}"),
-                                nextcord.File(stdin, "stdin.txt"),
+                                nextcord.File(
+                                    io.BytesIO(code.encode()), f"code.{lang}"
+                                ),
+                                nextcord.File(io.BytesIO(stdin.encode()), "stdin.txt"),
                             ],
                         )
                         stdout, exception = await runner(code, stdin)
