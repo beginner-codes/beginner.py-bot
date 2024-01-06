@@ -85,6 +85,12 @@ class CodeRunner(Cog):
                         await ctx.guild.get_channel(CODE_RUNNING_LOG_CHANNEL_ID).send(
                             content=f"{ctx.author.mention} ({ctx.author.display_name} - {ctx.author.id}) in {ctx.channel.mention}",
                             files=log_files,
+                            allowed_mentions=nextcord.AllowedMentions(
+                                everyone=False,
+                                users=False,
+                                roles=False,
+                                replied_user=False,
+                            ),
                         )
 
                         stdout, exception = await runner(code, stdin)
