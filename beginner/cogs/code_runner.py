@@ -9,7 +9,13 @@ import asyncio
 import black
 import dis
 import nextcord
-from nextcord.ext.commands import Context
+from nextcord.ext.commands import (
+    BucketType,
+    Context,
+    cooldown,
+    guild_only,
+    max_concurrency,
+)
 import io
 import json
 import pathlib
@@ -42,6 +48,9 @@ class CodeRunner(Cog):
         self._lambda_client = session.client("lambda", region_name="ca-central-1")
 
     @Cog.command()
+    @cooldown(1, 15.0, BucketType.user)
+    @guild_only()
+    @max_concurrency(1)
     async def run(self, ctx: Context):
         match re.search(
             r"```([a-zA-Z0-9_]+)\n((?:.|\n)+?)```(?:\n((?:.|\n)+))?",
@@ -80,6 +89,15 @@ class CodeRunner(Cog):
                 color=color,
             ),
             reference=ctx.message,
+        )
+
+    @run.error
+    async def run_error_handler(self, ctx, error):
+        await ctx.send(
+            embed=nextcord.Embed(
+                title="Command Error",
+                description=f"```\n{type(error).__qualname__}: {error.args[0]}",
+            )
         )
 
     async def _run_python(self, code: str, stdin: str) -> tuple[str, Literal[""] | str]:
