@@ -111,14 +111,14 @@ class CodeRunner(Cog):
                 [
                     *lines[:10],
                     "...",
-                    f"Removed {len(lines) - 20} lines",
+                    f"Removed {len(lines) - 20:,} lines",
                     "...",
                     *lines[~10:],
                 ]
             )
 
         if len(result) > 2000:
-            result = f"{output[:800]}\n...\nRemoved {len(output) - 1600} characters\n...\n{output[~800:]}"
+            result = f"{output[:800]}\n...\nRemoved {len(output) - 1600:,} characters\n...\n{output[~800:]}"
 
         return result
 
