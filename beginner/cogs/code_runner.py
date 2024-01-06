@@ -52,7 +52,7 @@ class CodeRunner(Cog):
     @Cog.command()
     @cooldown(1, 15.0, BucketType.user)
     @guild_only()
-    @max_concurrency(1)
+    @max_concurrency(5)
     async def run(self, ctx: Context):
         match re.search(
             r"```([a-zA-Z0-9_]+)\n((?:.|\n)+?)```(?:\n((?:.|\n)+))?",
