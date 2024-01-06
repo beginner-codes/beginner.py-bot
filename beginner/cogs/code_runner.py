@@ -79,7 +79,9 @@ class CodeRunner(Cog):
                             color = RED
                         else:
                             title = f"Successfully Ran"
-                            description = f"```\n{stdout}\n```"
+                            description = (
+                                f"```\n{self._restrict_output_length(stdout)}\n```"
+                            )
                             color = GREEN
 
         await ctx.send(
@@ -116,7 +118,7 @@ class CodeRunner(Cog):
             )
 
         if len(result) > 2000:
-            result = f"{output[:1000]}\n...\nRemoved {len(output) - 2000} characters\n...\n{output[~1000:]}"
+            result = f"{output[:800]}\n...\nRemoved {len(output) - 1600} characters\n...\n{output[~800:]}"
 
         return result
 
