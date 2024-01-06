@@ -75,7 +75,7 @@ class CodeRunner(Cog):
                         stdout, exception = await runner(code, stdin)
                         if exception:
                             title = f"Error: Code Raised an Exception"
-                            description = f"```\n{stdout}\n\n{exception}\n```"
+                            description = f"```\n{self._restrict_output_length(stdout)}\n\n{exception}\n```"
                             color = RED
                         else:
                             title = f"Successfully Ran"
@@ -100,6 +100,25 @@ class CodeRunner(Cog):
                 color=ORANGE,
             )
         )
+
+    def _restrict_output_length(self, output: str) -> str:
+        result = output
+        if result.count("\n") > 25:
+            lines = output.split("\n")
+            result = "\n".join(
+                [
+                    *lines[:10],
+                    "...",
+                    f"Removed {len(lines) - 20} lines",
+                    "...",
+                    *lines[~10:],
+                ]
+            )
+
+        if len(result) > 2000:
+            result = f"{output[:1000]}\n...\nRemoved {len(output) - 2000} characters\n...\n{output[~1000:]}"
+
+        return result
 
     async def _run_python(self, code: str, stdin: str) -> tuple[str, Literal[""] | str]:
         response = self._lambda_client.invoke(
