@@ -77,7 +77,7 @@ class CodeRunner(Cog):
                         log_files = [
                             nextcord.File(io.BytesIO(code.encode()), f"code.{lang}")
                         ]
-                        if stdin.trim():
+                        if stdin.strip():
                             log_files.append(
                                 nextcord.File(io.BytesIO(stdin.encode()), "stdin.txt")
                             )
