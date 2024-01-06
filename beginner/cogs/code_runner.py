@@ -36,11 +36,11 @@ class CodeRunner(Cog):
         self._aws_error_key = "errorMessage"
 
         self._lang_aliases = {
-            "py": "python",
+            "python": "py",
         }
 
         self._runners = {
-            "python": self._run_python,
+            "py": self._run_python,
         }
 
         session = boto3.Session(
@@ -75,7 +75,9 @@ class CodeRunner(Cog):
                         color = RED
                     case runner:
                         log_files = [
-                            nextcord.File(io.BytesIO(code.encode()), f"code.{lang}")
+                            nextcord.File(
+                                io.BytesIO(code.encode()), f"code.{lang_name}"
+                            )
                         ]
                         if stdin:
                             log_files.append(
