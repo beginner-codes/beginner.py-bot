@@ -95,8 +95,9 @@ class CodeRunner(Cog):
     async def run_error_handler(self, ctx, error):
         await ctx.send(
             embed=nextcord.Embed(
-                title="Command Error",
-                description=f"```\n{type(error).__qualname__}: {error.args[0]}",
+                title=f"Command Error: {type(error).__qualname__}",
+                description=error.args[0],
+                color=ORANGE,
             )
         )
 
