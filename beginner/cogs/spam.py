@@ -178,7 +178,6 @@ class SpamCog(Cog):
             )
 
         if disallowed:
-            embed.colour = RED
             embed.add_field(
                 name="Ignored these files due to them having unallowed file extensions",
                 value="\n".join(f"- {attachment.filename}" for attachment in disallowed)
