@@ -113,13 +113,14 @@ class SpamCog(Cog):
         )
         embed = Embed(
             title="File Attachments Not Allowed",
-            description=f"For safety reasons we do not allow file and video attachments.",
-            color=YELLOW,
+            description=f"For safety reasons we do not allow files with certain file extensions.",
+            color=RED,
         )
 
         if allowed:
-            embed.title = f"{message.author.display_name} Uploaded Some Code"
+            embed.title = f"{message.author.display_name} Successfully Uploaded Some Code"
             embed.description = user_message
+            embed.colour = GREEN
             files = {}
             for attachment in allowed:
                 content = (await attachment.read()).decode()
@@ -154,7 +155,7 @@ class SpamCog(Cog):
             )
 
             embed.set_footer(
-                text="For safety reasons we do not allow file attachments."
+                text="For safety reasons we upload approved file extension files to a Gist."
             )
 
         else:
@@ -179,7 +180,7 @@ class SpamCog(Cog):
 
         if disallowed:
             embed.add_field(
-                name="Ignored these files",
+                name="Ignored these files due to them having unallowed file extensions",
                 value="\n".join(f"- {attachment.filename}" for attachment in disallowed)
                 or "*NO FILES*",
             )
