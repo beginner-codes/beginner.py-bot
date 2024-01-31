@@ -118,25 +118,15 @@ class SpamCog(Cog):
         )
 
         if allowed:
-            embed.title = f"{message.author.display_name} Successfully Uploaded Some Code"
+            embed.title = (
+                f"{message.author.display_name} Successfully Uploaded Some Code"
+            )
             embed.description = user_message
             embed.colour = GREEN
             files = {}
             for attachment in allowed:
                 content = (await attachment.read()).decode()
-                if len(content) < 1000:
-                    file_type = os.path.splitext(attachment.filename)[1].casefold()
-                    embed.add_field(
-                        name=f"Attachment: {self.escape_markdown(attachment.filename)}",
-                        value=(
-                            f"```{self.file_types.get(file_type, '')}\n{content}\n```"
-                            if content
-                            else "*FILE IS EMPTY*"
-                        ),
-                        inline=False,
-                    )
-                else:
-                    files[attachment.filename] = content
+                files[attachment.filename] = content
 
             if files:
                 gist = self.upload_files(files)
