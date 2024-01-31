@@ -175,6 +175,9 @@ class SpamCog(Cog):
                 or "*NO FILES*",
             )
 
+        if allowed and disallowed:
+            embed.colour = YELLOW
+
         try:
             await message.delete()
         except nextcord.errors.NotFound:
