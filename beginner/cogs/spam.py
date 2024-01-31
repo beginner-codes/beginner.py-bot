@@ -112,7 +112,7 @@ class SpamCog(Cog):
         )
         embed = Embed(
             title="File Attachments Not Allowed",
-            description=f"For safety reasons we do not allow files with certain file extensions and video attachments.",
+            description=f"For safety reasons we do not allow files with certain file extensions.",
             color=RED,
         )
 
