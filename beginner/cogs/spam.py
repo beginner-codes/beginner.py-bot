@@ -101,11 +101,6 @@ class SpamCog(Cog):
             if message.channel.permissions_for(message.author).manage_messages:
                 return
 
-        allowed, disallowed = self.categorize_attachments(message)
-
-        if not allowed and not disallowed:
-            return
-
         user_message = (
             "\n".join(f"> {section}" for section in message.content.split("\n"))
             if message.content.strip()
@@ -117,66 +112,32 @@ class SpamCog(Cog):
             color=RED,
         )
 
-        if allowed:
-            embed.title = (
-                f"{message.author.display_name} Successfully Uploaded Some Code"
-            )
-            embed.description = user_message
-            embed.colour = GREEN
-            files = {}
-            for attachment in allowed:
-                content = (await attachment.read()).decode()
-                files[attachment.filename] = content
-
-            if files:
-                gist = self.upload_files(files)
-                embed.add_field(
-                    name="Uploaded these files to a Gist",
-                    value="\n".join(
-                        f"[{self.escape_markdown(name)}]({gist}#file-{self.escape_github_file_name(name)})"
-                        for name in files
-                    )
-                    + f"\n\n**[View The Gist]({gist})**",
-                    inline=False,
-                )
-
-            embed.set_thumbnail(
-                url="https://cdn.discordapp.com/emojis/711749954837807135.png?v=1"
-            )
-
-            embed.set_footer(
-                text="For safety reasons we upload approved file extension files to a Gist."
-            )
-
-        else:
-            embed.set_thumbnail(
-                url="https://cdn.discordapp.com/emojis/651959497698574338.png?v=1"
-            )
-            if user_message:
-                embed.add_field(
-                    name=f"{message.author.display_name} Said", value=user_message
-                )
+        embed.set_thumbnail(
+            url="https://cdn.discordapp.com/emojis/651959497698574338.png?v=1"
+        )
+        if user_message:
             embed.add_field(
-                name="Code Formatting",
-                value=f"You can share your code using triple backticks like this:\n\\```\nYOUR CODE\n\\```",
-                inline=False,
+                name=f"{message.author.display_name} Said", value=user_message
             )
-            embed.add_field(
-                name="Large Portions of Code",
-                value=f"For longer scripts use [Hastebin](https://hastebin.com/) or "
-                f"[GitHub Gists](https://gist.github.com/) and share the link here",
-                inline=False,
-            )
+        embed.add_field(
+            name="Code Formatting",
+            value=f"You can share your code using triple backticks like this:\n\\```\nYOUR CODE\n\\```",
+            inline=False,
+        )
+        embed.add_field(
+            name="Large Portions of Code",
+            value=f"For longer scripts use [Hastebin](https://hastebin.com/) or "
+            f"[GitHub Gists](https://gist.github.com/) and share the link here",
+            inline=False,
+        )
 
-        if disallowed:
-            embed.add_field(
-                name="Ignored these files due to them having unallowed file extensions",
-                value="\n".join(f"- {attachment.filename}" for attachment in disallowed)
-                or "*NO FILES*",
+        embed.add_field(
+            name="Ignored these files due to them having disallowed file extensions",
+            value="\n".join(
+                f"- {attachment.filename}" for attachment in message.attachments
             )
-
-        if allowed and disallowed:
-            embed.colour = YELLOW
+            or "*NO FILES*",
+        )
 
         try:
             await message.delete()
