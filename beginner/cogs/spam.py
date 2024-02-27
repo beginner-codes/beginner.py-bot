@@ -17,34 +17,34 @@ import requests.auth
 
 class SpamCog(Cog):
     file_types = {
-        ".py": "python",
-        ".c": "c",
-        ".h": "c",
-        ".cpp": "cpp",
-        ".hpp": "cpp",
-        ".cs": "csharp",
-        ".sh": "shell",
-        ".css": "css",
-        ".csv": "csv",
-        ".go": "go",
-        ".html": "html",
-        ".htm": "html",
-        ".java": "java",
-        ".js": "javascript",
-        ".json": "json",
-        ".jl": "julia",
-        ".kt": "kotlin",
-        ".sql": "sql",
-        ".php": "php",
-        ".rb": "ruby",
-        ".rs": "rust",
-        ".swift": "swift",
-        ".xml": "xml",
-        ".yaml": "yaml",
-        ".yml": "yaml",
-        ".txt": "",
-        ".dockerfile": "dockerfile",
-        ".dat": "dat",
+        # ".py": "python",
+        # ".c": "c",
+        # ".h": "c",
+        # ".cpp": "cpp",
+        # ".hpp": "cpp",
+        # ".cs": "csharp",
+        # ".sh": "shell",
+        # ".css": "css",
+        # ".csv": "csv",
+        # ".go": "go",
+        # ".html": "html",
+        # ".htm": "html",
+        # ".java": "java",
+        # ".js": "javascript",
+        # ".json": "json",
+        # ".jl": "julia",
+        # ".kt": "kotlin",
+        # ".sql": "sql",
+        # ".php": "php",
+        # ".rb": "ruby",
+        # ".rs": "rust",
+        # ".swift": "swift",
+        # ".xml": "xml",
+        # ".yaml": "yaml",
+        # ".yml": "yaml",
+        # ".txt": "",
+        # ".dockerfile": "dockerfile",
+        # ".dat": "dat",
     }
 
     @cached_property
@@ -101,6 +101,11 @@ class SpamCog(Cog):
             if message.channel.permissions_for(message.author).manage_messages:
                 return
 
+        _, disallowed = self.categorize_attachments(message)
+
+        if not disallowed:
+            return
+
         user_message = (
             "\n".join(f"> {section}" for section in message.content.split("\n"))
             if message.content.strip()
@@ -133,9 +138,7 @@ class SpamCog(Cog):
 
         embed.add_field(
             name="Ignored these files due to them having disallowed file extensions",
-            value="\n".join(
-                f"- {attachment.filename}" for attachment in message.attachments
-            )
+            value="\n".join(f"- {attachment.filename}" for attachment in disallowed)
             or "*NO FILES*",
         )
 
