@@ -258,6 +258,16 @@ resources:
       TAILS: https://tails.boum.org/
       Qubes OS: https://www.qubes-os.org/
       Whonix: https://www.whonix.org/
+  
+  questions:
+    name: Questions & how to ask good ones
+    Recommended Reading:
+      Asking Good Technical Questions: https://www.freecodecamp.org/news/how-to-ask-good-technical-questions/
+      XY Problem: https://xyproblem.info/
+      Dont Ask To Ask, Just Ask: https://dontasktoask.com/
+      Short, Self Contained, Correct (Compilable), Example: http://sscce.org/
+      How to create a Minimal, Reproducible Example: https://stackoverflow.com/help/minimal-reproducible-example
+      
 
 lang_aliases:
   py: python
