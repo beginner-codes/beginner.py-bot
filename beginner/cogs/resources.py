@@ -13,7 +13,7 @@ class ResourcesCog(Cog):
             embed = nextcord.Embed(
                 title="Helpful Resources",
                 description=(
-                    f"{ctx.author.mention} here are all the topics we currently have resources for."
+                    f"{ctx.author.mention} here are all the topics we currently have resources for. "
                     f"Use the `{ctx.prefix}resources <topic>` command to get resources for a specific topic."
                 ),
                 color=YELLOW,
