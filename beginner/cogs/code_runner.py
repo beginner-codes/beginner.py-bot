@@ -147,7 +147,7 @@ class CodeRunner(Cog):
 
     async def _run_python(self, code: str, stdin: str) -> tuple[str, Literal[""] | str]:
         response = self._lambda_client.invoke(
-            FunctionName="CodeRunner",
+            FunctionName="CodeRunner:live",
             Payload=json.dumps({"code": code, "stdin": stdin}),
         )
         payload = json.loads(response["Payload"].read().decode())
