@@ -21,6 +21,7 @@ import json
 import pathlib
 import re
 import boto3
+from botocore.config import Config
 
 CODE_RUNNING_LOG_CHANNEL_ID = 1193007835332747404
 
@@ -47,7 +48,15 @@ class CodeRunner(Cog):
             aws_access_key_id=os.environ.get("BEGINNER_PYTHON_RUNNER_ACCESS_KEY"),
             aws_secret_access_key=os.environ.get("BEGINNER_PYTHON_RUNNER_SECRET_KEY"),
         )
-        self._lambda_client = session.client("lambda", region_name="ca-central-1")
+
+        lambda_config = Config(
+           retries = {
+              'max_attempts': 5,
+              'mode': 'standard'
+           }
+        )
+        
+        self._lambda_client = session.client("lambda", region_name="ca-central-1", config=lambda_config)
 
     @Cog.command()
     @cooldown(1, 15.0, BucketType.user)
@@ -147,7 +156,7 @@ class CodeRunner(Cog):
 
     async def _run_python(self, code: str, stdin: str) -> tuple[str, Literal[""] | str]:
         response = self._lambda_client.invoke(
-            FunctionName="CodeRunner",
+            FunctionName="CodeRunner:live",
             Payload=json.dumps({"code": code, "stdin": stdin}),
         )
         payload = json.loads(response["Payload"].read().decode())
