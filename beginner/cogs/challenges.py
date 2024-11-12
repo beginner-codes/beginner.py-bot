@@ -46,7 +46,6 @@ class Challenges(Cog):
         self.challenge_reminder_added = False
         self.approved_hosts = [
             "gist.github.com",
-            "hastebin.com",
             "pastebin.com",
             "github.com",
         ]
