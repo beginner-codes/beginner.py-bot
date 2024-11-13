@@ -131,7 +131,7 @@ class SpamCog(Cog):
         )
         embed.add_field(
             name="Large Portions of Code",
-            value=f"For longer scripts use [Hastebin](https://hastebin.com/) or "
+            value=f"For longer scripts use a code hosting platform like "
             f"[GitHub Gists](https://gist.github.com/) and share the link here",
             inline=False,
         )
