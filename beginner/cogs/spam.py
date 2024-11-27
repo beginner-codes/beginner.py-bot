@@ -105,9 +105,8 @@ class SpamCog(Cog):
 
         if not disallowed:
             if allowed:
-                await message.reply(
-                    "-# :warning: Files downloaded from unknown sources can be dangerous. Download with care. :warning:",
-                    mention_author=False,
+                await message.channel.send(
+                    "-# :warning: Files from unknown sources can be dangerous. Download with care. :warning:"
                 )
 
             return
