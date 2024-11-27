@@ -17,34 +17,34 @@ import requests.auth
 
 class SpamCog(Cog):
     file_types = {
-        # ".py": "python",
-        # ".c": "c",
-        # ".h": "c",
-        # ".cpp": "cpp",
-        # ".hpp": "cpp",
-        # ".cs": "csharp",
-        # ".sh": "shell",
-        # ".css": "css",
-        # ".csv": "csv",
-        # ".go": "go",
-        # ".html": "html",
-        # ".htm": "html",
-        # ".java": "java",
-        # ".js": "javascript",
-        # ".json": "json",
-        # ".jl": "julia",
-        # ".kt": "kotlin",
-        # ".sql": "sql",
-        # ".php": "php",
-        # ".rb": "ruby",
-        # ".rs": "rust",
-        # ".swift": "swift",
-        # ".xml": "xml",
-        # ".yaml": "yaml",
-        # ".yml": "yaml",
-        # ".txt": "",
-        # ".dockerfile": "dockerfile",
-        # ".dat": "dat",
+        ".py": "python",
+        ".c": "c",
+        ".h": "c",
+        ".cpp": "cpp",
+        ".hpp": "cpp",
+        ".cs": "csharp",
+        ".sh": "shell",
+        ".css": "css",
+        ".csv": "csv",
+        ".go": "go",
+        ".html": "html",
+        ".htm": "html",
+        ".java": "java",
+        ".js": "javascript",
+        ".json": "json",
+        ".jl": "julia",
+        ".kt": "kotlin",
+        ".sql": "sql",
+        ".php": "php",
+        ".rb": "ruby",
+        ".rs": "rust",
+        ".swift": "swift",
+        ".xml": "xml",
+        ".yaml": "yaml",
+        ".yml": "yaml",
+        ".txt": "",
+        ".dockerfile": "dockerfile",
+        ".dat": "dat",
     }
 
     @cached_property
@@ -101,9 +101,15 @@ class SpamCog(Cog):
             if message.channel.permissions_for(message.author).manage_messages:
                 return
 
-        _, disallowed = self.categorize_attachments(message)
+        allowed, disallowed = self.categorize_attachments(message)
 
         if not disallowed:
+            if allowed:
+                await message.reply(
+                    "-# :warning: Files downloaded from unknown sources can be dangerous. Download with care. :warning:",
+                    mention_author=False,
+                )
+
             return
 
         user_message = (
