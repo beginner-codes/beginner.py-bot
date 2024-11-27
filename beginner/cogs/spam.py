@@ -94,65 +94,55 @@ class SpamCog(Cog):
         if not message.attachments:
             return
 
-        if os.environ.get("PRODUCTION_BOT", False):
-            if message.channel.name.lower() in self.admin_channels:
-                return
-
-            if message.channel.permissions_for(message.author).manage_messages:
-                return
-
         allowed, disallowed = self.categorize_attachments(message)
-
-        if not disallowed:
-            if allowed:
-                await message.channel.send(
-                    "-# :warning: Files from unknown sources can be dangerous. Download with care. :warning:"
-                )
-
-            return
-
-        user_message = (
-            "\n".join(f"> {section}" for section in message.content.split("\n"))
-            if message.content.strip()
-            else ""
-        )
-        embed = Embed(
-            title="File Attachments Not Allowed",
-            description=f"For safety reasons we do not allow files with certain file extensions.",
-            color=RED,
-        )
-
-        embed.set_thumbnail(
-            url="https://cdn.discordapp.com/emojis/651959497698574338.png?v=1"
-        )
-        if user_message:
-            embed.add_field(
-                name=f"{message.author.display_name} Said", value=user_message
+        if not disallowed or message.channel.name.lower() in self.admin_channels:
+            await message.channel.send(
+                "-# :warning: Files from unknown sources can be dangerous. Download with care. :warning:"
             )
-        embed.add_field(
-            name="Code Formatting",
-            value=f"You can share your code using triple backticks like this:\n\\```\nYOUR CODE\n\\```",
-            inline=False,
-        )
-        embed.add_field(
-            name="Large Portions of Code",
-            value=f"For longer scripts use a code hosting platform like "
-            f"[GitHub Gists](https://gist.github.com/) and share the link here",
-            inline=False,
-        )
 
-        embed.add_field(
-            name="Ignored these files due to them having disallowed file extensions",
-            value="\n".join(f"- {attachment.filename}" for attachment in disallowed)
-            or "*NO FILES*",
-        )
+        else:
+            user_message = (
+                "\n".join(f"> {section}" for section in message.content.split("\n"))
+                if message.content.strip()
+                else ""
+            )
+            embed = Embed(
+                title="File Attachments Not Allowed",
+                description=f"For safety reasons we do not allow files with certain file extensions.",
+                color=RED,
+            )
 
-        try:
-            await message.delete()
-        except nextcord.errors.NotFound:
-            pass
+            embed.set_thumbnail(
+                url="https://cdn.discordapp.com/emojis/651959497698574338.png?v=1"
+            )
+            if user_message:
+                embed.add_field(
+                    name=f"{message.author.display_name} Said", value=user_message
+                )
+            embed.add_field(
+                name="Code Formatting",
+                value=f"You can share your code using triple backticks like this:\n\\```\nYOUR CODE\n\\```",
+                inline=False,
+            )
+            embed.add_field(
+                name="Large Portions of Code",
+                value=f"For longer scripts use a code hosting platform like "
+                f"[GitHub Gists](https://gist.github.com/) and share the link here",
+                inline=False,
+            )
 
-        await message.channel.send(message.author.mention, embed=embed)
+            embed.add_field(
+                name="Ignored these files due to them having disallowed file extensions",
+                value="\n".join(f"- {attachment.filename}" for attachment in disallowed)
+                or "*NO FILES*",
+            )
+
+            try:
+                await message.delete()
+            except nextcord.errors.NotFound:
+                pass
+
+            await message.channel.send(message.author.mention, embed=embed)
 
     def escape_markdown(self, string):
         return re.sub(r"([_*|])", r"\\\g<1>", string)
