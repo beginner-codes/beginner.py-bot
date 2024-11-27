@@ -49,14 +49,11 @@ class CodeRunner(Cog):
             aws_secret_access_key=os.environ.get("BEGINNER_PYTHON_RUNNER_SECRET_KEY"),
         )
 
-        lambda_config = Config(
-           retries = {
-              'max_attempts': 5,
-              'mode': 'standard'
-           }
+        lambda_config = Config(retries={"max_attempts": 5, "mode": "standard"})
+
+        self._lambda_client = session.client(
+            "lambda", region_name="ca-central-1", config=lambda_config
         )
-        
-        self._lambda_client = session.client("lambda", region_name="ca-central-1", config=lambda_config)
 
     @Cog.command()
     @cooldown(1, 15.0, BucketType.user)
