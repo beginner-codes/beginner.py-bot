@@ -47,6 +47,17 @@ class SpamCog(Cog):
         ".dat": "dat",
     }
 
+    embed_extensions = {
+        ".gif",
+        ".png",
+        ".jpeg",
+        ".jpg",
+        ".bmp",
+        ".webp",
+        ".mp4",
+        ".mov",
+    }
+
     @cached_property
     def admin_channels(self) -> Set:
         return set(channel.name for channel in self.get_category("Staff").text_channels)
@@ -95,6 +106,9 @@ class SpamCog(Cog):
             return
 
         allowed, disallowed = self.categorize_attachments(message)
+        if not allowed and not disallowed:
+            return
+
         if not disallowed or message.channel.name.lower() in self.admin_channels:
             await message.channel.send(
                 "-# :warning: Files from unknown sources can be dangerous. Download with care. :warning:"
@@ -153,16 +167,6 @@ class SpamCog(Cog):
     def categorize_attachments(self, message):
         allowed = []
         disallowed = []
-        allowed_extensions = {
-            ".gif",
-            ".png",
-            ".jpeg",
-            ".jpg",
-            ".bmp",
-            ".webp",
-            ".mp4",
-            ".mov",
-        }
 
         for attachment in message.attachments:
             _, extension = os.path.splitext(attachment.filename.lower())
@@ -171,7 +175,7 @@ class SpamCog(Cog):
                 or attachment.filename.lower() == "dockerfile"
             ):
                 allowed.append(attachment)
-            elif extension not in allowed_extensions:
+            elif extension not in self.embed_extensions:
                 disallowed.append(attachment)
 
         return allowed, disallowed
