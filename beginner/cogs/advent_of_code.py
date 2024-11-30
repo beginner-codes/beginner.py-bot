@@ -1,6 +1,7 @@
 from beginner.colors import BLUE
 from beginner.cog import Cog, commands
 from beginner.scheduler import schedule
+from beginner.snowflake import Snowflake
 from beginner.tags import tag
 from datetime import datetime, timedelta
 import nextcord
@@ -43,7 +44,10 @@ class AdventOfCode(Cog):
         )
 
     async def ready(self):
-        if self.now.month != self.christmas.month:
+        if self.now.month != self.christmas.month and (
+            self.now.month,
+            self.now.day,
+        ) != (11, 30):
             days = (self.christmas - self.now - timedelta(days=25)).days
             self.logger.debug(f"It's not December, another {days} days")
             return
