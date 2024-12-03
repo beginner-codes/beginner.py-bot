@@ -30,7 +30,7 @@ class AdventOfCode(Cog):
 
     @commands.command(name="aoc")
     async def toggle_aoc_role(self, ctx: commands.Context):
-        role = nextcord.utils.get(ctx.guild.roles, name="aoc-announcement")
+        role = nextcord.utils.get(ctx.guild.roles, name="aoc-announcement🎄")
         if role in ctx.author.roles:
             await ctx.author.remove_roles(role)
             action = "removed from"
@@ -72,7 +72,7 @@ class AdventOfCode(Cog):
 
     @tag("schedule", "advent-of-code-announcement")
     async def send_daily_link(self):
-        role = nextcord.utils.get(self.server.roles, name="aoc-announcement")
+        role = nextcord.utils.get(self.server.roles, name="aoc-announcement🎄")
         channel = self.get_channel("🎅aoc-announcements")
         show_off = self.get_channel("⛄aoc-discussion")
         help_channel = self.get_channel("🎄advent-of-code-help")
