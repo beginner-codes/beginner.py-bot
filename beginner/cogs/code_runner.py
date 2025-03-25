@@ -61,7 +61,7 @@ class CodeRunner(Cog):
     @max_concurrency(5)
     async def run(self, ctx: Context):
         match re.search(
-            r"```([a-zA-Z0-9_]+)\n((?:.|\n)+?)```(?:\n((?:.|\n)+))?",
+            r"```([a-zA-Z0-9_]+)\s*?\n((?:.|\n)+?)```(?:\n((?:.|\n)+))?",
             ctx.message.content,
         ):
             case None:
