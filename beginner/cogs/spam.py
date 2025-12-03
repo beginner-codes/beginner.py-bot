@@ -56,6 +56,8 @@ class SpamCog(Cog):
         ".webp",
         ".mp4",
         ".mov",
+        ".webm",
+        ".mp3",
     }
 
     @cached_property
