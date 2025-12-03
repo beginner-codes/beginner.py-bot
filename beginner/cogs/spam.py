@@ -56,6 +56,8 @@ class SpamCog(Cog):
         ".webp",
         ".mp4",
         ".mov",
+        ".webm",
+        ".mp3",
     }
 
     @cached_property
@@ -109,11 +111,17 @@ class SpamCog(Cog):
         if not allowed and not disallowed:
             return
 
-        if not disallowed or message.channel.name.lower() in self.admin_channels:
+        is_in_staff_channel = message.channel.name.lower() in self.admin_channels
+        member_role_ids = [role.id for role in message.author.roles]
+        is_author_staff = any(
+            role.id in [720655282115706892, 644390354157568014]
+            for role in member_role_ids
+        )
+
+        if not disallowed or is_in_staff_channel or is_author_staff:
             await message.channel.send(
                 "-# :warning: Files from unknown sources can be dangerous. Download with care. :warning:"
             )
-
         else:
             user_message = (
                 "\n".join(f"> {section}" for section in message.content.split("\n"))
