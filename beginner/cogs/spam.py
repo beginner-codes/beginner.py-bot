@@ -77,10 +77,7 @@ class SpamCog(Cog):
 
     @Cog.listener()
     async def on_message(self, message):
-        await asyncio.gather(
-            self.attachment_filter(message),
-            self.newline_filter(message),
-        )
+        await self.newline_filter(message)
 
     async def newline_filter(self, message: nextcord.Message):
         count = message.content.count("\n")
@@ -97,74 +94,6 @@ class SpamCog(Cog):
             ),
             message.delete(),
         )
-
-    async def attachment_filter(self, message: Message):
-        """When a message is sent by normal users ensure it doesn't have any non-image attachments. Delete it and send
-        a mod message if it does."""
-        if message.author.bot:
-            return
-
-        if not message.attachments:
-            return
-
-        allowed, disallowed = self.categorize_attachments(message)
-        if not allowed and not disallowed:
-            return
-
-        is_in_staff_channel = message.channel.name.lower() in self.admin_channels
-        member_role_ids = [role.id for role in message.author.roles]
-        is_author_staff = any(
-            role.id in [720655282115706892, 644390354157568014]
-            for role in member_role_ids
-        )
-
-        if not disallowed or is_in_staff_channel or is_author_staff:
-            await message.channel.send(
-                "-# :warning: Files from unknown sources can be dangerous. Download with care. :warning:"
-            )
-        else:
-            user_message = (
-                "\n".join(f"> {section}" for section in message.content.split("\n"))
-                if message.content.strip()
-                else ""
-            )
-            embed = Embed(
-                title="File Attachments Not Allowed",
-                description=f"For safety reasons we do not allow files with certain file extensions.",
-                color=RED,
-            )
-
-            embed.set_thumbnail(
-                url="https://cdn.discordapp.com/emojis/651959497698574338.png?v=1"
-            )
-            if user_message:
-                embed.add_field(
-                    name=f"{message.author.display_name} Said", value=user_message
-                )
-            embed.add_field(
-                name="Code Formatting",
-                value=f"You can share your code using triple backticks like this:\n\\```\nYOUR CODE\n\\```",
-                inline=False,
-            )
-            embed.add_field(
-                name="Large Portions of Code",
-                value=f"For longer scripts use a code hosting platform like "
-                f"[GitHub Gists](https://gist.github.com/) and share the link here",
-                inline=False,
-            )
-
-            embed.add_field(
-                name="Ignored these files due to them having disallowed file extensions",
-                value="\n".join(f"- {attachment.filename}" for attachment in disallowed)
-                or "*NO FILES*",
-            )
-
-            try:
-                await message.delete()
-            except nextcord.errors.NotFound:
-                pass
-
-            await message.channel.send(message.author.mention, embed=embed)
 
     def escape_markdown(self, string):
         return re.sub(r"([_*|])", r"\\\g<1>", string)
