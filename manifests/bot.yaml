@@ -17,6 +17,13 @@ spec:
       containers:
         - name: beginner-py-bot
           image: zzmmrmn/beginner-py-bot:<IMAGE_VERSION>
+          resources:
+            requests:
+              cpu: 25m
+              memory: 128Mi
+            limits:
+              cpu: 100m
+              memory: 256Mi
           envFrom:
             - configMapRef:
                 name: discord-bot-config
