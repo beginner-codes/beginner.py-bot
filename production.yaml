@@ -13,7 +13,7 @@ cogs:
   help: true
   help_posts: true
   moderation: true
-  monthly_showing_off: true
+
   onboarding: true
   resources: true
   rules: true
