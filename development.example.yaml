@@ -7,23 +7,12 @@ cogs:
   admin: false
   bump: false
   candidates: false
-  challenges: false
-  code_runner: false
-  fun: false
-  google: false
   help: false
   help_rotator: false
-  kudos: false
   moderation: false
   onboarding: false
-  python: false
-  repeater: false
   rules: true
   settings: false
-  spam: false
-  statistics: false
-  tips: false
-  user_roles: false
   devcog:
     enabled: true
     from: "beginner.devcog"
