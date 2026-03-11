@@ -1,6 +1,5 @@
 from beginner.cog import Cog, commands
 from beginner.colors import *
-from beginner.models.points import Points
 from beginner.scheduler import schedule, task_scheduled
 from beginner.tags import tag
 from datetime import datetime, timedelta

@@ -9,59 +9,24 @@ class Help(Cog):
             embedded = nextcord.Embed(
                 title="Beginner.py Commands",
                 description=(
-                    "**Commands:**\n- exec/eval\n- free\n- google\n- kudos\n- pip\n- resources\n- tip"
+                    "**Commands:**\n- resources\n- rules\n- help\n- info"
                 ),
                 color=0xFFE873,
             )
             embedded.set_thumbnail(url=self.server.icon.url)
-            embedded.add_field(
-                name="!exec <code block>",
-                value=(
-                    "Runs a block of python code. The code must be inside of a python markdown code block.\n\n"
-                    '!exec \\```py\nfor i in range(5):\n    print("Hello world!!!")\n\\```'
-                ),
-                inline=False,
-            )
-            embedded.add_field(
-                name="!eval <python statement>",
-                value='Runs the python statement.\n```\n!eval print("Hello world!!!")\n```',
-                inline=False,
-            )
-            embedded.add_field(
-                name="!free",
-                value="Gets a currently free Python help channel.\n```\n!free\n```",
-                inline=False,
-            )
-            embedded.add_field(
-                name="!google <search terms>",
-                value="Gets retrieves the top 5 results from Google for the search term.\n```\n!google foobar\n```",
-                inline=False,
-            )
-            embedded.add_field(
-                name="!kudos [leaderboard|help]",
-                value=(
-                    "Gets your kudos score\n```\n!kudos\n```\n"
-                    "Gets the kudos leaderboard\n```\n!kudos leaderboard\n```\n"
-                    "Explains how kudos works\n```\n!kudos help\n```"
-                ),
-                inline=False,
-            )
-            embedded.add_field(
-                name="!pip <package name>",
-                value="Looks up a python package on the Python Package Index\n```\n!pip requests\n```",
-                inline=False,
-            )
             embedded.add_field(
                 name="!resources <topic>",
                 value="Retrieves our recommended resources for a given topic.\n```\n!resources python\n```",
                 inline=False,
             )
             embedded.add_field(
-                name="!tip <topic>",
-                value=(
-                    "Retrieves a tip message.\n```\n!tip cli\n```"
-                    "Lists all available tips.\n```\n!tip\n```"
-                ),
+                name="!rules <rule>",
+                value="Displays the server rules.\n```\n!rules\n```",
+                inline=False,
+            )
+            embedded.add_field(
+                name="!info",
+                value="Displays information about the bot.\n```\n!info\n```",
                 inline=False,
             )
             await ctx.send(embed=embedded)
@@ -93,21 +58,6 @@ class Help(Cog):
                     embedded.add_field(
                         name="!rule -edit-alias <current_alias> <new_alias>",
                         value="Overwrites an existing rule's current alias with a new alias.",
-                        inline=False,
-                    )
-                    embedded.add_field(
-                        name="!python -missing",
-                        value="Returns a list of Python keywords that currently have no example code yet.",
-                        inline=False,
-                    )
-                    embedded.add_field(
-                        name="!python -add <field> <keyword> <content>",
-                        value="Adds a new value to the field of the keyword.",
-                        inline=False,
-                    )
-                    embedded.add_field(
-                        name="!python -edit <field> <keyword> <index> <content>",
-                        value="Updates the value of an existing field of the keyword. When editing example codes, the index number of the code block (1 or 2) must be provided as well.",
                         inline=False,
                     )
                     await ctx.send(embed=embedded)

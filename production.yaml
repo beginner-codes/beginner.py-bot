@@ -5,37 +5,19 @@ bot:
 
 cogs:
   admin: true
-  advent_of_code: true
   beginner_cog:
     enabled: true
     from: beginner.beginner
-  buddy: true
   bump: true
   candidates: true
-  challenges: true
-  code_runner: true
-  fun: true
-  google: true
   help: true
   help_posts: true
-  kudos: true
   moderation: true
-  monthly_showing_off: true
+
   onboarding: true
-  python: true
-  pip: true
-  repeater: true
   resources: true
-  role_assignment: true
   rules: true
   settings: true
-  spam: true
-  statistics: true
-  tips: true
-  user_roles: true
-
-  prompt_weather: true
-  prompt_luck: true
 
 logging:
   format: "%(asctime)s: %(levelname)-9s %(name)-16s :: %(message)s"
